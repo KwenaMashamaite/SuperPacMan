@@ -1,0 +1,48 @@
+###################################################
+# Lines that start with '#' are comments.
+#
+# The syntax for the file is as follows:
+# 	key:type=value
+#
+# key is the name of a variable, type is the type of
+# the key (in lowercase - only fundamental types are 
+# allowed) and value is an entry associated with that
+# key. The key must not contain any whitespaces or
+# special characters. For boolean types use 1 for yes
+# or true and 0 for no or false.
+#
+####################################################
+
+### WINDOW SETTINGS ###
+
+# Title of the game window
+windowTitle:string=Super Pac-Man
+
+# Game window fullscreen option
+fullscreen:bool=0
+
+# Width of the game window
+windowWidth:int=482
+
+# Height of the game window
+windowHeight:int=608
+
+# Window Icon path
+iconPath:string=assets/images/
+
+# FPS limit
+fpsLimit:int=60
+
+### RESOURCE MANAGER SETTINGS ###
+
+# Path to fonts
+fontsPath:string=assets/fonts/
+
+# Path to image files
+imagesPath:string=assets/images/
+
+# Path to music files
+musicPath:string=assets/music/
+
+# Path to sound effects
+sfxPath:string=assets/sfx/

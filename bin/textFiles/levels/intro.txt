@@ -1,0 +1,52 @@
+###########################################
+# Lines that start with '#' are comments.
+#
+# This files defines the Super PacMan map.
+# All levels of the game use the same map
+#
+# The tile id's are as follows:
+#   | = solid wall block
+#   # = solid wall block
+#   . = Empty tile
+#   M = Ghost house front door/Blinky spawn position
+#   P = Pinky spawn position
+#   I = Inky spawn position
+#   C = Clyde spawn position
+#   R = Revival position for ghosts
+#   X = Pacman spawn position
+#   K = key
+#   D = Door
+#   F = Food
+#   E = Power Pellet
+#   S = Super Pellet
+###########################################
+
+.......................
+.......................
+|#####################|
+|K...................K|
+|.|D|.|####D####|.|D|.|
+|.|E|.DF.F.F.F.FD.|E|.|
+|.|D|.|#########|.|D|.|
+|....K.....M.....K....|
+|.|D##|.|##.##|.|##D|.|
+|.|F.F|.|..P..|.|F.F|.|
+|.|D|.|.|..I..|.|.|D|.|
+|K..|F|.|..C..|.|F|..K|
+|#|.|.|.|#####|.|.|.##|
+DFD.DFD....X....DFD.DFD
+|#|.|#|.|#|.|#|.|#|.##|
+|K.....K|.|.|.|K.....K|
+|.|D|.|D|#|.|#|D|.|D|.|
+|.|F|.|S.FD.DF.S|.|F|.|
+|.|.|.|.|#|.|#|.|.|.|.|
+|.|F|.|F|..K..|F|.|F|.|
+|.|D|.|.|.|#|.|.|.|D|.|
+|.....|F|.|F|.|F|.....|
+|.|D|.|D|.|D|.|D|.|D|.|
+|.|E|.............|E|.|
+|.|D|K|####D####|K|D|.|
+|K....DF.F.F.F.FD....K|
+|#####################|
+.......................
+.......................
