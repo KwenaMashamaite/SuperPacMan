@@ -5,7 +5,7 @@
 #ifndef INTROSTATE_H
 #define INTROSTATE_H
 
-#include <IME/core/loop/State.h>
+#include <IME/core/states/State.h>
 #include <IME/core/tilemap/TileMap.h>
 #include <IME/graphics/ui/GuiContainer.h>
 #include <IME/core/entity/Entity.h>
@@ -110,9 +110,10 @@ namespace SuperPacMan {
         void exit() override;
 
     private:
+        /**
+         * @brief Construct the maze
+         */
         void createMaze();
-        void createEntities();
-        void hideSpriteAt(IME::Position position);
 
     private:
         IME::TileMap grid_;
@@ -120,6 +121,7 @@ namespace SuperPacMan {
         EntityContainer pellets_;
         std::vector<std::shared_ptr<IEntityAnimator>> animators_;
         std::unordered_map<std::string, AnimatableSpriteContainer> dynamicSprites_;
+        float stateTimeout_;
     };
 }
 

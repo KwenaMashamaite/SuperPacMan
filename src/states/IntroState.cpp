@@ -4,11 +4,13 @@
 #include <IME/graphics/ui/layout/VerticalLayout.h>
 #include "../common/SpriteContainer.h"
 #include "../animators/PelletAnimator.h"
+#include "MainMenuState.h"
 
 namespace SuperPacMan {
     IntroState::IntroState(IME::Engine &engine) : State(engine),
         grid_(20, 20),
-        guiContainer_(engine.getRenderTarget())
+        guiContainer_(engine.getRenderTarget()),
+        stateTimeout_{5.0f}
     {}
 
     void IntroState::initialize() {
@@ -108,6 +110,11 @@ namespace SuperPacMan {
     }
 
     void IntroState::update(float deltaTime) {
+        stateTimeout_ -= deltaTime;
+        if (stateTimeout_ <= 0.0f) {
+            engine().popState();
+            engine().pushState(std::make_shared<MainMenuState>(engine()));
+        }
         for (auto& animator : animators_)
             animator->update(deltaTime);
     }
