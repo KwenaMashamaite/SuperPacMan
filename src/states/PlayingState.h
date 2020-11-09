@@ -8,6 +8,8 @@
 #include <IME/core/states/State.h>
 #include <IME/core/tilemap/TileMap.h>
 #include <IME/graphics/ui/GuiContainer.h>
+#include <IME/core/entity/Entity.h>
+#include <IME/graphics/Sprite.h>
 
 namespace SuperPacMan {
     class PlayingState : public IME::State {
@@ -69,23 +71,31 @@ namespace SuperPacMan {
         void exit() override;
 
     private:
-        /**
-         * @brief Create the states grid
-         */
         void createMaze();
-
-        /**
-         * @brief Create the current score and highscore displays
-         */
         void createScoresText();
+        void createFruits();
 
     private:
+        //Aliases
+        using EntitySpritePair = std::pair<std::shared_ptr<IME::Entity>, std::shared_ptr<IME::Graphics::Sprite>>;
+        using EntityContainer = std::vector<EntitySpritePair>;
+
         //Initialization flag
         bool isInitialized_;
+        //The current level
+        unsigned int level_;
         //The grid of the game
         IME::TileMap tileMap_;
         //Container for the high score display
         IME::Graphics::UI::GuiContainer guiContainer_;
+        //Container for all game entities
+        std::unordered_map<std::string, EntityContainer> objects_;
+        //Stores the types of fruit (Different fruit type each level)
+        const std::vector<std::string> fruitType_{
+            "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake",
+            "peach", "melon", "coffee", "mushroom", "bell", "clover", "galaxian",
+            "gift"
+        };
     };
 }
 

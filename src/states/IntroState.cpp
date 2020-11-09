@@ -10,7 +10,7 @@ namespace SuperPacMan {
     IntroState::IntroState(IME::Engine &engine) : State(engine),
         grid_(20, 20),
         guiContainer_(engine.getRenderTarget()),
-        stateTimeout_{5.0f}
+        stateTimeout_{1.0f}
     {}
 
     void IntroState::initialize() {

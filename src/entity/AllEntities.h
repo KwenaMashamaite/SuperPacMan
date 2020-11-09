@@ -11,5 +11,6 @@
 #include "PacMan.h"
 #include "Ghost.h"
 #include "Pellet.h"
+#include "Fruit.h"
 
 #endif

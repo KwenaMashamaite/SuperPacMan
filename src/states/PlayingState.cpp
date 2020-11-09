@@ -2,12 +2,14 @@
 #include <IME/core/loop/Engine.h>
 #include <IME/graphics/ui/widgets/Label.h>
 #include <IME/graphics/ui/layout/HorizontalLayout.h>
+#include "../entity/AllEntities.h"
+#include "../common/SpriteContainer.h"
 
 using namespace IME::Graphics;
 
 namespace SuperPacMan {
     PlayingState::PlayingState(IME::Engine &engine)
-        : State(engine), isInitialized_(false),
+        : State(engine), isInitialized_(false), level_{1u},
           tileMap_{20, 20},
           guiContainer_(engine.getRenderTarget())
     {
@@ -17,12 +19,13 @@ namespace SuperPacMan {
     void PlayingState::initialize() {
         createMaze();
         createScoresText();
+        createFruits();
         isInitialized_ = true;
     }
 
     void PlayingState::createMaze() {
         tileMap_.loadFromFile("textFiles/levels/maze.txt");
-        tileMap_.setGridVisible(true);
+        tileMap_.setGridVisible(false);
         tileMap_.setBackground("maze.png", {6.0f, -1.53f});
         tileMap_.scaleBackground(2.1f, 2.1f);
 
@@ -68,6 +71,20 @@ namespace SuperPacMan {
         guiContainer_.addWidget(std::move(scoresValueContainer), "scoresValueContainer");
     }
 
+    void PlayingState::createFruits() {
+        tileMap_.forEachTile('F', [this](auto& tile) {
+            auto fruit = std::make_shared<Fruit>(tileMap_.getTileSize(), fruitType_[level_ - 1]);
+            fruit->setCollidable(true);
+            tileMap_.addChild(tile.getIndex(), fruit);
+            auto fruitSprite = std::make_shared<IME::Graphics::Sprite>(SpriteContainer::getSprite(fruit->getName()));
+            fruitSprite->setOrigin(fruitSprite->getSize().width / 2.0f, fruitSprite->getSize().height / 2.0f);
+            fruitSprite->scale(2.0f, 2.0f);
+            fruitSprite->setPosition(fruit->getPosition().x + fruit->getSize().width / 2.0f,
+                fruit->getPosition().y + fruit->getSize().height / 2.0f);
+            objects_["fruits"].push_back({std::move(fruit), std::move(fruitSprite)});
+        });
+    }
+
     void PlayingState::update(float deltaTime) {
 
     }
@@ -80,6 +97,13 @@ namespace SuperPacMan {
         //Draw the grid (Walls and doors)
         tileMap_.draw(renderTarget);
         guiContainer_.draw();
+
+        std::for_each(objects_.begin(), objects_.end(), [&](auto& keyValuePair) {
+            std::for_each(keyValuePair.second.begin(), keyValuePair.second.end(), [&](auto& entitySpritePair) {
+                auto& [entity, sprite] = entitySpritePair;
+                renderTarget.draw(*sprite);
+            });
+        });
     }
 
     void PlayingState::handleEvent(sf::Event event) {
