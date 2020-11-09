@@ -74,6 +74,7 @@ namespace SuperPacMan {
         void createMaze();
         void createScoresText();
         void createFruits();
+        void createKeys();
 
     private:
         //Aliases

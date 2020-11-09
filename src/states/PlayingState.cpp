@@ -20,6 +20,7 @@ namespace SuperPacMan {
         createMaze();
         createScoresText();
         createFruits();
+        createKeys();
         isInitialized_ = true;
     }
 
@@ -82,6 +83,21 @@ namespace SuperPacMan {
             fruitSprite->setPosition(fruit->getPosition().x + fruit->getSize().width / 2.0f,
                 fruit->getPosition().y + fruit->getSize().height / 2.0f);
             objects_["fruits"].push_back({std::move(fruit), std::move(fruitSprite)});
+        });
+    }
+
+    void PlayingState::createKeys() {
+        tileMap_.forEachTile('K', [this](auto& tile) {
+            static auto keyId = 1;
+            auto key = std::make_shared<Key>(tileMap_.getTileSize(), keyId++);
+            key->setCollidable(true);
+            tileMap_.addChild(tile.getIndex(), key);
+            auto keySprite = std::make_shared<IME::Graphics::Sprite>(SpriteContainer::getSprite("key"));
+            keySprite->setOrigin(keySprite->getSize().width / 2.0f, keySprite->getSize().height / 2.0f);
+            keySprite->scale(2.0f, 2.0f);
+            keySprite->setPosition(key->getPosition().x + key->getSize().width / 2.0f,
+                key->getPosition().y + key->getSize().height / 2.0f);
+            objects_["keys"].push_back({std::move(key), std::move(keySprite)});
         });
     }
 
