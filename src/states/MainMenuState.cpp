@@ -1,4 +1,5 @@
 #include "MainMenuState.h"
+#include "PlayingState.h"
 #include <IME/core/loop/Engine.h>
 #include <IME/utility/DiskFileReader.h>
 #include <IME/graphics/ui/widgets/Button.h>
@@ -79,8 +80,8 @@ namespace SuperPacMan {
         auto navButtonsContainer = std::dynamic_pointer_cast<UI::VerticalLayout>(mainViewContainer_.getWidget("nav-btn-container"));
         //PLAY BUTTON
         navButtonsContainer->getWidget("play-btn")->on("click", IME::Callback<>([this] {
-            //engine().popState();
-            //engine().pushState(std::move(std::make_shared<PlayingState>(engine())));
+            engine().popState();
+            engine().pushState(std::move(std::make_shared<PlayingState>(engine())));
         }));
 
         //CONTROLS BUTTON
