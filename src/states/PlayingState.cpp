@@ -27,7 +27,7 @@ namespace SuperPacMan {
     void PlayingState::createMaze() {
         tileMap_.loadFromFile("textFiles/levels/maze.txt");
         tileMap_.setGridVisible(false);
-        tileMap_.setBackground("maze.png", {6.0f, -1.53f});
+        tileMap_.setBackground("gameplayGridBackground.png", {6.0f, -1.53f});
         tileMap_.scaleBackground(2.1f, 2.1f);
 
         //Initialize tiles

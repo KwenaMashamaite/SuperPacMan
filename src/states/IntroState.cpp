@@ -17,7 +17,7 @@ namespace SuperPacMan {
         using namespace IME::Graphics;
         grid_.loadFromFile("textFiles/levels/introMaze.txt");
         grid_.setGridVisible(false);
-        grid_.setBackground("introMaze.png", {5.0f, -18.0f});
+        grid_.setBackground("introGridBackground.png", {5.0f, -18.0f});
         grid_.scaleBackground(2.1, 2.1);
         grid_.forEachTile([](Tile& tile) {
             if (tile.getId() == '#' || tile.getId() == 'D')

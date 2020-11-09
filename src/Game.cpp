@@ -6,6 +6,28 @@
 using Key = IME::Input::Keyboard::Key;
 using KeyEvent = IME::Input::Keyboard::Event;
 
+void loadResources() {
+    //LOAD FONTS
+    IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Font, "namco.ttf");
+
+    //LOAD TEXTURES
+    IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Texture,  {
+        "icon.png", "introGridBackground.png", "gameplayGridBackground.png",
+        "logo.png", "spritesTileset.png"
+    });
+
+    //LOAD SOUND EFFECTS
+    IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::SoundBuffer, {
+        "doorBroken.wav", "fruitEaten.wav", "ghostEaten.wav", "pacmanDying.wav",
+        "powerPelletEaten.wav", "superPelletEaten.wav"
+    });
+
+    //LOAD MUSIC
+    IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Music, {
+        "pacman_beginning.wav", "searching.ogg", "pacman_intermission.ogg"
+    });
+}
+
 namespace SuperPacMan {
     Game::Game()
         : engine_("Super Pac-Man", "textFiles/config/settings.dat")
@@ -13,6 +35,7 @@ namespace SuperPacMan {
 
     void Game::initialize() {
         engine_.init();
+        loadResources();
         constructSpritesFromSpriteSheet();
         engine_.pushState(std::make_shared<StartUpState>(engine_));
 
