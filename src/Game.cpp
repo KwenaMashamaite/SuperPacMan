@@ -1,5 +1,5 @@
 #include "Game.h"
-#include "states/IntroState.h"
+#include "states/StartUpState.h"
 #include "common/SpriteContainer.h"
 #include <memory>
 
@@ -14,7 +14,7 @@ namespace SuperPacMan {
     void Game::initialize() {
         engine_.init();
         constructSpritesFromSpriteSheet();
-        engine_.pushState(std::make_shared<IntroState>(engine_));
+        engine_.pushState(std::make_shared<StartUpState>(engine_));
 
         engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::Escape, [this] {
             engine_.quit();
