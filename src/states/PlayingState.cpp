@@ -9,6 +9,40 @@
 
 using namespace IME::Graphics;
 
+int getLockerId(IME::Index doorIndex) {
+    if (doorIndex == IME::Index{4, 3} || doorIndex == IME::Index{6, 3})
+        return 1;
+    else if (doorIndex == IME::Index{4, 19} || doorIndex == IME::Index{6, 19})
+        return 2;
+    else if (doorIndex == IME::Index{5, 6} || doorIndex == IME::Index{4, 11})
+        return 3;
+    else if (doorIndex == IME::Index{5, 16})
+        return 4;
+    else if (doorIndex == IME::Index{10, 3} || doorIndex == IME::Index{13, 2} || doorIndex == IME::Index{13, 4})
+        return 5;
+    else if (doorIndex == IME::Index{10, 19} || doorIndex == IME::Index{13, 18} || doorIndex == IME::Index{13, 20})
+        return 6;
+    else if (doorIndex == IME::Index{16, 3} || doorIndex == IME::Index{20, 3})
+        return 7;
+    else if (doorIndex == IME::Index{13, 6} || doorIndex == IME::Index{16, 7} || doorIndex == IME::Index{17, 10})
+        return 8;
+    else if (doorIndex == IME::Index{13, 16} || doorIndex == IME::Index{17, 12} || doorIndex == IME::Index{16, 15})
+        return 9;
+    else if (doorIndex == IME::Index{16, 19} || doorIndex == IME::Index{20, 19})
+        return 10;
+    else if (doorIndex == IME::Index{22, 11} || doorIndex == IME::Index{13, 0} || doorIndex == IME::Index{13, 22})
+        return 11;
+    else if (doorIndex == IME::Index{22, 7} || doorIndex == IME::Index{25, 6} || doorIndex == IME::Index{24, 11})
+        return 12;
+    else if (doorIndex == IME::Index{22, 15} || doorIndex == IME::Index{25, 16})
+        return 13;
+    else if (doorIndex == IME::Index{22, 3} || doorIndex == IME::Index{24, 3})
+        return 14;
+    else if (doorIndex == IME::Index{22, 19} || doorIndex == IME::Index{24, 19})
+        return 15;
+    else return -1;
+}
+
 namespace SuperPacMan {
     PlayingState::PlayingState(IME::Engine &engine)
         : State(engine), isInitialized_(false), level_{1u},
@@ -20,6 +54,8 @@ namespace SuperPacMan {
 
     void PlayingState::initialize() {
         createMaze();
+        createWalls();
+        createDoors();
         createScoresText();
         createFruits();
         createKeys();
@@ -120,6 +156,29 @@ namespace SuperPacMan {
                 tileMap_.addChild(tile.getIndex(), pellet);
                 objects_["pellets"].push_back({std::move(pellet), std::move(pelletSprite)});
             }
+        });
+    }
+
+    void PlayingState::createWalls() {
+        tileMap_.forEachTile([this](auto& tile) {
+            if (tile.getId() == '#' || tile.getId() == '|') {
+                auto wall = std::make_shared<Wall>(tileMap_.getTileSize());
+                wall->setCollidable(true);
+                tileMap_.addChild(tile.getIndex(), wall);
+                objects_["walls"].push_back({std::move(wall), std::make_shared<Sprite>()});
+            }
+        });
+    }
+
+    void PlayingState::createDoors() {
+        tileMap_.forEachTile('D', [this](auto& tile) {
+            auto door = std::make_shared<Door>(tileMap_.getTileSize());
+            door->addDoorLocker(std::make_unique<DoorLocker>(getLockerId(tile.getIndex())));
+            door->lockWith(Key({}, getLockerId(tile.getIndex())));
+            if (tile.getIndex().row % 2 == 0)
+                door->setOrientation(Orientation::Horizontal);
+            tileMap_.addChild(tile.getIndex(), door);
+            objects_["doors"].push_back({std::move(door), std::make_shared<Sprite>()});
         });
     }
 

@@ -73,6 +73,8 @@ namespace SuperPacMan {
 
     private:
         void createMaze();
+        void createWalls();
+        void createDoors();
         void createScoresText();
         void createFruits();
         void createKeys();
