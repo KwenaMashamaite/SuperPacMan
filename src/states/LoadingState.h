@@ -1,24 +1,23 @@
 /**
- * @brief Defines the start state of the game
- *
- * This state does nothing but display the games grid for a small duration
- * before transitioning to the next state
+ * @brief Defines the loading state of the game
  */
 
 #ifndef STARTUPSTATE_H
 #define STARTUPSTATE_H
 
 #include <IME/core/states/State.h>
-#include <IME/core/tilemap/TileMap.h>
+#include <IME/graphics/Sprite.h>
+#include <IME/graphics/ui/GuiContainer.h>
+#include <atomic>
 
 namespace SuperPacMan {
-    class StartUpState : public IME::State {
+    class LoadingState : public IME::State {
     public:
         /**
          * @brief Create state
          * @param engine Reference to the game
          */
-        explicit StartUpState(IME::Engine &engine);
+        explicit LoadingState(IME::Engine &engine);
 
         /**
          * @brief Initialize state
@@ -109,10 +108,30 @@ namespace SuperPacMan {
         void exit() override;
 
     private:
-        //The games grid
-        IME::TileMap grid_;
-        //How long the state displays before transitioning to the next state
-        float stateTimeout_;
+        /**
+         * @brief Load resources (fonts, textures, music etc...) from the disk
+         */
+        void loadResources();
+
+        /**
+         * @brief Create the game title and logo
+         */
+        void createTitle();
+
+        /**
+         * @brief Create bar to display the resource loading progress
+         */
+        void createProgressBar();
+
+    private:
+        //Third party engine logo
+        IME::Graphics::Sprite engineLogo_;
+        //Games mascot
+        IME::Graphics::Sprite mascot_;
+        //Container for all widgets
+        IME::Graphics::UI::GuiContainer guiContainer_;
+        //Flags whether resource loading is complete or not
+        std::atomic_bool loadingFinished_;
     };
 }
 
