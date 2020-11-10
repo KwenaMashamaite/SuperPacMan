@@ -2,8 +2,10 @@
 #include <IME/core/loop/Engine.h>
 #include <IME/graphics/ui/widgets/Label.h>
 #include <IME/graphics/ui/layout/HorizontalLayout.h>
+#include <IME/graphics/AnimatableSprite.h>
 #include "../entity/AllEntities.h"
 #include "../common/SpriteContainer.h"
+#include "../animators/PelletAnimator.h"
 
 using namespace IME::Graphics;
 
@@ -21,6 +23,7 @@ namespace SuperPacMan {
         createScoresText();
         createFruits();
         createKeys();
+        createPellets();
         isInitialized_ = true;
     }
 
@@ -101,8 +104,28 @@ namespace SuperPacMan {
         });
     }
 
-    void PlayingState::update(float deltaTime) {
+    void PlayingState::createPellets() {
+        tileMap_.forEachTile([this](auto& tile) {
+            if (tile.getId() == 'E' || tile.getId() == 'S') {
+                auto pelletType = PelletType::SuperPellet;
+                if (tile.getId() == 'E')
+                    pelletType = PelletType::PowerPellet;
+                auto pellet = std::make_shared<Pellet>(pelletType, tileMap_.getTileSize());
+                pellet->setCollidable(true);
 
+                auto pelletSprite = std::make_shared<IME::Graphics::AnimatableSprite>();
+                auto pelletAnimator = std::make_shared<PelletAnimator>(pelletType, *pelletSprite, *pellet);
+                pelletAnimator->initialize();
+                animators_.push_back(std::move(pelletAnimator));
+                tileMap_.addChild(tile.getIndex(), pellet);
+                objects_["pellets"].push_back({std::move(pellet), std::move(pelletSprite)});
+            }
+        });
+    }
+
+    void PlayingState::update(float deltaTime) {
+        for (auto& animator : animators_)
+            animator->update(deltaTime);
     }
 
     void PlayingState::fixedUpdate(float deltaTime) {

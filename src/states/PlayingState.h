@@ -10,6 +10,7 @@
 #include <IME/graphics/ui/GuiContainer.h>
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Sprite.h>
+#include "../animators/IEntityAnimator.h"
 
 namespace SuperPacMan {
     class PlayingState : public IME::State {
@@ -75,6 +76,7 @@ namespace SuperPacMan {
         void createScoresText();
         void createFruits();
         void createKeys();
+        void createPellets();
 
     private:
         //Aliases
@@ -91,6 +93,7 @@ namespace SuperPacMan {
         IME::Graphics::UI::GuiContainer guiContainer_;
         //Container for all game entities
         std::unordered_map<std::string, EntityContainer> objects_;
+        std::vector<std::shared_ptr<IEntityAnimator>> animators_;
         //Stores the types of fruit (Different fruit type each level)
         const std::vector<std::string> fruitType_{
             "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake",
