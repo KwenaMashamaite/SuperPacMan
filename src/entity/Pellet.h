@@ -21,7 +21,7 @@ namespace SuperPacMan {
          * @brief pelletType Type of the pellet
          * @param boundingRect Size of the objects bounding rectangle
          */
-        explicit Pellet(PelletType pelletType, const IME::Dimensions &boundingRect);
+        explicit Pellet(PelletType pelletType, const IME::Vector2u &boundingRect);
 
         /**
          * @brief Eat pellet

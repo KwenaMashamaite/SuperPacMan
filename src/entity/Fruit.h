@@ -16,7 +16,7 @@ namespace SuperPacMan {
          * @param boundingRect Size of the objects bounding rectangle
          * @param name Name of the fruit
          */
-        Fruit(const IME::Dimensions &boundingRect, const std::string &name);
+        Fruit(const IME::Vector2u &boundingRect, const std::string &name);
 
         /**
          * @brief Get the name of the fruit

@@ -1,7 +1,7 @@
 #include "Door.h"
 
 namespace SuperPacMan {
-    Door::Door(const IME::Dimensions &boundingRect)
+    Door::Door(const IME::Vector2u &boundingRect)
         : Entity(boundingRect), orientation_(Orientation::Vertical)
     {}
 

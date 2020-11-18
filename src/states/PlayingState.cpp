@@ -1,7 +1,7 @@
 #include "PlayingState.h"
 #include <IME/core/loop/Engine.h>
 #include <IME/graphics/ui/widgets/Label.h>
-#include <IME/graphics/ui/layout/HorizontalLayout.h>
+#include <IME/graphics/ui/widgets/HorizontalLayout.h>
 #include <IME/graphics/AnimatableSprite.h>
 #include "../entity/AllEntities.h"
 #include "../common/SpriteContainer.h"
@@ -44,19 +44,18 @@ int getLockerId(IME::Index doorIndex) {
 }
 
 namespace SuperPacMan {
-    PlayingState::PlayingState(IME::Engine &engine)
-        : State(engine), isInitialized_(false), level_{1u},
-          tileMap_{20, 20},
-          guiContainer_(engine.getRenderTarget())
-    {
-        guiContainer_.setFont("namco.ttf");
-    }
+    PlayingState::PlayingState(IME::Engine &engine) :
+        State(engine),
+        scoreView_(engine.getRenderTarget()),
+        isInitialized_(false), level_{1u},
+        tileMap_{20, 20}
+    {}
 
     void PlayingState::initialize() {
+        scoreView_.init();
         createMaze();
         createWalls();
         createDoors();
-        createScoresText();
         createFruits();
         createKeys();
         createPellets();
@@ -66,8 +65,10 @@ namespace SuperPacMan {
     void PlayingState::createMaze() {
         tileMap_.loadFromFile("textFiles/levels/maze.txt");
         tileMap_.setGridVisible(false);
-        tileMap_.setBackground("gameplayGridBackground.png", {6.0f, -1.53f});
-        tileMap_.scaleBackground(2.1f, 2.1f);
+        tileMap_.getBackground() = SpriteContainer::getSprite("level_1_to_4_grid");
+        tileMap_.getBackground().setPosition({6.0f, 48.0f});
+        tileMap_.getBackground().scale(2.1f, 2.1f);
+        tileMap_.showLayer("background");
 
         //Initialize tiles
         tileMap_.forEachTile([](IME::Graphics::Tile& tile) {
@@ -84,43 +85,16 @@ namespace SuperPacMan {
         });
     }
 
-    void PlayingState::createScoresText() {
-        auto windowWidth = std::stof(engine().getSettings().getValueFor("windowWidth"));
-
-        auto scoresTextContainer = std::make_shared<UI::HorizontalLayout>(windowWidth / 1.8f, tileMap_.getTileSize().height);
-        scoresTextContainer->setPosition({40.0f, 0.0f});
-        auto oneUpText = std::make_shared<UI::Label>("1UP");
-        oneUpText->getRenderer()->setTextColour(Colour::Red);
-        scoresTextContainer->addWidget(std::move(oneUpText), "oneUpText");
-
-        auto highscoreText = std::make_shared<UI::Label>("HIGH SCORE");
-        highscoreText->getRenderer()->setTextColour(Colour::Red);
-        scoresTextContainer->addWidget(std::move(highscoreText), "highscoresText");
-
-        auto scoresValueContainer = std::make_shared<UI::HorizontalLayout>(windowWidth / 1.6f, tileMap_.getTileSize().height);
-        scoresValueContainer->setPosition({60, scoresTextContainer->getSize().height});
-        auto scoreValue = std::make_shared<UI::Label>("00");
-        scoreValue->getRenderer()->setTextColour(Colour::White);
-        scoresValueContainer->addWidget(std::move(scoreValue), "scoreValue");
-
-        auto highscoreValue = std::make_shared<UI::Label>("30000"); //@TODO - Replace high score with actual high score
-        highscoreValue->getRenderer()->setTextColour(Colour::White);
-        scoresValueContainer->addWidget(std::move(highscoreValue), "highscoresValue");
-
-        guiContainer_.addWidget(std::move(scoresTextContainer), "scoresTextContainer");
-        guiContainer_.addWidget(std::move(scoresValueContainer), "scoresValueContainer");
-    }
-
     void PlayingState::createFruits() {
         tileMap_.forEachTile('F', [this](auto& tile) {
             auto fruit = std::make_shared<Fruit>(tileMap_.getTileSize(), fruitType_[level_ - 1]);
             fruit->setCollidable(true);
             tileMap_.addChild(tile.getIndex(), fruit);
             auto fruitSprite = std::make_shared<IME::Graphics::Sprite>(SpriteContainer::getSprite(fruit->getName()));
-            fruitSprite->setOrigin(fruitSprite->getSize().width / 2.0f, fruitSprite->getSize().height / 2.0f);
+            fruitSprite->setOrigin(fruitSprite->getSize().x / 2.0f, fruitSprite->getSize().y / 2.0f);
             fruitSprite->scale(2.0f, 2.0f);
-            fruitSprite->setPosition(fruit->getPosition().x + fruit->getSize().width / 2.0f,
-                fruit->getPosition().y + fruit->getSize().height / 2.0f);
+            fruitSprite->setPosition(fruit->getPosition().x + fruit->getSize().x / 2.0f,
+                fruit->getPosition().y + fruit->getSize().y / 2.0f);
             objects_["fruits"].push_back({std::move(fruit), std::move(fruitSprite)});
         });
     }
@@ -132,10 +106,10 @@ namespace SuperPacMan {
             key->setCollidable(true);
             tileMap_.addChild(tile.getIndex(), key);
             auto keySprite = std::make_shared<IME::Graphics::Sprite>(SpriteContainer::getSprite("key"));
-            keySprite->setOrigin(keySprite->getSize().width / 2.0f, keySprite->getSize().height / 2.0f);
+            keySprite->setOrigin(keySprite->getSize().x / 2.0f, keySprite->getSize().y / 2.0f);
             keySprite->scale(2.0f, 2.0f);
-            keySprite->setPosition(key->getPosition().x + key->getSize().width / 2.0f,
-                key->getPosition().y + key->getSize().height / 2.0f);
+            keySprite->setPosition(key->getPosition().x + key->getSize().x / 2.0f,
+                key->getPosition().y + key->getSize().y / 2.0f);
             objects_["keys"].push_back({std::move(key), std::move(keySprite)});
         });
     }
@@ -192,9 +166,9 @@ namespace SuperPacMan {
     }
 
     void PlayingState::render(IME::Graphics::Window &renderTarget) {
+        scoreView_.render(renderTarget);
         //Draw the grid (Walls and doors)
         tileMap_.draw(renderTarget);
-        guiContainer_.draw();
 
         std::for_each(objects_.begin(), objects_.end(), [&](auto& keyValuePair) {
             std::for_each(keyValuePair.second.begin(), keyValuePair.second.end(), [&](auto& entitySpritePair) {

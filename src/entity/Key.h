@@ -19,7 +19,7 @@ namespace SuperPacMan {
          * Multiple key objects can have the same identifier. By default the
          * key has a position of (0, 0)
          */
-        Key(const IME::Dimensions &boundingRect, int id);
+        Key(const IME::Vector2u &boundingRect, int id);
 
         /**
          * @brief Copy constructor

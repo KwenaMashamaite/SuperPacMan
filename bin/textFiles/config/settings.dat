@@ -33,6 +33,9 @@ iconPath:string=assets/images/
 # FPS limit
 fpsLimit:int=60
 
+# Vertical synchronization (V-Sync)
+vsync:bool=0
+
 ### RESOURCE MANAGER SETTINGS ###
 
 # Path to fonts

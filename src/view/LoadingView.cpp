@@ -1,0 +1,73 @@
+#include "IME/graphics/Window.h"
+#include "LoadingView.h"
+#include <IME/graphics/ui/widgets/Label.h>
+#include <IME/graphics/ui/widgets/ProgressBar.h>
+
+namespace SuperPacMan {
+    LoadingView::LoadingView(IME::Vector2u renderTargetSize) :
+        windowSize_(renderTargetSize)
+    {}
+
+    void LoadingView::init() {
+        createTitle();
+        createProgressBar();
+    }
+
+    void LoadingView::createTitle() {
+        auto gameTitle = std::make_shared<IME::Graphics::UI::Label>("Super Pac-Man");
+        gameTitle->setTextSize(45.0f);
+        gameTitle->scale(0, 1.5f);
+        gameTitle->getRenderer()->setFont("pacfont.ttf");
+        gameTitle->getRenderer()->setTextColour({255, 0, 0, 100});
+        gameTitle->setOrigin(0.5f, 0.0f);
+        gameTitle->setPosition(windowSize_.x / 2.0f, 50.0f);
+        guiContainer_.addWidget(gameTitle, "gameTitle");
+
+        mascot_.setTexture("pacman_mascot.png");
+        mascot_.setOrigin(mascot_.getSize().x / 2.0f, mascot_.getSize().y / 2.0f);
+        mascot_.scale(0.4f, 0.4f);
+        mascot_.setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
+
+        auto poweredByText = std::make_shared<IME::Graphics::UI::Label>("Powered by");
+        poweredByText->getRenderer()->setTextStyle(IME::TextStyle::Italic);
+        poweredByText->setOrigin(0.5f, 0.0f);
+        poweredByText->setPosition(mascot_.getPosition().x, mascot_.getPosition().y + mascot_.getSize().y / 4.5f);
+        guiContainer_.addWidget(poweredByText, "poweredBy");
+        engineLogo_.setTexture("IME_logo.png");
+        engineLogo_.setOrigin(engineLogo_.getSize().x / 2.0f, 0.0f);
+        engineLogo_.scale(0.9f, 0.9f);
+        engineLogo_.setPosition(poweredByText->getPosition().x, poweredByText->getPosition().y + poweredByText->getSize().y);
+    }
+
+    void LoadingView::createProgressBar() {
+        auto loadingProgressBar = std::make_shared<IME::Graphics::UI::ProgressBar>();
+        loadingProgressBar->setText("loading fonts...");
+        loadingProgressBar->getRenderer()->setBorderColour({0, 230, 64, 135});
+        loadingProgressBar->setSize(loadingProgressBar->getSize().x + 125.0f, loadingProgressBar->getSize().y);
+        loadingProgressBar->setOrigin(0.5, 0.5);
+        guiContainer_.addWidget(loadingProgressBar, "loadingProgressBar");
+        loadingProgressBar->on("full", IME::Callback<>([=]{
+            guiContainer_.getWidget("loadingText")->setText("Resources loaded successfully");
+            loadingProgressBar->setText("100%");
+        }));
+
+        auto loadingText = std::make_shared<IME::Graphics::UI::Label>("Loading resources, please wait...");
+        loadingText->setOrigin(0.5, 0.5);
+        loadingText->setPosition(windowSize_.x / 2.0f, windowSize_.y - 3 * loadingProgressBar->getSize().y);
+        loadingProgressBar->setPosition(loadingText->getPosition().x, loadingText->getPosition().y + loadingText->getSize().y);
+        guiContainer_.addWidget(std::move(loadingText), "loadingText");
+    }
+
+    void LoadingView::render(IME::Graphics::Window& renderTarget) {
+        if (!guiContainer_.isTargetSet())
+            guiContainer_.setTarget(renderTarget);
+
+        guiContainer_.draw();
+        renderTarget.draw(engineLogo_);
+        renderTarget.draw(mascot_);
+    }
+
+    void SuperPacMan::LoadingView::handleEvent(sf::Event event) {
+        guiContainer_.handleEvent(event);
+    }
+}

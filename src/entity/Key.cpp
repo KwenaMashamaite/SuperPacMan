@@ -1,7 +1,7 @@
 #include "Key.h"
 
 namespace SuperPacMan {
-    Key::Key(const IME::Dimensions &boundingRect, int id) : Entity(boundingRect), id_(id)
+    Key::Key(const IME::Vector2u &boundingRect, int id) : Entity(boundingRect), id_(id)
     {}
 
     std::string Key::getType() {

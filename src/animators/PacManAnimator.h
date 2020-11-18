@@ -35,6 +35,14 @@ namespace SuperPacMan {
          */
         void update(float deltaTime) override;
 
+        /**
+         * @brief Switch to a different animation
+         * @param name Name of the new animation
+         * @return True if the animation was switched or false if the specified
+         *         animation does not exist
+         */
+        bool switchAnimation(const std::string& name);
+
     private:
         //Reference to pacman
         IME::Entity& pacman_;

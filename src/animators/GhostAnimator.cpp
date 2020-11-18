@@ -14,33 +14,33 @@ namespace SuperPacMan {
     }
 
     void GhostAnimator::initialize() {
-        auto frameSize = IME::Dimensions{16.0f, 16.0f};
+        auto frameSize = IME::Vector2i{16, 16};
         auto movementAnimDuration = 0.24f;
 
         //Normal animations
-        auto goingLeftAnim = std::make_shared<IME::Animation>("goingLeft", "spritesTileset.png", movementAnimDuration);
+        auto goingLeftAnim = std::make_shared<IME::Animation>("goingLeft", "spritesheet.png", movementAnimDuration);
         goingLeftAnim->setLoop(true);
 
-        auto goingRightAnim = std::make_shared<IME::Animation>("goingRight", "spritesTileset.png", movementAnimDuration);
+        auto goingRightAnim = std::make_shared<IME::Animation>("goingRight", "spritesheet.png", movementAnimDuration);
         goingRightAnim->setLoop(true);
 
-        auto goingUpAnim = std::make_shared<IME::Animation>("goingUp", "spritesTileset.png", movementAnimDuration);
+        auto goingUpAnim = std::make_shared<IME::Animation>("goingUp", "spritesheet.png", movementAnimDuration);
         goingUpAnim->setLoop(true);
 
-        auto goingDownAnim = std::make_shared<IME::Animation>("goingDown", "spritesTileset.png", movementAnimDuration);
+        auto goingDownAnim = std::make_shared<IME::Animation>("goingDown", "spritesheet.png", movementAnimDuration);
         goingDownAnim->setLoop(true);
 
         //Flat Animations
-        auto goingLeftFlatAnim = std::make_shared<IME::Animation>("goingLeftFlat", "spritesTileset.png", movementAnimDuration);
+        auto goingLeftFlatAnim = std::make_shared<IME::Animation>("goingLeftFlat", "spritesheet.png", movementAnimDuration);
         goingLeftFlatAnim->setLoop(true);
 
-        auto goingRightFlatAnim = std::make_shared<IME::Animation>("goingRightFlat", "spritesTileset.png", movementAnimDuration);
+        auto goingRightFlatAnim = std::make_shared<IME::Animation>("goingRightFlat", "spritesheet.png", movementAnimDuration);
         goingRightFlatAnim->setLoop(true);
 
-        auto goingUpFlatAnim = std::make_shared<IME::Animation>("goingUpFlat", "spritesTileset.png", movementAnimDuration);
+        auto goingUpFlatAnim = std::make_shared<IME::Animation>("goingUpFlat", "spritesheet.png", movementAnimDuration);
         goingUpFlatAnim->setLoop(true);
 
-        auto goingDownFlatAnim = std::make_shared<IME::Animation>("goingDownFlat", "spritesTileset.png", movementAnimDuration);
+        auto goingDownFlatAnim = std::make_shared<IME::Animation>("goingDownFlat", "spritesheet.png", movementAnimDuration);
         goingDownFlatAnim->setLoop(true);
 
         //Initialize movement animations
@@ -112,28 +112,28 @@ namespace SuperPacMan {
         ghostSprite_.addAnimation(std::move(goingDownFlatAnim));
 
         //Add frightened animations (The animation is the same for all ghosts)
-        auto frightenedAnim = std::make_shared<IME::Animation>("frightened", "spritesTileset.png", movementAnimDuration);
+        auto frightenedAnim = std::make_shared<IME::Animation>("frightened", "spritesheet.png", movementAnimDuration);
         frightenedAnim->addFrames({389, 69}, frameSize, 2, 1);
         frightenedAnim->setLoop(true);
         ghostSprite_.addAnimation(std::move(frightenedAnim));
 
         //Add eaten animations (The animations are the same for all ghosts)
-        auto goingLeftEatenAnim = std::make_shared<IME::Animation>("goingLeftEaten", "spritesTileset.png", movementAnimDuration);
+        auto goingLeftEatenAnim = std::make_shared<IME::Animation>("goingLeftEaten", "spritesheet.png", movementAnimDuration);
         goingLeftEatenAnim->addFrames({389, 86}, frameSize, 2, 1, IME::Arrangement::Vertical);
         goingLeftEatenAnim->setLoop(true);
         ghostSprite_.addAnimation(std::move(goingLeftEatenAnim));
 
-        auto goingRightEatenAnim = std::make_shared<IME::Animation>("goingRightEaten", "spritesTileset.png", movementAnimDuration);
+        auto goingRightEatenAnim = std::make_shared<IME::Animation>("goingRightEaten", "spritesheet.png", movementAnimDuration);
         goingRightEatenAnim->addFrames({423, 86}, frameSize, 2, 1, IME::Arrangement::Vertical);
         goingRightEatenAnim->setLoop(true);
         ghostSprite_.addAnimation(std::move(goingRightEatenAnim));
 
-        auto goingUpEatenAnim = std::make_shared<IME::Animation>("goingUpEaten", "spritesTileset.png", movementAnimDuration);
+        auto goingUpEatenAnim = std::make_shared<IME::Animation>("goingUpEaten", "spritesheet.png", movementAnimDuration);
         goingUpEatenAnim->addFrames({406, 86}, frameSize, 2, 1, IME::Arrangement::Vertical);
         goingUpEatenAnim->setLoop(true);
         ghostSprite_.addAnimation(std::move(goingUpEatenAnim));
 
-        auto goingDownEatenAnim = std::make_shared<IME::Animation>("goingDownEaten", "spritesTileset.png", movementAnimDuration);
+        auto goingDownEatenAnim = std::make_shared<IME::Animation>("goingDownEaten", "spritesheet.png", movementAnimDuration);
         goingDownEatenAnim->addFrames({440, 86}, frameSize, 2, 1, IME::Arrangement::Vertical);
         goingDownEatenAnim->setLoop(true);
         ghostSprite_.addAnimation(std::move(goingDownEatenAnim));
@@ -184,7 +184,7 @@ namespace SuperPacMan {
 
         //Have the ghost sprite track the position of the ghost
         ghost_.onEvent("positionChanged", IME::Callback<float, float>([this](float x, float y) {
-            ghostSprite_.setPosition(x + ghost_.getSize().width / 2.0f, y + ghost_.getSize().height / 2.0f);
+            ghostSprite_.setPosition(x + ghost_.getSize().x / 2.0f, y + ghost_.getSize().y / 2.0f);
         }));
 
         //Reset energized mode when a ghost is eaten by pacman
@@ -251,9 +251,9 @@ namespace SuperPacMan {
 
         //Set left animation as default animation
         ghostSprite_.switchAnimation("goingLeft");
-        ghostSprite_.setOrigin(ghostSprite_.getSize().width / 2.0f, ghostSprite_.getSize().height / 2.0f);
-        ghostSprite_.setPosition(ghost_.getPosition().x + ghost_.getSize().width / 2.0f,
-            ghost_.getPosition().y + ghost_.getSize().height / 2.0f);
+        ghostSprite_.setOrigin(ghostSprite_.getSize().x / 2.0f, ghostSprite_.getSize().y / 2.0f);
+        ghostSprite_.setPosition(ghost_.getPosition().x + ghost_.getSize().x / 2.0f,
+            ghost_.getPosition().y + ghost_.getSize().y / 2.0f);
         ghostSprite_.scale(2.0f, 2.0f);
     }
 

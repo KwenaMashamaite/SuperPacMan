@@ -26,7 +26,7 @@ namespace SuperPacMan {
          *
          * The door is unlocked by default and has a position of (0, 0)
          */
-        explicit Door(const IME::Dimensions &boundingRect);
+        explicit Door(const IME::Vector2u &boundingRect);
 
         /**
          * @brief Copy constructor

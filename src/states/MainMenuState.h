@@ -8,6 +8,7 @@
 #include <IME/core/states/State.h>
 #include <IME/graphics/ui/GuiContainer.h>
 #include <IME/graphics/Sprite.h>
+#include "../view/MainMenuView.h"
 
 namespace SuperPacMan {
     class MainMenuState : public IME::State {
@@ -85,24 +86,10 @@ namespace SuperPacMan {
         void initUIButtonsBehavior();
 
     private:
-        //Container for main view widgets
-        IME::Graphics::UI::GuiContainer mainViewContainer_;
-        //Container for info view widgets
-        IME::Graphics::UI::GuiContainer infoViewContainer_;
-        //The games logo
-        IME::Graphics::Sprite logo_;
         //Initialization flag
         bool isInitialized_;
-
-        /**
-         * @brief States the menu can be in
-         */
-        enum class View {
-            Main,
-            Info
-        };
-        //Current View of the main menu
-        View currentView_;
+        //
+        MainMenuView mainMenuView_;
     };
 }
 

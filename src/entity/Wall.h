@@ -16,7 +16,7 @@ namespace SuperPacMan {
          *
          * The wall is collidable by default
          */
-        explicit Wall(const IME::Dimensions &boundingRect);
+        explicit Wall(const IME::Vector2u &boundingRect);
 
         /**
          * @brief Get the type of the object

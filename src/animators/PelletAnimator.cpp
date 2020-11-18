@@ -11,25 +11,25 @@ namespace SuperPacMan {
     }
 
     void PelletAnimator::initialize() {
-        auto blinkAnimation = std::make_shared<IME::Animation>("blink", "spritesTileset.png", 0.3f);
+        auto blinkAnimation = std::make_shared<IME::Animation>("blink", "spritesheet.png", 0.3f);
         blinkAnimation->setLoop(true);
         if (pelletType_ == PelletType::PowerPellet)
-            blinkAnimation->addFrames({151, 18}, {16.0f, 16.0f}, 2, 1);
+            blinkAnimation->addFrames({151, 18}, {16, 16}, 2, 1);
         else {
             blinkAnimation->setDuration(1.0f);
-            blinkAnimation->addFrames({168, 35}, {16.0f, 16.0f}, 6, 1);
+            blinkAnimation->addFrames({168, 35}, {16, 16}, 6, 1);
         }
         pelletSprite_.addAnimation(std::move(blinkAnimation));
 
         pellet_.onEvent("positionChanged", IME::Callback<float, float>([this](float x, float y) {
-            pelletSprite_.setPosition(x + pellet_.getSize().width / 2.0f, y + pellet_.getSize().height / 2.0f);
+            pelletSprite_.setPosition(x + pellet_.getSize().x / 2.0f, y + pellet_.getSize().y / 2.0f);
         }));
 
         pelletSprite_.switchAnimation("blink");
-        pelletSprite_.setOrigin(pelletSprite_.getSize().width / 2.0f, pelletSprite_.getSize().height / 2.0f);
+        pelletSprite_.setOrigin(pelletSprite_.getSize().x / 2.0f, pelletSprite_.getSize().y / 2.0f);
         pelletSprite_.scale(2.0f, 2.0f);
-        pelletSprite_.setPosition(pellet_.getPosition().x + pellet_.getSize().width / 2.0f,
-            pellet_.getPosition().y + pellet_.getSize().height / 2.0f);
+        pelletSprite_.setPosition(pellet_.getPosition().x + pellet_.getSize().x / 2.0f,
+            pellet_.getPosition().y + pellet_.getSize().y / 2.0f);
     }
 
     void PelletAnimator::update(float deltaTime) {

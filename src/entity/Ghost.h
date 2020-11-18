@@ -19,11 +19,20 @@ namespace SuperPacMan {
 
     class Ghost : public IME::Entity, public Movable {
     public:
+        enum class State{
+            Chase,
+            Frightened
+        };
+
         /**
          * @brief Construct ghost object
          * @param boundingRect Size of the rectangle surrounding the ghost object
          */
-        Ghost(GhostName ghostName, const IME::Dimensions &boundingRect);
+        Ghost(GhostName ghostName, const IME::Vector2u &boundingRect);
+
+        void setState(State state);
+
+        State getState() const;
 
         /**
          * @brief Get the type of the entity
@@ -41,6 +50,8 @@ namespace SuperPacMan {
         //Some behaviours depend on the type of ghost
         //But this should probably not be in here
         GhostName ghostName_;
+        //
+        State state_;
     };
 }
 

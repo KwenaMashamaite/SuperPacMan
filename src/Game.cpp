@@ -1,10 +1,50 @@
 #include "Game.h"
 #include "states/LoadingState.h"
+#include "states/IntroState.h"
+#include "states/PlayingState.h"
 #include "common/SpriteContainer.h"
+#include <IME/core/event/EventDispatcher.h>
 #include <memory>
 
 using Key = IME::Input::Keyboard::Key;
 using KeyEvent = IME::Input::Keyboard::Event;
+
+void createSprite(const std::string& name, const std::string& texture, IME::IntRect rect) {
+    auto sprite = IME::Graphics::Sprite();
+    sprite.setTexture(texture);
+    sprite.setTextureRect(rect);
+    SuperPacMan::SpriteContainer::addSprite(name, std::move(sprite));
+}
+
+void createFruitSprites() {
+    auto fruits = std::vector{
+        "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake", "peach",
+        "melon", "coffee", "mushroom", "bell", "clover", "galaxian", "gift"
+    };
+
+    auto rectSpacing = 1;
+    auto rectSize = IME::Vector2i{16, 16};
+    auto rectPos = IME::Vector2i{151, 52};
+    for (auto i = 0u; i < fruits.size(); ++i) {
+        createSprite(fruits[i], "spritesheet.png", {rectPos.x, rectPos.y, rectSize.x, rectSize.y});
+        rectPos.x += rectSize.x + rectSpacing;
+    }
+
+    //Key
+    createSprite("key", "spritesheet.png", {151, 35, rectSize.x, rectSize.y});
+}
+
+void createGridSprites() {
+    auto gridSize = IME::Vector2i{224, 244};
+    createSprite("intro_grid", "grids.png", {225, 0, gridSize.x, gridSize.y});
+    createSprite("empty_grid_blue", "grids.png", {450, 0, gridSize.x, gridSize.y});
+    createSprite("empty_grid_white", "grids.png", {675, 0, gridSize.x, gridSize.y});
+    createSprite("level_1_to_4_grid", "grids.png", {0, 0, gridSize.x, gridSize.y});
+    createSprite("level_5_to_8_grid", "grids.png", {0, 249, gridSize.x, gridSize.y});
+    createSprite("level_9_to_12_grid", "grids.png", {225, 249, gridSize.x, gridSize.y});
+    createSprite("level_13_to_16_grid", "grids.png", {450, 249, gridSize.x, gridSize.y});
+    createSprite("level_16_to_20_grid", "grids.png", {675, 249, gridSize.x, gridSize.y});
+}
 
 namespace SuperPacMan {
     Game::Game()
@@ -13,37 +53,31 @@ namespace SuperPacMan {
 
     void Game::initialize() {
         engine_.init();
-        constructSpritesFromSpriteSheet();
+        engine_.pushState(std::make_shared<PlayingState>(engine_));
+        engine_.pushState(std::make_shared<IntroState>(engine_));
         engine_.pushState(std::make_shared<LoadingState>(engine_));
 
-        engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::Escape, [this] {
-            engine_.quit();
-        });
+        //Prevent the game from being exited when in loading state (First state)
+        engine_.onWindowClose(nullptr);
+
+        //Allow application to be exited when not in loading state
+        IME::EventDispatcher::instance()->onEvent("resourceLoadingComplete", IME::Callback<>([this]{
+            //Quit game using escape key
+            engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::Escape, [this] {
+                engine_.quit();
+            });
+
+            //Quit game using close button
+            engine_.onWindowClose([this]{engine_.quit();});
+        }));
+
+        IME::EventDispatcher::instance()->onEvent("resourceLoadingComplete", IME::Callback<>([]{
+            createFruitSprites();
+            createGridSprites();
+        }));
     }
 
     void Game::start() {
         engine_.run();
-    }
-
-    void Game::constructSpritesFromSpriteSheet() {
-        auto fruits = std::vector{
-            "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake",
-            "peach", "melon", "coffee", "mushroom", "bell", "clover", "galaxian",
-            "gift"};
-        auto rectPos = IME::Position{151, 52};
-        auto rectSpacing = 1.0f;
-        auto rectSize = 16.0f;
-        for (auto i = 0u; i < fruits.size(); ++i) {
-            auto sprite = IME::Graphics::Sprite();
-            sprite.setTexture("spritesTileset.png");
-            sprite.setTextureRect(rectPos.x, rectPos.y, rectSize, rectSize);
-            SpriteContainer::addSprite(fruits[i], std::move(sprite));
-            rectPos.x += + rectSize + rectSpacing;
-        }
-
-        auto keySprite = IME::Graphics::Sprite();
-        keySprite.setTexture("spritesTileset.png");
-        keySprite.setTextureRect(151, 35, rectSize, rectSize);
-        SpriteContainer::addSprite("key", std::move(keySprite));
     }
 }

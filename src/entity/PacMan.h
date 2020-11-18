@@ -11,11 +11,16 @@
 namespace SuperPacMan {
     class PacMan : public IME::Entity, public Movable {
     public:
+        enum class State {
+            Normal,
+            Super
+        };
+
         /**
          * @brief Construct pacman object
          * @param boundingRect Bounding rectangle of pacman object
          */
-        explicit PacMan(const IME::Dimensions &boundingRect);
+        explicit PacMan(const IME::Vector2u &boundingRect);
 
         /**
          * @brief Set the number of lives pacman has
@@ -35,6 +40,18 @@ namespace SuperPacMan {
         unsigned int getNumberOfLives() const;
 
         /**
+         * @brief Switch the current state
+         * @param state New state
+         */
+        void switchState(State state);
+
+        /**
+         * @brief Get current state
+         * @return The current state
+         */
+        State getState() const;
+
+        /**
          * @brief Get the type of the entity
          * @return The type of the entity
          */
@@ -43,6 +60,8 @@ namespace SuperPacMan {
     private:
         //Number of lives
         unsigned int numberOfLives_;
+        //Pacmans current state
+        State state_;
     };
 }
 

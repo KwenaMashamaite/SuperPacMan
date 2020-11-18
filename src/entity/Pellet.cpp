@@ -1,7 +1,7 @@
 #include "Pellet.h"
 
 namespace SuperPacMan {
-    Pellet::Pellet(PelletType pelletType, const IME::Dimensions &boundingRect)
+    Pellet::Pellet(PelletType pelletType, const IME::Vector2u &boundingRect)
         : Entity(boundingRect), pelletType_(pelletType)
     {}
 

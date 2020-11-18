@@ -9,6 +9,8 @@
 #include <IME/graphics/Sprite.h>
 #include <IME/graphics/ui/GuiContainer.h>
 #include <atomic>
+#include <mutex>
+#include "../view/LoadingView.h"
 
 namespace SuperPacMan {
     class LoadingState : public IME::State {
@@ -113,25 +115,15 @@ namespace SuperPacMan {
          */
         void loadResources();
 
-        /**
-         * @brief Create the game title and logo
-         */
-        void createTitle();
-
-        /**
-         * @brief Create bar to display the resource loading progress
-         */
-        void createProgressBar();
-
     private:
-        //Third party engine logo
-        IME::Graphics::Sprite engineLogo_;
-        //Games mascot
-        IME::Graphics::Sprite mascot_;
-        //Container for all widgets
-        IME::Graphics::UI::GuiContainer guiContainer_;
+        //State initialization flag
+        bool isInitialized_;
+        //States view
+        LoadingView view_;
         //Flags whether resource loading is complete or not
         std::atomic_bool loadingFinished_;
+        //Synchronization for this thread and the resource loading thread
+        std::mutex mtx_;
     };
 }
 

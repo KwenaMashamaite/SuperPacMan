@@ -11,6 +11,7 @@
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Sprite.h>
 #include "../animators/IEntityAnimator.h"
+#include "../view/ScoreView.h"
 
 namespace SuperPacMan {
     class PlayingState : public IME::State {
@@ -75,7 +76,6 @@ namespace SuperPacMan {
         void createMaze();
         void createWalls();
         void createDoors();
-        void createScoresText();
         void createFruits();
         void createKeys();
         void createPellets();
@@ -85,14 +85,14 @@ namespace SuperPacMan {
         using EntitySpritePair = std::pair<std::shared_ptr<IME::Entity>, std::shared_ptr<IME::Graphics::Sprite>>;
         using EntityContainer = std::vector<EntitySpritePair>;
 
+        //
+        ScoreView scoreView_;
         //Initialization flag
         bool isInitialized_;
         //The current level
         unsigned int level_;
         //The grid of the game
         IME::TileMap tileMap_;
-        //Container for the high score display
-        IME::Graphics::UI::GuiContainer guiContainer_;
         //Container for all game entities
         std::unordered_map<std::string, EntityContainer> objects_;
         std::vector<std::shared_ptr<IEntityAnimator>> animators_;

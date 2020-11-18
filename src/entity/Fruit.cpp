@@ -1,7 +1,7 @@
 #include "Fruit.h"
 
 namespace SuperPacMan {
-    Fruit::Fruit(const IME::Dimensions &boundingRect, const std::string &name)
+    Fruit::Fruit(const IME::Vector2u &boundingRect, const std::string &name)
         : Entity(boundingRect), name_(name), isEaten_(false)
     {}
 

@@ -7,10 +7,10 @@
 
 #include <IME/core/states/State.h>
 #include <IME/core/tilemap/TileMap.h>
-#include <IME/graphics/ui/GuiContainer.h>
 #include <IME/core/entity/Entity.h>
 #include "../common/Aliases.h"
 #include "../animators/IEntityAnimator.h"
+#include "../view/IntroView.h"
 
 namespace SuperPacMan {
     class IntroState : public IME::State {
@@ -117,7 +117,7 @@ namespace SuperPacMan {
 
     private:
         IME::TileMap grid_;
-        IME::Graphics::UI::GuiContainer guiContainer_;
+        IntroView introView_;
         EntityContainer pellets_;
         std::vector<std::shared_ptr<IEntityAnimator>> animators_;
         std::unordered_map<std::string, AnimatableSpriteContainer> dynamicSprites_;

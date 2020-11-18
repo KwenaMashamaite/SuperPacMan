@@ -29,9 +29,6 @@ namespace SuperPacMan {
         void start();
 
     private:
-        void constructSpritesFromSpriteSheet();
-
-    private:
         IME::Engine engine_;
     };
 }

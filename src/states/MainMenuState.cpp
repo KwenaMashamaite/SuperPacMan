@@ -5,79 +5,26 @@
 #include <IME/graphics/ui/widgets/Button.h>
 #include <IME/graphics/ui/widgets/BitmapButton.h>
 #include <IME/graphics/ui/widgets/Label.h>
-#include <IME/graphics/ui/layout/VerticalLayout.h>
+#include <IME/graphics/ui/widgets/VerticalLayout.h>
 
 using namespace IME::Graphics;
 using namespace IME::Graphics::UI;
 
 namespace SuperPacMan {
-    MainMenuState::MainMenuState(IME::Engine &engine)
-        : State(engine), isInitialized_(false), mainViewContainer_{engine.getRenderTarget()},
-          infoViewContainer_{engine.getRenderTarget()}, currentView_(View::Main)
+    MainMenuState::MainMenuState(IME::Engine &engine) :
+        State(engine),
+        isInitialized_(false),
+        mainMenuView_(engine.getRenderTarget())
     {}
 
     void MainMenuState::initialize() {
-        createLogo();
-        createUIElements();
+        mainMenuView_.init();
         initUIButtonsBehavior();
         isInitialized_ = true;
     }
 
-    void MainMenuState::createLogo() {
-        auto windowWidth = std::stof(engine().getSettings().getValueFor("windowWidth"));
-        auto windowHeight = std::stof(engine().getSettings().getValueFor("windowHeight"));
-
-        logo_.setTexture("logo.png");
-        logo_.setOrigin(logo_.getSize().width / 2.0f, 0.0f);
-        logo_.scale(0.75, 0.75);
-        logo_.setPosition(windowWidth / 2.0f, windowHeight * 6.0f / 100.0f);
-    }
-
-    void MainMenuState::createUIElements() {
-        auto windowWidth = std::stof(engine().getSettings().getValueFor("windowWidth"));
-        auto windowHeight = std::stof(engine().getSettings().getValueFor("windowHeight"));
-
-        //Create Buttons
-        struct ButtonDetails{std::string name; std::string text;};
-        auto navigationButtons = std::vector<ButtonDetails>{
-            {"play-btn", "PLAY"},
-            {"controls-btn", "CONTROLS"},
-            {"options-btn", "OPTIONS"},
-            {"exit-btn", "EXIT"}
-        };
-        auto buttonsContainer = std::make_shared<VerticalLayout>(120, 180);
-        buttonsContainer->setOrigin(0.5, 0.5);
-        buttonsContainer->getRenderer()->setSpaceBetweenWidgets(20.0f);
-        std::for_each(navigationButtons.begin(), navigationButtons.end(), [&](auto& buttonInfo) {
-            auto button = std::make_shared<UI::Button>(buttonInfo.text);
-            button->setTextSize(15.0f);
-            button->getRenderer()->setBackgroundColour(Colour::Transparent);
-            button->getRenderer()->setBorderColour(Colour::Transparent);
-            button->getRenderer()->setBackgroundHoverColour(Colour::Transparent);
-            button->getRenderer()->setTextColour(Colour::Red);
-            button->getRenderer()->setTextHoverColour(Colour::Grey);
-            buttonsContainer->addWidget(std::move(button), buttonInfo.name);
-        });
-        buttonsContainer->setPosition(windowWidth / 2.0f, windowHeight / 2.0f);
-        mainViewContainer_.addWidget(std::move(buttonsContainer), "nav-btn-container");
-
-        //Create text block for showing information when a main menu button is clicked
-        auto infoBox = std::make_shared<Label>();
-        infoBox->setOrigin(0.5, 0.5);
-        infoBox->setPosition(windowWidth / 2.0f, windowWidth / 2.0f);
-        infoViewContainer_.addWidget(std::move(infoBox), "info-box");
-
-        //Create button for returning to the main menu from the info panel
-        auto backButton = std::make_shared<UI::BitmapButton>("< Back");
-        backButton->setTextSize(10.0f);
-        backButton->on("click", IME::Callback<>([this] {
-            currentView_ = View::Main;
-        }));
-        infoViewContainer_.addWidget(std::move(backButton), "back-btn");
-    }
-
     void MainMenuState::initUIButtonsBehavior() {
-        auto navButtonsContainer = std::dynamic_pointer_cast<UI::VerticalLayout>(mainViewContainer_.getWidget("nav-btn-container"));
+        auto navButtonsContainer = mainMenuView_.getWidget<UI::VerticalLayout>("nav-btn-container");
         //PLAY BUTTON
         navButtonsContainer->getWidget("play-btn")->on("click", IME::Callback<>([this] {
             engine().popState();
@@ -88,33 +35,28 @@ namespace SuperPacMan {
         auto text = std::stringstream();
         IME::Utility::DiskFileReader().readFileInto("textFiles/controls.txt", text);
         navButtonsContainer->getWidget("controls-btn")->on("click", IME::Callback<>([this, info = text.str()]{
-            currentView_ = View::Info;
-            infoViewContainer_.getWidget("info-box")->setText(info);
+            mainMenuView_.setSubView(SubView::Info);
+            mainMenuView_.getWidget<UI::Label>("info-box")->setText(info);
         }));
 
         //EXIT BUTTON
         navButtonsContainer->getWidget("exit-btn")->on("click", IME::Callback<>([this]{
             engine().quit();
         }));
+
+        //BACK BUTTON
+        mainMenuView_.getWidget<UI::BitmapButton>("back-btn")->on("click", IME::Callback<>([this] {
+            mainMenuView_.setSubView(SubView::Main);
+            mainMenuView_.getWidget<UI::Label>("info-box")->setText("");
+        }));
     }
 
     void MainMenuState::render(IME::Graphics::Window &renderTarget) {
-        switch (currentView_) {
-            case View::Main:
-                renderTarget.draw(logo_);
-                mainViewContainer_.draw();
-                break;
-            case View::Info:
-                infoViewContainer_.draw();
-                break;
-        }
+        mainMenuView_.render(renderTarget);
     }
 
     void MainMenuState::handleEvent(sf::Event event) {
-        if (currentView_ == View::Main)
-            mainViewContainer_.handleEvent(event);
-        else
-            infoViewContainer_.handleEvent(event);
+        mainMenuView_.handleEvent(event);
     }
 
     bool MainMenuState::isInitialized() const {
@@ -138,7 +80,6 @@ namespace SuperPacMan {
     }
 
     void MainMenuState::exit() {
-        mainViewContainer_.removeAllWidgets();
-        infoViewContainer_.removeAllWidgets();
+
     }
 }
