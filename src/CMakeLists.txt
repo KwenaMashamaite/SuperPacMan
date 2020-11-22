@@ -10,6 +10,7 @@ set(SRC_FILES
         view/MainMenuView.cpp
         view/ScoreView.cpp
         view/IntroView.cpp
+        entity/states/StateController.cpp
         common/SpriteContainer.cpp
         entity/Door.cpp
         entity/DoorLocker.cpp
