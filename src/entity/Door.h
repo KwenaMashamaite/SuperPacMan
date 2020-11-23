@@ -115,13 +115,21 @@ namespace SuperPacMan {
          * @brief Get the type of the object
          * @return Type of the object
          */
-        std::string getType() override;
+        std::string getObjectType() override;
+
+        /**
+         * @brief Get the objects graphical representation
+         * @return The objects graphical representation
+         */
+        IME::Graphics::Sprite& getSprite();
 
     private:
         //Door locker
         std::unique_ptr<DoorLocker> doorLocker_;
         //The orientation of the door
         Orientation orientation_;
+        //Doors visual representation
+        IME::Graphics::Sprite sprite_;
     };
 }
 

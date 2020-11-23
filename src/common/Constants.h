@@ -17,7 +17,7 @@ namespace SuperPacMan {
         static constexpr auto ClydeSpawnTile = IME::Index{11, 11};
 
         //Speed
-        static constexpr auto PacManNormalSpeed = 100.0f;
+        static constexpr auto PacManNormalSpeed = 80.0f;
         static constexpr auto PacManSuperSizeSpeed = 1.5 * PacManNormalSpeed;
         static constexpr auto GhostScatterSpeed = PacManNormalSpeed;
         static constexpr auto GhostChaseSpeed = PacManNormalSpeed + 3.0f;

@@ -8,7 +8,7 @@
 #   | = solid wall block
 #   # = solid wall block
 #   . = Empty tile
-#   M = Ghost house front door/Blinky spawn position
+#   B = Blinky spawn position
 #   P = Pinky spawn position
 #   I = Inky spawn position
 #   C = Clyde spawn position
@@ -28,10 +28,10 @@
 |.|D|.|####D####|.|D|.|
 |.|E|.DF.F.F.F.FD.|E|.|
 |.|D|.|#########|.|D|.|
-|....K.....M.....K....|
+|....K.....B.....K....|
 |.|D##|.|##.##|.|##D|.|
-|.|F.F|.|..P..|.|F.F|.|
-|.|D|.|.|..I..|.|.|D|.|
+|.|F.F|.|P...I|.|F.F|.|
+|.|D|.|.|.....|.|.|D|.|
 |K..|F|.|..C..|.|F|..K|
 |#|.|.|.|#####|.|.|.##|
 DFD.DFD....X....DFD.DFD

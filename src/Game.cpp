@@ -44,6 +44,11 @@ void createGridSprites() {
     createSprite("level_9_to_12_grid", "grids.png", {225, 249, gridSize.x, gridSize.y});
     createSprite("level_13_to_16_grid", "grids.png", {450, 249, gridSize.x, gridSize.y});
     createSprite("level_16_to_20_grid", "grids.png", {675, 249, gridSize.x, gridSize.y});
+    createSprite("locked_door_vertical", "spritesheet.png", {270, 137, 16, 16});
+    createSprite("locked_door_horizontal", "spritesheet.png", {236, 137, 16, 16});
+    createSprite("broken_door_vertical", "spritesheet.png", {287, 137, 16, 16});
+    createSprite("broken_door_horizontal", "spritesheet.png", {253, 137, 16, 16});
+    createSprite("unlocked_door", "spritesheet.png", {253, 35, 16, 16});
 }
 
 namespace SuperPacMan {

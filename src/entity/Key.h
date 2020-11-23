@@ -6,6 +6,7 @@
 #define KEY_H
 
 #include <IME/core/entity/Entity.h>
+#include <IME/graphics/AnimatableSprite.h>
 
 namespace SuperPacMan {
     class Key : public IME::Entity {
@@ -46,11 +47,19 @@ namespace SuperPacMan {
          * @brief Get the type of the object
          * @return The type of the object
          */
-        std::string getType() override;
+        std::string getObjectType() override;
+
+        /**
+         * @brief Get the sprites graphical representation
+         * @return The sprites graphical representation
+         */
+        IME::Graphics::Sprite& getSprite();
 
     private:
         //Identifier that separates this key from other key objects
         int id_;
+        //Keys graphical representation
+        IME::Graphics::Sprite sprite_;
     };
 }
 

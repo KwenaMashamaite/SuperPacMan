@@ -6,7 +6,7 @@ namespace SuperPacMan {
         setCollidable(true);
     }
 
-    std::string Wall::getType() {
+    std::string Wall::getObjectType() {
         return "Wall";
     }
 }

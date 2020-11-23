@@ -8,9 +8,10 @@
 #include <IME/core/states/State.h>
 #include <IME/core/tilemap/TileMap.h>
 #include <IME/core/entity/Entity.h>
-#include "../common/Aliases.h"
-#include "../animators/IEntityAnimator.h"
+#include <IME/core/physics/TargetGridMover.h>
 #include "../view/IntroView.h"
+#include "../entity/Pellet.h"
+#include <queue>
 
 namespace SuperPacMan {
     class IntroState : public IME::State {
@@ -53,13 +54,13 @@ namespace SuperPacMan {
 
         /**
          * @brief Render the state on a render target
-         * @param renderTarget Target to render state on
+         * @param entity Target to render state on
          *
          * This function will be called once per frame by the engine after all
          * events have been handled and all updates have performed for the
          * current frame
          */
-        void render(IME::Graphics::Window &renderTarget) override;
+        void render(IME::Graphics::Window &entity) override;
 
         /**
          * @brief Pause the state
@@ -113,15 +114,24 @@ namespace SuperPacMan {
         /**
          * @brief Construct the maze
          */
-        void createMaze();
+        void createGrid();
+
+        /**
+         * @brief Create the objects in the grid
+         */
+        void createObjects();
 
     private:
+        //Grid
         IME::TileMap grid_;
+        //Frontend for this state
         IntroView introView_;
-        EntityContainer pellets_;
-        std::vector<std::shared_ptr<IEntityAnimator>> animators_;
-        std::unordered_map<std::string, AnimatableSpriteContainer> dynamicSprites_;
-        float stateTimeout_;
+        //Container for all game entities
+        std::unordered_map<std::string, std::vector<std::shared_ptr<IME::Entity>>> objects_;
+        //Path pacman follows in this state
+        std::queue<IME::Index> pacmanPath_;
+        //Pacmans movement controller
+        std::unique_ptr<IME::TargetGridMover> pacmanController_;
     };
 }
 

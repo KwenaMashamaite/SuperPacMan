@@ -6,6 +6,7 @@
 #define FRUIT_H
 
 #include <IME/core/entity/Entity.h>
+#include <IME/graphics/Sprite.h>
 #include "IEatable.h"
 
 namespace SuperPacMan {
@@ -41,13 +42,21 @@ namespace SuperPacMan {
          * @brief Get the type of the object
          * @return Type of the object
          */
-        std::string getType() override;
+        std::string getObjectType() override;
+
+        /**
+         * @brief Get the fruits graphical representation
+         * @return The fruits graphical representation
+         */
+        IME::Graphics::Sprite& getSprite();
 
     private:
         //Name of the fruit
         std::string name_;
         //The fruits eaten state
         bool isEaten_;
+        //Fruits visual presentation
+        IME::Graphics::Sprite sprite_;
     };
 }
 

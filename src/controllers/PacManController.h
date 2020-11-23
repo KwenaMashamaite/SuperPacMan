@@ -8,7 +8,6 @@
 #include <IME/core/physics/GridMover.h>
 #include <IME/core//input/Keyboard.h>
 #include "../entity/PacMan.h"
-#include "../animators/PacManAnimator.h"
 
 
 namespace SuperPacMan {

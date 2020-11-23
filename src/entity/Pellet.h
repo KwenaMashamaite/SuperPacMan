@@ -6,6 +6,7 @@
 #define PELLET_H
 
 #include <IME/core/entity/Entity.h>
+#include <IME/graphics/AnimatableSprite.h>
 #include "IEatable.h"
 
 namespace SuperPacMan {
@@ -35,6 +36,12 @@ namespace SuperPacMan {
         bool isEaten() const override;
 
         /**
+         * @brief Update pellet
+         * @param deltaTime Time passed since pellet was last updated
+         */
+        void update(float deltaTime);
+
+        /**
          * @brief Get the type of this pellet
          * @return The type of this pellet
          */
@@ -44,11 +51,19 @@ namespace SuperPacMan {
          * @brief Get the type of the object
          * @return The type of the object
          */
-        std::string getType() override;
+        std::string getObjectType() override;
+
+        /**
+         * @brief Get the pellets graphical representation
+         * @return The pellets graphical representation
+         */
+        IME::Graphics::AnimatableSprite& getSprite();
 
     private:
         //The type of this pellet
         PelletType pelletType_;
+        //Pellets graphical representation
+        IME::Graphics::AnimatableSprite sprite_;
     };
 }
 

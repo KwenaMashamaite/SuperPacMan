@@ -1,9 +1,38 @@
 #include "Door.h"
+#include "../common/SpriteContainer.h"
 
 namespace SuperPacMan {
-    Door::Door(const IME::Vector2u &boundingRect)
-        : Entity(boundingRect), orientation_(Orientation::Vertical)
-    {}
+    Door::Door(const IME::Vector2u &boundingRect) :
+        Entity(boundingRect),
+        orientation_(Orientation::Vertical)
+    {
+        sprite_ = SpriteContainer::getSprite("unlocked_door");
+        sprite_.setOrigin(sprite_.getSize() / 2.0f);
+        sprite_.scale(2.07f, 2.07f);
+        sprite_.setPosition(getSize().x / 2.0f, getSize().y / 2.0f);
+
+        onEvent("positionChanged", IME::Callback<float, float>([this](float x, float y) {
+            sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
+        }));
+
+        onEvent("locked", IME::Callback<>([this] {
+            if (orientation_ == Orientation::Horizontal)
+                sprite_.setTextureRect(SpriteContainer::getSprite("locked_door_horizontal").getTextureRect());
+            else
+                sprite_.setTextureRect(SpriteContainer::getSprite("locked_door_vertical").getTextureRect());
+        }));
+
+        onEvent("broken", IME::Callback<>([this] {
+            if (orientation_ == Orientation::Horizontal)
+                sprite_.setTextureRect(SpriteContainer::getSprite("broken_door_horizontal").getTextureRect());
+            else
+                sprite_.setTextureRect(SpriteContainer::getSprite("broken_door_vertical").getTextureRect());
+        }));
+
+        onEvent("unlocked", IME::Callback<>([this]{
+            sprite_.setTextureRect(SpriteContainer::getSprite("unlocked_door").getTextureRect());
+        }));
+    }
 
     Door::Door(const Door &other)
         : IME::Entity(*this), doorLocker_(std::make_unique<DoorLocker>(*other.doorLocker_)),
@@ -74,7 +103,11 @@ namespace SuperPacMan {
         return orientation_;
     }
 
-    std::string Door::getType() {
+    std::string Door::getObjectType() {
         return "Door";
+    }
+
+    IME::Graphics::Sprite &Door::getSprite() {
+        return sprite_;
     }
 }

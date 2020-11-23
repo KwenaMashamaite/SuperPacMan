@@ -1,9 +1,11 @@
 set(SRC_FILES
         main.cpp
         Game.cpp
-        animators/GhostAnimator.cpp
-        animators/PacManAnimator.cpp
-        animators/PelletAnimator.cpp
+        common/Drawer.cpp
+        animations/GhostAnimations.cpp
+        animations/PacManAnimations.cpp
+        animations/PelletAnimations.cpp
+        animations/FoodAnimation.cpp
         controllers/PacManController.cpp
         controllers/GhostsController.cpp
         view/LoadingView.cpp
@@ -17,7 +19,6 @@ set(SRC_FILES
         entity/Fruit.cpp
         entity/Ghost.cpp
         entity/Key.cpp
-        entity/Movable.cpp
         entity/PacMan.cpp
         entity/Pellet.cpp
         entity/Wall.cpp
@@ -27,6 +28,7 @@ set(SRC_FILES
         states/LoadingState.cpp
         states/MainMenuState.cpp
         states/PlayingState.cpp
+        utils/Utils.cpp
         )
 
 #Set executables output folder

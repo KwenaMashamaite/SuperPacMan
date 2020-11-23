@@ -10,7 +10,6 @@
 #include <IME/graphics/ui/GuiContainer.h>
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Sprite.h>
-#include "../animators/IEntityAnimator.h"
 #include "../view/ScoreView.h"
 
 namespace SuperPacMan {
@@ -41,9 +40,9 @@ namespace SuperPacMan {
 
         /**
          * @brief Render the state on a render target
-         * @param renderTarget Target to render state on
+         * @param entity Target to render state on
          */
-        void render(IME::Graphics::Window &renderTarget) override;
+        void render(IME::Graphics::Window &entity) override;
 
         /**
          * @brief Pause the state
@@ -73,17 +72,11 @@ namespace SuperPacMan {
         void exit() override;
 
     private:
-        void createMaze();
-        void createWalls();
-        void createDoors();
-        void createFruits();
-        void createKeys();
-        void createPellets();
+        void createGrid();
 
     private:
         //Aliases
-        using EntitySpritePair = std::pair<std::shared_ptr<IME::Entity>, std::shared_ptr<IME::Graphics::Sprite>>;
-        using EntityContainer = std::vector<EntitySpritePair>;
+        using EntityContainer = std::vector<std::shared_ptr<IME::Entity>>;
 
         //
         ScoreView scoreView_;
@@ -92,10 +85,9 @@ namespace SuperPacMan {
         //The current level
         unsigned int level_;
         //The grid of the game
-        IME::TileMap tileMap_;
+        IME::TileMap grid_;
         //Container for all game entities
         std::unordered_map<std::string, EntityContainer> objects_;
-        std::vector<std::shared_ptr<IEntityAnimator>> animators_;
         //Stores the types of fruit (Different fruit type each level)
         const std::vector<std::string> fruitType_{
             "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake",
