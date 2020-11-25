@@ -4,11 +4,12 @@
 
 namespace SuperPacMan {
     PacMan::PacMan(const IME::Vector2u &boundingRect) :
-        Entity(boundingRect),
+        Entity(boundingRect, IME::Entity::Type::Player),
         numberOfLives_(Constants::PacManLives),
         speed_(0.0f),
         isMoving_(false)
     {
+        setCollidable(true);
         auto animations = PacManAnimations();
         animations.create();
         for (const auto& animation : animations.getAll())
@@ -44,7 +45,7 @@ namespace SuperPacMan {
         }));
     }
 
-    std::string PacMan::getObjectType() {
+    std::string PacMan::getClassType() {
         return "PacMan";
     }
 

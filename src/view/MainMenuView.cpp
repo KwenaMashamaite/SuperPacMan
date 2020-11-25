@@ -53,11 +53,11 @@ namespace SuperPacMan {
         std::for_each(navigationButtons.begin(), navigationButtons.end(), [&](auto& buttonInfo) {
             auto button = std::make_shared<UI::Button>(buttonInfo.text);
             button->setTextSize(15.0f);
-            button->getRenderer()->setBackgroundColour(Colour::Transparent);
-            button->getRenderer()->setBorderColour(Colour::Transparent);
-            button->getRenderer()->setBackgroundHoverColour(Colour::Transparent);
-            button->getRenderer()->setTextColour(Colour::Red);
-            button->getRenderer()->setTextHoverColour(Colour::Grey);
+            button->getRenderer()->setBackgroundColour(IME::Colour::Transparent);
+            button->getRenderer()->setBorderColour(IME::Colour::Transparent);
+            button->getRenderer()->setBackgroundHoverColour(IME::Colour::Transparent);
+            button->getRenderer()->setTextColour(IME::Colour::Red);
+            button->getRenderer()->setTextHoverColour(IME::Colour::Grey);
             buttonsContainer->addWidget(std::move(button), buttonInfo.name);
         });
         buttonsContainer->setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);

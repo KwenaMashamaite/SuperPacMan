@@ -1,14 +1,16 @@
 #include "Ghost.h"
 #include "../animations/GhostAnimations.h"
+#include "../common/Constants.h"
 #include <utility>
 
 namespace SuperPacMan {
     Ghost::Ghost(Name ghostName, const IME::Vector2u &boundingRect) :
-        Entity(boundingRect),
+        Entity(boundingRect, IME::Entity::Type::Enemy),
         ghostName_(ghostName),
         isMoving_(false),
-        speed_(0.0f)
+        speed_(Constants::GhostScatterSpeed)
     {
+        setCollidable(true);
         auto animations = GhostAnimations();
         animations.createAnimationsFor(ghostName);
         for (const auto& animation : animations.getAll())
@@ -26,7 +28,7 @@ namespace SuperPacMan {
         }));
     }
 
-    std::string Ghost::getObjectType() {
+    std::string Ghost::getClassType() {
         return "Ghost";
     }
 

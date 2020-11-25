@@ -3,9 +3,10 @@
 
 namespace SuperPacMan {
     Door::Door(const IME::Vector2u &boundingRect) :
-        Entity(boundingRect),
+        Entity(boundingRect, IME::Entity::Type::Obstacle),
         orientation_(Orientation::Vertical)
     {
+        setCollidable(true);
         sprite_ = SpriteContainer::getSprite("unlocked_door");
         sprite_.setOrigin(sprite_.getSize() / 2.0f);
         sprite_.scale(2.07f, 2.07f);
@@ -29,7 +30,7 @@ namespace SuperPacMan {
                 sprite_.setTextureRect(SpriteContainer::getSprite("broken_door_vertical").getTextureRect());
         }));
 
-        onEvent("unlocked", IME::Callback<>([this]{
+        onEvent("unlocked", IME::Callback<>([this] {
             sprite_.setTextureRect(SpriteContainer::getSprite("unlocked_door").getTextureRect());
         }));
     }
@@ -103,7 +104,7 @@ namespace SuperPacMan {
         return orientation_;
     }
 
-    std::string Door::getObjectType() {
+    std::string Door::getClassType() {
         return "Door";
     }
 

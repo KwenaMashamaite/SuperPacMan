@@ -29,20 +29,6 @@ namespace SuperPacMan {
         grid_.getBackground().setPosition({6.0f, 48.0f});
         grid_.getBackground().scale(2.1f, 2.1f);
         grid_.showLayer("background");
-
-        //Initialize tiles
-        grid_.forEachTile([](IME::Graphics::Tile& tile) {
-            if (tile.getId() == '#' || tile.getId() == '|' || tile.getId() == 'D')
-                tile.setType(IME::Graphics::TileType::Obstacle);
-            else if (tile.getId() == 'K' || tile.getId() == 'F' || tile.getId() == 'S' || tile.getId() == 'E')
-                tile.setType(IME::Graphics::TileType::Collectable);
-            else if (tile.getId() == 'M' || tile.getId() == 'P' || tile.getId() == 'I' || tile.getId() == 'C')
-                tile.setType(IME::Graphics::TileType::Enemy);
-            else if (tile.getId() == 'X')
-                tile.setType(IME::Graphics::TileType::Player);
-            else
-                tile.setType(IME::Graphics::TileType::Empty);
-        });
     }
 
     void PlayingState::update(float deltaTime) {

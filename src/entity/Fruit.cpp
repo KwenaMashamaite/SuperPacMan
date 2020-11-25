@@ -2,9 +2,12 @@
 #include "../common/SpriteContainer.h"
 
 namespace SuperPacMan {
-    Fruit::Fruit(const IME::Vector2u &boundingRect, const std::string &name)
-        : Entity(boundingRect), name_(name), isEaten_(false)
+    Fruit::Fruit(const IME::Vector2u &boundingRect, const std::string &name) :
+        Entity(boundingRect, IME::Entity::Type::Collectable),
+        name_(name),
+        isEaten_(false)
     {
+        setCollidable(true);
         sprite_ = SpriteContainer::getSprite(name);
         sprite_.setOrigin(sprite_.getSize().x / 2.0f, sprite_.getSize().y / 2.0f);
         sprite_.scale(2.0f, 2.0f);
@@ -15,7 +18,7 @@ namespace SuperPacMan {
         }));
     }
 
-    std::string SuperPacMan::Fruit::getObjectType() {
+    std::string SuperPacMan::Fruit::getClassType() {
         return "Fruit";
     }
 

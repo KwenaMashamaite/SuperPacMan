@@ -27,7 +27,7 @@ namespace SuperPacMan {
         introView_.init();
         pacmanController_ = std::make_unique<IME::TargetGridMover>(grid_, objects_.at("pacman")[0]);
         pacmanController_->setDestination(IME::Index{8, 0});
-        pacmanController_->onDestinationReached([this](float, float ) {
+        pacmanController_->onDestinationReached([this](IME::Graphics::Tile) {
             if (pacmanPath_.empty())
                 engine().popState();
             else {
@@ -35,22 +35,36 @@ namespace SuperPacMan {
                 pacmanPath_.pop();
             }
         });
+        pacmanController_->startMovement();
 
         pacmanController_->onCollectableCollision([this](auto target, auto colletable) {
-            if (colletable->getObjectType() == "Fruit")
+            if (colletable->getClassType() == "Fruit")
                 std::dynamic_pointer_cast<Fruit>(colletable)->eat();
-            else if (colletable->getObjectType() == "Pellet")
+            else if (colletable->getClassType() == "Pellet")
                 std::dynamic_pointer_cast<Pellet>(colletable)->eat();
-            else if (colletable->getObjectType() == "Key")
-                for (const auto& door : objects_.at("doors"))
-                    std::dynamic_pointer_cast<Door>(door)->unlockWith(*std::dynamic_pointer_cast<Key>(colletable));
+            else if (colletable->getClassType() == "Key") {
+                for (const auto& doorPtr : objects_.at("doors")) {
+                    auto door = std::dynamic_pointer_cast<Door>(doorPtr);
+                    if (!door->isLocked())
+                        continue;
+
+                    door->unlockWith(*std::dynamic_pointer_cast<Key>(colletable));
+                    if (!door->isLocked())
+                        door->setAlive(false);
+                }
                 colletable->setAlive(false);
+            }
         });
 
-        engine().onFrameEnd([this]{
-            Utils::removeDeadObjects(objects_.at("keys"));
-            Utils::removeDeadObjects(objects_.at("fruits"));
-            Utils::removeDeadObjects(objects_.at("pellets"));
+        engine().onFrameEnd([this] {
+            grid_.removeChildrenIf([](std::shared_ptr<IME::Entity> entity) {
+                return !entity->isAlive();
+            });
+
+            Utils::removeDeadObjectsFromContainer(objects_.at("keys"));
+            Utils::removeDeadObjectsFromContainer(objects_.at("fruits"));
+            Utils::removeDeadObjectsFromContainer(objects_.at("pellets"));
+            Utils::removeDeadObjectsFromContainer(objects_.at("doors"));
         });
     }
 
@@ -62,15 +76,12 @@ namespace SuperPacMan {
         grid_.getBackground().setPosition({5.0f, 6.0f});
         grid_.getBackground().scale(2.1f, 2.1f);
         grid_.showLayer("background");
-        grid_.forEachTile([](Tile& tile) {
-            if (tile.getId() == 'K' || tile.getId() == 'F' || tile.getId() == 'E' || tile.getId() == 'S')
-                tile.setType(TileType::Collectable);
-        });
     }
 
     void IntroState::createObjects() {
         objects_ = Utils::createObjects(grid_);
 
+        //Lock all the doors
         for (auto i = 0; i < objects_.at("doors").size(); ++i) {
             auto door = std::dynamic_pointer_cast<Door>(objects_.at("doors").at(i));
             door->addDoorLocker(std::make_unique<DoorLocker>(i));

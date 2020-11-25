@@ -48,7 +48,7 @@ class Ghost : public IME::Entity, public IME::IMovable {
          * @brief Get the type of the entity
          * @return The type of the entity
          */
-        std::string getObjectType() override;
+        std::string getClassType() override;
 
         /**
          * @brief Get the name of the ghost

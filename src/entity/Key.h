@@ -47,7 +47,7 @@ namespace SuperPacMan {
          * @brief Get the type of the object
          * @return The type of the object
          */
-        std::string getObjectType() override;
+        std::string getClassType() override;
 
         /**
          * @brief Get the sprites graphical representation

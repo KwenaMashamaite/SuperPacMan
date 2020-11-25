@@ -27,36 +27,31 @@ namespace SuperPacMan::Utils {
                     door->setOrientation(Orientation::Horizontal);
                 door->addDoorLocker(std::make_unique<DoorLocker>(getLockerId(tile.getIndex())));
                 door->lockWith(Key({}, getLockerId(tile.getIndex())));
-                grid.addChild(tile.getIndex(), door);
+                grid.addChild(door, tile.getIndex());
                 objects["doors"].push_back(std::move(door));
             } else if (tile.getId() == '#' || tile.getId() == '|') { //Walls
                 auto wall = std::make_shared<Wall>(grid.getTileSize());
-                wall->setCollidable(true);
-                grid.addChild(tile.getIndex(), wall);
+                grid.addChild(wall, tile.getIndex());
                 objects["walls"].push_back(std::move(wall));
             } else if (tile.getId() == 'K') { //Keys
                 auto key = std::make_shared<Key>(grid.getTileSize(), keyId++);
-                key->setCollidable(true);
-                grid.addChild(tile.getIndex(), key);
+                grid.addChild(key, tile.getIndex());
                 objects["keys"].push_back(std::move(key));
             } else if (tile.getId() == 'F') { //Fruits
                 auto fruit =  std::make_shared<Fruit>(grid.getTileSize(), "apple");
-                fruit->setCollidable(true);
-                grid.addChild(tile.getIndex(), fruit);
+                grid.addChild(fruit, tile.getIndex());
                 objects["fruits"].push_back(std::move(fruit));
             } else if (tile.getId() == 'E' || tile.getId() == 'S') { //Power pellet or super pellet
                 auto pelletType = PelletType::SuperPellet;
                 if (tile.getId() == 'E')
                     pelletType = PelletType::PowerPellet;
                 auto pellet = std::make_shared<Pellet>(pelletType, grid.getTileSize());
-                pellet->setCollidable(true);
-                grid.addChild(tile.getIndex(), pellet);
+                grid.addChild(pellet, tile.getIndex());
                 objects["pellets"].push_back(std::move(pellet));
             } else if (tile.getId() == 'X') { //PacMan
                 auto pacman = std::make_shared<PacMan>(grid.getTileSize());
-                pacman->setCollidable(true);
                 pacman->setSpeed(Constants::PacManNormalSpeed);
-                grid.addChild(tile.getIndex(), pacman);
+                grid.addChild(pacman, tile.getIndex());
                 objects["pacman"].push_back(std::move(pacman));
             } else if (tile.getId() == 'B' || tile.getId() == 'P' || tile.getId() == 'C' || tile.getId() == 'I') {
                 auto ghostName = Ghost::Name::Blinky;
@@ -68,16 +63,15 @@ namespace SuperPacMan::Utils {
                     ghostName = Ghost::Name::Inky;
 
                 auto ghost = std::make_shared<Ghost>(ghostName, grid.getTileSize());
-                ghost->setCollidable(true);
                 ghost->setVulnerable(false);
-                grid.addChild(tile.getIndex(), ghost);
+                grid.addChild(ghost, tile.getIndex());
                 objects["ghosts"].push_back(std::move(ghost));
             }
         });
         return objects;
     }
 
-    void removeDeadObjects(std::vector<std::shared_ptr<IME::Entity>>& entities) {
+    void removeDeadObjectsFromContainer(std::vector<std::shared_ptr<IME::Entity>>& entities) {
         entities.erase(std::remove_if(entities.begin(), entities.end(), [](std::shared_ptr<IME::Entity>& entity) {
             return !entity->isAlive();
         }), entities.end());

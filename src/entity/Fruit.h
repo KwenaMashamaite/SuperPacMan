@@ -42,7 +42,7 @@ namespace SuperPacMan {
          * @brief Get the type of the object
          * @return Type of the object
          */
-        std::string getObjectType() override;
+        std::string getClassType() override;
 
         /**
          * @brief Get the fruits graphical representation

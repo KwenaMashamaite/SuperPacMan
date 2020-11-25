@@ -41,7 +41,7 @@ class PacMan : public IME::Entity, public IME::IMovable {
          * @brief Get the type of the entity
          * @return The type of the entity
          */
-        std::string getObjectType() override;
+        std::string getClassType() override;
 
         /**
          * @brief Push a state to the object

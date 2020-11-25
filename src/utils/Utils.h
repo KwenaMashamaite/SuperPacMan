@@ -26,7 +26,7 @@ namespace SuperPacMan::Utils {
     /**
      * @brief Remove all dead entities from the entity container
      */
-    extern void removeDeadObjects(std::vector<std::shared_ptr<IME::Entity>>& entities);
+    extern void removeDeadObjectsFromContainer(std::vector<std::shared_ptr<IME::Entity>>& entities);
 }
 
 #endif

@@ -2,8 +2,9 @@
 #include "../animations/PelletAnimations.h"
 
 namespace SuperPacMan {
-    Pellet::Pellet(PelletType pelletType, const IME::Vector2u &boundingRect)
-        : Entity(boundingRect), pelletType_(pelletType)
+    Pellet::Pellet(PelletType pelletType, const IME::Vector2u &boundingRect) :
+        Entity(boundingRect, IME::Entity::Type::Collectable),
+        pelletType_(pelletType)
     {
         auto animations = PelletAnimations();
         animations.createAnimationFor(pelletType);
@@ -18,6 +19,8 @@ namespace SuperPacMan {
         onEvent("positionChanged", IME::Callback<float, float>([this](float x, float y) {
             sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
         }));
+
+        setCollidable(true);
     }
 
     void Pellet::eat() {
@@ -36,7 +39,7 @@ namespace SuperPacMan {
         return pelletType_;
     }
 
-    std::string Pellet::getObjectType() {
+    std::string Pellet::getClassType() {
         return "Pellet";
     }
 

@@ -2,8 +2,11 @@
 #include "../common/SpriteContainer.h"
 
 namespace SuperPacMan {
-    Key::Key(const IME::Vector2u &boundingRect, int id) : Entity(boundingRect), id_(id)
+    Key::Key(const IME::Vector2u &boundingRect, int id) :
+        Entity(boundingRect, IME::Entity::Type::Collectable),
+        id_(id)
     {
+        setCollidable(true);
         sprite_ = SpriteContainer::getSprite("key");
         sprite_.setOrigin(sprite_.getSize() / 2.0f);
         sprite_.scale(2.0f, 2.0f);
@@ -14,7 +17,7 @@ namespace SuperPacMan {
         }));
     }
 
-    std::string Key::getObjectType() {
+    std::string Key::getClassType() {
         return "Key";
     }
 
