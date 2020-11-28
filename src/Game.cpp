@@ -3,6 +3,7 @@
 #include "states/IntroState.h"
 #include "states/MainMenuState.h"
 #include "common/SpriteContainer.h"
+#include "scoreboard/Scoreboard.h"
 #include <IME/core/event/EventDispatcher.h>
 #include <memory>
 
@@ -58,6 +59,16 @@ namespace SuperPacMan {
 
     void Game::initialize() {
         engine_.init();
+
+        auto scoreboard = Scoreboard("textFiles/highscores.txt");
+        scoreboard.load();
+
+        //Create data that should be accessible to all states
+        engine_.getPersistentData().addProperty({"high-score", "INT", scoreboard.getTopScore().getValue()});
+        engine_.getPersistentData().addProperty({"level", "INT", 1});
+        engine_.getPersistentData().addProperty({"score", "INT", 0});
+
+        //Push the initial states (States will be entered in reverse order: loading->intro->mainMenu)
         engine_.pushState(std::make_shared<MainMenuState>(engine_));
         engine_.pushState(std::make_shared<IntroState>(engine_));
         engine_.pushState(std::make_shared<LoadingState>(engine_));
