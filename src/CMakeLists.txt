@@ -10,6 +10,7 @@ set(SRC_FILES
         controllers/GhostsController.cpp
         views/LoadingView.cpp
         views/MainMenuView.cpp
+        views/LevelStartView.cpp
         views/ScoreView.cpp
         views/IntroView.cpp
         entities/states/StateController.cpp
