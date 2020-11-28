@@ -28,6 +28,7 @@ set(SRC_FILES
         states/IntroState.cpp
         states/LoadingState.cpp
         states/MainMenuState.cpp
+        states/LevelStartState.cpp
         states/PlayingState.cpp
         utils/Utils.cpp
         )

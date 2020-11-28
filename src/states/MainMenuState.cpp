@@ -1,5 +1,6 @@
 #include "MainMenuState.h"
 #include "PlayingState.h"
+#include "LevelStartState.h"
 #include <IME/core/loop/Engine.h>
 #include <IME/utility/DiskFileReader.h>
 #include <IME/graphics/ui/widgets/Button.h>
@@ -29,6 +30,7 @@ namespace SuperPacMan {
         navButtonsContainer->getWidget("play-btn")->on("click", IME::Callback<>([this] {
             engine().popState();
             engine().pushState(std::move(std::make_shared<PlayingState>(engine())));
+            engine().pushState(std::move(std::make_shared<LevelStartState>(engine())));
         }));
 
         //CONTROLS BUTTON
