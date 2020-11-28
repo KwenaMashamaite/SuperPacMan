@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "states/LoadingState.h"
 #include "states/IntroState.h"
-#include "states/PlayingState.h"
+#include "states/MainMenuState.h"
 #include "common/SpriteContainer.h"
 #include <IME/core/event/EventDispatcher.h>
 #include <memory>
@@ -58,7 +58,7 @@ namespace SuperPacMan {
 
     void Game::initialize() {
         engine_.init();
-        engine_.pushState(std::make_shared<PlayingState>(engine_));
+        engine_.pushState(std::make_shared<MainMenuState>(engine_));
         engine_.pushState(std::make_shared<IntroState>(engine_));
         engine_.pushState(std::make_shared<LoadingState>(engine_));
 
