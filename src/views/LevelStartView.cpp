@@ -2,6 +2,7 @@
 #include "../common/SpriteContainer.h"
 #include "../animations/FoodAnimation.h"
 #include <IME/graphics/ui/widgets/Label.h>
+#include <IME/graphics/ui/widgets/HorizontalLayout.h>
 
 using namespace IME::Graphics::UI;
 
@@ -17,29 +18,34 @@ namespace SuperPacMan {
 
     void LevelStartView::init() {
         scoreView_.init();
-        scoreView_.getWidget<Label>("scoreValue")->setText(std::to_string(score_));
-        scoreView_.getWidget<Label>("highscoresValue")->setText(std::to_string(highscore_));
+        auto scoresValueContainer = scoreView_.getWidget<HorizontalLayout>("scoresValueContainer");
+        scoresValueContainer->getWidget("scoreValue")->setText(std::to_string(score_));
+        scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highscore_));
 
         guiContainer_.setFont("namco.ttf");
-        guiContainer_.setTextSize(15.0f);
+        guiContainer_.setTextSize(12.0f);
         
-        auto stageText = std::make_shared<Label>("STAGE\t\t" + std::to_string(level_));
+        auto stageText = std::make_shared<Label>("STAGE  " + std::to_string(level_));
         stageText->getRenderer()->setTextColour(IME::Colour::White);
+        stageText->setOrigin(0.5f, 0.5f);
+        stageText->setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
         guiContainer_.addWidget(stageText, "stageText");
 
         //This animation contains all the fruits accessible by frames
         auto fruitAnimation = FoodAnimation();
         fruit_.setTexture(fruitAnimation.getAnimation()->getSpriteSheet());
         fruit_.setTextureRect(fruitAnimation.getAnimation()->getFrameAt(level_ - 1)); //Frames start at 0 but level starts at 1
-        fruit_.setPosition(stageText->getPosition().x + stageText->getSize().x, stageText->getPosition().y + stageText->getSize().y);
+        fruit_.scale({1.5f, 1.5f});
+        fruit_.setPosition(stageText->getPosition().x - stageText->getSize().x / 2.0f, stageText->getPosition().y + stageText->getSize().y * 2);
 
-        auto pointsText = std::make_shared<Label>("PTS\t\t" + std::to_string(level_ * 10));
+        auto pointsText = std::make_shared<Label>(std::to_string(level_ * 10) + " PTS");
         pointsText->getRenderer()->setTextColour(IME::Colour::White);
-        pointsText->setPosition(fruit_.getPosition().x + fruit_.getSize().x, fruit_.getPosition().y);
-        guiContainer_.addWidget(std::move(stageText), "pointsText");
+        pointsText->setPosition(fruit_.getPosition().x + (fruit_.getSize().x * 2), fruit_.getPosition().y + 6.0f);
+        guiContainer_.addWidget(std::move(pointsText), "pointsText");
     }
 
     void LevelStartView::render(IME::Graphics::Window &renderTarget) {
+        scoreView_.render(renderTarget);
         guiContainer_.draw();
         renderTarget.draw(fruit_);
     }
