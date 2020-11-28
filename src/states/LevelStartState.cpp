@@ -4,13 +4,21 @@
 namespace SuperPacMan {
     LevelStartState::LevelStartState(IME::Engine &engine) :
         State(engine),
-        view_(engine.getRenderTarget(), 1u, 3000, 50000),
         isInit_{false},
-        stateTimeout_{1.0}
+        stateTimeout_{2.0f}
     {}
 
     void LevelStartState::initialize() {
-        view_.init();
+        auto level = engine().getPersistentData().getValueFor<int>("level");
+        auto score = engine().getPersistentData().getValueFor<int>("score");
+        auto highScore = engine().getPersistentData().getValueFor<int>("high-score");
+        view_ = std::make_unique<LevelStartView>(engine().getRenderTarget(), level, score, highScore);
+        view_->init();
+
+        if (level == 1) { //Audio played for the first level only
+            sfx_.play("beginning.wav");
+            stateTimeout_ = sfx_.getDuration().Milliseconds / 1000.0f;
+        }
         isInit_ = true;
     }
 
@@ -19,11 +27,11 @@ namespace SuperPacMan {
     }
 
     void LevelStartState::render(IME::Graphics::Window &renderTarget) {
-        view_.render(renderTarget);
+        view_->render(renderTarget);
     }
 
     void LevelStartState::update(float deltaTime) {
-        stateTimeout_ -=deltaTime;
+        stateTimeout_ -= deltaTime;
         if (stateTimeout_ <= 0)
             engine().popState();
     }

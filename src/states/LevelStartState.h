@@ -10,7 +10,8 @@
 #define LEVELSTARTSTATE_H
 
 #include <IME/core/states/State.h>
-#include "../view/LevelStartView.h"
+#include <IME/core/audio/SoundEffect.h>
+#include "../views/LevelStartView.h"
 
 namespace SuperPacMan {
     class LevelStartState : public IME::State {
@@ -111,11 +112,13 @@ namespace SuperPacMan {
 
     private:
         //View for this state
-        LevelStartView view_;
+        std::unique_ptr<LevelStartView> view_;
         //Initialization state
         bool isInit_;
         //How long the state is active
         float stateTimeout_;
+        //State audio
+        IME::Audio::SoundEffect sfx_;
     };
 }
 
