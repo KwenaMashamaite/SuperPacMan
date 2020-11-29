@@ -40,7 +40,7 @@ namespace SuperPacMan {
 
         auto pointsText = std::make_shared<Label>(std::to_string(level_ * 10) + " PTS");
         pointsText->getRenderer()->setTextColour(IME::Colour::White);
-        pointsText->setPosition(fruit_.getPosition().x + (fruit_.getSize().x * 2), fruit_.getPosition().y + 6.0f);
+        pointsText->setPosition(fruit_.getPosition().x + (fruit_.getLocalBounds().width * 2), fruit_.getPosition().y + 6.0f);
         guiContainer_.addWidget(std::move(pointsText), "pointsText");
     }
 

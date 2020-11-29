@@ -18,7 +18,7 @@ namespace SuperPacMan {
 
         setDirection(IME::Direction::Left);
         sprite_.switchAnimation("goingLeft");
-        sprite_.setOrigin(sprite_.getSize().x / 2.0f, sprite_.getSize().y / 2.0f);
+        sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
         sprite_.scale(2.0f, 2.0f);
         sprite_.setPosition(getSize().x / 2.0f, getSize().y / 2.0f);
 

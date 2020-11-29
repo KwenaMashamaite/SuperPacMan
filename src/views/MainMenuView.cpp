@@ -34,7 +34,7 @@ namespace SuperPacMan {
 
     void MainMenuView::createLogo() {
         pacmanLogo_.setTexture("pacman_logo.png");
-        pacmanLogo_.setOrigin(pacmanLogo_.getSize().x / 2.0f, 0.0f);
+        pacmanLogo_.setOrigin(pacmanLogo_.getLocalBounds().width / 2.0f, 0.0f);
         pacmanLogo_.scale(0.75, 0.75);
         pacmanLogo_.setPosition(windowSize_.x / 2.0f, windowSize_.y * 13.0f / 100.0f);
     }
