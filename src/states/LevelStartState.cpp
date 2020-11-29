@@ -32,6 +32,7 @@ namespace SuperPacMan {
     }
 
     void LevelStartState::update(float deltaTime) {
+        view_->update(deltaTime);
         stateTimeout_ -= deltaTime;
         if (stateTimeout_ <= 0)
             engine().popState();

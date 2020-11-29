@@ -100,6 +100,7 @@ namespace SuperPacMan {
     }
 
     void IntroState::update(float deltaTime) {
+        introView_.update(deltaTime);
         pacmanController_->update(deltaTime);
     }
 

@@ -66,7 +66,7 @@ namespace SuperPacMan {
     }
 
     void MainMenuState::update(float deltaTime) {
-
+        mainMenuView_.update(deltaTime);
     }
 
     void MainMenuState::fixedUpdate(float deltaTime) {

@@ -39,6 +39,12 @@ namespace SuperPacMan {
         void render(IME::Graphics::Window& renderTarget);
 
         /**
+         * @brief Update view
+         * @param deltaTime Time passed since view was last updated
+         */
+        void update(float deltaTime);
+
+        /**
          * @brief Get access to a widget in the view
          * @param widgetName Name of the widget to get access to
          * @return The specified widget if it exists, otherwise a nullptr
@@ -72,6 +78,8 @@ namespace SuperPacMan {
         int level_;
         //Remaining pacman lives
         int pacmanLives_;
+        //How long the 1 up stays in hidden and shown states
+        float flashTimeout_;
     };
 }
 

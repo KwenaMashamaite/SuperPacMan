@@ -5,12 +5,15 @@
 #include <IME/graphics/ui/widgets/HorizontalLayout.h>
 #include <IME/graphics/Colour.h>
 
+using namespace IME::Graphics::UI;
+
 namespace SuperPacMan {
     CommonView::CommonView(IME::Graphics::Window &renderTarget, int level, int lives) :
         guiContainer_(renderTarget),
         windowSize_(renderTarget.getSize()),
         level_{level},
-        pacmanLives_{lives}
+        pacmanLives_{lives},
+        flashTimeout_{0.2f}
     {
         guiContainer_.setFont("namco.ttf");
     }
@@ -22,27 +25,27 @@ namespace SuperPacMan {
 
     void CommonView::createText() {
         auto tileSize = 20;
-        auto scoresTextContainer = std::make_shared<IME::Graphics::UI::HorizontalLayout>(windowSize_.x / 1.8f, tileSize);
+        auto scoresTextContainer = std::make_shared<HorizontalLayout>(windowSize_.x / 1.8f, tileSize);
         scoresTextContainer->setPosition({40.0f, 0.0f});
-        auto oneUpText = std::make_shared<IME::Graphics::UI::Label>("1UP");
+        auto oneUpText = std::make_shared<Label>("1UP");
         oneUpText->getRenderer()->setTextColour(IME::Colour::Red);
         scoresTextContainer->addWidget(std::move(oneUpText), "oneUpText");
 
-        auto highscoreText = std::make_shared<IME::Graphics::UI::Label>("HIGH SCORE");
+        auto highscoreText = std::make_shared<Label>("HIGH SCORE");
         highscoreText->getRenderer()->setTextColour(IME::Colour::Red);
         scoresTextContainer->addWidget(std::move(highscoreText), "highscoresText");
 
-        auto scoresValueContainer = std::make_shared<IME::Graphics::UI::HorizontalLayout>(windowSize_.x / 1.6f, tileSize);
+        auto scoresValueContainer = std::make_shared<HorizontalLayout>(windowSize_.x / 1.6f, tileSize);
         scoresValueContainer->setPosition({60, scoresTextContainer->getSize().y});
-        auto scoreValue = std::make_shared<IME::Graphics::UI::Label>("00");
+        auto scoreValue = std::make_shared<Label>("00");
         scoreValue->getRenderer()->setTextColour(IME::Colour::White);
         scoresValueContainer->addWidget(std::move(scoreValue), "scoreValue");
 
-        auto highscoreValue = std::make_shared<IME::Graphics::UI::Label>("00");
+        auto highscoreValue = std::make_shared<Label>("00");
         highscoreValue->getRenderer()->setTextColour(IME::Colour::White);
         scoresValueContainer->addWidget(std::move(highscoreValue), "highscoresValue");
 
-        auto creditText = std::make_shared<IME::Graphics::UI::Label>(pacmanLives_ > 0 ? "" : "CREDIT 0");
+        auto creditText = std::make_shared<Label>(pacmanLives_ > 0 ? "" : "CREDIT 0");
         creditText->getRenderer()->setTextColour(IME::Colour::White);
         creditText->getRenderer()->setPadding({0, 0, 0, 0});
         creditText->setPosition(40.0f, windowSize_.y - creditText->getSize().y);
@@ -78,5 +81,14 @@ namespace SuperPacMan {
         guiContainer_.draw();
         for (auto& fruit : sprites)
             renderTarget.draw(fruit);
+    }
+
+    void CommonView::update(float deltaTime) {
+        flashTimeout_ -= deltaTime;
+        if (flashTimeout_ <= 0) {
+            flashTimeout_ = 0.2f;
+            guiContainer_.getWidget<HorizontalLayout>("scoresTextContainer")
+                ->getWidget("oneUpText")->toggleVisibility();
+        }
     }
 }

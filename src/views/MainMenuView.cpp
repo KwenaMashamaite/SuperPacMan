@@ -77,6 +77,10 @@ namespace SuperPacMan {
         }
     }
 
+    void MainMenuView::update(float deltaTime) {
+        commonView_.update(deltaTime);
+    }
+
     void MainMenuView::handleEvent(sf::Event event) {
         if (currentView_ == SubView::Main)
             mainViewContainer_.handleEvent(event);

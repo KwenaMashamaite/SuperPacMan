@@ -53,7 +53,7 @@ namespace SuperPacMan {
         view_.getWidget<IWidget>("loadingText")->setText("Loading fonts...");
         lock.unlock();
         IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Font, {
-            "namco.ttf", "pacfont.ttf"}, updateProgressBar);
+            "namco.ttf", "AtariClassicExtrasmooth-LxZy.ttf"}, updateProgressBar);
 
         //LOAD TEXTURES
         lock.lock();

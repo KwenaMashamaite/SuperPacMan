@@ -28,10 +28,10 @@ namespace SuperPacMan {
         void render(IME::Graphics::Window& renderTarget);
 
         /**
-         * @brief Pass an event to be handled by the view
-         * @param event Event to be handled
+         * @brief Update view
+         * @param deltaTime Time passed since view was last updated
          */
-        void handleEvent(sf::Event event);
+        void update(float deltaTime);
 
     private:
         CommonView commonView_;

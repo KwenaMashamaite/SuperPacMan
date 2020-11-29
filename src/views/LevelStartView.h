@@ -28,6 +28,12 @@ namespace SuperPacMan {
         void init();
 
         /**
+         * @brief Update view
+         * @param deltaTime Time passed since view was last updated
+         */
+        void update(float deltaTime);
+
+        /**
          * @brief Render the view
          * @param renderTarget Target to render view on
          */

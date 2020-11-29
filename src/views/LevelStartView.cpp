@@ -45,6 +45,10 @@ namespace SuperPacMan {
         guiContainer_.addWidget(std::move(pointsText), "pointsText");
     }
 
+    void LevelStartView::update(float deltaTime) {
+        commonView_.update(deltaTime);
+    }
+
     void LevelStartView::render(IME::Graphics::Window &renderTarget) {
         commonView_.render(renderTarget);
         guiContainer_.draw();

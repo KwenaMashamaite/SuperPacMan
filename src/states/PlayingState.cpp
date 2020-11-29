@@ -33,6 +33,8 @@ namespace SuperPacMan {
     }
 
     void PlayingState::update(float deltaTime) {
+        commonView_.update(deltaTime);
+
         for (auto& pellet : objects_.at("pellets"))
             std::dynamic_pointer_cast<Pellet>(pellet)->update(deltaTime);
         for (auto& ghost : objects_.at("ghosts"))

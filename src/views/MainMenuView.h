@@ -39,6 +39,12 @@ namespace SuperPacMan {
         void handleEvent(sf::Event event);
 
         /**
+         * @brief Update view
+         * @param deltaTime Time passed since view was last updated
+         */
+        void update(float deltaTime);
+
+        /**
          * @brief Switch to a different view within this view
          * @param view View to switch to
          */
