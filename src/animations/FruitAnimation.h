@@ -5,19 +5,19 @@
  * can eat. It is played when a star appears in the game
  */
 
-#ifndef FOODANIMATION_H
-#define FOODANIMATION_H
+#ifndef FRUITANIMATION_H
+#define FRUITANIMATION_H
 
 #include <IME/core/animation/Animation.h>
 #include <memory>
 
 namespace SuperPacMan {
-    class FoodAnimation {
+    class FruitAnimation {
     public:
         /**
          * @brief Constructor
          */
-        FoodAnimation();
+        FruitAnimation();
 
         /**
          * @brief Get the food animation

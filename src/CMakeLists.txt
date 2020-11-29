@@ -5,7 +5,7 @@ set(SRC_FILES
         animations/GhostAnimations.cpp
         animations/PacManAnimations.cpp
         animations/PelletAnimations.cpp
-        animations/FoodAnimation.cpp
+        animations/FruitAnimation.cpp
         controllers/PacManController.cpp
         controllers/GhostsController.cpp
         views/LoadingView.cpp

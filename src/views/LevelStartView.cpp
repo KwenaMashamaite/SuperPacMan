@@ -1,6 +1,6 @@
 #include "LevelStartView.h"
 #include "../common/SpriteContainer.h"
-#include "../animations/FoodAnimation.h"
+#include "../animations/FruitAnimation.h"
 #include <IME/graphics/ui/widgets/Label.h>
 #include <IME/graphics/ui/widgets/HorizontalLayout.h>
 
@@ -32,7 +32,7 @@ namespace SuperPacMan {
         guiContainer_.addWidget(stageText, "stageText");
 
         //This animation contains all the fruits accessible by frames
-        auto fruitAnimation = FoodAnimation();
+        auto fruitAnimation = FruitAnimation();
         fruit_.setTexture(fruitAnimation.getAnimation()->getSpriteSheet());
         fruit_.setTextureRect(fruitAnimation.getAnimation()->getFrameAt(level_ - 1)); //Frames start at 0 but level starts at 1
         fruit_.scale({1.5f, 1.5f});
