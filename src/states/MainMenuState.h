@@ -71,16 +71,6 @@ namespace SuperPacMan {
 
     private:
         /**
-         * @brief Create the game logo
-         */
-        void createLogo();
-
-        /**
-         * @brief Create the main menu buttons and text labels
-         */
-        void createUIElements();
-
-        /**
          * @brief Initialize the behavior of the main menu buttons
          */
         void initUIButtonsBehavior();
