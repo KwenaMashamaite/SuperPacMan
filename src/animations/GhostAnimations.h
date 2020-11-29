@@ -8,7 +8,7 @@
 #include <IME/core/animation/Animation.h>
 #include <vector>
 #include <memory>
-#include "../entity/Ghost.h"
+#include "../entities/Ghost.h"
 
 namespace SuperPacMan {
     class GhostAnimations {

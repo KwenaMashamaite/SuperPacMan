@@ -8,7 +8,7 @@
 #include <IME/core/animation/Animation.h>
 #include <vector>
 #include <memory>
-#include "../entity/Pellet.h"
+#include "../entities/Pellet.h"
 
 namespace SuperPacMan {
     class PelletAnimations {

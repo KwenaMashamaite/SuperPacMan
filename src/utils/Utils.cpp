@@ -1,5 +1,5 @@
 #include "Utils.h"
-#include "../entity/AllEntities.h"
+#include "../entities/AllEntities.h"
 #include "../common/Constants.h"
 
 /**

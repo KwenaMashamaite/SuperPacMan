@@ -12,16 +12,16 @@ set(SRC_FILES
         views/MainMenuView.cpp
         views/ScoreView.cpp
         views/IntroView.cpp
-        entity/states/StateController.cpp
+        entities/states/StateController.cpp
         common/SpriteContainer.cpp
-        entity/Door.cpp
-        entity/DoorLocker.cpp
-        entity/Fruit.cpp
-        entity/Ghost.cpp
-        entity/Key.cpp
-        entity/PacMan.cpp
-        entity/Pellet.cpp
-        entity/Wall.cpp
+        entities/Door.cpp
+        entities/DoorLocker.cpp
+        entities/Fruit.cpp
+        entities/Ghost.cpp
+        entities/Key.cpp
+        entities/PacMan.cpp
+        entities/Pellet.cpp
+        entities/Wall.cpp
         scoreboard/Score.cpp
         scoreboard/Scoreboard.cpp
         states/IntroState.cpp

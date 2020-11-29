@@ -10,7 +10,7 @@
 #include <IME/core/entity/Entity.h>
 #include <IME/core/physics/TargetGridMover.h>
 #include "../views/IntroView.h"
-#include "../entity/Pellet.h"
+#include "../entities/Pellet.h"
 #include <queue>
 
 namespace SuperPacMan {

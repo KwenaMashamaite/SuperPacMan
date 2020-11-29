@@ -7,7 +7,7 @@
 
 #include <IME/core/physics/GridMover.h>
 #include <IME/core//input/Keyboard.h>
-#include "../entity/PacMan.h"
+#include "../entities/PacMan.h"
 
 
 namespace SuperPacMan {

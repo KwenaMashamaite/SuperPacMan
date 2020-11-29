@@ -1,5 +1,5 @@
 #include <IME/graphics/Window.h>
-#include "../entity/AllEntities.h"
+#include "../entities/AllEntities.h"
 #include "Drawer.h"
 
 namespace SuperPacMan {

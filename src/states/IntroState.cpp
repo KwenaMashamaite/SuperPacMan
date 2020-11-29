@@ -1,6 +1,6 @@
 #include "IntroState.h"
 #include <IME/core/loop/Engine.h>
-#include "../entity/AllEntities.h"
+#include "../entities/AllEntities.h"
 #include "../common/SpriteContainer.h"
 #include "../common/Drawer.h"
 #include "../utils/Utils.h"
