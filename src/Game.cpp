@@ -31,8 +31,8 @@ void createFruitSprites() {
         rectPos.x += rectSize.x + rectSpacing;
     }
 
-    //Key
     createSprite("key", "spritesheet.png", {151, 35, rectSize.x, rectSize.y});
+    createSprite("life", "spritesheet.png", {440, 52, rectSize.x, rectSize.y});
 }
 
 void createGridSprites() {
@@ -67,6 +67,7 @@ namespace SuperPacMan {
         engine_.getPersistentData().addProperty({"high-score", "INT", scoreboard.getTopScore().getValue()});
         engine_.getPersistentData().addProperty({"level", "INT", 1});
         engine_.getPersistentData().addProperty({"score", "INT", 0});
+        engine_.getPersistentData().addProperty({"lives", "INT", 4}); //Initially pacman has four lives
 
         //Push the initial states (States will be entered in reverse order: loading->intro->mainMenu)
         engine_.pushState(std::make_shared<MainMenuState>(engine_));

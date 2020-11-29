@@ -10,9 +10,10 @@ namespace SuperPacMan {
 
     void LevelStartState::initialize() {
         auto level = engine().getPersistentData().getValueFor<int>("level");
+        auto lives = engine().getPersistentData().getValueFor<int>("lives");
         auto score = engine().getPersistentData().getValueFor<int>("score");
         auto highScore = engine().getPersistentData().getValueFor<int>("high-score");
-        view_ = std::make_unique<LevelStartView>(engine().getRenderTarget(), level, score, highScore);
+        view_ = std::make_unique<LevelStartView>(engine().getRenderTarget(), level, lives, score, highScore);
         view_->init();
 
         if (level == 1) { //Audio played for the first level only

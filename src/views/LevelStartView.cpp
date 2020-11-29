@@ -7,13 +7,14 @@
 using namespace IME::Graphics::UI;
 
 namespace SuperPacMan {
-    LevelStartView::LevelStartView(IME::Graphics::Window& renderTarget, unsigned int level, int score, int highscore) :
-            guiContainer_{renderTarget},
-            windowSize_{renderTarget.getSize()},
-            commonView_{renderTarget},
-            level_{level},
-            score_{score},
-            highscore_{highscore}
+    LevelStartView::LevelStartView(IME::Graphics::Window& renderTarget,
+        int level, int lives, int score, int highscore) :
+        guiContainer_{renderTarget},
+        windowSize_{renderTarget.getSize()},
+        commonView_{renderTarget, level, lives},
+        level_{level},
+        score_{score},
+        highscore_{highscore}
     {}
 
     void LevelStartView::init() {

@@ -9,10 +9,11 @@ using namespace IME::Graphics;
 
 namespace SuperPacMan {
     PlayingState::PlayingState(IME::Engine &engine) :
-            State(engine),
-            commonView_(engine.getRenderTarget()),
-            isInitialized_(false), level_{1u},
-            grid_{20, 20}
+        State(engine),
+        commonView_(engine.getRenderTarget(), 1, 4),
+        isInitialized_(false),
+        level_{1u},
+        grid_{20, 20}
     {}
 
     void PlayingState::initialize() {

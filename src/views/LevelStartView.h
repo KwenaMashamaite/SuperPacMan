@@ -15,10 +15,12 @@ namespace SuperPacMan {
          * @brief Create level start view
          * @param renderTarget Target view is rendered on
          * @param level Current level
+         * @param lives Pacman's remaining lives
          * @param score Current score
-         * @param highscore Current highscore
+         * @param highscore Current high score
          */
-        LevelStartView(IME::Graphics::Window& renderTarget, unsigned int level, int score, int highscore);
+        LevelStartView(IME::Graphics::Window& renderTarget, int level, int lives,
+           int score, int highscore);
 
         /**
          * @brief Initialize the view
@@ -41,7 +43,7 @@ namespace SuperPacMan {
         //Current level fruit
         IME::Graphics::Sprite fruit_;
         //Current level
-        unsigned int level_;
+        int level_;
         //current score
         int score_;
         //current highscore

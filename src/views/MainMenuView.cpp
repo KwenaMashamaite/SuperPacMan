@@ -8,11 +8,11 @@ using namespace IME::Graphics;
 
 namespace SuperPacMan {
     MainMenuView::MainMenuView(IME::Graphics::Window& renderTarget) :
-            commonView_(renderTarget),
-            mainViewContainer_{renderTarget},
-            infoViewContainer_{renderTarget},
-            currentView_(SubView::Main),
-            windowSize_(renderTarget.getSize())
+        commonView_(renderTarget, 1, 0),
+        mainViewContainer_{renderTarget},
+        infoViewContainer_{renderTarget},
+        currentView_(SubView::Main),
+        windowSize_(renderTarget.getSize())
     {}
 
     void MainMenuView::init() {

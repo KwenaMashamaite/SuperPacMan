@@ -5,9 +5,9 @@ using namespace IME::Graphics;
 
 namespace SuperPacMan {
     IntroView::IntroView(Window &renderTarget) :
-            commonView_(renderTarget),
-            guiContainer_(renderTarget),
-            windowSize_(renderTarget.getSize())
+        commonView_(renderTarget, 1, 0),
+        guiContainer_(renderTarget),
+        windowSize_(renderTarget.getSize())
     {}
 
     void IntroView::init() {
@@ -41,12 +41,6 @@ namespace SuperPacMan {
         companyName->getRenderer()->setTextColour(IME::Colour::Red);
         companyName->setPosition(windowSize_.x / 2.0f, textContainer->getPosition().y + textContainer->getSize().y);
         guiContainer_.addWidget(std::move(companyName), "companyName");
-
-        auto creditText = std::make_shared<UI::Label>("CREDIT 0");
-        creditText->getRenderer()->setTextColour(IME::Colour::White);
-        creditText->getRenderer()->setPadding({0, 0, 0, 0});
-        creditText->setPosition(40.0f, windowSize_.y - creditText->getSize().y);
-        guiContainer_.addWidget(std::move(creditText), "creditText");
     }
 
     void IntroView::render(IME::Graphics::Window &renderTarget) {

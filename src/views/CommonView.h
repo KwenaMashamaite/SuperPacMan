@@ -14,6 +14,7 @@
 
 #include <IME/graphics/Window.h>
 #include <IME/graphics/ui/GuiContainer.h>
+#include <IME/graphics/Sprite.h>
 
 namespace SuperPacMan {
     class CommonView {
@@ -21,8 +22,10 @@ namespace SuperPacMan {
         /**
          * @brief Create view
          * @param renderTarget Target to render view on
+         * @param level Current level
+         * @param lives Pacman;s remaining lives
          */
-        explicit CommonView(IME::Graphics::Window& renderTarget);
+        CommonView(IME::Graphics::Window& renderTarget, int level, int lives);
 
         /**
          * @brief Initialize the view
@@ -48,10 +51,27 @@ namespace SuperPacMan {
         }
 
     private:
+        /**
+         * @brief Create high score texts
+         */
+        void createText();
+
+        /**
+         * @brief Create fruit and pacman lives sprites
+         */
+        void createSprites();
+
+    private:
         //Container for all widgets
         IME::Graphics::UI::GuiContainer guiContainer_;
         //Size of the render target
         IME::Vector2u windowSize_;
+        //Stores all sprites
+        std::vector<IME::Graphics::Sprite> sprites;
+        //Current level
+        int level_;
+        //Remaining pacman lives
+        int pacmanLives_;
     };
 }
 
