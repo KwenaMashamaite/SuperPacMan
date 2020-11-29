@@ -9,7 +9,7 @@
 #include <IME/core/tilemap/TileMap.h>
 #include <IME/core/entity/Entity.h>
 #include <IME/core/physics/TargetGridMover.h>
-#include "../view/IntroView.h"
+#include "../views/IntroView.h"
 #include "../entity/Pellet.h"
 #include <queue>
 

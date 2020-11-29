@@ -10,7 +10,7 @@
 #include <IME/graphics/ui/GuiContainer.h>
 #include <atomic>
 #include <mutex>
-#include "../view/LoadingView.h"
+#include "../views/LoadingView.h"
 
 namespace SuperPacMan {
     class LoadingState : public IME::State {

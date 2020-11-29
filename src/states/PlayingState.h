@@ -10,7 +10,7 @@
 #include <IME/graphics/ui/GuiContainer.h>
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Sprite.h>
-#include "../view/ScoreView.h"
+#include "../views/ScoreView.h"
 
 namespace SuperPacMan {
     class PlayingState : public IME::State {

@@ -8,10 +8,10 @@ set(SRC_FILES
         animations/FoodAnimation.cpp
         controllers/PacManController.cpp
         controllers/GhostsController.cpp
-        view/LoadingView.cpp
-        view/MainMenuView.cpp
-        view/ScoreView.cpp
-        view/IntroView.cpp
+        views/LoadingView.cpp
+        views/MainMenuView.cpp
+        views/ScoreView.cpp
+        views/IntroView.cpp
         entity/states/StateController.cpp
         common/SpriteContainer.cpp
         entity/Door.cpp

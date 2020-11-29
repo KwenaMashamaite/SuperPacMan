@@ -8,7 +8,7 @@
 #include <IME/core/states/State.h>
 #include <IME/graphics/ui/GuiContainer.h>
 #include <IME/graphics/Sprite.h>
-#include "../view/MainMenuView.h"
+#include "../views/MainMenuView.h"
 
 namespace SuperPacMan {
     class MainMenuState : public IME::State {
