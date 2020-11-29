@@ -1,8 +1,9 @@
 #include "Game.h"
 #include "states/LoadingState.h"
 #include "states/IntroState.h"
-#include "states/PlayingState.h"
+#include "states/MainMenuState.h"
 #include "common/SpriteContainer.h"
+#include "scoreboard/Scoreboard.h"
 #include <IME/core/event/EventDispatcher.h>
 #include <memory>
 
@@ -30,8 +31,8 @@ void createFruitSprites() {
         rectPos.x += rectSize.x + rectSpacing;
     }
 
-    //Key
     createSprite("key", "spritesheet.png", {151, 35, rectSize.x, rectSize.y});
+    createSprite("life", "spritesheet.png", {440, 52, rectSize.x, rectSize.y});
 }
 
 void createGridSprites() {
@@ -58,7 +59,18 @@ namespace SuperPacMan {
 
     void Game::initialize() {
         engine_.init();
-        engine_.pushState(std::make_shared<PlayingState>(engine_));
+
+        auto scoreboard = Scoreboard("textFiles/highscores.txt");
+        scoreboard.load();
+
+        //Create data that should be accessible to all states
+        engine_.getPersistentData().addProperty({"high-score", "INT", scoreboard.getTopScore().getValue()});
+        engine_.getPersistentData().addProperty({"level", "INT", 1});
+        engine_.getPersistentData().addProperty({"score", "INT", 0});
+        engine_.getPersistentData().addProperty({"lives", "INT", 4}); //Initially pacman has four lives
+
+        //Push the initial states (States will be entered in reverse order: loading->intro->mainMenu)
+        engine_.pushState(std::make_shared<MainMenuState>(engine_));
         engine_.pushState(std::make_shared<IntroState>(engine_));
         engine_.pushState(std::make_shared<LoadingState>(engine_));
 

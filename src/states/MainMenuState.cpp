@@ -1,5 +1,6 @@
 #include "MainMenuState.h"
 #include "PlayingState.h"
+#include "LevelStartState.h"
 #include <IME/core/loop/Engine.h>
 #include <IME/utility/DiskFileReader.h>
 #include <IME/graphics/ui/widgets/Button.h>
@@ -18,7 +19,7 @@ namespace SuperPacMan {
     {}
 
     void MainMenuState::initialize() {
-        mainMenuView_.init();
+        mainMenuView_.init(engine().getPersistentData().getValueFor<int>("high-score"));
         initUIButtonsBehavior();
         isInitialized_ = true;
     }
@@ -29,6 +30,7 @@ namespace SuperPacMan {
         navButtonsContainer->getWidget("play-btn")->on("click", IME::Callback<>([this] {
             engine().popState();
             engine().pushState(std::move(std::make_shared<PlayingState>(engine())));
+            engine().pushState(std::move(std::make_shared<LevelStartState>(engine())));
         }));
 
         //CONTROLS BUTTON
@@ -64,7 +66,7 @@ namespace SuperPacMan {
     }
 
     void MainMenuState::update(float deltaTime) {
-
+        mainMenuView_.update(deltaTime);
     }
 
     void MainMenuState::fixedUpdate(float deltaTime) {

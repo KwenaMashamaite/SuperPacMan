@@ -53,7 +53,7 @@ namespace SuperPacMan {
         view_.getWidget<IWidget>("loadingText")->setText("Loading fonts...");
         lock.unlock();
         IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Font, {
-            "namco.ttf", "pacfont.ttf"}, updateProgressBar);
+            "namco.ttf", "AtariClassicExtrasmooth-LxZy.ttf"}, updateProgressBar);
 
         //LOAD TEXTURES
         lock.lock();
@@ -69,7 +69,7 @@ namespace SuperPacMan {
         lock.unlock();
         IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::SoundBuffer, {
             "doorBroken.wav", "fruitEaten.wav", "ghostEaten.wav", "pacmanDying.wav",
-            "powerPelletEaten.wav", "superPelletEaten.wav"
+            "powerPelletEaten.wav", "superPelletEaten.wav", "beginning.wav"
         }, updateProgressBar);
 
         //LOAD MUSIC
@@ -77,7 +77,7 @@ namespace SuperPacMan {
         view_.getWidget<IME::Graphics::UI::Label>("loadingText")->setText("Loading music...");
         lock.unlock();
         IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Music, {
-            "pacman_beginning.wav", "searching.ogg", "pacman_intermission.ogg"
+            "searching.ogg", "pacman_intermission.ogg"
         }, updateProgressBar);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(500));

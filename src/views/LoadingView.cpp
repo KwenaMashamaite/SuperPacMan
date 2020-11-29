@@ -24,17 +24,17 @@ namespace SuperPacMan {
         guiContainer_.addWidget(gameTitle, "gameTitle");
 
         mascot_.setTexture("pacman_mascot.png");
-        mascot_.setOrigin(mascot_.getSize().x / 2.0f, mascot_.getSize().y / 2.0f);
+        mascot_.setOrigin(mascot_.getLocalBounds().width / 2.0f, mascot_.getLocalBounds().height / 2.0f);
         mascot_.scale(0.4f, 0.4f);
         mascot_.setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
 
         auto poweredByText = std::make_shared<IME::Graphics::UI::Label>("Powered by");
         poweredByText->getRenderer()->setTextStyle(IME::TextStyle::Italic);
         poweredByText->setOrigin(0.5f, 0.0f);
-        poweredByText->setPosition(mascot_.getPosition().x, mascot_.getPosition().y + mascot_.getSize().y / 4.5f);
+        poweredByText->setPosition(mascot_.getPosition().x, mascot_.getPosition().y + mascot_.getLocalBounds().height / 4.5f);
         guiContainer_.addWidget(poweredByText, "poweredBy");
         engineLogo_.setTexture("IME_logo.png");
-        engineLogo_.setOrigin(engineLogo_.getSize().x / 2.0f, 0.0f);
+        engineLogo_.setOrigin(engineLogo_.getLocalBounds().width / 2.0f, 0.0f);
         engineLogo_.scale(0.9f, 0.9f);
         engineLogo_.setPosition(poweredByText->getPosition().x, poweredByText->getPosition().y + poweredByText->getSize().y);
     }

@@ -1,5 +1,6 @@
 #include "PlayingState.h"
 #include <IME/core/loop/Engine.h>
+#include <IME/graphics/ui/widgets/HorizontalLayout.h>
 #include "../entities/AllEntities.h"
 #include "../common/SpriteContainer.h"
 #include "../common/Drawer.h"
@@ -10,13 +11,18 @@ using namespace IME::Graphics;
 namespace SuperPacMan {
     PlayingState::PlayingState(IME::Engine &engine) :
         State(engine),
-        scoreView_(engine.getRenderTarget()),
-        isInitialized_(false), level_{1u},
+        commonView_(engine.getRenderTarget(), 1, 4),
+        isInitialized_(false),
+        level_{1u},
         grid_{20, 20}
     {}
 
     void PlayingState::initialize() {
-        scoreView_.init();
+        commonView_.init();
+        auto scoresValueContainer = commonView_.getWidget<UI::HorizontalLayout>("scoresValueContainer");
+        scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(
+            engine().getPersistentData().getValueFor<int>("high-score")));
+
         createGrid();
         objects_ = Utils::createObjects(grid_);
         isInitialized_ = true;
@@ -32,6 +38,8 @@ namespace SuperPacMan {
     }
 
     void PlayingState::update(float deltaTime) {
+        commonView_.update(deltaTime);
+
         for (auto& pellet : objects_.at("pellets"))
             std::dynamic_pointer_cast<Pellet>(pellet)->update(deltaTime);
         for (auto& ghost : objects_.at("ghosts"))
@@ -45,7 +53,7 @@ namespace SuperPacMan {
     }
 
     void PlayingState::render(IME::Graphics::Window &renderTarget) {
-        scoreView_.render(renderTarget);
+        commonView_.render(renderTarget);
         //Draw the grid (Walls and doors)
         grid_.draw(renderTarget);
         static auto objectsDrawer = Drawer(renderTarget);

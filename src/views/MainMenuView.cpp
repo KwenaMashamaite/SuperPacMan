@@ -1,5 +1,6 @@
 #include "MainMenuView.h"
 #include <IME/graphics/ui/widgets/VerticalLayout.h>
+#include <IME/graphics/ui/widgets/HorizontalLayout.h>
 #include <IME/graphics/ui/widgets/Button.h>
 #include <IME/graphics/ui/widgets/Label.h>
 #include <IME/graphics/ui/widgets/BitmapButton.h>
@@ -8,15 +9,17 @@ using namespace IME::Graphics;
 
 namespace SuperPacMan {
     MainMenuView::MainMenuView(IME::Graphics::Window& renderTarget) :
-        scoreView_(renderTarget),
+        commonView_(renderTarget, 1, 0),
         mainViewContainer_{renderTarget},
-        infoViewContainer_{renderTarget}, 
+        infoViewContainer_{renderTarget},
         currentView_(SubView::Main),
         windowSize_(renderTarget.getSize())
     {}
 
-    void MainMenuView::init() {
-        scoreView_.init();
+    void MainMenuView::init(int highscore) {
+        commonView_.init();
+        auto scoresValueContainer = commonView_.getWidget<UI::HorizontalLayout>("scoresValueContainer");
+        scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highscore));
         createLogo();
         createButtons();
 
@@ -34,7 +37,7 @@ namespace SuperPacMan {
 
     void MainMenuView::createLogo() {
         pacmanLogo_.setTexture("pacman_logo.png");
-        pacmanLogo_.setOrigin(pacmanLogo_.getSize().x / 2.0f, 0.0f);
+        pacmanLogo_.setOrigin(pacmanLogo_.getLocalBounds().width / 2.0f, 0.0f);
         pacmanLogo_.scale(0.75, 0.75);
         pacmanLogo_.setPosition(windowSize_.x / 2.0f, windowSize_.y * 13.0f / 100.0f);
     }
@@ -67,7 +70,7 @@ namespace SuperPacMan {
     void MainMenuView::render(IME::Graphics::Window &renderTarget) {
         switch (currentView_) {
             case SubView::Main:
-                scoreView_.render(renderTarget);
+                commonView_.render(renderTarget);
                 renderTarget.draw(pacmanLogo_);
                 mainViewContainer_.draw();
                 break;
@@ -75,6 +78,10 @@ namespace SuperPacMan {
                 infoViewContainer_.draw();
                 break;
         }
+    }
+
+    void MainMenuView::update(float deltaTime) {
+        commonView_.update(deltaTime);
     }
 
     void MainMenuView::handleEvent(sf::Event event) {

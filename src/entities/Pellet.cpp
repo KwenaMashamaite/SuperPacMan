@@ -12,7 +12,7 @@ namespace SuperPacMan {
             sprite_.addAnimation(animation);
 
         sprite_.switchAnimation("blink");
-        sprite_.setOrigin(sprite_.getSize().x / 2.0f, sprite_.getSize().y / 2.0f);
+        sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
         sprite_.scale(2.0f, 2.0f);
         sprite_.setPosition(getPosition().x + getSize().x / 2.0f,getPosition().y + getSize().y / 2.0f);
 

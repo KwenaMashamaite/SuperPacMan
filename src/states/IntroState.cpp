@@ -24,7 +24,7 @@ namespace SuperPacMan {
     void IntroState::initialize() {
         createGrid();
         createObjects();
-        introView_.init();
+        introView_.init(engine().getPersistentData().getValueFor<int>("high-score"));
         pacmanController_ = std::make_unique<IME::TargetGridMover>(grid_, objects_.at("pacman")[0]);
         pacmanController_->setDestination(IME::Index{8, 0});
         pacmanController_->onDestinationReached([this](IME::Graphics::Tile) {
@@ -100,6 +100,7 @@ namespace SuperPacMan {
     }
 
     void IntroState::update(float deltaTime) {
+        introView_.update(deltaTime);
         pacmanController_->update(deltaTime);
     }
 

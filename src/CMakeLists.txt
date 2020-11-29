@@ -5,12 +5,13 @@ set(SRC_FILES
         animations/GhostAnimations.cpp
         animations/PacManAnimations.cpp
         animations/PelletAnimations.cpp
-        animations/FoodAnimation.cpp
+        animations/FruitAnimation.cpp
         controllers/PacManController.cpp
         controllers/GhostsController.cpp
         views/LoadingView.cpp
         views/MainMenuView.cpp
-        views/ScoreView.cpp
+        views/LevelStartView.cpp
+        views/CommonView.cpp
         views/IntroView.cpp
         entities/states/StateController.cpp
         common/SpriteContainer.cpp
@@ -27,6 +28,7 @@ set(SRC_FILES
         states/IntroState.cpp
         states/LoadingState.cpp
         states/MainMenuState.cpp
+        states/LevelStartState.cpp
         states/PlayingState.cpp
         utils/Utils.cpp
         )

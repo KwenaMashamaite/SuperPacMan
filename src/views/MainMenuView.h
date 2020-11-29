@@ -7,7 +7,7 @@
 
 #include <IME/graphics/Sprite.h>
 #include <IME/graphics/ui/GuiContainer.h>
-#include "ScoreView.h"
+#include "CommonView.h"
 
 namespace SuperPacMan {
     /**
@@ -20,11 +20,17 @@ namespace SuperPacMan {
 
     class MainMenuView {
     public:
+        /**
+         * @brief Construct view
+         * @param renderTarget Target to render view on
+         */
         explicit MainMenuView(IME::Graphics::Window& renderTarget);
+
         /**
          * @brief Initialize the view
+         * @param highscore Highest score from previous gameplay
          */
-        void init();
+        void init(int highscore);
 
         /**
          * @brief Render the view
@@ -37,6 +43,12 @@ namespace SuperPacMan {
          * @param event Event to be handled
          */
         void handleEvent(sf::Event event);
+
+        /**
+         * @brief Update view
+         * @param deltaTime Time passed since view was last updated
+         */
+        void update(float deltaTime);
 
         /**
          * @brief Switch to a different view within this view
@@ -73,7 +85,7 @@ namespace SuperPacMan {
 
     private:
         //
-        ScoreView scoreView_;
+        CommonView commonView_;
         //Container for main view widgets
         IME::Graphics::UI::GuiContainer mainViewContainer_;
         //Container for info view widgets

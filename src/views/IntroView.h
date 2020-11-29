@@ -5,7 +5,7 @@
 #ifndef INTROVIEW_H
 #define INTROVIEW_H
 
-#include "ScoreView.h"
+#include "CommonView.h"
 
 namespace SuperPacMan {
     class IntroView {
@@ -18,8 +18,9 @@ namespace SuperPacMan {
 
         /**
          * @brief Initialize the view
+         * @param highscore Highest score from last gameplay
          */
-        void init();
+        void init(int highscore);
 
         /**
          * @brief Render the view
@@ -28,13 +29,13 @@ namespace SuperPacMan {
         void render(IME::Graphics::Window& renderTarget);
 
         /**
-         * @brief Pass an event to be handled by the view
-         * @param event Event to be handled
+         * @brief Update view
+         * @param deltaTime Time passed since view was last updated
          */
-        void handleEvent(sf::Event event);
+        void update(float deltaTime);
 
     private:
-        ScoreView scoreView_;
+        CommonView commonView_;
         IME::Graphics::UI::GuiContainer guiContainer_;
         IME::Vector2u windowSize_;
     };
