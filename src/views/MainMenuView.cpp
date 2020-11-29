@@ -8,15 +8,15 @@ using namespace IME::Graphics;
 
 namespace SuperPacMan {
     MainMenuView::MainMenuView(IME::Graphics::Window& renderTarget) :
-        scoreView_(renderTarget),
-        mainViewContainer_{renderTarget},
-        infoViewContainer_{renderTarget}, 
-        currentView_(SubView::Main),
-        windowSize_(renderTarget.getSize())
+            commonView_(renderTarget),
+            mainViewContainer_{renderTarget},
+            infoViewContainer_{renderTarget},
+            currentView_(SubView::Main),
+            windowSize_(renderTarget.getSize())
     {}
 
     void MainMenuView::init() {
-        scoreView_.init();
+        commonView_.init();
         createLogo();
         createButtons();
 
@@ -67,7 +67,7 @@ namespace SuperPacMan {
     void MainMenuView::render(IME::Graphics::Window &renderTarget) {
         switch (currentView_) {
             case SubView::Main:
-                scoreView_.render(renderTarget);
+                commonView_.render(renderTarget);
                 renderTarget.draw(pacmanLogo_);
                 mainViewContainer_.draw();
                 break;

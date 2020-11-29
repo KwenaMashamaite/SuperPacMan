@@ -5,13 +5,13 @@ using namespace IME::Graphics;
 
 namespace SuperPacMan {
     IntroView::IntroView(Window &renderTarget) :
-        scoreView_(renderTarget),
-        guiContainer_(renderTarget),
-        windowSize_(renderTarget.getSize())
+            commonView_(renderTarget),
+            guiContainer_(renderTarget),
+            windowSize_(renderTarget.getSize())
     {}
 
     void IntroView::init() {
-        scoreView_.init();
+        commonView_.init();
 
         guiContainer_.setFont("namco.ttf");
         guiContainer_.setTextSize(15.0f);
@@ -50,7 +50,7 @@ namespace SuperPacMan {
     }
 
     void IntroView::render(IME::Graphics::Window &renderTarget) {
-        scoreView_.render(renderTarget);
+        commonView_.render(renderTarget);
         guiContainer_.draw();
     }
 

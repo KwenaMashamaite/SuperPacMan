@@ -5,7 +5,7 @@
 #ifndef INTROVIEW_H
 #define INTROVIEW_H
 
-#include "ScoreView.h"
+#include "CommonView.h"
 
 namespace SuperPacMan {
     class IntroView {
@@ -34,7 +34,7 @@ namespace SuperPacMan {
         void handleEvent(sf::Event event);
 
     private:
-        ScoreView scoreView_;
+        CommonView commonView_;
         IME::Graphics::UI::GuiContainer guiContainer_;
         IME::Vector2u windowSize_;
     };

@@ -7,7 +7,7 @@
 
 #include <IME/graphics/Sprite.h>
 #include <IME/graphics/ui/GuiContainer.h>
-#include "ScoreView.h"
+#include "CommonView.h"
 
 namespace SuperPacMan {
     /**
@@ -73,7 +73,7 @@ namespace SuperPacMan {
 
     private:
         //
-        ScoreView scoreView_;
+        CommonView commonView_;
         //Container for main view widgets
         IME::Graphics::UI::GuiContainer mainViewContainer_;
         //Container for info view widgets

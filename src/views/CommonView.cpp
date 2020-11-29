@@ -1,16 +1,16 @@
-#include "ScoreView.h"
+#include "CommonView.h"
 #include <IME/graphics/ui/widgets/Label.h>
 #include <IME/graphics/ui/widgets/HorizontalLayout.h>
 #include <IME/graphics/Colour.h>
 
 namespace SuperPacMan {
-    ScoreView::ScoreView(IME::Graphics::Window &renderTarget) :
+    CommonView::CommonView(IME::Graphics::Window &renderTarget) :
         guiContainer_(renderTarget), windowSize_(renderTarget.getSize())
     {
         guiContainer_.setFont("namco.ttf");
     }
 
-    void ScoreView::init() {
+    void CommonView::init() {
         auto tileSize = 20;
         auto scoresTextContainer = std::make_shared<IME::Graphics::UI::HorizontalLayout>(windowSize_.x / 1.8f, tileSize);
         scoresTextContainer->setPosition({40.0f, 0.0f});
@@ -36,7 +36,7 @@ namespace SuperPacMan {
         guiContainer_.addWidget(std::move(scoresValueContainer), "scoresValueContainer");
     }
 
-    void ScoreView::render(IME::Graphics::Window &renderTarget) {
+    void CommonView::render(IME::Graphics::Window &renderTarget) {
         guiContainer_.draw();
     }
 }

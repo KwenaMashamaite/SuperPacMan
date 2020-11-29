@@ -9,14 +9,14 @@ using namespace IME::Graphics;
 
 namespace SuperPacMan {
     PlayingState::PlayingState(IME::Engine &engine) :
-        State(engine),
-        scoreView_(engine.getRenderTarget()),
-        isInitialized_(false), level_{1u},
-        grid_{20, 20}
+            State(engine),
+            commonView_(engine.getRenderTarget()),
+            isInitialized_(false), level_{1u},
+            grid_{20, 20}
     {}
 
     void PlayingState::initialize() {
-        scoreView_.init();
+        commonView_.init();
         createGrid();
         objects_ = Utils::createObjects(grid_);
         isInitialized_ = true;
@@ -45,7 +45,7 @@ namespace SuperPacMan {
     }
 
     void PlayingState::render(IME::Graphics::Window &renderTarget) {
-        scoreView_.render(renderTarget);
+        commonView_.render(renderTarget);
         //Draw the grid (Walls and doors)
         grid_.draw(renderTarget);
         static auto objectsDrawer = Drawer(renderTarget);

@@ -8,17 +8,17 @@ using namespace IME::Graphics::UI;
 
 namespace SuperPacMan {
     LevelStartView::LevelStartView(IME::Graphics::Window& renderTarget, unsigned int level, int score, int highscore) :
-        guiContainer_{renderTarget},
-        windowSize_{renderTarget.getSize()},
-        scoreView_{renderTarget},
-        level_{level},
-        score_{score},
-        highscore_{highscore}
+            guiContainer_{renderTarget},
+            windowSize_{renderTarget.getSize()},
+            commonView_{renderTarget},
+            level_{level},
+            score_{score},
+            highscore_{highscore}
     {}
 
     void LevelStartView::init() {
-        scoreView_.init();
-        auto scoresValueContainer = scoreView_.getWidget<HorizontalLayout>("scoresValueContainer");
+        commonView_.init();
+        auto scoresValueContainer = commonView_.getWidget<HorizontalLayout>("scoresValueContainer");
         scoresValueContainer->getWidget("scoreValue")->setText(std::to_string(score_));
         scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highscore_));
 
@@ -45,7 +45,7 @@ namespace SuperPacMan {
     }
 
     void LevelStartView::render(IME::Graphics::Window &renderTarget) {
-        scoreView_.render(renderTarget);
+        commonView_.render(renderTarget);
         guiContainer_.draw();
         renderTarget.draw(fruit_);
     }

@@ -1,21 +1,28 @@
 /**
- * @brief
+ * @brief Defines the view that appears across all states
+ *
+ * This view includes the score and high score displayed at the top of
+ * the screen, the flashing 1 UP text at the top left edge of the screen,
+ * Pacman's current number of lives at the bottom left edge of the screen
+ * the level fruits at the bottom right of the screen
+ *
+ * This view is used by all game states except the loading state
  */
 
-#ifndef SCOREVIEW_H
-#define SCOREVIEW_H
+#ifndef COMMONVIEW_H
+#define COMMONVIEW_H
 
 #include <IME/graphics/Window.h>
 #include <IME/graphics/ui/GuiContainer.h>
 
 namespace SuperPacMan {
-    class ScoreView {
+    class CommonView {
     public:
         /**
          * @brief Create view
          * @param renderTarget Target to render view on
          */
-        explicit ScoreView(IME::Graphics::Window& renderTarget);
+        explicit CommonView(IME::Graphics::Window& renderTarget);
 
         /**
          * @brief Initialize the view

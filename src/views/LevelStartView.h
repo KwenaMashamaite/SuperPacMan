@@ -6,7 +6,7 @@
 #define LEVELSTARTVIEW_H
 
 #include <IME/graphics/Sprite.h>
-#include "ScoreView.h"
+#include "CommonView.h"
 
 namespace SuperPacMan {
     class LevelStartView {
@@ -37,7 +37,7 @@ namespace SuperPacMan {
         //Size of the render target
         IME::Vector2u windowSize_;
         //View to show the scores
-        ScoreView scoreView_;
+        CommonView commonView_;
         //Current level fruit
         IME::Graphics::Sprite fruit_;
         //Current level

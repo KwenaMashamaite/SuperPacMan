@@ -10,7 +10,7 @@
 #include <IME/graphics/ui/GuiContainer.h>
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Sprite.h>
-#include "../views/ScoreView.h"
+#include "../views/CommonView.h"
 
 namespace SuperPacMan {
     class PlayingState : public IME::State {
@@ -79,7 +79,7 @@ namespace SuperPacMan {
         using EntityContainer = std::vector<std::shared_ptr<IME::Entity>>;
 
         //
-        ScoreView scoreView_;
+        CommonView commonView_;
         //Initialization flag
         bool isInitialized_;
         //The current level

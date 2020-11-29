@@ -11,7 +11,7 @@ set(SRC_FILES
         views/LoadingView.cpp
         views/MainMenuView.cpp
         views/LevelStartView.cpp
-        views/ScoreView.cpp
+        views/CommonView.cpp
         views/IntroView.cpp
         entities/states/StateController.cpp
         common/SpriteContainer.cpp
