@@ -10,8 +10,10 @@ namespace SuperPacMan {
         windowSize_(renderTarget.getSize())
     {}
 
-    void IntroView::init() {
+    void IntroView::init(int highscore) {
         commonView_.init();
+        auto scoresValueContainer = commonView_.getWidget<UI::HorizontalLayout>("scoresValueContainer");
+        scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highscore));
 
         guiContainer_.setFont("namco.ttf");
         auto textContainer = std::make_shared<UI::VerticalLayout>(500, 250);
@@ -35,7 +37,7 @@ namespace SuperPacMan {
 
         auto companyName = std::make_shared<UI::Label>("namco");
         companyName->getRenderer()->setFont("AtariClassicExtrasmooth-LxZy.ttf");
-        companyName->setTextSize(10);
+        companyName->setTextSize(16);
         companyName->setOrigin(0.5f, 1.0f);
         companyName->getRenderer()->setTextColour(IME::Colour::Red);
         companyName->setPosition(windowSize_.x / 2.0f, textContainer->getPosition().y + textContainer->getSize().y);

@@ -19,7 +19,7 @@ namespace SuperPacMan {
     {}
 
     void MainMenuState::initialize() {
-        mainMenuView_.init();
+        mainMenuView_.init(engine().getPersistentData().getValueFor<int>("high-score"));
         initUIButtonsBehavior();
         isInitialized_ = true;
     }

@@ -1,5 +1,6 @@
 #include "MainMenuView.h"
 #include <IME/graphics/ui/widgets/VerticalLayout.h>
+#include <IME/graphics/ui/widgets/HorizontalLayout.h>
 #include <IME/graphics/ui/widgets/Button.h>
 #include <IME/graphics/ui/widgets/Label.h>
 #include <IME/graphics/ui/widgets/BitmapButton.h>
@@ -15,8 +16,10 @@ namespace SuperPacMan {
         windowSize_(renderTarget.getSize())
     {}
 
-    void MainMenuView::init() {
+    void MainMenuView::init(int highscore) {
         commonView_.init();
+        auto scoresValueContainer = commonView_.getWidget<UI::HorizontalLayout>("scoresValueContainer");
+        scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highscore));
         createLogo();
         createButtons();
 

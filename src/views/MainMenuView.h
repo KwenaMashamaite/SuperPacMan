@@ -20,11 +20,17 @@ namespace SuperPacMan {
 
     class MainMenuView {
     public:
+        /**
+         * @brief Construct view
+         * @param renderTarget Target to render view on
+         */
         explicit MainMenuView(IME::Graphics::Window& renderTarget);
+
         /**
          * @brief Initialize the view
+         * @param highscore Highest score from previous gameplay
          */
-        void init();
+        void init(int highscore);
 
         /**
          * @brief Render the view

@@ -1,5 +1,6 @@
 #include "PlayingState.h"
 #include <IME/core/loop/Engine.h>
+#include <IME/graphics/ui/widgets/HorizontalLayout.h>
 #include "../entities/AllEntities.h"
 #include "../common/SpriteContainer.h"
 #include "../common/Drawer.h"
@@ -18,6 +19,10 @@ namespace SuperPacMan {
 
     void PlayingState::initialize() {
         commonView_.init();
+        auto scoresValueContainer = commonView_.getWidget<UI::HorizontalLayout>("scoresValueContainer");
+        scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(
+            engine().getPersistentData().getValueFor<int>("high-score")));
+
         createGrid();
         objects_ = Utils::createObjects(grid_);
         isInitialized_ = true;

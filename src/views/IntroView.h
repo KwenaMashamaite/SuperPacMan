@@ -18,8 +18,9 @@ namespace SuperPacMan {
 
         /**
          * @brief Initialize the view
+         * @param highscore Highest score from last gameplay
          */
-        void init();
+        void init(int highscore);
 
         /**
          * @brief Render the view
