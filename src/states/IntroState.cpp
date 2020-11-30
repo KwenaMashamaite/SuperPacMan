@@ -38,11 +38,18 @@ namespace SuperPacMan {
         pacmanController_->startMovement();
 
         pacmanController_->onCollectableCollision([this](auto target, auto colletable) {
-            if (colletable->getClassType() == "Fruit")
+            if (colletable->getClassType() == "Fruit") {
+                engine().getAudioManager().play(IME::AudioType::Sfx, "WakkaWakka.wav");
                 std::dynamic_pointer_cast<Fruit>(colletable)->eat();
-            else if (colletable->getClassType() == "Pellet")
-                std::dynamic_pointer_cast<Pellet>(colletable)->eat();
-            else if (colletable->getClassType() == "Key") {
+            } else if (colletable->getClassType() == "Pellet") {
+                auto pellet = std::dynamic_pointer_cast<Pellet>(colletable);
+                if (pellet->getPelletType() == PelletType::PowerPellet)
+                    engine().getAudioManager().play(IME::AudioType::Sfx, "powerPelletEaten.wav");
+                else
+                    engine().getAudioManager().play(IME::AudioType::Sfx, "superPelletEaten.wav");
+                pellet->eat();
+            } else if (colletable->getClassType() == "Key") {
+                engine().getAudioManager().play(IME::AudioType::Sfx, "keyEaten.wav");
                 for (const auto& doorPtr : objects_.at("doors")) {
                     auto door = std::dynamic_pointer_cast<Door>(doorPtr);
                     if (!door->isLocked())
