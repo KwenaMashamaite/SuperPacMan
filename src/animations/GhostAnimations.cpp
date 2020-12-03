@@ -67,16 +67,16 @@ namespace SuperPacMan {
     }
 
     void GhostAnimations::createEatenAnimations() {
-        createAnimation("goingLeftEaten", {389, 86});
-        createAnimation("goingRightEaten", {423, 86});
-        createAnimation("goingUpEaten", {406, 86});
-        createAnimation("goingDownEaten", {440, 86});
+        createAnimation("goingLeftEaten", {389, 86}, IME::Arrangement::Vertical);
+        createAnimation("goingRightEaten", {423, 86}, IME::Arrangement::Vertical);
+        createAnimation("goingUpEaten", {406, 86}, IME::Arrangement::Vertical);
+        createAnimation("goingDownEaten", {440, 86}, IME::Arrangement::Vertical);
     }
 
-    void GhostAnimations::createAnimation(const std::string &name, IME::Vector2i startPos) {
+    void GhostAnimations::createAnimation(const std::string &name, IME::Vector2i startPos, IME::Arrangement arrangement) {
         auto anim = std::make_shared<IME::Animation>(name, "spritesheet.png", movementAnimDuration);
         anim->setLoop(true);
-        anim->addFrames(startPos, frameSize, 2);
+        anim->addFrames(startPos, frameSize, 2, 1, arrangement);
         animations_.push_back(std::move(anim));
     }
 

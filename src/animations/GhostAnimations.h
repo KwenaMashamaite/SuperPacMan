@@ -46,8 +46,10 @@ namespace SuperPacMan {
          * @brief Create a movement animation
          * @param name Name of the animation
          * @param startPos Starting position of the frame on the spritesheet
+         * @param arrangement Arrangement of the animation frames on the spritesheet
          */
-        void createAnimation(const std::string& name, IME::Vector2i startPos);
+        void createAnimation(const std::string& name, IME::Vector2i startPos,
+            IME::Arrangement arrangement = IME::Arrangement::Horizontal);
 
     private:
         //Stores all the created animations
