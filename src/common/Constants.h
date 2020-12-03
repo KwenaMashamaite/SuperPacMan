@@ -15,6 +15,7 @@ namespace SuperPacMan {
         static constexpr auto PinkySpawnTile = IME::Index{9, 9};
         static constexpr auto InkySpawnTile = IME::Index{9, 13};
         static constexpr auto ClydeSpawnTile = IME::Index{11, 11};
+        static constexpr auto EatenGhostRespawnTile = IME::Index{11, 11};
 
         //Speed
         static constexpr auto PacManNormalSpeed = 80.0f;
