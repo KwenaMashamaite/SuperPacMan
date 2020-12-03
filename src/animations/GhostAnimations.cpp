@@ -21,40 +21,40 @@ namespace SuperPacMan {
             case Ghost::Name::Blinky:
                 createAnimation("goingLeft", {100, 69});
                 createAnimation("goingLeftFlat", {236, 69});
-                createAnimation("goingRight", {134, 69});
-                createAnimation("goingRightFlat", {270, 69});
-                createAnimation("goingUp", {168, 69});
-                createAnimation("goingUpFlat", {304, 69});
+                createAnimation("goingRight", {168, 69});
+                createAnimation("goingRightFlat", {304, 69});
+                createAnimation("goingUp", {134, 69});
+                createAnimation("goingUpFlat", {270, 69});
                 createAnimation("goingDown", {202, 69});
                 createAnimation("goingDownFlat", {338, 69});
                 break;
             case Ghost::Name::Pinky:
                 createAnimation("goingLeft", {100, 86});
                 createAnimation("goingLeftFlat", {236, 86});
-                createAnimation("goingRight", {134, 86});
-                createAnimation("goingRightFlat", {270, 86});
-                createAnimation("goingUp", {168, 86});
-                createAnimation("goingUpFlat", {304, 86});
+                createAnimation("goingRight", {168, 86});
+                createAnimation("goingRightFlat", {304, 86});
+                createAnimation("goingUp", {134, 86});
+                createAnimation("goingUpFlat", {270, 86});
                 createAnimation("goingDown", {202, 86});
                 createAnimation("goingDownFlat", {338, 86});
                 break;
             case Ghost::Name::Inky:
                 createAnimation("goingLeft", {100, 103});
                 createAnimation("goingLeftFlat", {236, 103});
-                createAnimation("goingRight", {134, 103});
-                createAnimation("goingRightFlat", {270, 103});
-                createAnimation("goingUp", {168, 103});
-                createAnimation("goingUpFlat", {304, 103});
+                createAnimation("goingRight", {168, 103});
+                createAnimation("goingRightFlat", {304, 103});
+                createAnimation("goingUp", {134, 103});
+                createAnimation("goingUpFlat", {270, 103});
                 createAnimation("goingDown", {202, 103});
                 createAnimation("goingDownFlat", {338, 103});
                 break;
             case Ghost::Name::Clyde:
                 createAnimation("goingLeft", {100, 120});
                 createAnimation("goingLeftFlat", {236, 120});
-                createAnimation("goingRight", {134, 120});
-                createAnimation("goingRightFlat", {270, 120});
-                createAnimation("goingUp", {168, 120});
-                createAnimation("goingUpFlat", {304, 120});
+                createAnimation("goingRight", {168, 120});
+                createAnimation("goingRightFlat", {304, 120});
+                createAnimation("goingUp", {134, 120});
+                createAnimation("goingUpFlat", {270, 120});
                 createAnimation("goingDown", {202, 120});
                 createAnimation("goingDownFlat", {338, 120});
                 break;
