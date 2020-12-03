@@ -5,6 +5,7 @@
 #include "../common/SpriteContainer.h"
 #include "../common/Drawer.h"
 #include "../utils/Utils.h"
+#include "../entities/states/ghost/ScatterState.h"
 
 using namespace IME::Graphics;
 
@@ -25,6 +26,24 @@ namespace SuperPacMan {
 
         createGrid();
         objects_ = Utils::createObjects(grid_);
+
+        for (const auto& ghost : objects_.at("ghosts")) {
+            auto scatterPos = ScatterPosition::TopRightCorner;
+            switch (std::dynamic_pointer_cast<Ghost>(ghost)->getGhostName()) {
+                case Ghost::Name::Blinky:
+                    break;
+                case Ghost::Name::Pinky:
+                    scatterPos = ScatterPosition::TopLeftCorner;
+                    break;
+                case Ghost::Name::Inky:
+                    scatterPos = ScatterPosition::BottomRightCorner;
+                    break;
+                case Ghost::Name::Clyde:
+                    scatterPos = ScatterPosition::BottomLeftCorner;
+                    break;
+            }
+            std::dynamic_pointer_cast<Ghost>(ghost)->pushState(std::make_shared<ScatterState>(scatterPos, ghost, grid_));
+        }
         isInitialized_ = true;
     }
 
