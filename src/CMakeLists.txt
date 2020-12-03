@@ -31,7 +31,10 @@ set(SRC_FILES
         states/LevelStartState.cpp
         states/PlayingState.cpp
         utils/Utils.cpp
-        )
+        entities/states/ghost/GhostIdleState.cpp
+        entities/states/pacman/PacManIdleState.cpp
+
+    )
 
 #Set executables output folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)

@@ -1,6 +1,8 @@
 #include "Utils.h"
 #include "../entities/AllEntities.h"
 #include "../common/Constants.h"
+#include "../entities/states/pacman/PacManIdleState.h"
+#include "../entities/states/ghost/GhostIdleState.h"
 
 /**
  * @brief Get the key id that will open a door at a specific index
@@ -51,6 +53,7 @@ namespace SuperPacMan::Utils {
             } else if (tile.getId() == 'X') { //PacMan
                 auto pacman = std::make_shared<PacMan>(grid.getTileSize());
                 pacman->setSpeed(Constants::PacManNormalSpeed);
+                pacman->pushState(std::make_shared<PacManIdleState>());
                 grid.addChild(pacman, tile.getIndex());
                 objects["pacman"].push_back(std::move(pacman));
             } else if (tile.getId() == 'B' || tile.getId() == 'P' || tile.getId() == 'C' || tile.getId() == 'I') {
@@ -63,6 +66,7 @@ namespace SuperPacMan::Utils {
                     ghostName = Ghost::Name::Inky;
 
                 auto ghost = std::make_shared<Ghost>(ghostName, grid.getTileSize());
+                ghost->pushState(std::make_shared<GhostIdleState>());
                 ghost->setVulnerable(false);
                 grid.addChild(ghost, tile.getIndex());
                 objects["ghosts"].push_back(std::move(ghost));
