@@ -4,7 +4,7 @@
 namespace SuperPacMan {
     void StateController::pushState(std::shared_ptr<IState> state) {
         assert(state && "State cannot be null");
-        state->onStart();
+        state->onEntry();
         states_.push(std::move(state));
     }
 

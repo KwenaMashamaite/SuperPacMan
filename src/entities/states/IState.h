@@ -11,10 +11,10 @@ namespace SuperPacMan {
         /**
          * @brief Initialize the state
          *
-         * This function will be called by the FSM before a state is entered
+         * This function will be called by the FSM when a state is entered
          * for the first time
          */
-        virtual void onStart() = 0;
+        virtual void onEntry() = 0;
 
         /**
          * @brief update the state
