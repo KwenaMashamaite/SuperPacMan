@@ -64,6 +64,19 @@ class Ghost : public IME::Entity, public IME::IMovable {
         void move() override;
 
         /**
+         * @brief Flatten ghost
+         *
+         * This ghost is only flattened if it alive and not frightened
+         * i.e not eaten and not blue
+         */
+        void flatten();
+
+        /**
+         * @brief Unflatten ghost
+         */
+        void unflatten();
+
+        /**
          * @brief Set the speed of the object
          * @param speed The new speed of the object
          *
@@ -105,6 +118,8 @@ class Ghost : public IME::Entity, public IME::IMovable {
         float speed_;
         //Ghost's graphical representation
         IME::Graphics::AnimatableSprite sprite_;
+        //Flattened state
+        bool isFlattened_;
     };
 }
 

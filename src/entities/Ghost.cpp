@@ -8,7 +8,8 @@ namespace SuperPacMan {
         Entity(boundingRect, IME::Entity::Type::Enemy),
         ghostName_(ghostName),
         isMoving_(false),
-        speed_(Constants::GhostScatterSpeed)
+        speed_(Constants::GhostScatterSpeed),
+        isFlattened_{false}
     {
         setCollidable(true);
         auto animations = GhostAnimations();
@@ -25,6 +26,36 @@ namespace SuperPacMan {
         //Make the sprite track the position of the ghost
         onEvent("positionChanged", IME::Callback<float, float>([this](float x, float y) {
             sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
+        }));
+
+        onEvent("directionChanged", IME::Callback<IME::Direction>([this](IME::Direction newDir) {
+            if (isVulnerable() && isAlive()) //Ghost turned blue - Animations the same in all directions
+                return;
+
+            auto dir = std::string();
+            switch (newDir) {
+                case IME::Direction::None:
+                    return;
+                case IME::Direction::Left:
+                    dir = "Left";
+                    break;
+                case IME::Direction::Right:
+                    dir = "Right";
+                    break;
+                case IME::Direction::Up:
+                    dir = "Up";
+                    break;
+                case IME::Direction::Down:
+                    dir = "Down";
+                    break;
+            }
+
+            if (!isAlive())
+                sprite_.switchAnimation("going" + dir + "Eaten");
+            else if (isFlattened_)
+                sprite_.switchAnimation("going" + dir + "Flat");
+            else
+                sprite_.switchAnimation("going" + dir);
         }));
     }
 
@@ -61,6 +92,15 @@ namespace SuperPacMan {
             stateController_.getCurrentState()->update(deltaTime);
 
         sprite_.updateAnimation(deltaTime);
+    }
+
+    void Ghost::flatten() {
+        if (!isAlive() || !isVulnerable())
+            isFlattened_ = true;
+    }
+
+    void Ghost::unflatten() {
+        isFlattened_ = false;
     }
 
     void Ghost::move() {
