@@ -14,7 +14,7 @@ namespace SuperPacMan {
     }
 
     void LoadingView::createTitle() {
-        auto gameTitle = std::make_shared<IME::Graphics::UI::Label>("Super Pac-Man");
+        auto gameTitle = std::make_shared<IME::UI::Label>("Super Pac-Man");
         gameTitle->setTextSize(45.0f);
         gameTitle->scale(0, 1.5f);
         gameTitle->getRenderer()->setFont("pacfont.ttf");
@@ -28,7 +28,7 @@ namespace SuperPacMan {
         mascot_.scale(0.4f, 0.4f);
         mascot_.setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
 
-        auto poweredByText = std::make_shared<IME::Graphics::UI::Label>("Powered by");
+        auto poweredByText = std::make_shared<IME::UI::Label>("Powered by");
         poweredByText->getRenderer()->setTextStyle(IME::TextStyle::Italic);
         poweredByText->setOrigin(0.5f, 0.0f);
         poweredByText->setPosition(mascot_.getPosition().x, mascot_.getPosition().y + mascot_.getLocalBounds().height / 4.5f);
@@ -40,7 +40,7 @@ namespace SuperPacMan {
     }
 
     void LoadingView::createProgressBar() {
-        auto loadingProgressBar = std::make_shared<IME::Graphics::UI::ProgressBar>();
+        auto loadingProgressBar = std::make_shared<IME::UI::ProgressBar>();
         loadingProgressBar->setText("loading fonts...");
         loadingProgressBar->getRenderer()->setBorderColour({0, 230, 64, 135});
         loadingProgressBar->setSize(loadingProgressBar->getSize().x + 125.0f, loadingProgressBar->getSize().y);
@@ -51,7 +51,7 @@ namespace SuperPacMan {
             loadingProgressBar->setText("100%");
         }));
 
-        auto loadingText = std::make_shared<IME::Graphics::UI::Label>("Loading resources, please wait...");
+        auto loadingText = std::make_shared<IME::UI::Label>("Loading resources, please wait...");
         loadingText->setOrigin(0.5, 0.5);
         loadingText->setPosition(windowSize_.x / 2.0f, windowSize_.y - 3 * loadingProgressBar->getSize().y);
         loadingProgressBar->setPosition(loadingText->getPosition().x, loadingText->getPosition().y + loadingText->getSize().y);

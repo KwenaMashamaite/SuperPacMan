@@ -1,4 +1,5 @@
 #include "FrightenedState.h"
+#include <cassert>
 
 namespace SuperPacMan {
     FrightenedState::FrightenedState(std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid) :

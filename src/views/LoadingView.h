@@ -66,7 +66,7 @@ namespace SuperPacMan {
         //Games mascot
         IME::Graphics::Sprite mascot_;
         //Container for all widgets
-        IME::Graphics::UI::GuiContainer guiContainer_;
+        IME::UI::GuiContainer guiContainer_;
     };
 }
 

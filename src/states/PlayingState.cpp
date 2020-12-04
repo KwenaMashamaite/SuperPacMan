@@ -20,7 +20,7 @@ namespace SuperPacMan {
 
     void PlayingState::initialize() {
         commonView_.init();
-        auto scoresValueContainer = commonView_.getWidget<UI::HorizontalLayout>("scoresValueContainer");
+        auto scoresValueContainer = commonView_.getWidget<IME::UI::HorizontalLayout>("scoresValueContainer");
         scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(
             engine().getPersistentData().getValueFor<int>("high-score")));
 

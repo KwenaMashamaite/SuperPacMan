@@ -8,9 +8,6 @@
 #include <IME/graphics/ui/widgets/Label.h>
 #include <IME/graphics/ui/widgets/VerticalLayout.h>
 
-using namespace IME::Graphics;
-using namespace IME::Graphics::UI;
-
 namespace SuperPacMan {
     MainMenuState::MainMenuState(IME::Engine &engine) :
         State(engine),
@@ -25,7 +22,7 @@ namespace SuperPacMan {
     }
 
     void MainMenuState::initUIButtonsBehavior() {
-        auto navButtonsContainer = mainMenuView_.getWidget<UI::VerticalLayout>("nav-btn-container");
+        auto navButtonsContainer = mainMenuView_.getWidget<IME::UI::VerticalLayout>("nav-btn-container");
         //PLAY BUTTON
         navButtonsContainer->getWidget("play-btn")->on("click", IME::Callback<>([this] {
             engine().popState();
@@ -38,7 +35,7 @@ namespace SuperPacMan {
         IME::Utility::DiskFileReader().readFileInto("textFiles/controls.txt", text);
         navButtonsContainer->getWidget("controls-btn")->on("click", IME::Callback<>([this, info = text.str()]{
             mainMenuView_.setSubView(SubView::Info);
-            mainMenuView_.getWidget<UI::Label>("info-box")->setText(info);
+            mainMenuView_.getWidget<IME::UI::Label>("info-box")->setText(info);
         }));
 
         //EXIT BUTTON
@@ -47,9 +44,9 @@ namespace SuperPacMan {
         }));
 
         //BACK BUTTON
-        mainMenuView_.getWidget<UI::BitmapButton>("back-btn")->on("click", IME::Callback<>([this] {
+        mainMenuView_.getWidget<IME::UI::BitmapButton>("back-btn")->on("click", IME::Callback<>([this] {
             mainMenuView_.setSubView(SubView::Main);
-            mainMenuView_.getWidget<UI::Label>("info-box")->setText("");
+            mainMenuView_.getWidget<IME::UI::Label>("info-box")->setText("");
         }));
     }
 

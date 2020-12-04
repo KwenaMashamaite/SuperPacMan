@@ -1,5 +1,6 @@
 #include "SuperState.h"
 #include "../../../common/Constants.h"
+#include <cassert>
 
 namespace SuperPacMan {
     SuperState::SuperState(std::shared_ptr<IME::Entity> pacman) {

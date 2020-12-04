@@ -8,7 +8,6 @@
 //Warning!! This number must be updated each time a new resource is added to the
 //resources to be loaded
 const auto numOfResources = 15;
-using namespace IME::Graphics::UI;
 
 namespace SuperPacMan {
     LoadingState::LoadingState(IME::Engine &engine) :
@@ -20,7 +19,7 @@ namespace SuperPacMan {
 
     void LoadingState::initialize() {
         view_.init();
-        view_.getWidget<ProgressBar>("loadingProgressBar")->setMaximumValue(numOfResources);
+        view_.getWidget<IME::UI::ProgressBar>("loadingProgressBar")->setMaximumValue(numOfResources);
 
         // Transition to next state if all resources are loaded
         engine().onFrameEnd([this] {
@@ -40,7 +39,7 @@ namespace SuperPacMan {
 
     void LoadingState::loadResources() {
         auto updateProgressBar = [this](const std::string& text) {
-            static auto loadingProgressBar = view_.getWidget<ProgressBar>("loadingProgressBar");
+            static auto loadingProgressBar = view_.getWidget<IME::UI::ProgressBar>("loadingProgressBar");
             //Resources load very fast (less than a second), so we simulate a delay (= numberOfResources * threadSleepTime)
             std::this_thread::sleep_for(std::chrono::milliseconds (200));
             std::lock_guard<std::mutex> lock(mtx_);
@@ -50,14 +49,14 @@ namespace SuperPacMan {
 
         //LOAD FONTS
         std::unique_lock<std::mutex> lock(mtx_);
-        view_.getWidget<IWidget>("loadingText")->setText("Loading fonts...");
+        view_.getWidget<IME::UI::IWidget>("loadingText")->setText("Loading fonts...");
         lock.unlock();
         IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Font, {
             "namco.ttf", "AtariClassicExtrasmooth-LxZy.ttf"}, updateProgressBar);
 
         //LOAD TEXTURES
         lock.lock();
-        view_.getWidget<IME::Graphics::UI::Label>("loadingText")->setText("Loading textures...");
+        view_.getWidget<IME::UI::Label>("loadingText")->setText("Loading textures...");
         lock.unlock();
         IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Texture,  {
             "icon.png", "grids.png", "pacman_logo.png", "spritesheet.png"
@@ -65,7 +64,7 @@ namespace SuperPacMan {
 
         //LOAD SOUND EFFECTS
         lock.lock();
-        view_.getWidget<IME::Graphics::UI::Label>("loadingText")->setText("Loading sound effects...");
+        view_.getWidget<IME::UI::Label>("loadingText")->setText("Loading sound effects...");
         lock.unlock();
         IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::SoundBuffer, {
             "doorBroken.wav", "fruitEaten.wav", "ghostEaten.wav", "pacmanDying.wav",
@@ -74,7 +73,7 @@ namespace SuperPacMan {
 
         //LOAD MUSIC
         lock.lock();
-        view_.getWidget<IME::Graphics::UI::Label>("loadingText")->setText("Loading music...");
+        view_.getWidget<IME::UI::Label>("loadingText")->setText("Loading music...");
         lock.unlock();
         IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Music, {
             "searching.ogg", "pacman_intermission.ogg"

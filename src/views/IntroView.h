@@ -36,7 +36,7 @@ namespace SuperPacMan {
 
     private:
         CommonView commonView_;
-        IME::Graphics::UI::GuiContainer guiContainer_;
+        IME::UI::GuiContainer guiContainer_;
         IME::Vector2u windowSize_;
     };
 }

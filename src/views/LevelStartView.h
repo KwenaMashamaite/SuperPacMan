@@ -41,7 +41,7 @@ namespace SuperPacMan {
 
     private:
         //Container
-        IME::Graphics::UI::GuiContainer guiContainer_;
+        IME::UI::GuiContainer guiContainer_;
         //Size of the render target
         IME::Vector2u windowSize_;
         //View to show the scores

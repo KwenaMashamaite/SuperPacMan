@@ -5,6 +5,7 @@
 #include "../common/Drawer.h"
 #include "../utils/Utils.h"
 #include "../entities/states/pacman/SuperState.h"
+#include "../entities/states/ghost/FrightenedState.h"
 
 using namespace IME::Graphics;
 
@@ -45,9 +46,11 @@ namespace SuperPacMan {
                 std::dynamic_pointer_cast<Fruit>(colletable)->eat();
             } else if (colletable->getClassType() == "Pellet") {
                 auto pellet = std::dynamic_pointer_cast<Pellet>(colletable);
-                if (pellet->getPelletType() == PelletType::PowerPellet)
+                if (pellet->getPelletType() == PelletType::PowerPellet) {
+                    for (const auto& ghost : objects_.at("ghosts"))
+                        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(std::make_shared<FrightenedState>(ghost, grid_));
                     engine().getAudioManager().play(IME::AudioType::Sfx, "powerPelletEaten.wav");
-                else {
+                } else {
                     std::dynamic_pointer_cast<PacMan>(objects_.at("pacman")[0])->pushState(std::make_shared<SuperState>(objects_.at("pacman")[0]));
                     engine().getAudioManager().play(IME::AudioType::Sfx,"superPelletEaten.wav");
                 }

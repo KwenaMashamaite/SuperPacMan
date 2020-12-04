@@ -69,7 +69,7 @@ namespace SuperPacMan {
 
     private:
         //Container for all widgets
-        IME::Graphics::UI::GuiContainer guiContainer_;
+        IME::UI::GuiContainer guiContainer_;
         //Size of the render target
         IME::Vector2u windowSize_;
         //Stores all sprites

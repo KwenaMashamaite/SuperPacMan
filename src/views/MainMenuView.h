@@ -87,9 +87,9 @@ namespace SuperPacMan {
         //
         CommonView commonView_;
         //Container for main view widgets
-        IME::Graphics::UI::GuiContainer mainViewContainer_;
+        IME::UI::GuiContainer mainViewContainer_;
         //Container for info view widgets
-        IME::Graphics::UI::GuiContainer infoViewContainer_;
+        IME::UI::GuiContainer infoViewContainer_;
         //The games logo
         IME::Graphics::Sprite pacmanLogo_;
         //The current view of the main menu

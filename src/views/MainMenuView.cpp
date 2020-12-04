@@ -5,8 +5,6 @@
 #include <IME/graphics/ui/widgets/Label.h>
 #include <IME/graphics/ui/widgets/BitmapButton.h>
 
-using namespace IME::Graphics;
-
 namespace SuperPacMan {
     MainMenuView::MainMenuView(IME::Graphics::Window& renderTarget) :
         commonView_(renderTarget, 1, 0),
@@ -18,19 +16,19 @@ namespace SuperPacMan {
 
     void MainMenuView::init(int highscore) {
         commonView_.init();
-        auto scoresValueContainer = commonView_.getWidget<UI::HorizontalLayout>("scoresValueContainer");
+        auto scoresValueContainer = commonView_.getWidget<IME::UI::HorizontalLayout>("scoresValueContainer");
         scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highscore));
         createLogo();
         createButtons();
 
         //Create text block for showing information when a main menu button is clicked
-        auto infoBox = std::make_shared<UI::Label>();
+        auto infoBox = std::make_shared<IME::UI::Label>();
         infoBox->setOrigin(0.5, 0.5);
         infoBox->setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
         infoViewContainer_.addWidget(std::move(infoBox), "info-box");
 
         //Create button for returning to the main menu from the info panel
-        auto backButton = std::make_shared<UI::BitmapButton>("< Back");
+        auto backButton = std::make_shared<IME::UI::BitmapButton>("< Back");
         backButton->setTextSize(10.0f);
         infoViewContainer_.addWidget(std::move(backButton), "back-btn");
     }
@@ -50,11 +48,11 @@ namespace SuperPacMan {
                 {"options-btn", "OPTIONS"},
                 {"exit-btn", "EXIT"}
         };
-        auto buttonsContainer = std::make_shared<UI::VerticalLayout>(120, 180);
+        auto buttonsContainer = std::make_shared<IME::UI::VerticalLayout>(120, 180);
         buttonsContainer->setOrigin(0.5, 0.5);
         buttonsContainer->getRenderer()->setSpaceBetweenWidgets(20.0f);
         std::for_each(navigationButtons.begin(), navigationButtons.end(), [&](auto& buttonInfo) {
-            auto button = std::make_shared<UI::Button>(buttonInfo.text);
+            auto button = std::make_shared<IME::UI::Button>(buttonInfo.text);
             button->setTextSize(15.0f);
             button->getRenderer()->setBackgroundColour(IME::Colour::Transparent);
             button->getRenderer()->setBorderColour(IME::Colour::Transparent);
