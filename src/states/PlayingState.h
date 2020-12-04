@@ -10,6 +10,7 @@
 #include <IME/graphics/ui/GuiContainer.h>
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Sprite.h>
+#include <IME/core/physics/KeyboardControlledGridMover.h>
 #include "../views/CommonView.h"
 
 namespace SuperPacMan {
@@ -88,12 +89,8 @@ namespace SuperPacMan {
         IME::TileMap grid_;
         //Container for all game entities
         std::unordered_map<std::string, EntityContainer> objects_;
-        //Stores the types of fruit (Different fruit type each level)
-        const std::vector<std::string> fruitType_{
-            "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake",
-            "peach", "melon", "coffee", "mushroom", "bell", "clover", "galaxian",
-            "gift"
-        };
+        //Pacman movement controller
+        std::unique_ptr<IME::KeyboardControlledGridMover> pacmanController_;
     };
 }
 

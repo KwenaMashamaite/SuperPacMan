@@ -27,6 +27,19 @@ namespace SuperPacMan {
         createGrid();
         objects_ = Utils::createObjects(grid_);
 
+        pacmanController_ = std::make_unique<IME::KeyboardControlledGridMover>(grid_, objects_.at("pacman")[0]);
+        pacmanController_->setMovementTrigger(IME::MovementTrigger::OnKeyDown);
+        pacmanController_->setKeys(IME::Input::Keyboard::Key::Left, IME::Input::Keyboard::Key::Right,
+            IME::Input::Keyboard::Key::Up, IME::Input::Keyboard::Key::Down);
+
+        //Keep pacman moving in the same direction until he collides with something
+        pacmanController_->onAdjacentTileReached([this](IME::Graphics::Tile) {
+            pacmanController_->requestDirectionChange(pacmanController_->getTarget()->getDirection());
+        });
+
+        //Initiate movement
+        pacmanController_->requestDirectionChange(pacmanController_->getTarget()->getDirection());
+
         for (const auto& ghost : objects_.at("ghosts")) {
             auto scatterPos = ScatterPosition::TopRightCorner;
             switch (std::dynamic_pointer_cast<Ghost>(ghost)->getGhostName()) {
@@ -58,6 +71,7 @@ namespace SuperPacMan {
 
     void PlayingState::update(float deltaTime) {
         commonView_.update(deltaTime);
+        pacmanController_->update(deltaTime);
 
         for (auto& pellet : objects_.at("pellets"))
             std::dynamic_pointer_cast<Pellet>(pellet)->update(deltaTime);
@@ -85,7 +99,7 @@ namespace SuperPacMan {
     }
 
     void PlayingState::handleEvent(sf::Event event) {
-
+        pacmanController_->handleEvent(event);
     }
 
     bool PlayingState::isInitialized() const {
