@@ -80,6 +80,11 @@ namespace SuperPacMan {
             Utils::removeDeadObjectsFromContainer(objects_.at("pellets"));
             Utils::removeDeadObjectsFromContainer(objects_.at("doors"));
         });
+
+        //Make state skippable by pressing enter key
+        engine().getInputManager().addKeyListener(IME::Input::Keyboard::Event::KeyUp, IME::Input::Keyboard::Key::Enter, [this] {
+            engine().popState();
+        });
     }
 
     void IntroState::createGrid() {
