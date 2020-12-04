@@ -19,7 +19,7 @@ namespace SuperPacMan {
 
         //Speed
         static constexpr auto PacManNormalSpeed = 80.0f;
-        static constexpr auto PacManSuperSizeSpeed = 1.5 * PacManNormalSpeed;
+        static constexpr auto PacManSuperSpeed = 2.0f * PacManNormalSpeed;
         static constexpr auto GhostScatterSpeed = PacManNormalSpeed;
         static constexpr auto GhostChaseSpeed = PacManNormalSpeed + 3.0f;
         static constexpr auto GhostFrightenedSpeed = GhostChaseSpeed / 2.0f;

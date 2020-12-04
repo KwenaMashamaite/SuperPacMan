@@ -6,7 +6,7 @@ namespace SuperPacMan {
     PacMan::PacMan(const IME::Vector2u &boundingRect) :
         Entity(boundingRect, IME::Entity::Type::Player),
         numberOfLives_(Constants::PacManLives),
-        speed_(0.0f),
+        speed_(Constants::PacManNormalSpeed),
         isMoving_(false)
     {
         setCollidable(true);
@@ -26,22 +26,28 @@ namespace SuperPacMan {
         }));
 
         onEvent("directionChanged", IME::Callback<IME::Direction>([this](IME::Direction dir) {
+            auto newDir = std::string();
             switch (dir) {
                 case IME::Direction::None:
-                    break;
+                    return;
                 case IME::Direction::Left:
-                    sprite_.switchAnimation("goingLeft");
+                    newDir = "Left";
                     break;
                 case IME::Direction::Right:
-                    sprite_.switchAnimation("goingRight");
+                    newDir = "Right";
                     break;
                 case IME::Direction::Up:
-                    sprite_.switchAnimation("goingUp");
+                    newDir = "Up";
                     break;
                 case IME::Direction::Down:
-                    sprite_.switchAnimation("goingDown");
+                    newDir = "Down";
                     break;
             }
+
+            if (isVulnerable()) //Not in super mode
+                sprite_.switchAnimation("going" + newDir);
+            else
+                sprite_.switchAnimation("going" + newDir + "Super");
         }));
     }
 

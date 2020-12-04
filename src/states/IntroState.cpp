@@ -4,6 +4,7 @@
 #include "../common/SpriteContainer.h"
 #include "../common/Drawer.h"
 #include "../utils/Utils.h"
+#include "../entities/states/pacman/SuperState.h"
 
 using namespace IME::Graphics;
 
@@ -18,7 +19,8 @@ namespace SuperPacMan {
         pacmanPath_.push({15, 13});
         pacmanPath_.push({15, 26});
         pacmanPath_.push({19, 26});
-        pacmanPath_.push({19, 0});
+        pacmanPath_.push({19, 13});
+        pacmanPath_.push({19, 26});
     }
 
     void IntroState::initialize() {
@@ -45,8 +47,10 @@ namespace SuperPacMan {
                 auto pellet = std::dynamic_pointer_cast<Pellet>(colletable);
                 if (pellet->getPelletType() == PelletType::PowerPellet)
                     engine().getAudioManager().play(IME::AudioType::Sfx, "powerPelletEaten.wav");
-                else
-                    engine().getAudioManager().play(IME::AudioType::Sfx, "superPelletEaten.wav");
+                else {
+                    std::dynamic_pointer_cast<PacMan>(objects_.at("pacman")[0])->pushState(std::make_shared<SuperState>(objects_.at("pacman")[0]));
+                    engine().getAudioManager().play(IME::AudioType::Sfx,"superPelletEaten.wav");
+                }
                 pellet->eat();
             } else if (colletable->getClassType() == "Key") {
                 engine().getAudioManager().play(IME::AudioType::Sfx, "keyEaten.wav");
