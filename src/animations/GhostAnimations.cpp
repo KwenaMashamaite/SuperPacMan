@@ -4,7 +4,7 @@
 //The size of each animation frame
 const auto frameSize = IME::Vector2i{16, 16};
 //The duration of each movement animation
-const auto movementAnimDuration = 0.24f;
+const auto movementAnimDuration = 0.18f;
 
 namespace SuperPacMan {
     void GhostAnimations::createAnimationsFor(Ghost::Name ghostName) {

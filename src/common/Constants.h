@@ -18,9 +18,9 @@ namespace SuperPacMan {
         static constexpr auto EatenGhostRespawnTile = IME::Index{11, 11};
 
         //Speed
-        static constexpr auto PacManNormalSpeed = 80.0f;
-        static constexpr auto PacManSuperSpeed = 2.0f * PacManNormalSpeed;
-        static constexpr auto GhostScatterSpeed = PacManNormalSpeed;
+        static constexpr auto PacManNormalSpeed = 120.0f;
+        static constexpr auto PacManSuperSpeed = 4.0f * PacManNormalSpeed;
+        static constexpr auto GhostScatterSpeed = PacManNormalSpeed + 40.0f;
         static constexpr auto GhostChaseSpeed = PacManNormalSpeed + 3.0f;
         static constexpr auto GhostFrightenedSpeed = GhostChaseSpeed / 2.0f;
 
