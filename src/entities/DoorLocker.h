@@ -1,6 +1,26 @@
-/**
- * @brief Class for locking doors
- */
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef DOORLOCKER_H
 #define DOORLOCKER_H
@@ -8,14 +28,23 @@
 #include "Key.h"
 
 namespace SuperPacMan {
+    /**
+     * @brief A class for locking doors
+     *
+     * When a door is fitted with a locker, it can be locked and
+     * unlocked using a key
+     *
+     * @see Door and Key
+     */
     class DoorLocker {
     public:
         /**
-         * @brief Construct door locker object
+         * @brief Construct a door locker
          * @param id Identifier of the locker
          *
-         * The identifier determines which keys can interact with this locker.
-         * Only keys with the same id as this locker can lock or unlock it
+         * The identifier determines which keys can interact with this
+         * locker. Only keys with the same id as this locker can lock
+         * or unlock it
          */
         explicit DoorLocker(int id);
 
@@ -23,8 +52,8 @@ namespace SuperPacMan {
          * @brief Lock the locker with a key
          * @param key Key to lock the locker with
          *
-         * The locker is unlocked by default. The keys id must be the same as
-         * the lockers id in order for the locker to be locked
+         * The locker is unlocked by default. The keys id must be the
+         * same as the lockers id in order for the locker to be locked
          */
         void lock(const Key& key);
 
@@ -32,13 +61,13 @@ namespace SuperPacMan {
          * @brief Unlock the locker with a key
          * @param key Key to unlock the locker with
          *
-         * The keys id must be the same as the lockers id in order for the
-         * locker to be unlocked
+         * The keys id must be the same as the lockers id in order for
+         * the locker to be unlocked
          */
         void unlock(const Key& key);
 
         /**
-         * @brief Check if locker is locked or not
+         * @brief Check if the locker is locked or not
          * @return True if the locker is locked, otherwise false
          */
         bool isLocked() const;
@@ -50,10 +79,8 @@ namespace SuperPacMan {
         int getId() const;
 
     private:
-        //The lockers id
-        int id_;
-        //The lockers locked state
-        bool isLocked_;
+        int id_;        //!< The lockers id
+        bool isLocked_; //!< The lockers locked state
     };
 }
 

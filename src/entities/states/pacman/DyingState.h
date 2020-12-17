@@ -22,29 +22,59 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <IME/graphics/Window.h>
-#include "../entities/AllEntities.h"
-#include "Drawer.h"
+#ifndef DYINGSTATE_H
+#define DYINGSTATE_H
+
+#include "../TimedState.h"
+#include "../../PacMan.h"
 
 namespace SuperPacMan {
-    Drawer::Drawer(IME::Graphics::Window &renderTarget) :
-            renderTarget_(renderTarget)
-    {}
+    /**
+     * @brief Defines Pacmans behavior when he is killed
+     *
+     * This state is entered when pacman is vulnerable and collides
+     * with a ghost. The state plays a death animation and pops
+     * itself when the animation finishes
+     */
+    class DyingState : public TimedState {
+    public:
+        /**
+         * @brief Construct state
+         * @param pacman Pacman
+         */
+        explicit DyingState(std::shared_ptr<IME::Entity> pacman);
 
-    void Drawer::drawEntities(const std::vector<std::shared_ptr<IME::Entity>> &entities) {
-        std::for_each(entities.begin(), entities.end(), [this](auto& entity) {
-            if (entity->getClassType() == "Pellet")
-                renderTarget_.draw(std::dynamic_pointer_cast<Pellet>(entity)->getSprite());
-            else if (entity->getClassType() == "Fruit")
-                renderTarget_.draw(std::dynamic_pointer_cast<Fruit>(entity)->getSprite());
-            else if (entity->getClassType() == "Key")
-                renderTarget_.draw(std::dynamic_pointer_cast<Key>(entity)->getSprite());
-            else if (entity->getClassType() == "PacMan")
-                renderTarget_.draw(std::dynamic_pointer_cast<PacMan>(entity)->getSprite());
-            else if (entity->getClassType() == "Ghost")
-                renderTarget_.draw(std::dynamic_pointer_cast<Ghost>(entity)->getSprite());
-            else if (entity->getClassType() == "Door")
-                renderTarget_.draw(std::dynamic_pointer_cast<Door>(entity)->getSprite());
-        });
-    }
+        /**
+         * @brief Initialize the state
+         *
+         * This function will be called by the FSM when a state is entered
+         * for the first time
+         */
+        void onEntry() override;
+
+        /**
+         * @brief update the state
+         * @param deltaTime Time passed since the state was last updated
+         */
+        void update(float deltaTime) override;
+
+        /**
+         * @brief Exit a state
+         *
+         * This function will be called by the FSM before the state is
+         * destroyed
+         */
+        void onExit() override;
+
+    private:
+        /**
+         * @brief Pop state
+         */
+        void onTimeout() override;
+
+    private:
+        std::shared_ptr<PacMan> pacman_;
+    };
 }
+
+#endif

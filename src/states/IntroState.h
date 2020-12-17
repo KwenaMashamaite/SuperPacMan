@@ -1,6 +1,26 @@
-/**
- * @brief Defines the intro state of the game
- */
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef INTROSTATE_H
 #define INTROSTATE_H
@@ -14,6 +34,15 @@
 #include <queue>
 
 namespace SuperPacMan {
+    /**
+     * @brief Defines the intro state of the game
+     *
+     * This state is a demonstration of how the game works. Pacman moves
+     * back and forth between the left and right edges of the screen while
+     * eating collectables (keys, fruits and pellets). Each collectable
+     * demonstrate what it does when it is eaten. The state pops itself
+     * after Pacman and all the ghosts leave the screen (demo finished)
+     */
     class IntroState : public IME::State {
     public:
         /**
@@ -25,19 +54,48 @@ namespace SuperPacMan {
         /**
          * @brief Initialize state
          *
-         * This function will be called by the engine before the state is entered
-         * for the first time
+         * This function will be called by the engine before the state is
+         * entered for the first time. After the state is entered, the
+         * function isInitialized returns true
+         *
+         * @see isInitialized
          */
         void initialize() override;
+
+        /**
+         * @brief Check if a state is initialized or not
+         * @return True if state is initialized or false if state is not
+         *         initialized
+         *
+         * This function will be called by the engine before a state push
+         * or a state pop operation. This ensures that a previously
+         * initialized state is resumed instead of being reinitialized and
+         * vice versa
+         *
+         * @see initialize, pause and resume
+         */
+        bool isInitialized() const override;
+
+        /**
+         * @brief Handle an event
+         * @param event Event to handle
+         *
+         * This function wil be called by the engine at the start of
+         * the current frame
+         */
+        void handleEvent(sf::Event event) override;
 
         /**
          * @brief Update the state
          * @param deltaTime Time passed since last update
          *
-         * This function will be called once per frame by the engine. The delta
-         * passed to it is frame rate dependent. This means that it depends on
-         * how long the current frames takes to complete. All updates that need
-         * a variable timestep must be defined in this function
+         * This function will be called once per frame by the engine.
+         * The delta passed to it is frame rate dependent. This means
+         * that it depends on how long the current frames takes to
+         * complete. All updates that need a variable time step are
+         * defined in this function
+         *
+         * @see fixedUpdate
          */
         void update(float deltaTime) override;
 
@@ -45,68 +103,52 @@ namespace SuperPacMan {
          * @brief Update state in fixed time steps
          * @param deltaTime Time passed since last update
          *
-         * This function will be called multiple times per frame by the engine.
-         * The delta passed to it is always the same. All update that require a
-         * fixed timestep must be defined in this function. This function allows
-         * updates to be the same regardless of how fast or slow the computer is
+         * This function may be called multiple times per frame or not
+         * called at all. The delta passed to it is always the same. All
+         * update that require a fixed time step are defined in this
+         * function, such updates are frame-rate independent
+         *
+         * @see update
          */
         void fixedUpdate(float deltaTime) override;
 
         /**
          * @brief Render the state on a render target
-         * @param entity Target to render state on
+         * @param renderTarget Target to render state on
          *
-         * This function will be called once per frame by the engine after all
-         * events have been handled and all updates have performed for the
-         * current frame
+         * This function will be called once per frame by the engine
+         * after all events have been handled and all updates have
+         * been performed for the current frame
          */
         void render(IME::Graphics::Window &entity) override;
 
         /**
          * @brief Pause the state
          *
-         * This function will be called by the game engine on the current state
-         * when a state change is requested. This function allows a state to pause
-         * itself such that when it is returned to, it can resume where it left of
-         * instead of being reinitialized
+         * This function will be called by the game engine before a state
+         * push operation. This function allows a state to pause itself
+         * such that when it is returned to, it can resume where it left
+         * of instead of being reinitialized
          */
         void pause() override;
 
         /**
-         * @brief Handle an event
-         * @param event Event to handle
-         *
-         * This function wil be called by the engine at the start of the current
-         * frame
-         */
-        void handleEvent(sf::Event event) override;
-
-        /**
          * @brief Resume a paused state
          *
-         * This function will be called by the game engine when a previously
-         * initialised state is returned to @see initialize() and pause()
+         * This function will be called by the game engine after a state
+         * pop if the state was paused
+         *
+         * @see pause
          */
         void resume() override;
-
-        /**
-         * @brief Check if a state is initialized or not
-         * @return True if state is initialized or false if state is not initialized
-         *
-         * This function will be called by the engine when a state push or a state
-         * pop was requested in the previous frame. This ensures that a previously
-         * initialized state is resumed instead of being reinitialized and vice
-         * versa @see initialize(), resume() and pause()
-         */
-        bool isInitialized() const override;
 
         /**
          * @brief Exit a state
          *
          * This function will be called by the engine before the state
          * is destroyed. It may be useful if there are some cleanup
-         * procedures that need to be taken care of before the object
-         * is destroyed
+         * procedures that need to be taken care of before the state
+         * object is destroyed
          */
         void exit() override;
 

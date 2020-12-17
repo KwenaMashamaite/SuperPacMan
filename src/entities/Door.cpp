@@ -1,3 +1,27 @@
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
 #include "Door.h"
 #include "../common/SpriteContainer.h"
 
@@ -10,9 +34,8 @@ namespace SuperPacMan {
         sprite_ = SpriteContainer::getSprite("unlocked_door");
         sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
         sprite_.scale(2.07f, 2.07f);
-        sprite_.setPosition(getSize().x / 2.0f, getSize().y / 2.0f);
 
-        onEvent("positionChanged", IME::Callback<float, float>([this](float x, float y) {
+        onEvent("positionChange", IME::Callback<float, float>([this](float x, float y) {
             sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
         }));
 
@@ -45,19 +68,17 @@ namespace SuperPacMan {
           orientation_(other.orientation_)
     {}
 
-    void Door::setOrientation(Orientation orientation) {
-        orientation_ = orientation;
-    }
-
     Door &Door::operator=(Door rhs) {
         std::swap(*this, rhs);
         return *this;
     }
 
-    bool Door::isLocked() const {
-        if (doorLocker_)
-            return doorLocker_->isLocked();
-        return false;
+    void Door::setOrientation(Orientation orientation) {
+        orientation_ = orientation;
+    }
+
+    Orientation Door::getOrientation() const {
+        return orientation_;
     }
 
     void Door::addDoorLocker(std::unique_ptr<DoorLocker> doorLocker) {
@@ -84,12 +105,15 @@ namespace SuperPacMan {
         }
     }
 
+    bool Door::isLocked() const {
+        if (doorLocker_)
+            return doorLocker_->isLocked();
+        return false;
+    }
+
     void Door::forceOpen() {
-        if (doorLocker_) {
-            doorLocker_ = nullptr;
-            setCollidable(false);
-            publishEvent("lockerBroken");
-        }
+        setCollidable(false);
+        publishEvent("broken");
     }
 
     int Door::onLock(IME::Callback<> callback) {
@@ -98,10 +122,6 @@ namespace SuperPacMan {
 
     int Door::onUnlock(IME::Callback<> callback) {
         return onEvent("unlocked", std::move(callback));
-    }
-
-    Orientation Door::getOrientation() const {
-        return orientation_;
     }
 
     std::string Door::getClassType() {

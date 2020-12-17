@@ -1,6 +1,26 @@
-/**
- * @brief View displayed before a level is started or restarted
- */
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef LEVELSTARTVIEW_H
 #define LEVELSTARTVIEW_H
@@ -9,18 +29,24 @@
 #include "CommonView.h"
 
 namespace SuperPacMan {
+    /**
+     * @brief View displayed before a level is started
+     *
+     * This view is displayed when a level is played for the first time
+     * or when pacman dies but still has lives to continue playing
+     */
     class LevelStartView {
     public:
         /**
          * @brief Create level start view
          * @param renderTarget Target view is rendered on
          * @param level Current level
-         * @param lives Pacman's remaining lives
+         * @param lives Pacmans current number of lives
          * @param score Current score
-         * @param highscore Current high score
+         * @param highScore Current high score
          */
         LevelStartView(IME::Graphics::Window& renderTarget, int level, int lives,
-           int score, int highscore);
+           int score, int highScore);
 
         /**
          * @brief Initialize the view
@@ -40,20 +66,13 @@ namespace SuperPacMan {
         void render(IME::Graphics::Window& renderTarget);
 
     private:
-        //Container
-        IME::UI::GuiContainer guiContainer_;
-        //Size of the render target
-        IME::Vector2u windowSize_;
-        //View to show the scores
-        CommonView commonView_;
-        //Current level fruit
-        IME::Graphics::Sprite fruit_;
-        //Current level
-        int level_;
-        //current score
-        int score_;
-        //current highscore
-        int highscore_;
+        IME::UI::GuiContainer guiContainer_; //!< Container for all widgets in this view
+        IME::Vector2u windowSize_;           //!< Size of the games render target
+        CommonView commonView_;              //!< View displayed across all states
+        IME::Graphics::Sprite fruit_;        //!< Displays the current level fruit
+        int level_;                          //!< Current level
+        int score_;                          //!< Current player score
+        int highScore_;                      //!< Current top score
     };
 }
 

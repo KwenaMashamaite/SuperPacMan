@@ -22,29 +22,46 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <IME/graphics/Window.h>
-#include "../entities/AllEntities.h"
-#include "Drawer.h"
+#include "TimedState.h"
 
 namespace SuperPacMan {
-    Drawer::Drawer(IME::Graphics::Window &renderTarget) :
-            renderTarget_(renderTarget)
+    TimedState::TimedState() : timeout_(0.0f), timedOut_(false)
     {}
 
-    void Drawer::drawEntities(const std::vector<std::shared_ptr<IME::Entity>> &entities) {
-        std::for_each(entities.begin(), entities.end(), [this](auto& entity) {
-            if (entity->getClassType() == "Pellet")
-                renderTarget_.draw(std::dynamic_pointer_cast<Pellet>(entity)->getSprite());
-            else if (entity->getClassType() == "Fruit")
-                renderTarget_.draw(std::dynamic_pointer_cast<Fruit>(entity)->getSprite());
-            else if (entity->getClassType() == "Key")
-                renderTarget_.draw(std::dynamic_pointer_cast<Key>(entity)->getSprite());
-            else if (entity->getClassType() == "PacMan")
-                renderTarget_.draw(std::dynamic_pointer_cast<PacMan>(entity)->getSprite());
-            else if (entity->getClassType() == "Ghost")
-                renderTarget_.draw(std::dynamic_pointer_cast<Ghost>(entity)->getSprite());
-            else if (entity->getClassType() == "Door")
-                renderTarget_.draw(std::dynamic_pointer_cast<Door>(entity)->getSprite());
-        });
+    void TimedState::setTimeout(float timeout, std::function<void()> callback) {
+        timeout_ = timeout;
+        callback_ = std::move(callback);
+    }
+
+    float TimedState::getTimeout() const {
+        return timeout_;
+    }
+
+    void TimedState::incrementTimeout(float value) {
+        timeout_ += value;
+    }
+
+    void TimedState::decrementTimeout(float value) {
+        timeout_ -= value;
+        if (timeout_ <= 0.0f && !timedOut_) {
+            timedOut_ = true;
+            onTimeout();
+        }
+    }
+
+    void TimedState::update(float deltaTime) {
+        if (timedOut_)
+            return;
+
+        timeout_ -= deltaTime;
+        if (timeout_ <= 0) {
+            timedOut_ = true;
+            onTimeout();
+        }
+    }
+
+    void TimedState::callback() {
+        if (callback_)
+            callback_();
     }
 }

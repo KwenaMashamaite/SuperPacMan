@@ -1,22 +1,52 @@
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
 #include "StateController.h"
 #include <cassert>
+#include <iostream>
 
 namespace SuperPacMan {
-    void StateController::pushState(std::shared_ptr<IState> state) {
+    void StateController::pushState(const std::string& name, std::shared_ptr<IState> state) {
         assert(state && "State cannot be null");
+        states_.push({name, state});
         state->onEntry();
-        states_.push(std::move(state));
     }
 
-    std::shared_ptr<IState> StateController::getCurrentState() {
-        return !states_.empty() ? states_.top() : nullptr;
+    std::pair<std::string, std::shared_ptr<IState>> StateController::getCurrentState() {
+        return !states_.empty() ? states_.top() : std::pair("", nullptr);
+    }
+
+    std::pair<std::string, std::shared_ptr<IState>> StateController::getCurrentState() const {
+        return !states_.empty() ? states_.top() : std::pair("", nullptr);
     }
 
     void StateController::popState() {
         if (states_.empty())
             return;
-        states_.top()->onExit();
+        auto stateToPop = states_.top();
         states_.pop();
+        stateToPop.second->onExit();
     }
 
     bool StateController::isEmpty() const {

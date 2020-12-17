@@ -1,16 +1,33 @@
-/**
- * @brief Defines the behavior of a ghost in scatter mode
- *
- * This state is entered from time to time to give the player a
- * break from the chase
- */
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef SCATTERSTATE_H
 #define SCATTERSTATE_H
 
 #include <IME/core/physics/TargetGridMover.h>
 #include <queue>
-#include "../IState.h"
+#include "../TimedState.h"
 #include "../../Ghost.h"
 
 namespace SuperPacMan {
@@ -18,13 +35,19 @@ namespace SuperPacMan {
      * @brief Positions ghost targets in scatter mode
      */
     enum class ScatterPosition {
-        TopLeftCorner,
-        TopRightCorner,
-        BottomLeftCorner,
-        BottomRightCorner
+        TopLeftCorner,    //!< Top-left corner cyclic path starting position
+        TopRightCorner,   //!< Top-right corner cyclic path starting position
+        BottomLeftCorner, //!< Bottom-left corner cyclic path starting position
+        BottomRightCorner //!< Bottom-right corner cyclic path starting position
     };
 
-    class ScatterState : public IState {
+    /**
+     * @brief Defines the behavior of a ghost in scatter mode
+     *
+     * This state is entered from time to time to give the player a
+     * break from the chase
+     */
+    class ScatterState final : public TimedState {
     public:
         /**
          * @brief Construct state
@@ -59,14 +82,16 @@ namespace SuperPacMan {
         void onExit() override;
 
     private:
-        //Eaten ghost
-        std::shared_ptr<Ghost> ghost_;
-        //Ghost movement controller
-        IME::TargetGridMover ghostMover_;
-        //Target position
-        ScatterPosition targetPos_;
-        //Cyclic path ghost follows after reaching target position
-        std::queue<IME::Index> ghostPath_;
+        /**
+         * @brief Pop the state
+         */
+        void onTimeout() override;
+
+    private:
+        std::shared_ptr<Ghost> ghost_;     //!< Scattering ghost
+        IME::TargetGridMover ghostMover_;  //!< Ghost movement controller
+        ScatterPosition targetPos_;        //!< Position ghost must reach before cycling corner
+        std::queue<IME::Index> ghostPath_; //!< Cyclic path ghost follows after reaching target position
     };
 }
 

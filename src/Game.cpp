@@ -1,9 +1,34 @@
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
 #include "Game.h"
 #include "states/LoadingState.h"
 #include "states/IntroState.h"
 #include "states/MainMenuState.h"
 #include "common/SpriteContainer.h"
 #include "scoreboard/Scoreboard.h"
+#include "states/PlayingState.h"
 #include <IME/core/event/EventDispatcher.h>
 #include <memory>
 
@@ -38,13 +63,11 @@ void createFruitSprites() {
 void createGridSprites() {
     auto gridSize = IME::Vector2i{224, 244};
     createSprite("intro_grid", "grids.png", {225, 0, gridSize.x, gridSize.y});
-    createSprite("empty_grid_blue", "grids.png", {450, 0, gridSize.x, gridSize.y});
-    createSprite("empty_grid_white", "grids.png", {675, 0, gridSize.x, gridSize.y});
-    createSprite("level_1_to_4_grid", "grids.png", {0, 0, gridSize.x, gridSize.y});
+    createSprite("level_1_to_4_grid", "grids.png", {450, 0, gridSize.x, gridSize.y});
     createSprite("level_5_to_8_grid", "grids.png", {0, 249, gridSize.x, gridSize.y});
     createSprite("level_9_to_12_grid", "grids.png", {225, 249, gridSize.x, gridSize.y});
     createSprite("level_13_to_16_grid", "grids.png", {450, 249, gridSize.x, gridSize.y});
-    createSprite("level_16_to_20_grid", "grids.png", {675, 249, gridSize.x, gridSize.y});
+    createSprite("level_17_to_20_grid", "grids.png", {675, 249, gridSize.x, gridSize.y});
     createSprite("locked_door_vertical", "spritesheet.png", {270, 137, 16, 16});
     createSprite("locked_door_horizontal", "spritesheet.png", {236, 137, 16, 16});
     createSprite("broken_door_vertical", "spritesheet.png", {287, 137, 16, 16});
@@ -58,16 +81,16 @@ namespace SuperPacMan {
     {}
 
     void Game::initialize() {
-        engine_.init();
+        engine_.initialize();
 
         auto scoreboard = Scoreboard("textFiles/highscores.txt");
         scoreboard.load();
 
-        //Create data that should be accessible to all states
+        //Create data that should be accessible in all states
         engine_.getPersistentData().addProperty({"high-score", "INT", scoreboard.getTopScore().getValue()});
         engine_.getPersistentData().addProperty({"level", "INT", 1});
         engine_.getPersistentData().addProperty({"score", "INT", 0});
-        engine_.getPersistentData().addProperty({"lives", "INT", 4}); //Initially pacman has four lives
+        engine_.getPersistentData().addProperty({"lives", "INT", 4});
 
         //Push the initial states (States will be entered in reverse order: loading->intro->mainMenu)
         engine_.pushState(std::make_shared<MainMenuState>(engine_));
@@ -77,21 +100,27 @@ namespace SuperPacMan {
         //Prevent the game from being exited when in loading state (First state)
         engine_.onWindowClose(nullptr);
 
-        //Allow application to be exited when not in loading state
-        IME::EventDispatcher::instance()->onEvent("resourceLoadingComplete", IME::Callback<>([this]{
-            //Quit game using escape key
+        //This event is emitted by the loading state after all assets have been loaded
+        IME::EventDispatcher::instance()->onEvent("resourceLoadingComplete", IME::Callback<>([this] {
             engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::Escape, [this] {
                 engine_.quit();
             });
 
-            //Quit game using close button
-            engine_.onWindowClose([this]{engine_.quit();});
-        }));
+            engine_.onWindowClose([this] {
+                engine_.quit();
+            });
 
-        IME::EventDispatcher::instance()->onEvent("resourceLoadingComplete", IME::Callback<>([]{
             createFruitSprites();
             createGridSprites();
         }));
+
+        engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::A, [this] {
+            engine_.pushState(std::make_shared<PlayingState>(engine_));
+        });
+
+        engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::S, [this] {
+            engine_.popState();
+        });
     }
 
     void Game::start() {

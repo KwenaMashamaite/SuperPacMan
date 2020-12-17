@@ -1,3 +1,27 @@
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
 #include "Scoreboard.h"
 #include <IME/utility/DiskFileReader.h>
 #include <algorithm>
@@ -23,8 +47,24 @@ namespace SuperPacMan {
         currentScore_.adjustValue(points);
     }
 
+    int Scoreboard::getCurrentScore() const {
+        return currentScore_.getValue();
+    }
+
+    const Score& Scoreboard::getTopScore() const {
+        return highScores_.front();
+    }
+
+    void Scoreboard::resetCurrentScore() {
+        currentScore_.setValue(0);
+    }
+
+    std::size_t Scoreboard::getSize() const {
+        return highScores_.size();
+    }
+
     void Scoreboard::updateHighScoreFile(const std::string& name) {
-        if (currentScore_.getValue() > highScores_.back().getValue()) {//Highscores stored in descending order
+        if (currentScore_ > highScores_.back()) { //High scores stored in descending order
             highScores_.pop_back();
             currentScore_.setOwner(name);
             highScores_.push_back(currentScore_);
@@ -38,23 +78,8 @@ namespace SuperPacMan {
         }
     }
 
-    void Scoreboard::resetCurrentScore() {
-        currentScore_.setValue(0);
-    }
-
-    int Scoreboard::getCurrentScore() const {
-        return currentScore_.getValue();
-    }
-
-    const Score& Scoreboard::getTopScore() const {
-        return highScores_.front();
-    }
-
-    Scoreboard::constIterator Scoreboard::cBegin() const {
-        return highScores_.cbegin();
-    }
-
-    Scoreboard::constIterator Scoreboard::cEnd() const {
-        return highScores_.cend();
+    void Scoreboard::forEachScore(std::function<void(const Score&)> callback) {
+        for (const auto& score : highScores_)
+            callback(score);
     }
 }

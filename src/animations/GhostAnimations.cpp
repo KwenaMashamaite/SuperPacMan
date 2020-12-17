@@ -1,3 +1,27 @@
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
 #include "GhostAnimations.h"
 #include <IME/common/Vector2.h>
 
@@ -14,6 +38,17 @@ namespace SuperPacMan {
         createMovementAnimations(ghostName);
         createEatenAnimations();
         createFrightenedAnimations();
+    }
+
+    const std::vector<std::shared_ptr<IME::Animation>> &GhostAnimations::getAll() const {
+        return animations_;
+    }
+
+    void GhostAnimations::createAnimation(const std::string &name, IME::Vector2i startPos, IME::Arrangement arrangement) {
+        auto anim = std::make_shared<IME::Animation>(name, "spritesheet.png", movementAnimDuration);
+        anim->setLoop(true);
+        anim->addFrames(startPos, frameSize, 2, 1, arrangement);
+        animations_.push_back(std::move(anim));
     }
 
     void GhostAnimations::createMovementAnimations(Ghost::Name ghostName) {
@@ -63,24 +98,13 @@ namespace SuperPacMan {
 
     void GhostAnimations::createFrightenedAnimations() {
         createAnimation("frightened", {389, 69});
-        createAnimation("flash", {389, 120});
+        createAnimation("flash", {304, 137});
     }
 
     void GhostAnimations::createEatenAnimations() {
-        createAnimation("goingLeftEaten", {389, 86}, IME::Arrangement::Vertical);
-        createAnimation("goingRightEaten", {423, 86}, IME::Arrangement::Vertical);
-        createAnimation("goingUpEaten", {406, 86}, IME::Arrangement::Vertical);
-        createAnimation("goingDownEaten", {440, 86}, IME::Arrangement::Vertical);
-    }
-
-    void GhostAnimations::createAnimation(const std::string &name, IME::Vector2i startPos, IME::Arrangement arrangement) {
-        auto anim = std::make_shared<IME::Animation>(name, "spritesheet.png", movementAnimDuration);
-        anim->setLoop(true);
-        anim->addFrames(startPos, frameSize, 2, 1, arrangement);
-        animations_.push_back(std::move(anim));
-    }
-
-    const std::vector<std::shared_ptr<IME::Animation>> &GhostAnimations::getAll() const {
-        return animations_;
+        createAnimation("goingLeftEaten", {355, 171}, IME::Arrangement::Vertical);
+        createAnimation("goingRightEaten", {355, 137}, IME::Arrangement::Vertical);
+        createAnimation("goingUpEaten", {372, 171}, IME::Arrangement::Vertical);
+        createAnimation("goingDownEaten", {372, 137}, IME::Arrangement::Vertical);
     }
 }

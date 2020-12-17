@@ -1,8 +1,38 @@
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
 #include "Utils.h"
 #include "../entities/AllEntities.h"
 #include "../common/Constants.h"
 #include "../entities/states/pacman/PacManIdleState.h"
 #include "../entities/states/ghost/GhostIdleState.h"
+#include "../entities/states/ghost/FrightenedState.h"
+#include "../entities/states/ghost/ScatterState.h"
+#include "../entities/states/ghost/ChaseState.h"
+#include "../entities/states/pacman/SuperState.h"
+#include "../entities/states/pacman/NormalState.h"
+#include "../entities/states/ghost/EatenState.h"
 
 /**
  * @brief Get the key id that will open a door at a specific index
@@ -27,8 +57,6 @@ namespace SuperPacMan::Utils {
                 auto door = std::make_shared<Door>(grid.getTileSize());
                 if (tile.getIndex().row % 2 == 0)
                     door->setOrientation(Orientation::Horizontal);
-                door->addDoorLocker(std::make_unique<DoorLocker>(getLockerId(tile.getIndex())));
-                door->lockWith(Key({}, getLockerId(tile.getIndex())));
                 grid.addChild(door, tile.getIndex());
                 objects["doors"].push_back(std::move(door));
             } else if (tile.getId() == '#' || tile.getId() == '|') { //Walls
@@ -53,7 +81,7 @@ namespace SuperPacMan::Utils {
             } else if (tile.getId() == 'X') { //PacMan
                 auto pacman = std::make_shared<PacMan>(grid.getTileSize());
                 pacman->setSpeed(Constants::PacManNormalSpeed);
-                pacman->pushState(std::make_shared<PacManIdleState>());
+                pacman->pushState(PacMan::States::Idle, std::make_shared<PacManIdleState>(pacman));
                 grid.addChild(pacman, tile.getIndex());
                 objects["pacman"].push_back(std::move(pacman));
             } else if (tile.getId() == 'B' || tile.getId() == 'P' || tile.getId() == 'C' || tile.getId() == 'I') {
@@ -66,7 +94,7 @@ namespace SuperPacMan::Utils {
                     ghostName = Ghost::Name::Inky;
 
                 auto ghost = std::make_shared<Ghost>(ghostName, grid.getTileSize());
-                ghost->pushState(std::make_shared<GhostIdleState>());
+                ghost->pushState(Ghost::States::Idle, std::make_shared<GhostIdleState>(ghost));
                 ghost->setVulnerable(false);
                 grid.addChild(ghost, tile.getIndex());
                 objects["ghosts"].push_back(std::move(ghost));
@@ -75,10 +103,114 @@ namespace SuperPacMan::Utils {
         return objects;
     }
 
-    void removeDeadObjectsFromContainer(std::vector<std::shared_ptr<IME::Entity>>& entities) {
+    void removeInactiveObjectsFromContainer(std::vector<std::shared_ptr<IME::Entity>>& entities) {
         entities.erase(std::remove_if(entities.begin(), entities.end(), [](std::shared_ptr<IME::Entity>& entity) {
-            return !entity->isAlive();
+            return !entity->isActive();
         }), entities.end());
+    }
+
+    std::string convertToString(IME::Direction direction) {
+        switch (direction) {
+            case IME::Direction::Left:
+                return "Left";
+            case IME::Direction::Right:
+                return "Right";
+            case IME::Direction::Up:
+                return "Up";
+            case IME::Direction::Down:
+                return "Down";
+            default:
+                return "Unknown";
+        }
+    }
+
+    void frightenGhost(std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid) {
+        auto frightenedState = std::make_shared<FrightenedState>(ghost, grid);
+        frightenedState->setTimeout(10.0f, [ghost, &grid] {
+            Utils::scatterGhost(ghost, grid);
+        });
+        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Frightened, std::move(frightenedState));
+    }
+
+    void scatterGhost(std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid) {
+        auto scatterPos = ScatterPosition::TopRightCorner;
+        switch (std::dynamic_pointer_cast<Ghost>(ghost)->getGhostName()) {
+            case Ghost::Name::Blinky:
+                break;
+            case Ghost::Name::Pinky:
+                scatterPos = ScatterPosition::TopLeftCorner;
+                break;
+            case Ghost::Name::Inky:
+                scatterPos = ScatterPosition::BottomRightCorner;
+                break;
+            case Ghost::Name::Clyde:
+                scatterPos = ScatterPosition::BottomLeftCorner;
+                break;
+        }
+        auto scatterState = std::make_shared<ScatterState>(scatterPos, ghost, grid);
+        scatterState->setTimeout(10.0f, [ghost, &grid] {
+            std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Eaten,
+                std::make_shared<EatenState>(ghost, grid));
+        });
+        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Scatter, std::move(scatterState));
+    }
+
+    bool unlockDoor(std::shared_ptr<IME::Entity> doorPtr, std::shared_ptr<IME::Entity> key) {
+        auto door = std::dynamic_pointer_cast<Door>(doorPtr);
+        if (!door->isLocked())
+            return false;
+        door->unlockWith(*std::dynamic_pointer_cast<Key>(key));
+        if (!door->isLocked())
+            return true;
+        return false;
+    }
+
+    void lockAllDoors(IME::TileMap& grid) {
+        grid.forEachTileWithId('D', [&grid](IME::Graphics::Tile& tile) {
+            auto door = std::dynamic_pointer_cast<Door>(grid.getOccupant(tile));
+            door->addDoorLocker(std::make_unique<DoorLocker>(getLockerId(tile.getIndex())));
+            door->lockWith(Key({}, getLockerId(tile.getIndex())));
+        });
+    }
+
+    void enlargePacman(std::shared_ptr<IME::Entity> pacman, float duration) {
+        auto superState = std::make_shared<SuperState>(pacman);
+        superState->setTimeout(duration, [pacman] {
+            std::dynamic_pointer_cast<PacMan>(pacman)->pushState(PacMan::States::Normal,
+                 std::make_shared<NormalState>(pacman));
+        });
+        std::dynamic_pointer_cast<PacMan>(pacman)->pushState(PacMan::States::Super, std::move(superState));
+    }
+
+    void flashGrid(IME::TileMap& grid, int level) {
+        if (level >= 1 && level <= 4)
+            grid.getBackground().switchAnimation("flash-blue");
+        else if (level >= 5 && level <= 8)
+            grid.getBackground().switchAnimation("flash-orange");
+        else if (level >= 9 && level <= 12)
+            grid.getBackground().switchAnimation("flash-purple");
+        else if (level >= 13 && level <= 16)
+            grid.getBackground().switchAnimation("flash-pink");
+        else
+            grid.getBackground().switchAnimation("flash-green");
+    }
+
+    void chasePacMan(std::shared_ptr<IME::Entity> pacman,
+         std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid)
+    {
+        auto chaseState = std::make_shared<ChaseState>(ghost, grid, grid.getTileOccupiedByChild(pacman));
+        chaseState->setTimeout(7.0f, [&grid, ghost] {
+            Utils::scatterGhost(ghost, grid);
+        });
+        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Chasing, std::move(chaseState));
+    }
+
+    void triggerAnimationSwitch(std::shared_ptr<IME::Entity> entity) {
+        if (entity) {
+            auto previousDirection = entity->getDirection();
+            entity->setDirection(IME::Direction::Unknown);
+            entity->setDirection(previousDirection);
+        }
     }
 }
 

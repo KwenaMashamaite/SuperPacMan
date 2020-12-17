@@ -1,6 +1,26 @@
-/**
- * @brief Frontend for the loading state
- */
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef LOADINGVIEW_H
 #define LOADINGVIEW_H
@@ -9,12 +29,15 @@
 #include <IME/graphics/ui/GuiContainer.h>
 
 namespace SuperPacMan {
+    /**
+     * @brief Frontend for the loading state
+     */
     class LoadingView {
     public:
         /**
          * @brief Create the view
-         * @param renderTargetSize Size of the window the view is being rendered
-         *          on
+         * @param renderTargetSize Size of the window the view is being
+         *        rendered on
          */
         explicit LoadingView(IME::Vector2u renderTargetSize);
 
@@ -54,19 +77,16 @@ namespace SuperPacMan {
         void createTitle();
 
         /**
-         * @brief Create the bar to show the progress of the resource loading
+         * @brief Create the bar to show the progress of the resource
+         *        loading
          */
         void createProgressBar();
 
     private:
-        //Window Size
-        IME::Vector2u windowSize_;
-        //Third party engine logo
-        IME::Graphics::Sprite engineLogo_;
-        //Games mascot
-        IME::Graphics::Sprite mascot_;
-        //Container for all widgets
-        IME::UI::GuiContainer guiContainer_;
+        IME::Vector2u windowSize_;           //!< Game window Size
+        IME::Graphics::Sprite engineLogo_;   //!< Third party engine logo
+        IME::Graphics::Sprite mascot_;       //!< Super Pac-Man mascot
+        IME::UI::GuiContainer guiContainer_; //!< Container for all widgets in this view
     };
 }
 

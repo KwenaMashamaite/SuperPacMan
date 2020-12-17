@@ -1,15 +1,42 @@
-/**
- * @brief
- */
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef SUPERSTATE_H
 #define SUPERSTATE_H
 
-#include "../IState.h"
+#include "../TimedState.h"
 #include "../../PacMan.h"
 
 namespace SuperPacMan {
-    class SuperState : public IState {
+    /**
+     * @brief Defines Pacmans behavior after eating a Super pellet
+     *
+     * In this state, Pacman enlarges and attains super speed. In addition,
+     * he is invulnerable and cannot be killed by the ghost. He can break
+     * doors when colliding with them
+     */
+    class SuperState : public TimedState {
     public:
         /**
          * @brief Construct state
@@ -41,14 +68,21 @@ namespace SuperPacMan {
 
     private:
         /**
+         * @brief Pop state
+         */
+        void onTimeout() override;
+
+        /**
          * @brief Trigger animation to reflect the correct pacman size
          *
-         * Normal size when state is exited and Super size when state is entered
+         * Normal size when state is exited and Super size when state is
+         * entered
          */
         void triggerAnimationSwitch();
 
     private:
         std::shared_ptr<PacMan> pacman_;
+        bool isPacmanFlashing_;
     };
 }
 

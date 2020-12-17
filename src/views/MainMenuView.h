@@ -1,6 +1,26 @@
-/**
- * @brief Frontend for the main menu state
- */
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef MAINMENUVIEW_H
 #define MAINMENUVIEW_H
@@ -11,13 +31,16 @@
 
 namespace SuperPacMan {
     /**
-     * @brief States the menu can be in
+     * @brief Main menu sub views
      */
     enum class SubView {
-        Main,
-        Info
+        Main,   //!< Navigation view
+        Info    //!< Information view
     };
 
+    /**
+     * @brief Frontend for the main menu state
+     */
     class MainMenuView {
     public:
         /**
@@ -28,9 +51,9 @@ namespace SuperPacMan {
 
         /**
          * @brief Initialize the view
-         * @param highscore Highest score from previous gameplay
+         * @param highScore Highest score from previous gameplay
          */
-        void init(int highscore);
+        void init(int highScore);
 
         /**
          * @brief Render the view
@@ -39,8 +62,11 @@ namespace SuperPacMan {
         void render(IME::Graphics::Window& renderTarget);
 
         /**
-         * @brief Pass an event to be handled by the view
+         * @brief Handle an event
          * @param event Event to be handled
+         *
+         * This function ensures that mouse clicks and mose move
+         * events are captured by the view
          */
         void handleEvent(sf::Event event);
 
@@ -79,23 +105,17 @@ namespace SuperPacMan {
         void createLogo();
 
         /**
-         * @brief Create the menu navigation buttons
+         * @brief Create the navigation buttons
          */
         void createButtons();
 
     private:
-        //
-        CommonView commonView_;
-        //Container for main view widgets
-        IME::UI::GuiContainer mainViewContainer_;
-        //Container for info view widgets
-        IME::UI::GuiContainer infoViewContainer_;
-        //The games logo
-        IME::Graphics::Sprite pacmanLogo_;
-        //The current view of the main menu
-        SubView currentView_;
-        //Size of the render target for this view
-        IME::Vector2u windowSize_;
+        CommonView commonView_;                   //!< View displayed by all states
+        IME::UI::GuiContainer mainViewContainer_; //!< Container for all main menu subview widgets
+        IME::UI::GuiContainer infoViewContainer_; //!< Container for all info subview widgets
+        IME::Graphics::Sprite pacmanLogo_;        //!< Super PacMan logo
+        SubView currentView_;                     //!< View that is currently rendered
+        IME::Vector2u windowSize_;                //!< Size of the games render target
     };
 }
 

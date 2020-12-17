@@ -22,29 +22,43 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <IME/graphics/Window.h>
-#include "../entities/AllEntities.h"
-#include "Drawer.h"
+#include "ChaseState.h"
+#include <IME/core/event/EventDispatcher.h>
+#include <cassert>
 
 namespace SuperPacMan {
-    Drawer::Drawer(IME::Graphics::Window &renderTarget) :
-            renderTarget_(renderTarget)
-    {}
+    ChaseState::ChaseState(std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid,
+        IME::Graphics::Tile pacmanTile) :
+        ghostMover_(grid, ghost), pacmanTileChangeHandler{-1}
+    {
+        assert(std::dynamic_pointer_cast<Ghost>(ghost) && "Cannot create ghost state for non ghost object");
+        ghost_ = std::move(std::dynamic_pointer_cast<Ghost>(ghost));
+        ghostMover_.setDestination(pacmanTile.getIndex());
+    }
 
-    void Drawer::drawEntities(const std::vector<std::shared_ptr<IME::Entity>> &entities) {
-        std::for_each(entities.begin(), entities.end(), [this](auto& entity) {
-            if (entity->getClassType() == "Pellet")
-                renderTarget_.draw(std::dynamic_pointer_cast<Pellet>(entity)->getSprite());
-            else if (entity->getClassType() == "Fruit")
-                renderTarget_.draw(std::dynamic_pointer_cast<Fruit>(entity)->getSprite());
-            else if (entity->getClassType() == "Key")
-                renderTarget_.draw(std::dynamic_pointer_cast<Key>(entity)->getSprite());
-            else if (entity->getClassType() == "PacMan")
-                renderTarget_.draw(std::dynamic_pointer_cast<PacMan>(entity)->getSprite());
-            else if (entity->getClassType() == "Ghost")
-                renderTarget_.draw(std::dynamic_pointer_cast<Ghost>(entity)->getSprite());
-            else if (entity->getClassType() == "Door")
-                renderTarget_.draw(std::dynamic_pointer_cast<Door>(entity)->getSprite());
+    void ChaseState::onEntry() {
+        pacmanTileChangeHandler = IME::EventDispatcher::instance()->onEvent("pacmanTileChange", IME::Callback<IME::Graphics::Tile>(
+            [this](IME::Graphics::Tile tile) {
+                ghostMover_.setDestination(tile.getIndex());
+        }));
+
+        ghostMover_.startMovement();
+    }
+
+    void ChaseState::update(float deltaTime) {
+        TimedState::update(deltaTime);
+        ghostMover_.update(deltaTime);
+    }
+
+    void ChaseState::onExit() {
+        IME::EventDispatcher::instance()->removeEventListener("pacmanTileChange", pacmanTileChangeHandler);
+    }
+
+    void ChaseState::onTimeout() {
+        //Make sure ghost is not stuck in between tiles when state is popped
+        ghostMover_.onAdjacentTileReached([this](IME::Graphics::Tile) {
+            ghost_->popState();
+            callback();
         });
     }
 }

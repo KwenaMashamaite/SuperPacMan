@@ -22,29 +22,36 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <IME/graphics/Window.h>
-#include "../entities/AllEntities.h"
-#include "Drawer.h"
+#include "DyingState.h"
+#include <IME/core/event/EventDispatcher.h>
+#include <cassert>
 
 namespace SuperPacMan {
-    Drawer::Drawer(IME::Graphics::Window &renderTarget) :
-            renderTarget_(renderTarget)
-    {}
+    DyingState::DyingState(std::shared_ptr<IME::Entity> pacman) {
+        assert(std::dynamic_pointer_cast<PacMan>(pacman) && "Cannot create Pacman state for non Pacman object");
+        pacman_ = std::move(std::dynamic_pointer_cast<PacMan>(pacman));
+    }
 
-    void Drawer::drawEntities(const std::vector<std::shared_ptr<IME::Entity>> &entities) {
-        std::for_each(entities.begin(), entities.end(), [this](auto& entity) {
-            if (entity->getClassType() == "Pellet")
-                renderTarget_.draw(std::dynamic_pointer_cast<Pellet>(entity)->getSprite());
-            else if (entity->getClassType() == "Fruit")
-                renderTarget_.draw(std::dynamic_pointer_cast<Fruit>(entity)->getSprite());
-            else if (entity->getClassType() == "Key")
-                renderTarget_.draw(std::dynamic_pointer_cast<Key>(entity)->getSprite());
-            else if (entity->getClassType() == "PacMan")
-                renderTarget_.draw(std::dynamic_pointer_cast<PacMan>(entity)->getSprite());
-            else if (entity->getClassType() == "Ghost")
-                renderTarget_.draw(std::dynamic_pointer_cast<Ghost>(entity)->getSprite());
-            else if (entity->getClassType() == "Door")
-                renderTarget_.draw(std::dynamic_pointer_cast<Door>(entity)->getSprite());
+    void DyingState::onEntry() {
+        pacman_->setNumberOfLives(pacman_->getNumberOfLives() - 1);
+        pacman_->getSprite().switchAnimation("dying");
+        setTimeout(pacman_->getSprite().getCurrentAnimation()->getDuration(), [this] {
+            pacman_->popState();
         });
+    }
+
+    void DyingState::update(float deltaTime) {
+        TimedState::update(deltaTime);
+    }
+
+    void DyingState::onExit() {
+        if (pacman_->isActive())
+            IME::EventDispatcher::instance()->dispatchEvent("pacmanRevived", pacman_);
+        else
+            IME::EventDispatcher::instance()->dispatchEvent("pacmanDied", pacman_);
+    }
+
+    void DyingState::onTimeout() {
+        callback();
     }
 }

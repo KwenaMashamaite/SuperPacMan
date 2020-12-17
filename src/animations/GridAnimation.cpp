@@ -22,29 +22,25 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <IME/graphics/Window.h>
-#include "../entities/AllEntities.h"
-#include "Drawer.h"
+#include "GridAnimation.h"
 
 namespace SuperPacMan {
-    Drawer::Drawer(IME::Graphics::Window &renderTarget) :
-            renderTarget_(renderTarget)
-    {}
+    GridAnimation::GridAnimation() {
+        createFlashAnimations("blue", {450, 0, 224, 244});
+        createFlashAnimations("orange", {0, 249, 224, 244});
+        createFlashAnimations("purple", {225, 249, 224, 244});
+        createFlashAnimations("pink", {450, 249, 224, 244});
+        createFlashAnimations("green", {675, 249, 224, 244});
+    }
 
-    void Drawer::drawEntities(const std::vector<std::shared_ptr<IME::Entity>> &entities) {
-        std::for_each(entities.begin(), entities.end(), [this](auto& entity) {
-            if (entity->getClassType() == "Pellet")
-                renderTarget_.draw(std::dynamic_pointer_cast<Pellet>(entity)->getSprite());
-            else if (entity->getClassType() == "Fruit")
-                renderTarget_.draw(std::dynamic_pointer_cast<Fruit>(entity)->getSprite());
-            else if (entity->getClassType() == "Key")
-                renderTarget_.draw(std::dynamic_pointer_cast<Key>(entity)->getSprite());
-            else if (entity->getClassType() == "PacMan")
-                renderTarget_.draw(std::dynamic_pointer_cast<PacMan>(entity)->getSprite());
-            else if (entity->getClassType() == "Ghost")
-                renderTarget_.draw(std::dynamic_pointer_cast<Ghost>(entity)->getSprite());
-            else if (entity->getClassType() == "Door")
-                renderTarget_.draw(std::dynamic_pointer_cast<Door>(entity)->getSprite());
-        });
+    const std::vector<std::shared_ptr<IME::Animation>> & GridAnimation::getAnimations() {
+        return animations_;
+    }
+
+    void GridAnimation::createFlashAnimations(const std::string& gridColour, IME::IntRect gridFrame) {
+        auto animation = std::make_shared<IME::Animation>("flash-" + gridColour, "grids.png", 0.20f);
+        animation->addFrames({gridFrame, {675, 0, 224, 244}});
+        animation->setLoop(true);
+        animations_.push_back(std::move(animation));
     }
 }

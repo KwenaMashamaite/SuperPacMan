@@ -1,3 +1,27 @@
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
 #include "IME/graphics/Window.h"
 #include "LoadingView.h"
 #include <IME/graphics/ui/widgets/Label.h>
@@ -37,6 +61,12 @@ namespace SuperPacMan {
         engineLogo_.setOrigin(engineLogo_.getLocalBounds().width / 2.0f, 0.0f);
         engineLogo_.scale(0.9f, 0.9f);
         engineLogo_.setPosition(poweredByText->getPosition().x, poweredByText->getPosition().y + poweredByText->getSize().y);
+
+        auto copyright = std::make_shared<IME::UI::Label>("Copyright \xa9 2021 Kwena Mashamaite");
+        copyright->getRenderer()->setTextColour({255, 250, 250, 150});
+        copyright->setOrigin(0.5f, 0.0f);
+        copyright->setPosition(windowSize_.x / 2.0f, windowSize_.y - copyright->getSize().y);
+        guiContainer_.addWidget(std::move(copyright), "copyright");
     }
 
     void LoadingView::createProgressBar() {

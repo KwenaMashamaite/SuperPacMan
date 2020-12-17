@@ -1,3 +1,27 @@
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
+
 #include "IntroState.h"
 #include <IME/core/loop/Engine.h>
 #include "../entities/AllEntities.h"
@@ -6,6 +30,7 @@
 #include "../utils/Utils.h"
 #include "../entities/states/pacman/SuperState.h"
 #include "../entities/states/ghost/FrightenedState.h"
+#include "../entities/states/pacman/NormalState.h"
 
 using namespace IME::Graphics;
 
@@ -40,45 +65,47 @@ namespace SuperPacMan {
         });
         pacmanController_->startMovement();
 
-        pacmanController_->onCollectableCollision([this](auto target, auto colletable) {
-            if (colletable->getClassType() == "Fruit") {
-                engine().getAudioManager().play(IME::AudioType::Sfx, "WakkaWakka.wav");
-                std::dynamic_pointer_cast<Fruit>(colletable)->eat();
-            } else if (colletable->getClassType() == "Pellet") {
-                auto pellet = std::dynamic_pointer_cast<Pellet>(colletable);
+        pacmanController_->onCollectableCollision([this](auto target, auto collectable) {
+            if (collectable->getClassType() == "Fruit") {
+                engine().getAudioManager().play(IME::Audio::Type::Sfx, "WakkaWakka.wav");
+                std::dynamic_pointer_cast<Fruit>(collectable)->eat();
+            } else if (collectable->getClassType() == "Pellet") {
+                auto pellet = std::dynamic_pointer_cast<Pellet>(collectable);
                 if (pellet->getPelletType() == PelletType::PowerPellet) {
                     for (const auto& ghost : objects_.at("ghosts"))
-                        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(std::make_shared<FrightenedState>(ghost, grid_));
-                    engine().getAudioManager().play(IME::AudioType::Sfx, "powerPelletEaten.wav");
+                        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Frightened, std::make_shared<FrightenedState>(ghost, grid_));
+                    engine().getAudioManager().play(IME::Audio::Type::Sfx, "powerPelletEaten.wav");
                 } else {
-                    std::dynamic_pointer_cast<PacMan>(objects_.at("pacman")[0])->pushState(std::make_shared<SuperState>(objects_.at("pacman")[0]));
-                    engine().getAudioManager().play(IME::AudioType::Sfx,"superPelletEaten.wav");
+                    Utils::enlargePacman(objects_.at("pacman")[0], 10.0f);
+                    engine().getAudioManager().play(IME::Audio::Type::Sfx,"superPelletEaten.wav");
                 }
                 pellet->eat();
-            } else if (colletable->getClassType() == "Key") {
-                engine().getAudioManager().play(IME::AudioType::Sfx, "keyEaten.wav");
+            } else if (collectable->getClassType() == "Key") {
+                engine().getAudioManager().play(IME::Audio::Type::Sfx, "keyEaten.wav");
                 for (const auto& doorPtr : objects_.at("doors")) {
                     auto door = std::dynamic_pointer_cast<Door>(doorPtr);
                     if (!door->isLocked())
                         continue;
 
-                    door->unlockWith(*std::dynamic_pointer_cast<Key>(colletable));
-                    if (!door->isLocked())
-                        door->setAlive(false);
+                    door->unlockWith(*std::dynamic_pointer_cast<Key>(collectable));
+                    if (!door->isLocked()) {
+                        door->setActive(false);
+                        break;
+                    }
                 }
-                colletable->setAlive(false);
+                collectable->setActive(false);
             }
         });
 
         engine().onFrameEnd([this] {
-            grid_.removeChildrenIf([](std::shared_ptr<IME::Entity> entity) {
-                return !entity->isAlive();
+            grid_.removeChildrenIf([](std::shared_ptr<IME::Entity> child) {
+                return !child->isActive();
             });
 
-            Utils::removeDeadObjectsFromContainer(objects_.at("keys"));
-            Utils::removeDeadObjectsFromContainer(objects_.at("fruits"));
-            Utils::removeDeadObjectsFromContainer(objects_.at("pellets"));
-            Utils::removeDeadObjectsFromContainer(objects_.at("doors"));
+            Utils::removeInactiveObjectsFromContainer(objects_.at("keys"));
+            Utils::removeInactiveObjectsFromContainer(objects_.at("fruits"));
+            Utils::removeInactiveObjectsFromContainer(objects_.at("pellets"));
+            Utils::removeInactiveObjectsFromContainer(objects_.at("doors"));
         });
 
         //Make state skippable by pressing enter key
@@ -91,7 +118,7 @@ namespace SuperPacMan {
         grid_.loadFromFile("textFiles/levels/introMaze.txt");
         grid_.setPosition(-42, 0);
         grid_.setGridVisible(false);
-        grid_.getBackground() = SpriteContainer::getSprite("intro_grid");
+        dynamic_cast<IME::Graphics::Sprite&>(grid_.getBackground()) = SpriteContainer::getSprite("intro_grid");
         grid_.getBackground().setPosition({5.0f, 6.0f});
         grid_.getBackground().scale(2.1f, 2.1f);
         grid_.showLayer("background");
@@ -99,6 +126,10 @@ namespace SuperPacMan {
 
     void IntroState::createObjects() {
         objects_ = Utils::createObjects(grid_);
+
+        auto pacman = objects_.at("pacman")[0];
+        std::dynamic_pointer_cast<PacMan>(objects_.at("pacman")[0])
+            ->pushState(PacMan::States::Normal, std::make_shared<NormalState>(pacman));
 
         //Lock all the doors
         for (auto i = 0; i < objects_.at("doors").size(); ++i) {

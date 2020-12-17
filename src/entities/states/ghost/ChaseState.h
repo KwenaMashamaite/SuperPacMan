@@ -22,66 +22,62 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef KEY_H
-#define KEY_H
+#ifndef CHASESTATE_H
+#define CHASESTATE_H
 
 #include <IME/core/entity/Entity.h>
-#include <IME/graphics/AnimatableSprite.h>
+#include <IME/core/tilemap/TileMap.h>
+#include <IME/core/physics/TargetGridMover.h>
+#include "../TimedState.h"
+#include "../../Ghost.h"
 
 namespace SuperPacMan {
     /**
-     * @brief A key that can lock or unlock a door
-     *
-     * @see Door
+     * @brief Defines the behavior of a ghost when it is chasing pacman
      */
-    class Key : public IME::Entity {
+    class ChaseState final : public TimedState {
     public:
         /**
-         * @brief Construct the key
-         * @param boundingRect The keys bounding rectangle dimensions
-         * @param id Identification code of the key
+         * @brief Construct state
+         * @param ghost Eaten ghost
+         * @param grid Grid ghost is in
+         * @param pacmanTile Tile currently occupied by pacman
+         */
+        ChaseState(std::shared_ptr<IME::Entity> ghost, IME::TileMap& grid,
+            IME::Graphics::Tile pacmanTile);
+
+        /**
+         * @brief Initialize the state
          *
-         * The id is useful for distinguishing between different key
-         * objects. Multiple key objects can have the same identifier
+         * This function will be called by the FSM when a state is entered
+         * for the first time
          */
-        Key(const IME::Vector2u &boundingRect, int id);
+        void onEntry() override;
 
         /**
-         * @brief Copy constructor
+         * @brief update the state
+         * @param deltaTime Time passed since the state was last updated
          */
-        Key(const Key&) = default;
+        void update(float deltaTime) override;
 
         /**
-         * @brief Move constructor
+         * @brief Exit a state
+         *
+         * This function will be called by the FSM before the state is
+         * destroyed
          */
-        Key(Key&&) = default;
-
-        /**
-         * @brief Assignment operator
-         */
-        Key& operator=(const Key& rhs) = default;
-
-        /**
-         * @brief Get the keys identification code
-         * @return The keys identification code
-         */
-        int getId() const;
-
-        /**
-         * @brief Get the class type
-         * @return Name of the concrete class the key belongs to
-         */
-        std::string getClassType() override;
-
-        /**
-         * @brief Get the sprites graphical representation
-         * @return The sprites graphical representation
-         */
-        IME::Graphics::Sprite& getSprite();
+        void onExit() override;
 
     private:
-        int id_;                       //!< The keys id
-        IME::Graphics::Sprite sprite_; //!< Keys graphical representation
+        /**
+         * @brief Pop the state
+         */
+        void onTimeout() override;
+
+    private:
+        std::shared_ptr<Ghost> ghost_;    //!< Eaten ghost
+        int pacmanTileChangeHandler;      //!< Pacman tile change handler id
+        IME::TargetGridMover ghostMover_; //!< Ghost movement controller
     };
 }
 

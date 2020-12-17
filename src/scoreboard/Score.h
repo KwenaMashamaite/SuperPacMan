@@ -1,6 +1,26 @@
-/**
- * @brief Class for instantiating score objects
- */
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef SCORE_H
 #define SCORE_H
@@ -8,6 +28,9 @@
 #include <string>
 
 namespace SuperPacMan {
+    /**
+     * @brief Game score
+     */
     class Score {
     public:
         /**
@@ -26,36 +49,6 @@ namespace SuperPacMan {
         Score& operator=(const Score&) = default;
 
         /**
-         * @brief Check if a score is the same as this score
-         * @param rhs Score to check against this score
-         * @return True if the scores are the same, otherwise false
-         */
-        bool operator==(const Score& rhs) const;
-
-        /**
-         * @brief Check if a score is not the same as this score
-         * @param rhs Score to check against this score
-         * @return True if the scores are not the same, otherwise false
-         */
-        bool operator!=(const Score& rhs) const;
-
-        /**
-         * @brief Check if a score has a value less than this scores value
-         * @param rhs Score to check against this one
-         * @return True if the specified score has a value less than this score
-         *         value, otherwise false
-         */
-        bool operator<(const Score& rhs) const;
-
-        /**
-         * @brief Check if a score has a value greater than this scores value
-         * @param rhs Score to check against this one
-         * @return True if the specified score has a value greater than this score
-         *         value, otherwise false
-         */
-        bool operator>(const Score& rhs) const;
-
-        /**
          * @brief Set the value of the score
          * @param value New value of the score
          *
@@ -64,6 +57,26 @@ namespace SuperPacMan {
          * of the score is
          */
         void setValue(int value);
+
+        /**
+         * @brief Get the value of the score
+         * @return The value of the score
+         */
+        int getValue() const;
+
+        /**
+         * @brief Set the name of the person the score belongs to
+         * @param name Name of the person
+         *
+         * The score is not associated with any owner (empty string) by default
+         */
+        void setOwner(const std::string& name);
+
+        /**
+         * @brief Get the name of the person the score belongs to
+         * @return The name of the person the score belongs to
+         */
+        const std::string& getOwner() const;
 
         /**
          * @brief Increase or decrease the score value
@@ -75,31 +88,51 @@ namespace SuperPacMan {
         void adjustValue(int offset);
 
         /**
-         * @brief Set the name of the person the score belongs to
-         * @param name Name of the person
+         * @brief Check if a score is the same as this score
+         * @param rhs Score to check against this score
+         * @return True if the scores are the same, otherwise false
          *
-         * The score is not associated with any owner (empty string) by default
+         * Two score objects are the same if they have the same value and
+         * the same owner
          */
-        void setOwner(const std::string& name);
+        bool operator==(const Score& rhs) const;
 
         /**
-         * @brief Get the value of the score
-         * @return The value of the score
+         * @brief Check if a score is not the same as this score
+         * @param rhs Score to check against this score
+         * @return True if the scores are not the same, otherwise false
+         *
+         * Two score objects are not the same if either the value or
+         * the owner don't match
          */
-        int getValue() const;
-
-        /**
-         * @brief Get the name of the person the score belongs to
-         * @return The name of the person the score belongs to
-         */
-        const std::string& getOwner() const;
+        bool operator!=(const Score& rhs) const;
 
     private:
-        //Score points
-        int value_;
-        //Name of the person the score belongs to
-        std::string owner_;
+        int value_;         //!< Points
+        std::string owner_; //!< Name of the player the score belongs to
     };
+
+    /**
+     * @relates Score
+     * @brief Check if a score is less than another scores value
+     * @param lhs Left operand
+     * @param rhs Right operand
+     * @return True if @a lhs is less than @a rhs
+     *
+     * This operator performs comparison using score values
+     */
+    extern bool operator<(const Score& lhs, const Score& rhs);
+
+    /**
+     * @relates Score
+     * @brief Check if a score is greater than another score
+     * @param lhs Left operand
+     * @param rhs Right operand
+     * @return True if @a lhs is greater than @a rhs
+     *
+     * This operator performs comparison using score values
+     */
+    extern bool operator>(const Score& lhs, const Score& rhs);
 }
 
 #endif

@@ -1,13 +1,26 @@
-/**
- * @brief Defines the view that appears across all states
- *
- * This view includes the score and high score displayed at the top of
- * the screen, the flashing 1 UP text at the top left edge of the screen,
- * Pacman's current number of lives at the bottom left edge of the screen
- * the level fruits at the bottom right of the screen
- *
- * This view is used by all game states except the loading state
- */
+////////////////////////////////////////////////////////////////////////////////
+// Super Pac-Man clone
+//
+// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef COMMONVIEW_H
 #define COMMONVIEW_H
@@ -17,6 +30,16 @@
 #include <IME/graphics/Sprite.h>
 
 namespace SuperPacMan {
+    /**
+     * @brief Defines the view that appears across all states
+     *
+     * This view includes the score and high score displayed at the top of
+     * the screen, the flashing 1 UP text at the top left edge of the screen,
+     * Pacman's current number of lives at the bottom left edge of the screen
+     * and the level fruits at the bottom right of the screen
+     *
+     * This view is used by all game states except the loading state
+     */
     class CommonView {
     public:
         /**
@@ -68,18 +91,12 @@ namespace SuperPacMan {
         void createSprites();
 
     private:
-        //Container for all widgets
-        IME::UI::GuiContainer guiContainer_;
-        //Size of the render target
-        IME::Vector2u windowSize_;
-        //Stores all sprites
-        std::vector<IME::Graphics::Sprite> sprites;
-        //Current level
-        int level_;
-        //Remaining pacman lives
-        int pacmanLives_;
-        //How long the 1 up stays in hidden and shown states
-        float flashTimeout_;
+        IME::UI::GuiContainer guiContainer_;        //!< Container for all widgets
+        IME::Vector2u windowSize_;                  //!< Size of the render target
+        std::vector<IME::Graphics::Sprite> sprites; //!< Stores all sprites to be rendered
+        int level_;                                 //!< Current level
+        int pacmanLives_;                           //!< Remaining pacman lives
+        float flashTimeout_;                        //!< How long the 1 up text stays in hidden and shown states
     };
 }
 
