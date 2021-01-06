@@ -153,6 +153,7 @@ namespace SuperPacMan {
         void initCollisionHandler();
         void initPacmanMovementController();
         void initEventHandlers();
+        void updateScore(int points);
 
     private:
         //Aliases

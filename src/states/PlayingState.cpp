@@ -57,6 +57,8 @@ namespace SuperPacMan {
         auto scoresValueContainer = commonView_->getWidget<IME::UI::HorizontalLayout>("scoresValueContainer");
         scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(
             engine().getPersistentData().getValueFor<int>("high-score")));
+        scoresValueContainer->getWidget("scoreValue")->setText(std::to_string(
+            engine().getPersistentData().getValueFor<int>("score")));
 
         createGrid();
         createEntities();
@@ -128,16 +130,19 @@ namespace SuperPacMan {
         pacmanController_->onCollectableCollision([this](auto, auto collectable) {
             if (collectable->getClassType() == "Fruit") {
                 std::dynamic_pointer_cast<Fruit>(collectable)->eat();
+                updateScore(level_ * 10);
                 engine().getAudioManager().play(IME::Audio::Type::Sfx, "WakkaWakka.wav");
             } else if (collectable->getClassType() == "Pellet") {
                 auto pellet = std::dynamic_pointer_cast<Pellet>(collectable);
                 pellet->eat();
+                updateScore(100);
                 if (pellet->getPelletType() == PelletType::PowerPellet)
                     eventEmitter_.emit("powerPelletEaten");
                 else
                     eventEmitter_.emit("superPelletEaten");
             } else if (collectable->getClassType() == "Key") {
                 collectable->setActive(false);
+                updateScore(50);
                 eventEmitter_.emit("keyEaten", collectable);
             }
         });
@@ -153,6 +158,7 @@ namespace SuperPacMan {
         pacmanController_->onObstacleCollision([this](std::shared_ptr<IME::Entity> pacman, std::shared_ptr<IME::Entity> obstacle) {
             if (obstacle->getClassType() == "Door" && !pacman->isVulnerable()) {
                 std::dynamic_pointer_cast<Door>(obstacle)->forceOpen();
+                updateScore(200);
                 engine().getAudioManager().play(IME::Audio::Type::Sfx, "doorBroken.wav");
                 pacmanController_->requestDirectionChange(pacman->getDirection());
             }
@@ -226,13 +232,14 @@ namespace SuperPacMan {
         });
     }
 
-    void PlayingState::chasePacman() {
-        for (const auto& ghost : objects_.at("ghosts")) {
-            auto chaseState = std::make_shared<ChaseState>(ghost, grid_, grid_.getTileOccupiedByChild(objects_.at("pacman")[0]));
-            chaseState->setTimeout(7.0f, [this, ghost] {
-                Utils::scatterGhost(ghost, grid_);
-            });
-            std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Chasing, std::move(chaseState));
+    void PlayingState::updateScore(int points) {
+        auto scoresValueContainer = commonView_->getWidget<IME::UI::HorizontalLayout>("scoresValueContainer");
+        auto newScore = engine().getPersistentData().getValueFor<int>("score") + points;
+        engine().getPersistentData().setValueFor("score", newScore);
+        scoresValueContainer->getWidget("scoreValue")->setText(std::to_string(newScore));
+        if (newScore > engine().getPersistentData().getValueFor<int>("high-score")) {
+            engine().getPersistentData().setValueFor("high-score", newScore);
+            scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(newScore));
         }
     }
 
