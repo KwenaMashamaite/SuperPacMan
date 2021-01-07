@@ -47,7 +47,8 @@ namespace SuperPacMan {
 
         //Create text block for showing information when a main menu button is clicked
         auto infoBox = std::make_shared<IME::UI::Label>();
-        infoBox->setOrigin(0.5, 0.5);
+        infoBox->setSize(windowSize_.x / 1.05f, windowSize_.y / 1.2f);
+        infoBox->setOrigin(0.5f, 0.5f);
         infoBox->setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
         infoViewContainer_.addWidget(std::move(infoBox), "info-box");
 
@@ -70,6 +71,7 @@ namespace SuperPacMan {
             {"play-btn", "PLAY"},
             {"controls-btn", "CONTROLS"},
             {"options-btn", "OPTIONS"},
+            {"about-btn", "ABOUT"},
             {"exit-btn", "EXIT"}
         };
         auto buttonsContainer = std::make_shared<IME::UI::VerticalLayout>(120, 180);

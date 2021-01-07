@@ -62,6 +62,18 @@ namespace SuperPacMan {
             mainMenuView_.getWidget<IME::UI::Label>("info-box")->setText(info);
         }));
 
+        //ABOUT BUTTON
+        text.str("");
+        IME::Utility::DiskFileReader().readFileInto("textFiles/LICENSE", text);
+        navButtonsContainer->getWidget("about-btn")->on("click", IME::Callback<>([this, info = text.str()]{
+            mainMenuView_.setSubView(SubView::Info);
+            mainMenuView_.getWidget<IME::UI::Label>("info-box")->setText(info);
+        }));
+
+        navButtonsContainer->getWidget("options-btn")->on("click", IME::Callback<>([this] {
+            mainMenuView_.setSubView(SubView::Options);
+        }));
+
         //EXIT BUTTON
         navButtonsContainer->getWidget("exit-btn")->on("click", IME::Callback<>([this]{
             engine().quit();
