@@ -38,26 +38,26 @@ namespace SuperPacMan {
         scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highScore));
 
         guiContainer_.setFont("namco.ttf");
-        auto textContainer = std::make_shared<IME::UI::VerticalLayout>(500, 250);
+        auto textContainer = IME::UI::VerticalLayout::create(500, 250);
         textContainer->getRenderer()->setSpaceBetweenWidgets(0.0f);
         textContainer->setPosition(84.0f, 315.0);
         guiContainer_.addWidget(textContainer, "textContainer");
 
-        auto powerText = std::make_shared<IME::UI::Label>("POWER");
+        auto powerText = IME::UI::Label::create("POWER");
         powerText->getRenderer()->setTextColour(IME::Colour::White);
         powerText->getRenderer()->setPadding({18.0f, 0.0f, 0.0f, 0.0f});
         textContainer->addWidget(std::move(powerText), "powerText");
 
-        auto superText = std::make_shared<IME::UI::Label>("SUPER");
+        auto superText = IME::UI::Label::create("SUPER");
         superText->getRenderer()->setTextColour(IME::Colour::White);
         superText->getRenderer()->setPadding({18.0f, 0.0f, 0.0f, 0.0f});
         textContainer->addWidget(std::move(superText), "superText");
 
-        auto copyrightText = std::make_shared<IME::UI::Label>("\xa9 1982 NAMCO LTD.");
+        auto copyrightText = IME::UI::Label::create("\xa9 1982 NAMCO LTD.");
         copyrightText->getRenderer()->setTextColour(IME::Colour::White);
         textContainer->addWidget(std::move(copyrightText), "copyrightText");
 
-        auto companyName = std::make_shared<IME::UI::Label>("namco");
+        auto companyName = IME::UI::Label::create("namco");
         companyName->getRenderer()->setFont("AtariClassicExtrasmooth-LxZy.ttf");
         companyName->setTextSize(16);
         companyName->setOrigin(0.5f, 1.0f);

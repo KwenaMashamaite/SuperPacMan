@@ -48,7 +48,7 @@ namespace SuperPacMan {
         guiContainer_.setFont("namco.ttf");
         guiContainer_.setTextSize(12.0f);
         
-        auto stageText = std::make_shared<IME::UI::Label>("STAGE  " + std::to_string(level_));
+        auto stageText = IME::UI::Label::create("STAGE  " + std::to_string(level_));
         stageText->getRenderer()->setTextColour(IME::Colour::White);
         stageText->setOrigin(0.5f, 0.5f);
         stageText->setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
@@ -62,7 +62,7 @@ namespace SuperPacMan {
         fruit_.setPosition(stageText->getPosition().x - stageText->getSize().x / 2.0f,
             stageText->getPosition().y + stageText->getSize().y * 2);
 
-        auto pointsText = std::make_shared<IME::UI::Label>(std::to_string(level_ * 10) + " PTS");
+        auto pointsText = IME::UI::Label::create(std::to_string(level_ * 10) + " PTS");
         pointsText->getRenderer()->setTextColour(IME::Colour::White);
         pointsText->setPosition(fruit_.getPosition().x + (fruit_.getLocalBounds().width * 2),
             fruit_.getPosition().y + 6.0f);
