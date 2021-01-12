@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GRIDANIMATION_H
-#define GRIDANIMATION_H
+#ifndef SUPERPACMAN_GRIDANIMATION_H
+#define SUPERPACMAN_GRIDANIMATION_H
 
 #include <IME/core/animation/Animation.h>
 #include <IME/common/Rect.h>
 #include <memory>
 #include <vector>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Construct flashing grid animations
      *
@@ -48,7 +48,7 @@ namespace SuperPacMan {
          * @brief Get all the grid animation
          * @return The grid animation
          */
-        const std::vector<std::shared_ptr<IME::Animation>>& getAnimations();
+        const std::vector<std::shared_ptr<ime::Animation>>& getAnimations();
 
     private:
         /**
@@ -56,10 +56,10 @@ namespace SuperPacMan {
          * @param gridColour Colour of the grid in lower case
          * @param gridFrame Frame of the grid on the spritesheet
          */
-        void createFlashAnimations(const std::string& gridColour, IME::IntRect gridFrame);
+        void createFlashAnimations(const std::string& gridColour, ime::IntRect gridFrame);
 
     private:
-        std::vector<std::shared_ptr<IME::Animation>> animations_;
+        std::vector<std::shared_ptr<ime::Animation>> animations_;
     };
 }
 

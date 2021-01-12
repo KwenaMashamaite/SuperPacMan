@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SCATTERSTATE_H
-#define SCATTERSTATE_H
+#ifndef SUPERPACMAN_SCATTERSTATE_H
+#define SUPERPACMAN_SCATTERSTATE_H
 
 #include <IME/core/physics/TargetGridMover.h>
 #include <queue>
 #include "../TimedState.h"
 #include "../../Ghost.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Positions ghost targets in scatter mode
      */
@@ -55,7 +55,7 @@ namespace SuperPacMan {
          * @param ghost Ghost to scatter
          * @param grid Grid ghost is in
          */
-        ScatterState(ScatterPosition targetPos, std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid);
+        ScatterState(ScatterPosition targetPos, std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid);
 
         /**
          * @brief Initialize the state
@@ -89,9 +89,9 @@ namespace SuperPacMan {
 
     private:
         std::shared_ptr<Ghost> ghost_;     //!< Scattering ghost
-        IME::TargetGridMover ghostMover_;  //!< Ghost movement controller
+        ime::TargetGridMover ghostMover_;  //!< Ghost movement controller
         ScatterPosition targetPos_;        //!< Position ghost must reach before cycling corner
-        std::queue<IME::Index> ghostPath_; //!< Cyclic path ghost follows after reaching target position
+        std::queue<ime::Index> ghostPath_; //!< Cyclic path ghost follows after reaching target position
     };
 }
 

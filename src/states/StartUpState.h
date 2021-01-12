@@ -22,31 +22,25 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_LOADINGSTATE_H
-#define SUPERPACMAN_LOADINGSTATE_H
+#ifndef SUPERPACMAN_STARTUPSTATE_H
+#define SUPERPACMAN_STARTUPSTATE_H
 
 #include <IME/core/states/State.h>
-#include <atomic>
-#include <mutex>
-#include "../views/LoadingView.h"
+#include "../views/StartUpView.h"
 
 namespace pacman {
     /**
-     * @brief Defines the loading state of the game
+     * @brief Defines the start up state
      *
-     * This state loads all the required assets (Images, sounds, fonts
-     * and music) from the disk into the game. Once all resources have
-     * been loaded, the state pops itself.
-     *
-     * @note The game cannot be exited while in this state
+     * This state state is entered when the game is run
      */
-    class LoadingState : public ime::State {
+    class StartUpState : public ime::State {
     public:
         /**
          * @brief Create state
          * @param engine Reference to the game
          */
-        explicit LoadingState(ime::Engine &engine);
+        explicit StartUpState(ime::Engine &engine);
 
         /**
          * @brief Enter a state
@@ -155,16 +149,9 @@ namespace pacman {
         void onExit() override;
 
     private:
-        /**
-         * @brief Load resources (fonts, textures, music etc...) from the disk
-         */
-        void loadResources();
-
-    private:
-        bool isEntered_;               //!< Initialization flag
-        LoadingView view_;                 //!< View for this state
-        std::atomic_bool loadingFinished_; //!< Flags whether resource loading is complete or not
-        std::mutex mtx_;                   //!< Synchronization for this thread and the resource loading thread
+        StartUpView view_; //!< View for this state
+        bool isInit_;      //!< Initialization state
+        float timeOut_;    //!< StateTimeout
     };
 }
 

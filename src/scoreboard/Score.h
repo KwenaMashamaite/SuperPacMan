@@ -22,12 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SCORE_H
-#define SCORE_H
+#ifndef SUPERPACMAN_SCORE_H
+#define SUPERPACMAN_SCORE_H
 
 #include <string>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Game score
      */

@@ -22,13 +22,13 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef LOADINGVIEW_H
-#define LOADINGVIEW_H
+#ifndef SUPERPACMAN_LOADINGVIEW_H
+#define SUPERPACMAN_LOADINGVIEW_H
 
-#include <IME/graphics/Sprite.h>
-#include <IME/graphics/ui/GuiContainer.h>
+#include <IME/ui/GuiContainer.h>
+#include <IME/graphics/Window.h>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Frontend for the loading state
      */
@@ -36,10 +36,9 @@ namespace SuperPacMan {
     public:
         /**
          * @brief Create the view
-         * @param renderTargetSize Size of the window the view is being
-         *        rendered on
+         * @param window Window to render view on
          */
-        explicit LoadingView(IME::Vector2u renderTargetSize);
+        explicit LoadingView(ime::Window& window);
 
         /**
          * @brief Initialize the view
@@ -48,9 +47,8 @@ namespace SuperPacMan {
 
         /**
          * @brief Render the view
-         * @param renderTarget Target to render view on
          */
-        void render(IME::Graphics::Window& renderTarget);
+        void render();
 
         /**
          * @brief Pass an event to be handled by the view
@@ -61,9 +59,14 @@ namespace SuperPacMan {
         /**
          * @brief Get access to a widget in the view
          * @param widgetName Name of the widget to get access to
-         * @return The specified widget if it exists, otherwise a nullptr
+         * @return The requested widget if it exists, otherwise a nullptr
          *
-         * The object will be casted to the desired type if it's valid
+         * The widget will be casted to the desired type if it's valid
+         *
+         * Example of getting a button widget called "play_btn"
+         * @code
+         * view.getWidget<ime::ui::Button>("play_btn");
+         * @endcode
          */
         template <class T>
         std::shared_ptr<T> getWidget(const std::string& widgetName) const {
@@ -71,22 +74,7 @@ namespace SuperPacMan {
         }
 
     private:
-        /**
-         * @brief Create the title of the game
-         */
-        void createTitle();
-
-        /**
-         * @brief Create the bar to show the progress of the resource
-         *        loading
-         */
-        void createProgressBar();
-
-    private:
-        IME::Vector2u windowSize_;           //!< Game window Size
-        IME::Graphics::Sprite engineLogo_;   //!< Third party engine logo
-        IME::Graphics::Sprite mascot_;       //!< Super Pac-Man mascot
-        IME::UI::GuiContainer guiContainer_; //!< Container for all widgets in this view
+        ime::ui::GuiContainer guiContainer_; //!< Container for all gui widgets
     };
 }
 

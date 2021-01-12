@@ -28,9 +28,9 @@
 #include "../animations/PacManAnimations.h"
 #include <cassert>
 
-namespace SuperPacMan {
-    PacMan::PacMan(const IME::Vector2u &boundingRect) :
-        Entity(boundingRect, IME::Entity::Type::Player),
+namespace pacman {
+    PacMan::PacMan(const ime::Vector2u &boundingRect) :
+        Entity(boundingRect, ime::Entity::Type::Player),
         numberOfLives_(Constants::PacManLives),
         speed_(Constants::PacManNormalSpeed),
         isMoving_(false)
@@ -41,16 +41,16 @@ namespace SuperPacMan {
         for (const auto& animation : animations.getAll())
             sprite_.addAnimation(animation);
 
-        setDirection(IME::Direction::Left);
+        setDirection(ime::Direction::Left);
         sprite_.switchAnimation("goingLeft");
         sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
         sprite_.scale(2.0f, 2.0f);
 
-        onEvent("positionChange", IME::Callback<float, float>([this](float x, float y) {
+        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
             sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
         }));
 
-        onEvent("directionChange", IME::Callback<IME::Direction>([this](IME::Direction dir) {
+        onEvent("directionChange", ime::Callback<ime::Direction>([this](ime::Direction dir) {
             auto newDir = Utils::convertToString(dir);
             if (stateController_.getCurrentState().first != std::to_string(static_cast<int>(States::Super)))
                 sprite_.switchAnimation("going" + newDir);
@@ -86,7 +86,7 @@ namespace SuperPacMan {
         return "PacMan";
     }
 
-    IME::Graphics::AnimatableSprite &PacMan::getSprite() {
+    ime::AnimatableSprite &PacMan::getSprite() {
         return sprite_;
     }
 
@@ -123,18 +123,18 @@ namespace SuperPacMan {
         if (isMoving()) {
             auto velocity = getSpeed() * deltaTime;
             switch (getDirection()) {
-                case IME::Direction::Unknown:
+                case ime::Direction::Unknown:
                     break;
-                case IME::Direction::Left:
+                case ime::Direction::Left:
                     setPosition(getPosition().x - velocity, getPosition().y);
                     break;
-                case IME::Direction::Right:
+                case ime::Direction::Right:
                     setPosition(getPosition().x + velocity, getPosition().y);
                     break;
-                case IME::Direction::Up:
+                case ime::Direction::Up:
                     setPosition(getPosition().x, getPosition().y - velocity);
                     break;
-                case IME::Direction::Down:
+                case ime::Direction::Down:
                     setPosition(getPosition().x, getPosition().y + velocity);
                     break;
             }

@@ -26,7 +26,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace SuperPacMan {
+namespace pacman {
     void StateController::pushState(const std::string& name, std::shared_ptr<IState> state) {
         assert(state && "State cannot be null");
         states_.push({name, state});

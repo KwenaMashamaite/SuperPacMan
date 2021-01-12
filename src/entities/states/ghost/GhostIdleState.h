@@ -22,14 +22,14 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GHOSTIDLESTATE_H
-#define GHOSTIDLESTATE_H
+#ifndef SUPERPACMAN_GHOSTIDLESTATE_H
+#define SUPERPACMAN_GHOSTIDLESTATE_H
 
 #include "../IState.h"
 #include <IME/core/entity/Entity.h>
 #include <memory>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief A ghosts idle state
      *
@@ -42,7 +42,7 @@ namespace SuperPacMan {
          * @brief Constructor
          * @param ghost Ghost to be put in idle state
          */
-        explicit GhostIdleState(std::shared_ptr<IME::Entity> ghost);
+        explicit GhostIdleState(std::shared_ptr<ime::Entity> ghost);
 
         /**
          * @brief Initialize the state

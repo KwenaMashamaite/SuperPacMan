@@ -26,95 +26,66 @@
 #include "PlayingState.h"
 #include "LevelStartState.h"
 #include <IME/core/loop/Engine.h>
-#include <IME/utility/DiskFileReader.h>
-#include <IME/graphics/ui/widgets/Button.h>
-#include <IME/graphics/ui/widgets/BitmapButton.h>
-#include <IME/graphics/ui/widgets/Label.h>
-#include <IME/graphics/ui/widgets/VerticalLayout.h>
+#include <IME/ui/widgets/Button.h>
 
-namespace SuperPacMan {
-    MainMenuState::MainMenuState(IME::Engine &engine) :
+namespace pacman {
+    MainMenuState::MainMenuState(ime::Engine &engine) :
         State(engine),
         isInitialized_(false),
         mainMenuView_(engine.getRenderTarget())
     {}
 
-    void MainMenuState::initialize() {
-        mainMenuView_.init(engine().getPersistentData().getValueFor<int>("high-score"));
+    void MainMenuState::onEnter() {
+        mainMenuView_.init();
         initUIButtonsBehavior();
         isInitialized_ = true;
     }
 
     void MainMenuState::initUIButtonsBehavior() {
-        auto navButtonsContainer = mainMenuView_.getWidget<IME::UI::VerticalLayout>("nav-btn-container");
-        //PLAY BUTTON
-        navButtonsContainer->getWidget("play-btn")->on("click", IME::Callback<>([this] {
+        mainMenuView_.getWidget<ime::ui::Button>("play_btn")->on("click", ime::Callback<>([this] {
             engine().popState();
             engine().pushState(std::move(std::make_shared<PlayingState>(engine())));
             engine().pushState(std::move(std::make_shared<LevelStartState>(engine())));
         }));
 
-        //CONTROLS BUTTON
-        auto text = std::stringstream();
-        IME::Utility::DiskFileReader().readFileInto("textFiles/controls.txt", text);
-        navButtonsContainer->getWidget("controls-btn")->on("click", IME::Callback<>([this, info = text.str()]{
-            mainMenuView_.setSubView(SubView::Info);
-            mainMenuView_.getWidget<IME::UI::Label>("info-box")->setText(info);
-        }));
-
-        //ABOUT BUTTON
-        text.str("");
-        IME::Utility::DiskFileReader().readFileInto("textFiles/LICENSE", text);
-        navButtonsContainer->getWidget("about-btn")->on("click", IME::Callback<>([this, info = text.str()]{
-            mainMenuView_.setSubView(SubView::Info);
-            mainMenuView_.getWidget<IME::UI::Label>("info-box")->setText(info);
-        }));
-
-        navButtonsContainer->getWidget("options-btn")->on("click", IME::Callback<>([this] {
-            mainMenuView_.setSubView(SubView::Options);
-        }));
-
-        //EXIT BUTTON
-        navButtonsContainer->getWidget("exit-btn")->on("click", IME::Callback<>([this]{
+        mainMenuView_.getWidget<ime::ui::Button>("quit_btn")->on("click", ime::Callback<>([this]{
             engine().quit();
         }));
 
-        //BACK BUTTON
-        mainMenuView_.getWidget<IME::UI::BitmapButton>("back-btn")->on("click", IME::Callback<>([this] {
-            mainMenuView_.setSubView(SubView::Main);
-            mainMenuView_.getWidget<IME::UI::Label>("info-box")->setText("");
+        mainMenuView_.getWidget<ime::ui::Button>("apply_btn")->on("click", ime::Callback<>([this] {
+            //@TODO Save new settings
         }));
     }
 
-    void MainMenuState::render(IME::Graphics::Window &renderTarget) {
-        mainMenuView_.render(renderTarget);
+    void MainMenuState::render(ime::Window &renderTarget) {
+        mainMenuView_.render();
     }
 
     void MainMenuState::handleEvent(sf::Event event) {
         mainMenuView_.handleEvent(event);
     }
 
-    bool MainMenuState::isInitialized() const {
+    bool MainMenuState::isEntered() const {
         return isInitialized_;
     }
 
     void MainMenuState::update(float deltaTime) {
-        mainMenuView_.update(deltaTime);
+
     }
 
     void MainMenuState::fixedUpdate(float deltaTime) {
 
     }
 
-    void MainMenuState::pause() {
+    void MainMenuState::onPause() {
 
     }
 
-    void MainMenuState::resume() {
+    void MainMenuState::onResume() {
 
     }
 
-    void MainMenuState::exit() {
+    void MainMenuState::onExit() {
 
     }
 }

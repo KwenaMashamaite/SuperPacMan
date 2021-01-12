@@ -26,9 +26,9 @@
 #include <IME/core/event/EventDispatcher.h>
 #include <cassert>
 
-namespace SuperPacMan {
-    ChaseState::ChaseState(std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid,
-        IME::Graphics::Tile pacmanTile) :
+namespace pacman {
+    ChaseState::ChaseState(std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid,
+        ime::Tile pacmanTile) :
         ghostMover_(grid, ghost), pacmanTileChangeHandler{-1}
     {
         assert(std::dynamic_pointer_cast<Ghost>(ghost) && "Cannot create ghost state for non ghost object");
@@ -37,8 +37,8 @@ namespace SuperPacMan {
     }
 
     void ChaseState::onEntry() {
-        pacmanTileChangeHandler = IME::EventDispatcher::instance()->onEvent("pacmanTileChange", IME::Callback<IME::Graphics::Tile>(
-            [this](IME::Graphics::Tile tile) {
+        pacmanTileChangeHandler = ime::EventDispatcher::instance()->onEvent("pacmanTileChange", ime::Callback<ime::Tile>(
+            [this](ime::Tile tile) {
                 ghostMover_.setDestination(tile.getIndex());
         }));
 
@@ -51,12 +51,12 @@ namespace SuperPacMan {
     }
 
     void ChaseState::onExit() {
-        IME::EventDispatcher::instance()->removeEventListener("pacmanTileChange", pacmanTileChangeHandler);
+        ime::EventDispatcher::instance()->removeEventListener("pacmanTileChange", pacmanTileChangeHandler);
     }
 
     void ChaseState::onTimeout() {
         //Make sure ghost is not stuck in between tiles when state is popped
-        ghostMover_.onAdjacentTileReached([this](IME::Graphics::Tile) {
+        ghostMover_.onAdjacentTileReached([this](ime::Tile) {
             ghost_->popState();
             callback();
         });

@@ -22,67 +22,56 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_SUPERSTATE_H
-#define SUPERPACMAN_SUPERSTATE_H
+#ifndef SUPERPACMAN_STARTUPVIEW_H
+#define SUPERPACMAN_STARTUPVIEW_H
 
-#include "../TimedState.h"
-#include "../../PacMan.h"
+#include <IME/graphics/Window.h>
+#include <IME/ui/GuiContainer.h>
 
 namespace pacman {
     /**
-     * @brief Defines Pacmans behavior after eating a Super pellet
+     * @brief Frontend for the start up state
      *
-     * In this state, Pacman enlarges and attains super speed. In addition,
-     * he is invulnerable and cannot be killed by the ghost. He can break
-     * doors when colliding with them
+     * This view is displayed when the game is opened i.e the first graphic
+     * the user sees
      */
-    class SuperState : public TimedState {
+    class StartUpView {
     public:
         /**
-         * @brief Construct state
-         * @param pacman Pacman
+         * @brief Constructor
+         * @param window Window to render view on
          */
-        explicit SuperState(std::shared_ptr<ime::Entity> pacman);
+        explicit StartUpView(ime::Window& window);
 
         /**
-         * @brief Initialize the state
+         * @brief Initialize the view
+         */
+        void init();
+
+        /**
+         * @brief Render the view
+         */
+        void render();
+
+        /**
+         * @brief Get access to a widget in the view
+         * @param widgetName Name of the widget to get access to
+         * @return The required widget if it exists, otherwise a nullptr
          *
-         * This function will be called by the FSM when a state is entered
-         * for the first time
-         */
-        void onEntry() override;
-
-        /**
-         * @brief update the state
-         * @param deltaTime Time passed since the state was last updated
-         */
-        void update(float deltaTime) override;
-
-        /**
-         * @brief Exit a state
+         * The widget will be casted to the desired type if it's valid
          *
-         * This function will be called by the FSM before the state is
-         * destroyed
+         * Example of getting a button widget called "play_btn"
+         * @code
+         * view.getWidget<ime::ui::Button>("play_btn");
+         * @endcode
          */
-        void onExit() override;
+        template <class T>
+        std::shared_ptr<T> getWidget(const std::string& widgetName) const {
+            return guiContainer_.getWidget<T>(widgetName);
+        }
 
     private:
-        /**
-         * @brief Pop state
-         */
-        void onTimeout() override;
-
-        /**
-         * @brief Trigger animation to reflect the correct pacman size
-         *
-         * Normal size when state is exited and Super size when state is
-         * entered
-         */
-        void triggerAnimationSwitch();
-
-    private:
-        std::shared_ptr<PacMan> pacman_;
-        bool isPacmanFlashing_;
+        ime::ui::GuiContainer guiContainer_; //!< Container for all gui widgets
     };
 }
 

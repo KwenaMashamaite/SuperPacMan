@@ -22,14 +22,14 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef DOOR_H
-#define DOOR_H
+#ifndef SUPERPACMAN_DOOR_H
+#define SUPERPACMAN_DOOR_H
 
 #include <IME/core/entity/Entity.h>
 #include "DoorLocker.h"
 #include <memory>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Orientation of the door
      */
@@ -41,13 +41,13 @@ namespace SuperPacMan {
     /**
      * @brief A door that locks fruits and pellets away from Pacman
      */
-    class Door : public IME::Entity {
+    class Door : public ime::Entity {
     public:
         /**
          * @brief Create door
          * @param boundingRect Size of the rectangle surrounding the door object
          */
-        explicit Door(const IME::Vector2u &boundingRect);
+        explicit Door(const ime::Vector2u &boundingRect);
 
         /**
          * @brief Copy constructor
@@ -133,13 +133,13 @@ namespace SuperPacMan {
          * @brief Add an event listener to a door lock event
          * @param callback Function to execute when the door is locked
          */
-        int onLock(IME::Callback<> callback);
+        int onLock(ime::Callback<> callback);
 
         /**
          * @brief Add an event listener to a door unlock event
          * @param callback Function to execute when the door is unlocked
          */
-        int onUnlock(IME::Callback<> callback);
+        int onUnlock(ime::Callback<> callback);
 
         /**
          * @brief Get the class type
@@ -151,12 +151,12 @@ namespace SuperPacMan {
          * @brief Get the doors graphical representation
          * @return The doors graphical representation
          */
-        IME::Graphics::Sprite& getSprite();
+        ime::Sprite& getSprite();
 
     private:
         std::unique_ptr<DoorLocker> doorLocker_; //!< Door locker
         Orientation orientation_;                //!< The current orientation of the door
-        IME::Graphics::Sprite sprite_;           //!< The doors graphical representation
+        ime::Sprite sprite_;           //!< The doors graphical representation
     };
 }
 

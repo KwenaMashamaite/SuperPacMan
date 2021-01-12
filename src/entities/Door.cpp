@@ -25,9 +25,9 @@
 #include "Door.h"
 #include "../common/SpriteContainer.h"
 
-namespace SuperPacMan {
-    Door::Door(const IME::Vector2u &boundingRect) :
-        Entity(boundingRect, IME::Entity::Type::Obstacle),
+namespace pacman {
+    Door::Door(const ime::Vector2u &boundingRect) :
+        Entity(boundingRect, ime::Entity::Type::Obstacle),
         orientation_(Orientation::Vertical)
     {
         setCollidable(true);
@@ -35,36 +35,36 @@ namespace SuperPacMan {
         sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
         sprite_.scale(2.07f, 2.07f);
 
-        onEvent("positionChange", IME::Callback<float, float>([this](float x, float y) {
+        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
             sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
         }));
 
-        onEvent("locked", IME::Callback<>([this] {
+        onEvent("locked", ime::Callback<>([this] {
             if (orientation_ == Orientation::Horizontal)
                 sprite_.setTextureRect(SpriteContainer::getSprite("locked_door_horizontal").getTextureRect());
             else
                 sprite_.setTextureRect(SpriteContainer::getSprite("locked_door_vertical").getTextureRect());
         }));
 
-        onEvent("broken", IME::Callback<>([this] {
+        onEvent("broken", ime::Callback<>([this] {
             if (orientation_ == Orientation::Horizontal)
                 sprite_.setTextureRect(SpriteContainer::getSprite("broken_door_horizontal").getTextureRect());
             else
                 sprite_.setTextureRect(SpriteContainer::getSprite("broken_door_vertical").getTextureRect());
         }));
 
-        onEvent("unlocked", IME::Callback<>([this] {
+        onEvent("unlocked", ime::Callback<>([this] {
             sprite_.setTextureRect(SpriteContainer::getSprite("unlocked_door").getTextureRect());
         }));
     }
 
     Door::Door(const Door &other)
-        : IME::Entity(*this), doorLocker_(std::make_unique<DoorLocker>(*other.doorLocker_)),
+        : ime::Entity(*this), doorLocker_(std::make_unique<DoorLocker>(*other.doorLocker_)),
           orientation_(other.orientation_)
     {}
 
     Door::Door(Door &&other) noexcept
-        : IME::Entity(*this), doorLocker_(std::move(other.doorLocker_)),
+        : ime::Entity(*this), doorLocker_(std::move(other.doorLocker_)),
           orientation_(other.orientation_)
     {}
 
@@ -116,11 +116,11 @@ namespace SuperPacMan {
         publishEvent("broken");
     }
 
-    int Door::onLock(IME::Callback<> callback) {
+    int Door::onLock(ime::Callback<> callback) {
         return onEvent("locked", std::move(callback));
     }
 
-    int Door::onUnlock(IME::Callback<> callback) {
+    int Door::onUnlock(ime::Callback<> callback) {
         return onEvent("unlocked", std::move(callback));
     }
 
@@ -128,7 +128,7 @@ namespace SuperPacMan {
         return "Door";
     }
 
-    IME::Graphics::Sprite &Door::getSprite() {
+    ime::Sprite &Door::getSprite() {
         return sprite_;
     }
 }

@@ -1,9 +1,10 @@
 #include "Game.h"
+#include "states/StartUpState.h"
 
 int main() {
-    auto superPacMan = SuperPacMan::Game();
-    superPacMan.initialize();
-    superPacMan.start();
+    auto pacman = pacman::Game();
+    pacman.initialize();
+    pacman.start();
 
     return 0;
 }

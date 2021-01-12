@@ -25,20 +25,20 @@
 #include "ScatterState.h"
 #include <cassert>
 
-const auto topLeftPath = std::vector<IME::Index>{{7, 3}, {5, 5}, {3, 3}};
-const auto topRightPath = std::vector<IME::Index>{{5, 21}, {7, 19}, {3, 19}};
-const auto bottomLeftPath = std::vector<IME::Index>{{25, 3}, {23, 5}, {21, 3}};
-const auto bottomRightPath = std::vector<IME::Index>{{23, 21}, {21, 19}, {25, 19}};
+const auto topLeftPath = std::vector<ime::Index>{{7, 3}, {5, 5}, {3, 3}};
+const auto topRightPath = std::vector<ime::Index>{{5, 21}, {7, 19}, {3, 19}};
+const auto bottomLeftPath = std::vector<ime::Index>{{25, 3}, {23, 5}, {21, 3}};
+const auto bottomRightPath = std::vector<ime::Index>{{23, 21}, {21, 19}, {25, 19}};
 
-std::queue<IME::Index> vectorToQueue(const std::vector<IME::Index>& vector) {
-    std::queue<IME::Index> queue;
+std::queue<ime::Index> vectorToQueue(const std::vector<ime::Index>& vector) {
+    std::queue<ime::Index> queue;
     for (const auto& index : vector)
         queue.push(index);
     return queue;
 }
 
-namespace SuperPacMan {
-    ScatterState::ScatterState(ScatterPosition scatterPos, std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid) :
+namespace pacman {
+    ScatterState::ScatterState(ScatterPosition scatterPos, std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid) :
         targetPos_(scatterPos),
         ghostMover_(grid, ghost)
     {
@@ -49,20 +49,20 @@ namespace SuperPacMan {
     void ScatterState::onEntry() {
         switch (targetPos_) {
             case ScatterPosition::TopLeftCorner:
-                ghostMover_.setDestination(IME::Index{3, 3});
+                ghostMover_.setDestination(ime::Index{3, 3});
                 break;
             case ScatterPosition::TopRightCorner:
-                ghostMover_.setDestination(IME::Index{3, 19});
+                ghostMover_.setDestination(ime::Index{3, 19});
                 break;
             case ScatterPosition::BottomLeftCorner:
-                ghostMover_.setDestination(IME::Index{21, 3});
+                ghostMover_.setDestination(ime::Index{21, 3});
                 break;
             case ScatterPosition::BottomRightCorner:
-                ghostMover_.setDestination(IME::Index{25, 19});
+                ghostMover_.setDestination(ime::Index{25, 19});
                 break;
         }
 
-        ghostMover_.onDestinationReached([this](IME::Graphics::Tile tile) {
+        ghostMover_.onDestinationReached([this](ime::Tile tile) {
             if (ghostPath_.empty()) {
                 switch (targetPos_) {
                     case ScatterPosition::TopLeftCorner:
@@ -98,7 +98,7 @@ namespace SuperPacMan {
 
     void ScatterState::onTimeout() {
         //Make sure ghost is not stuck in between tiles when state is popped
-        ghostMover_.onAdjacentTileReached([this](IME::Graphics::Tile) {
+        ghostMover_.onAdjacentTileReached([this](ime::Tile) {
             ghost_->popState();
             callback();
         });

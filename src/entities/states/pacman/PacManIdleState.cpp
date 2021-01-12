@@ -25,8 +25,8 @@
 #include "PacManIdleState.h"
 #include "../../PacMan.h"
 
-namespace SuperPacMan {
-    PacManIdleState::PacManIdleState(std::shared_ptr<IME::Entity> pacman) {
+namespace pacman {
+    PacManIdleState::PacManIdleState(std::shared_ptr<ime::Entity> pacman) {
         assert(std::dynamic_pointer_cast<PacMan>(pacman) && "Cannot create Pacman state for non Pacman object");
     }
 

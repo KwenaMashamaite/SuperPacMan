@@ -24,9 +24,9 @@
 
 #include "Wall.h"
 
-namespace SuperPacMan {
-    Wall::Wall(const IME::Vector2u &boundingRect) :
-        Entity(boundingRect, IME::Entity::Type::Obstacle)
+namespace pacman {
+    Wall::Wall(const ime::Vector2u &boundingRect) :
+        Entity(boundingRect, ime::Entity::Type::Obstacle)
     {
         setCollidable(true);
     }

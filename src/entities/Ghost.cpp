@@ -29,9 +29,9 @@
 #include <utility>
 #include <cassert>
 
-namespace SuperPacMan {
-    Ghost::Ghost(Name ghostName, const IME::Vector2u &boundingRect) :
-        Entity(boundingRect, IME::Entity::Type::Enemy),
+namespace pacman {
+    Ghost::Ghost(Name ghostName, const ime::Vector2u &boundingRect) :
+        Entity(boundingRect, ime::Entity::Type::Enemy),
         ghostName_(ghostName),
         isMoving_(false),
         speed_(Constants::GhostScatterSpeed),
@@ -43,18 +43,18 @@ namespace SuperPacMan {
         for (const auto& animation : animations.getAll())
             sprite_.addAnimation(animation);
 
-        setDirection(IME::Direction::Left);
+        setDirection(ime::Direction::Left);
         sprite_.switchAnimation("goingLeft");
         sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
         sprite_.scale(2.0f, 2.0f);
 
         //Make the sprite track the position of the ghost
-        onEvent("positionChange", IME::Callback<float, float>([this](float x, float y) {
+        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
             sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
         }));
 
-        onEvent("directionChange", IME::Callback<IME::Direction>([this](IME::Direction newDir) {
-            if (getState().first == States::Frightened || newDir == IME::Direction::Unknown)
+        onEvent("directionChange", ime::Callback<ime::Direction>([this](ime::Direction newDir) {
+            if (getState().first == States::Frightened || newDir == ime::Direction::Unknown)
                 return;
 
             auto dir = Utils::convertToString(newDir);
@@ -86,7 +86,7 @@ namespace SuperPacMan {
         return ghostName_;
     }
 
-    IME::Graphics::AnimatableSprite &Ghost::getSprite() {
+    ime::AnimatableSprite &Ghost::getSprite() {
         return sprite_;
     }
 
@@ -112,7 +112,7 @@ namespace SuperPacMan {
             // Animation switch is triggered by a direction change, check
             // "directionChange" handler defined in constructor
             auto prevDir = getDirection();
-            setDirection(IME::Direction::Unknown);
+            setDirection(ime::Direction::Unknown);
             setDirection(prevDir);
         }
     }
@@ -122,7 +122,7 @@ namespace SuperPacMan {
     }
 
     void Ghost::move() {
-        if (speed_ > 0.0f && getState().first != States::Idle)
+        if (speed_ > 0.0f /*&& getState().first != States::Idle*/)
             isMoving_ = true;
     }
 
@@ -139,18 +139,18 @@ namespace SuperPacMan {
         if (isMoving_) {
             auto velocity = getSpeed() * deltaTime;
             switch (getDirection()) {
-                case IME::Direction::Unknown:
+                case ime::Direction::Unknown:
                     break;
-                case IME::Direction::Left:
+                case ime::Direction::Left:
                     setPosition(getPosition().x - velocity, getPosition().y);
                     break;
-                case IME::Direction::Right:
+                case ime::Direction::Right:
                     setPosition(getPosition().x + velocity, getPosition().y);
                     break;
-                case IME::Direction::Up:
+                case ime::Direction::Up:
                     setPosition(getPosition().x, getPosition().y - velocity);
                     break;
-                case IME::Direction::Down:
+                case ime::Direction::Down:
                     setPosition(getPosition().x, getPosition().y + velocity);
                     break;
             }

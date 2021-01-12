@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SCOREBOARD_H
-#define SCOREBOARD_H
+#ifndef SUPERPACMAN_SCOREBOARD_H
+#define SUPERPACMAN_SCOREBOARD_H
 
 #include "Score.h"
 #include <vector>
 #include <string>
 #include <functional>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Loads and persists game top scores
      */

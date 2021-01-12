@@ -22,8 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMAN_H
-#define PACMAN_H
+#ifndef SUPERPACMAN_PACMAN_H
+#define SUPERPACMAN_PACMAN_H
 
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/AnimatableSprite.h>
@@ -31,11 +31,11 @@
 #include "states/IState.h"
 #include "states/StateController.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Pacman
      */
-    class PacMan : public IME::Entity, public IME::IMovable {
+    class PacMan : public ime::Entity, public ime::IMovable {
     public:
         /**
          * @brief Pacman states
@@ -52,7 +52,7 @@ namespace SuperPacMan {
          * @brief Construct pacman
          * @param boundingRect  Size of pacmans bounding rectangle
          */
-        explicit PacMan(const IME::Vector2u &boundingRect);
+        explicit PacMan(const ime::Vector2u &boundingRect);
 
         /**
          * @brief Set the number of lives
@@ -93,7 +93,7 @@ namespace SuperPacMan {
          * @brief Get the pacmans graphical representation
          * @return Pacmans graphical representation
          */
-        IME::Graphics::AnimatableSprite& getSprite();
+        ime::AnimatableSprite& getSprite();
 
         /**
          * @brief Push a pacman state
@@ -148,7 +148,7 @@ namespace SuperPacMan {
         float speed_;                            //!< Pacmans speed
         bool isMoving_;                          //!< Flags whether pacman is moving or not
         StateController stateController_;        //!< Pacmans FSM
-        IME::Graphics::AnimatableSprite sprite_; //!< Pacmans graphical representation
+        ime::AnimatableSprite sprite_; //!< Pacmans graphical representation
     };
 }
 

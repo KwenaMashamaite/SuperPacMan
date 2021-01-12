@@ -22,19 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GHOST_H
-#define GHOST_H
+#ifndef SUPERPACMAN_GHOST_H
+#define SUPERPACMAN_GHOST_H
 
 #include <IME/core/entity/Entity.h>
 #include <IME/core/entity/IMovable.h>
 #include <IME/graphics/AnimatableSprite.h>
 #include "states/StateController.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Ghost
      */
-    class Ghost : public IME::Entity, public IME::IMovable {
+    class Ghost : public ime::Entity, public ime::IMovable {
     public:
         enum class Name {
             Blinky, //!< Red ghost
@@ -60,7 +60,7 @@ namespace SuperPacMan {
          * @param ghostName Name of the ghost
          * @param boundingRect Size of the ghosts bounding rect
          */
-        Ghost(Name ghostName, const IME::Vector2u &boundingRect);
+        Ghost(Name ghostName, const ime::Vector2u &boundingRect);
 
         /**
          * @brief Set the speed of the ghost
@@ -92,7 +92,7 @@ namespace SuperPacMan {
          * @brief Get the ghosts graphical representation
          * @return The ghosts graphical representation
          */
-        IME::Graphics::AnimatableSprite& getSprite();
+        ime::AnimatableSprite& getSprite();
 
         /**
          * @brief Push a ghost state
@@ -164,7 +164,7 @@ namespace SuperPacMan {
         StateController stateController_;        //!< Ghosts FSM
         bool isMoving_;                          //!< Flags whether ghost is moving or not
         float speed_;                            //!< The speed of the ghost
-        IME::Graphics::AnimatableSprite sprite_; //!< Ghosts graphical representation
+        ime::AnimatableSprite sprite_; //!< Ghosts graphical representation
         bool isFlattened_;                       //!< Flattened state
     };
 }

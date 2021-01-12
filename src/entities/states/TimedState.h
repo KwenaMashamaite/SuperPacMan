@@ -22,13 +22,13 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef TIMEDSTATE_H
-#define TIMEDSTATE_H
+#ifndef SUPERPACMAN_TIMEDSTATE_H
+#define SUPERPACMAN_TIMEDSTATE_H
 
 #include <functional>
 #include "IState.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Abstract base class for entity states that are only active
      *        for a set duration, thereafter, popping themselves

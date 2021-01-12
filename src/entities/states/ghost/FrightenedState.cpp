@@ -25,8 +25,8 @@
 #include "FrightenedState.h"
 #include <cassert>
 
-namespace SuperPacMan {
-    FrightenedState::FrightenedState(std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid) :
+namespace pacman {
+    FrightenedState::FrightenedState(std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid) :
         TimedState(),
         ghostMover_(grid, ghost),
         isGhostFlashing_{false}
@@ -67,7 +67,7 @@ namespace SuperPacMan {
 
     void FrightenedState::onTimeout() {
         //Make sure ghost is not stuck in between tiles when state is popped
-        ghostMover_.onAdjacentTileReached([this](IME::Graphics::Tile) {
+        ghostMover_.onAdjacentTileReached([this](ime::Tile) {
             ghost_->popState();
             callback();
         });

@@ -24,26 +24,42 @@
 
 #include "LoadingState.h"
 #include <IME/core/loop/Engine.h>
-#include <IME/graphics/ui/widgets/ProgressBar.h>
-#include <IME/graphics/ui/widgets/Label.h>
+#include <IME/ui/widgets/ProgressBar.h>
+#include <IME/ui/widgets/Label.h>
 #include <thread>
 #include <chrono>
+#include <IME/ui/widgets/Panel.h>
+#include <IME/ui/widgets/VerticalLayout.h>
 
 //Warning!! This number must be updated each time a new resource is added to the
 //resources to be loaded
-const auto numOfResources = 15;
+const auto numOfResources = 18;
 
-namespace SuperPacMan {
-    LoadingState::LoadingState(IME::Engine &engine) :
+namespace pacman {
+    LoadingState::LoadingState(ime::Engine &engine) :
         State(engine),
-        isInitialized_{false},
-        view_(engine.getRenderTarget().getSize()),
+        isEntered_{false},
+        view_(engine.getRenderTarget()),
         loadingFinished_{false}
     {}
 
-    void LoadingState::initialize() {
+    void LoadingState::onEnter() {
+        // Prevent the game from being exited while assets are being loaded
+        // The resource loading thread must finish first before we can stop
+        // the main thread
+        engine().onWindowClose(nullptr);
+
         view_.init();
-        view_.getWidget<IME::UI::ProgressBar>("loadingProgressBar")->setMaximumValue(numOfResources);
+        auto progressBar = view_.getWidget<ime::ui::ProgressBar>("loading_progress_bar");
+        progressBar->setMaximumValue(numOfResources);
+
+        progressBar->on("full", ime::Callback<>([this, progressBar] {
+            mtx_.unlock();
+            view_.getWidget<ime::ui::Label>("loading_text")
+                  ->setText("Resources loaded successfully");
+
+            progressBar->setText("100%");
+        }));
 
         // Transition to next state if all resources are loaded
         engine().onFrameEnd([this] {
@@ -54,52 +70,63 @@ namespace SuperPacMan {
         });
 
         //Initiate resource loading
-        std::thread([this] {
-            loadResources();
-        }).detach();
+        view_.getWidget<ime::ui::Panel>("container")->on("animationFinish", ime::Callback<>([this] {
+            std::thread([this] {
+                loadResources();
+            }).detach();
+        }));
 
-        isInitialized_ = true;
+        isEntered_ = true;
+    }
+
+    bool LoadingState::isEntered() const {
+        return isEntered_;
     }
 
     void LoadingState::loadResources() {
         auto updateProgressBar = [this](const std::string& text) {
-            static auto loadingProgressBar = view_.getWidget<IME::UI::ProgressBar>("loadingProgressBar");
+            static auto loadingProgressBar = view_.getWidget<ime::ui::ProgressBar>("loading_progress_bar");
+            
             //Resources load very fast (less than a second), so we simulate a delay (= numberOfResources * threadSleepTime)
             std::this_thread::sleep_for(std::chrono::milliseconds (200));
             std::lock_guard<std::mutex> lock(mtx_);
             loadingProgressBar->setText("Loading " + text + "...");
             loadingProgressBar->incrementValue();
         };
-
+        
+        auto loadingText = view_.getWidget<ime::ui::Label>("loading_text");
+        
         //LOAD FONTS
         std::unique_lock<std::mutex> lock(mtx_);
-        view_.getWidget<IME::UI::IWidget>("loadingText")->setText("Loading fonts...");
+        loadingText->setText("Loading fonts...");
         lock.unlock();
-        IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Font, {
+        ime::ResourceManager::getInstance()->loadFromFile(ime::ResourceType::Font, {
             "namco.ttf", "AtariClassicExtrasmooth-LxZy.ttf"}, updateProgressBar);
 
         //LOAD TEXTURES
         lock.lock();
-        view_.getWidget<IME::UI::Label>("loadingText")->setText("Loading textures...");
+        loadingText->setText("Loading textures...");
         lock.unlock();
-        IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Texture,  {
-            "icon.png", "grids.png", "pacman_logo.png", "spritesheet.png"
+        ime::ResourceManager::getInstance()->loadFromFile(ime::ResourceType::Texture,  {
+            "icon.png", "grids.png", "pacman_logo.png", "spritesheet.png",
+            "main_menu_background.jpg", "credits_menu_background.jpg",
+            "options_menu_background.jpg"
         }, updateProgressBar);
 
         //LOAD SOUND EFFECTS
         lock.lock();
-        view_.getWidget<IME::UI::Label>("loadingText")->setText("Loading sound effects...");
+        loadingText->setText("Loading sound effects...");
         lock.unlock();
-        IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::SoundBuffer, {
+        ime::ResourceManager::getInstance()->loadFromFile(ime::ResourceType::SoundBuffer, {
             "doorBroken.wav", "fruitEaten.wav", "ghostEaten.wav", "pacmanDying.wav",
             "powerPelletEaten.wav", "superPelletEaten.wav", "beginning.wav"
         }, updateProgressBar);
 
         //LOAD MUSIC
         lock.lock();
-        view_.getWidget<IME::UI::Label>("loadingText")->setText("Loading music...");
+        loadingText->setText("Loading music...");
         lock.unlock();
-        IME::ResourceManager::getInstance()->loadFromFile(IME::ResourceType::Music, {
+        ime::ResourceManager::getInstance()->loadFromFile(ime::ResourceType::Music, {
             "searching.ogg", "pacman_intermission.ogg"
         }, updateProgressBar);
 
@@ -115,12 +142,12 @@ namespace SuperPacMan {
 
     }
 
-    void LoadingState::render(IME::Graphics::Window &renderTarget) {
+    void LoadingState::render(ime::Window &renderTarget) {
         std::lock_guard<std::mutex> lock(mtx_);
-        view_.render(renderTarget);
+        view_.render();
     }
 
-    void LoadingState::pause() {
+    void LoadingState::onPause() {
 
     }
 
@@ -129,15 +156,11 @@ namespace SuperPacMan {
         view_.handleEvent(event);
     }
 
-    void LoadingState::resume() {
+    void LoadingState::onResume() {
 
     }
 
-    bool LoadingState::isInitialized() const {
-        return isInitialized_;
-    }
-
-    void LoadingState::exit() {
-        IME::EventDispatcher::instance()->dispatchEvent("resourceLoadingComplete");
+    void LoadingState::onExit() {
+        ime::EventDispatcher::instance()->dispatchEvent("resourceLoadingComplete");
     }
 }

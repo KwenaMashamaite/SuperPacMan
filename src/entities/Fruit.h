@@ -22,25 +22,25 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef FRUIT_H
-#define FRUIT_H
+#ifndef SUPERPACMAN_FRUIT_H
+#define SUPERPACMAN_FRUIT_H
 
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Sprite.h>
 #include "IEatable.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief A fruit that can be eaten by Pacman
      */
-    class Fruit : public IME::Entity, public IEatable {
+    class Fruit : public ime::Entity, public IEatable {
     public:
         /**
          * @brief Construct a fruit
          * @param boundingRect Size of the fruits bounding rectangle
          * @param name Name of the fruit
          */
-        Fruit(const IME::Vector2u &boundingRect, const std::string &name);
+        Fruit(const ime::Vector2u &boundingRect, const std::string &name);
 
         /**
          * @brief Get the name of the fruit
@@ -58,7 +58,7 @@ namespace SuperPacMan {
          * @brief Get the fruits graphical representation
          * @return The fruits graphical representation
          */
-        IME::Graphics::Sprite& getSprite();
+        ime::Sprite& getSprite();
 
         /**
          * @brief Eat fruit
@@ -77,7 +77,7 @@ namespace SuperPacMan {
     private:
         std::string name_;             //!< Name of the fruit
         bool isEaten_;                 //!< The fruits eaten state
-        IME::Graphics::Sprite sprite_; //!< Fruits visual presentation
+        ime::Sprite sprite_; //!< Fruits visual presentation
     };
 }
 

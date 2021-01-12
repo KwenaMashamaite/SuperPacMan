@@ -22,12 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_H
-#define SUPERPACMAN_H
+#ifndef SUPERPACMAN_GAME_H
+#define SUPERPACMAN_GAME_H
 
 #include <IME/core/loop/Engine.h>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Starts the game
      *
@@ -51,7 +51,7 @@ namespace SuperPacMan {
         void start();
 
     private:
-        IME::Engine engine_; //!< Runs the main game loop
+        ime::Engine engine_; //!< Runs the main game loop
     };
 }
 

@@ -26,8 +26,8 @@
 #include <IME/core/event/EventDispatcher.h>
 #include <cassert>
 
-namespace SuperPacMan {
-    DyingState::DyingState(std::shared_ptr<IME::Entity> pacman) {
+namespace pacman {
+    DyingState::DyingState(std::shared_ptr<ime::Entity> pacman) {
         assert(std::dynamic_pointer_cast<PacMan>(pacman) && "Cannot create Pacman state for non Pacman object");
         pacman_ = std::move(std::dynamic_pointer_cast<PacMan>(pacman));
     }
@@ -46,9 +46,9 @@ namespace SuperPacMan {
 
     void DyingState::onExit() {
         if (pacman_->isActive())
-            IME::EventDispatcher::instance()->dispatchEvent("pacmanRevived", pacman_);
+            ime::EventDispatcher::instance()->dispatchEvent("pacmanRevived", pacman_);
         else
-            IME::EventDispatcher::instance()->dispatchEvent("pacmanDied", pacman_);
+            ime::EventDispatcher::instance()->dispatchEvent("pacmanDied", pacman_);
     }
 
     void DyingState::onTimeout() {

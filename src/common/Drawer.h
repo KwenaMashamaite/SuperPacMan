@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef DRAWER_H
-#define DRAWER_H
+#ifndef SUPERPACMAN_DRAWER_H
+#define SUPERPACMAN_DRAWER_H
 
 #include <vector>
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Window.h>
 #include <memory>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Class for rendering objects
      */
@@ -40,16 +40,16 @@ namespace SuperPacMan {
          * @brief Constructor
          * @param renderTarget Target to render objects on
          */
-        explicit Drawer(IME::Graphics::Window &renderTarget);
+        explicit Drawer(ime::Window &renderTarget);
 
         /**
          * @brief Render entity objects on a render target
          * @param entities Objects to be rendered
          */
-        void drawEntities(const std::vector<std::shared_ptr<IME::Entity>>& entities);
+        void drawEntities(const std::vector<std::shared_ptr<ime::Entity>>& entities);
 
     private:
-        IME::Graphics::Window& renderTarget_;
+        ime::Window& renderTarget_;
     };
 }
 

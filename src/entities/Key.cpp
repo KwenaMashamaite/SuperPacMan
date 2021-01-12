@@ -25,9 +25,9 @@
 #include "Key.h"
 #include "../common/SpriteContainer.h"
 
-namespace SuperPacMan {
-    Key::Key(const IME::Vector2u &boundingRect, int id) :
-        Entity(boundingRect, IME::Entity::Type::Collectable),
+namespace pacman {
+    Key::Key(const ime::Vector2u &boundingRect, int id) :
+        Entity(boundingRect, ime::Entity::Type::Collectable),
         id_(id)
     {
         setCollidable(true);
@@ -35,7 +35,7 @@ namespace SuperPacMan {
         sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
         sprite_.scale(2.0f, 2.0f);
 
-        onEvent("positionChange", IME::Callback<float, float>([this](float x, float y) {
+        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
             sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
         }));
     }
@@ -48,7 +48,7 @@ namespace SuperPacMan {
         return "Key";
     }
 
-    IME::Graphics::Sprite &Key::getSprite() {
+    ime::Sprite &Key::getSprite() {
         return sprite_;
     }
 }

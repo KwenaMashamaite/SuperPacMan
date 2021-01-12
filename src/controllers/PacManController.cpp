@@ -1,20 +1,20 @@
 #include "PacManController.h"
 
-namespace SuperPacMan {
-    PacManController::PacManController(IME::TileMap &tileMap,
+namespace pacman {
+    PacManController::PacManController(ime::TileMap &tileMap,
         std::shared_ptr<PacMan> pacMan,
-        IME::Graphics::AnimatableSprite &pacmanSprite)
+        ime::AnimatableSprite &pacmanSprite)
         : gridMover_(tileMap, std::move(pacMan))
     {}
 
-    void PacManController::handleInput(IME::Input::Keyboard::Key key) {
-        /*if (key == IME::Input::Keyboard::Key::Left && gridMover_.requestDirectionChange(IME::Direction::Left))
+    void PacManController::handleInput(ime::input::Keyboard::Key key) {
+        /*if (key == ime::input::Keyboard::Key::Left && gridMover_.requestDirectionChange(ime::Direction::Left))
             animator_.switchAnimation("goingLeft");
-        else if (key == IME::Input::Keyboard::Key::Right && gridMover_.requestDirectionChange(IME::Direction::Right))
+        else if (key == ime::input::Keyboard::Key::Right && gridMover_.requestDirectionChange(ime::Direction::Right))
             animator_.switchAnimation("goingRight");
-        else if (key == IME::Input::Keyboard::Key::Up && gridMover_.requestDirectionChange(IME::Direction::Up))
+        else if (key == ime::input::Keyboard::Key::Up && gridMover_.requestDirectionChange(ime::Direction::Up))
             animator_.switchAnimation("goingUp");
-        else if (key == IME::Input::Keyboard::Key::Down && gridMover_.requestDirectionChange(IME::Direction::Down))
+        else if (key == ime::input::Keyboard::Key::Down && gridMover_.requestDirectionChange(ime::Direction::Down))
             animator_.switchAnimation("goingDown");*/
     }
 

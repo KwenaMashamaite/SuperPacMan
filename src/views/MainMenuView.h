@@ -22,20 +22,21 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef MAINMENUVIEW_H
-#define MAINMENUVIEW_H
+#ifndef SUPERPACMAN_MAINMENUVIEW_H
+#define SUPERPACMAN_MAINMENUVIEW_H
 
 #include <IME/graphics/Sprite.h>
-#include <IME/graphics/ui/GuiContainer.h>
+#include <IME/ui/GuiContainer.h>
 #include "CommonView.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Main menu sub views
      */
     enum class SubView {
-        Main,   //!< Navigation view
-        Info    //!< Information view
+        MainMenu,    //!< View rendered when main menu state is rendered
+        OptionsMenu, //!< View rendered when options view is clicked
+        CreditsMenu, //!< View rendered when credits button is clicked
     };
 
     /**
@@ -45,77 +46,80 @@ namespace SuperPacMan {
     public:
         /**
          * @brief Construct view
-         * @param renderTarget Target to render view on
+         * @param window Window to render view on
          */
-        explicit MainMenuView(IME::Graphics::Window& renderTarget);
+        explicit MainMenuView(ime::Window& window);
 
         /**
          * @brief Initialize the view
-         * @param highScore Highest score from previous gameplay
          */
-        void init(int highScore);
+        void init();
 
         /**
          * @brief Render the view
-         * @param renderTarget Target to render view on
          */
-        void render(IME::Graphics::Window& renderTarget);
+        void render();
 
         /**
-         * @brief Handle an event
+         * @brief Pass an event to be handled by the current main menu view
          * @param event Event to be handled
-         *
-         * This function ensures that mouse clicks and mose move
-         * events are captured by the view
          */
         void handleEvent(sf::Event event);
 
         /**
-         * @brief Update view
-         * @param deltaTime Time passed since view was last updated
-         */
-        void update(float deltaTime);
-
-        /**
-         * @brief Switch to a different view within this view
+         * @brief Switch to a different view within the main menu
          * @param view View to switch to
          */
         void setSubView(SubView view);
 
         /**
+         * @brief Get the view that is currently rendered
+         * @return Current main menu view
+         */
+        SubView getView() const;
+
+        /**
          * @brief Get access to a widget in the view
          * @param widgetName Name of the widget to get access to
-         * @return The specified widget if it exists, otherwise a nullptr
+         * @return The requested widget if it exists, otherwise a nullptr
          *
-         * The object will be casted to the desired type if it's valid
+         * The widget will be casted to the desired type if it's valid
+         *
+         * Example of getting a button widget called "play_btn"
+         * @code
+         * view.getWidget<ime::ui::Button>("play_btn");
+         * @endcode
          */
         template <class T>
         std::shared_ptr<T> getWidget(const std::string& widgetName) const {
-            auto widget = mainViewContainer_.getWidget<T>(widgetName);
-            if (widget)
-                return widget;
-            else
-                return infoViewContainer_.getWidget<T>(widgetName);
+            return guiContainer_.getWidget<T>(widgetName);
         }
 
     private:
         /**
-         * @brief Create the pacman logo
+         * @brief Create the main view
+         *
+         * This view is rendered when the main menu state is entered and also
+         * when a subview returns (usually when back button is clicked)
          */
-        void createLogo();
+        void createMainMenuView();
 
         /**
-         * @brief Create the navigation buttons
+         * @brief Create the view that is rendered when the options button
+         *        is clicked
          */
-        void createButtons();
+        void createOptionsMenuView();
+
+        /**
+         * @brief Create the view that is rendered when the credits button is
+         *        clicked
+         */
+        void createCreditsMenuView();
 
     private:
-        CommonView commonView_;                   //!< View displayed by all states
-        IME::UI::GuiContainer mainViewContainer_; //!< Container for all main menu subview widgets
-        IME::UI::GuiContainer infoViewContainer_; //!< Container for all info subview widgets
-        IME::Graphics::Sprite pacmanLogo_;        //!< Super PacMan logo
-        SubView currentView_;                     //!< View that is currently rendered
-        IME::Vector2u windowSize_;                //!< Size of the games render target
+        ime::ui::GuiContainer guiContainer_;    //!< Container for all main menu widgets
+        ime::Vector2u windowSize_;              //!< Size of the render target
+        SubView subView_;                       //!< View that is currently rendered
     };
 }
 

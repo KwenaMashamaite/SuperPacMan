@@ -24,7 +24,7 @@
 
 #include "Score.h"
 
-namespace SuperPacMan {
+namespace pacman {
     Score::Score() : value_(0)
     {}
 

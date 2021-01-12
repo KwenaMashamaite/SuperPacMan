@@ -22,82 +22,67 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "IME/graphics/Window.h"
 #include "LoadingView.h"
-#include <IME/graphics/ui/widgets/Label.h>
-#include <IME/graphics/ui/widgets/ProgressBar.h>
+#include <IME/ui/widgets/Label.h>
+#include <IME/ui/widgets/ProgressBar.h>
+#include <IME/ui/widgets/Picture.h>
+#include <IME/ui/widgets/Panel.h>
 
-namespace SuperPacMan {
-    LoadingView::LoadingView(IME::Vector2u renderTargetSize) :
-        windowSize_(renderTargetSize)
+namespace pacman {
+    LoadingView::LoadingView(ime::Window& renderTarget) :
+        guiContainer_{renderTarget}
     {}
 
     void LoadingView::init() {
-        createTitle();
-        createProgressBar();
-    }
+        auto container = ime::ui::Panel::create();
+        container->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        guiContainer_.addWidget(container, "container");
+        container->showWithEffect(ime::ShowAnimationType::SlideFromBottom, 1500);
 
-    void LoadingView::createTitle() {
-        auto gameTitle = IME::UI::Label::create("Super Pac-Man");
+        auto gameTitle = ime::ui::Label::create("Super  Pac-Man");
         gameTitle->setTextSize(45.0f);
         gameTitle->scale(0, 1.5f);
         gameTitle->getRenderer()->setFont("pacfont.ttf");
         gameTitle->getRenderer()->setTextColour({255, 0, 0, 100});
         gameTitle->setOrigin(0.5f, 0.0f);
-        gameTitle->setPosition(windowSize_.x / 2.0f, 50.0f);
-        guiContainer_.addWidget(gameTitle, "gameTitle");
+        gameTitle->setPosition("50%", "35%");
+        container->addWidget(gameTitle, "game_title");
 
-        mascot_.setTexture("pacman_mascot.png");
-        mascot_.setOrigin(mascot_.getLocalBounds().width / 2.0f, mascot_.getLocalBounds().height / 2.0f);
-        mascot_.scale(0.4f, 0.4f);
-        mascot_.setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
+        auto mascot = ime::ui::Picture::create("pacman_mascot.png");
+        mascot->setOrigin(0.5f, 1.0f);
+        mascot->setSize("40%", "35%");
+        mascot->setPosition("50%", ime::bindBottom(gameTitle));
+        container->addWidget(mascot, "mascot");
 
-        auto poweredByText = IME::UI::Label::create("Powered by");
-        poweredByText->getRenderer()->setTextStyle(IME::TextStyle::Italic);
-        poweredByText->setOrigin(0.5f, 0.0f);
-        poweredByText->setPosition(mascot_.getPosition().x, mascot_.getPosition().y + mascot_.getLocalBounds().height / 4.5f);
-        guiContainer_.addWidget(poweredByText, "poweredBy");
-        engineLogo_.setTexture("IME_logo.png");
-        engineLogo_.setOrigin(engineLogo_.getLocalBounds().width / 2.0f, 0.0f);
-        engineLogo_.scale(0.9f, 0.9f);
-        engineLogo_.setPosition(poweredByText->getPosition().x, poweredByText->getPosition().y + poweredByText->getSize().y);
+        auto logo = ime::ui::Picture::create("IME_logo.png");
+        logo->setOrigin(0.5f, 0.0f);
+        logo->setPosition("50%", "70%");
+        container->addWidget(logo, "ime_logo");
 
-        auto copyright = IME::UI::Label::create("Copyright \xa9 2021 Kwena Mashamaite");
-        copyright->getRenderer()->setTextColour({255, 250, 250, 150});
-        copyright->setOrigin(0.5f, 0.0f);
-        copyright->setPosition(windowSize_.x / 2.0f, windowSize_.y - copyright->getSize().y);
-        guiContainer_.addWidget(std::move(copyright), "copyright");
-    }
+        auto poweredByText = ime::ui::Label::create("Powered by");
+        poweredByText->getRenderer()->setTextStyle(ime::TextStyle::Italic);
+        poweredByText->setOrigin(0.5f, 1.0f);
+        poweredByText->setPosition("50%", ime::bindTop(logo));
+        container->addWidget(poweredByText, "poweredBy");
 
-    void LoadingView::createProgressBar() {
-        auto loadingProgressBar = IME::UI::ProgressBar::create();
-        loadingProgressBar->setText("loading fonts...");
+        auto loadingProgressBar = ime::ui::ProgressBar::create("loading fonts...");
         loadingProgressBar->getRenderer()->setBorderColour({0, 230, 64, 135});
-        loadingProgressBar->setSize(loadingProgressBar->getSize().x + 125.0f, loadingProgressBar->getSize().y);
-        loadingProgressBar->setOrigin(0.5, 0.5);
-        guiContainer_.addWidget(loadingProgressBar, "loadingProgressBar");
-        loadingProgressBar->on("full", IME::Callback<>([=]{
-            guiContainer_.getWidget("loadingText")->setText("Resources loaded successfully");
-            loadingProgressBar->setText("100%");
-        }));
+        loadingProgressBar->setOrigin(0.5f, 0.0f);
+        loadingProgressBar->setSize("80%", std::to_string(loadingProgressBar->getSize().y));
+        loadingProgressBar->setPosition("50%", "90%");
+        container->addWidget(loadingProgressBar, "loading_progress_bar");
 
-        auto loadingText = IME::UI::Label::create("Loading resources, please wait...");
-        loadingText->setOrigin(0.5, 0.5);
-        loadingText->setPosition(windowSize_.x / 2.0f, windowSize_.y - 3 * loadingProgressBar->getSize().y);
-        loadingProgressBar->setPosition(loadingText->getPosition().x, loadingText->getPosition().y + loadingText->getSize().y);
-        guiContainer_.addWidget(std::move(loadingText), "loadingText");
+        auto loadingText = ime::ui::Label::create("Loading resources, please wait...");
+        loadingText->setOrigin(0.5f, 1.0f);
+        loadingText->setPosition("50%", ime::bindTop(loadingProgressBar));
+        container->addWidget(loadingText, "loading_text");
     }
 
-    void LoadingView::render(IME::Graphics::Window& renderTarget) {
-        if (!guiContainer_.isTargetSet())
-            guiContainer_.setTarget(renderTarget);
-
+    void LoadingView::render() {
         guiContainer_.draw();
-        renderTarget.draw(engineLogo_);
-        renderTarget.draw(mascot_);
     }
 
-    void SuperPacMan::LoadingView::handleEvent(sf::Event event) {
+    void pacman::LoadingView::handleEvent(sf::Event event) {
         guiContainer_.handleEvent(event);
     }
 }

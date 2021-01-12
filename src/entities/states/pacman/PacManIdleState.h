@@ -22,14 +22,14 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMANIDLESTATE_H
-#define PACMANIDLESTATE_H
+#ifndef SUPERPACMAN_PACMANIDLESTATE_H
+#define SUPERPACMAN_PACMANIDLESTATE_H
 
 #include "../IState.h"
 #include <IME/core/entity/Entity.h>
 #include <memory>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Pacman's idle state
      *
@@ -42,7 +42,7 @@ namespace SuperPacMan {
          * @param Constructor
          * @param pacman Pacman
          */
-        PacManIdleState(std::shared_ptr<IME::Entity> pacman);
+        PacManIdleState(std::shared_ptr<ime::Entity> pacman);
 
         /**
          * @brief Initialize the state

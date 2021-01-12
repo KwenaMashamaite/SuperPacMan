@@ -22,13 +22,13 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef LEVELSTARTVIEW_H
-#define LEVELSTARTVIEW_H
+#ifndef SUPERPACMAN_LEVELSTARTVIEW_H
+#define SUPERPACMAN_LEVELSTARTVIEW_H
 
 #include <IME/graphics/Sprite.h>
 #include "CommonView.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief View displayed before a level is started
      *
@@ -45,7 +45,7 @@ namespace SuperPacMan {
          * @param score Current score
          * @param highScore Current high score
          */
-        LevelStartView(IME::Graphics::Window& renderTarget, int level, int lives,
+        LevelStartView(ime::Window& renderTarget, int level, int lives,
            int score, int highScore);
 
         /**
@@ -63,13 +63,13 @@ namespace SuperPacMan {
          * @brief Render the view
          * @param renderTarget Target to render view on
          */
-        void render(IME::Graphics::Window& renderTarget);
+        void render(ime::Window& renderTarget);
 
     private:
-        IME::UI::GuiContainer guiContainer_; //!< Container for all widgets in this view
-        IME::Vector2u windowSize_;           //!< Size of the games render target
+        ime::ui::GuiContainer guiContainer_; //!< Container for all widgets in this view
+        ime::Vector2u windowSize_;           //!< Size of the games render target
         CommonView commonView_;              //!< View displayed across all states
-        IME::Graphics::Sprite fruit_;        //!< Displays the current level fruit
+        ime::Sprite fruit_;        //!< Displays the current level fruit
         int level_;                          //!< Current level
         int score_;                          //!< Current player score
         int highScore_;                      //!< Current top score

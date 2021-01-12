@@ -22,19 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef KEY_H
-#define KEY_H
+#ifndef SUPERPACMAN_KEY_H
+#define SUPERPACMAN_KEY_H
 
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/AnimatableSprite.h>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief A key that can lock or unlock a door
      *
      * @see Door
      */
-    class Key : public IME::Entity {
+    class Key : public ime::Entity {
     public:
         /**
          * @brief Construct the key
@@ -44,7 +44,7 @@ namespace SuperPacMan {
          * The id is useful for distinguishing between different key
          * objects. Multiple key objects can have the same identifier
          */
-        Key(const IME::Vector2u &boundingRect, int id);
+        Key(const ime::Vector2u &boundingRect, int id);
 
         /**
          * @brief Copy constructor
@@ -77,11 +77,11 @@ namespace SuperPacMan {
          * @brief Get the sprites graphical representation
          * @return The sprites graphical representation
          */
-        IME::Graphics::Sprite& getSprite();
+        ime::Sprite& getSprite();
 
     private:
         int id_;                       //!< The keys id
-        IME::Graphics::Sprite sprite_; //!< Keys graphical representation
+        ime::Sprite sprite_; //!< Keys graphical representation
     };
 }
 

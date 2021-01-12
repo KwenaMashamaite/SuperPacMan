@@ -25,8 +25,8 @@
 #include "NormalState.h"
 #include <cassert>
 
-namespace SuperPacMan {
-    NormalState::NormalState(std::shared_ptr<IME::Entity> pacman) {
+namespace pacman {
+    NormalState::NormalState(std::shared_ptr<ime::Entity> pacman) {
         assert(std::dynamic_pointer_cast<PacMan>(pacman) && "Cannot create Pacman state for non Pacman object");
         pacman_ = std::dynamic_pointer_cast<PacMan>(pacman);
     }

@@ -23,10 +23,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "IntroView.h"
-#include <IME/graphics/ui/Widgets.h>
+#include <IME/ui/AllWidgets.h>
 
-namespace SuperPacMan {
-    IntroView::IntroView(IME::Graphics::Window &renderTarget) :
+namespace pacman {
+    IntroView::IntroView(ime::Window &renderTarget) :
         commonView_(renderTarget, 1, 0),
         guiContainer_(renderTarget),
         windowSize_(renderTarget.getSize())
@@ -34,39 +34,40 @@ namespace SuperPacMan {
 
     void IntroView::init(int highScore) {
         commonView_.init();
-        auto scoresValueContainer = commonView_.getWidget<IME::UI::HorizontalLayout>("scoresValueContainer");
-        scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highScore));
+        auto scoresValueContainer = commonView_.getWidget<ime::ui::HorizontalLayout>("scoresValueContainer");
+        scoresValueContainer->getWidget<ime::ui::Label>("highscoresValue")->setText(std::to_string(highScore));
 
         guiContainer_.setFont("namco.ttf");
-        auto textContainer = IME::UI::VerticalLayout::create(500, 250);
+        auto textContainer = ime::ui::VerticalLayout::create();
+        textContainer->setSize(500, 250);
         textContainer->getRenderer()->setSpaceBetweenWidgets(0.0f);
         textContainer->setPosition(84.0f, 315.0);
         guiContainer_.addWidget(textContainer, "textContainer");
 
-        auto powerText = IME::UI::Label::create("POWER");
-        powerText->getRenderer()->setTextColour(IME::Colour::White);
+        auto powerText = ime::ui::Label::create("POWER");
+        powerText->getRenderer()->setTextColour(ime::Colour::White);
         powerText->getRenderer()->setPadding({18.0f, 0.0f, 0.0f, 0.0f});
         textContainer->addWidget(std::move(powerText), "powerText");
 
-        auto superText = IME::UI::Label::create("SUPER");
-        superText->getRenderer()->setTextColour(IME::Colour::White);
+        auto superText = ime::ui::Label::create("SUPER");
+        superText->getRenderer()->setTextColour(ime::Colour::White);
         superText->getRenderer()->setPadding({18.0f, 0.0f, 0.0f, 0.0f});
         textContainer->addWidget(std::move(superText), "superText");
 
-        auto copyrightText = IME::UI::Label::create("\xa9 1982 NAMCO LTD.");
-        copyrightText->getRenderer()->setTextColour(IME::Colour::White);
+        auto copyrightText = ime::ui::Label::create("\xa9 1982 NAMCO LTD.");
+        copyrightText->getRenderer()->setTextColour(ime::Colour::White);
         textContainer->addWidget(std::move(copyrightText), "copyrightText");
 
-        auto companyName = IME::UI::Label::create("namco");
+        auto companyName = ime::ui::Label::create("namco");
         companyName->getRenderer()->setFont("AtariClassicExtrasmooth-LxZy.ttf");
         companyName->setTextSize(16);
         companyName->setOrigin(0.5f, 1.0f);
-        companyName->getRenderer()->setTextColour(IME::Colour::Red);
+        companyName->getRenderer()->setTextColour(ime::Colour::Red);
         companyName->setPosition(windowSize_.x / 2.0f, textContainer->getPosition().y + textContainer->getSize().y);
         guiContainer_.addWidget(std::move(companyName), "companyName");
     }
 
-    void IntroView::render(IME::Graphics::Window &renderTarget) {
+    void IntroView::render(ime::Window &renderTarget) {
         commonView_.render(renderTarget);
         guiContainer_.draw();
     }

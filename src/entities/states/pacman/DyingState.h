@@ -22,13 +22,13 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef DYINGSTATE_H
-#define DYINGSTATE_H
+#ifndef SUPERPACMAN_DYINGSTATE_H
+#define SUPERPACMAN_DYINGSTATE_H
 
 #include "../TimedState.h"
 #include "../../PacMan.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Defines Pacmans behavior when he is killed
      *
@@ -42,7 +42,7 @@ namespace SuperPacMan {
          * @brief Construct state
          * @param pacman Pacman
          */
-        explicit DyingState(std::shared_ptr<IME::Entity> pacman);
+        explicit DyingState(std::shared_ptr<ime::Entity> pacman);
 
         /**
          * @brief Initialize the state

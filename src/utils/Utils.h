@@ -22,20 +22,20 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef Utils_H
-#define Utils_H
+#ifndef SUPERPACMAN_Utils_H
+#define SUPERPACMAN_Utils_H
 
 #include <IME/core/tilemap/TileMap.h>
 #include <unordered_map>
 #include <vector>
 #include <memory>
 
-using ObjectsContainer = std::unordered_map<std::string, std::vector<std::shared_ptr<IME::Entity>>>;
+using ObjectsContainer = std::unordered_map<std::string, std::vector<std::shared_ptr<ime::Entity>>>;
 
 /**
  * @brief Defines a bunch of helper functions
  */
-namespace SuperPacMan::Utils {
+namespace pacman::Utils {
     /**
      * @brief Create objects based on the grid Id
      * @param grid Grid to parse
@@ -44,33 +44,33 @@ namespace SuperPacMan::Utils {
      * This functions looks for specific id's in the grid and creates an object
      * at that grid position corresponding to the id
      */
-    extern ObjectsContainer createObjects(IME::TileMap& grid);
+    extern ObjectsContainer createObjects(ime::TileMap& grid);
 
     /**
      * @brief Remove all dead entities from the entity container
      */
-    extern void removeInactiveObjectsFromContainer(std::vector<std::shared_ptr<IME::Entity>>& entities);
+    extern void removeInactiveObjectsFromContainer(std::vector<std::shared_ptr<ime::Entity>>& entities);
 
     /**
-     * @brief Convert IME::Direction to std::string
+     * @brief Convert ime::Direction to std::string
      * @param direction Direction to get the string version of
-     * @return A string version of IME::Direction
+     * @return A string version of ime::Direction
      */
-    extern std::string convertToString(IME::Direction direction);
+    extern std::string convertToString(ime::Direction direction);
 
     /**
      * @brief Frighten a ghost
      * @param ghost Ghost to be frightened
      * @param grid Grid ghost is in
      */
-    extern void frightenGhost(std::shared_ptr<IME::Entity> ghost, IME::TileMap& grid);
+    extern void frightenGhost(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid);
 
     /**
      * @brief Scatter a ghost
      * @param ghost Ghost to be scattered
      * @param grid Grid the ghost is in
      */
-    extern void scatterGhost(std::shared_ptr<IME::Entity> ghost, IME::TileMap& grid);
+    extern void scatterGhost(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid);
 
     /**
      * @brief Unlock a door using  key
@@ -79,19 +79,19 @@ namespace SuperPacMan::Utils {
      * @return True if door was unlocked or false if door is already unlocked
      *         or the given key is not compatible with the door locker
      */
-    extern bool unlockDoor(std::shared_ptr<IME::Entity> door, std::shared_ptr<IME::Entity> key);
+    extern bool unlockDoor(std::shared_ptr<ime::Entity> door, std::shared_ptr<ime::Entity> key);
 
     /**
      * @brief Lock all the doors
      */
-    extern void lockAllDoors(IME::TileMap& grid);
+    extern void lockAllDoors(ime::TileMap& grid);
 
     /**
      * @brief Give pacman super powers
      * @param pacman Pacman
      * @param duration How long pacman stays in super mode
      */
-    extern void enlargePacman(std::shared_ptr<IME::Entity> pacman, float duration);
+    extern void enlargePacman(std::shared_ptr<ime::Entity> pacman, float duration);
 
     /**
      * @brief Make ghost chase pacman
@@ -99,9 +99,9 @@ namespace SuperPacMan::Utils {
      * @param ghost Ghost that must chase pacman
      * @param grid The grid that contains pacman and the ghost
      */
-    extern void chasePacMan(std::shared_ptr<IME::Entity> pacman,
-        std::shared_ptr<IME::Entity> ghost,
-        IME::TileMap& grid);
+    extern void chasePacMan(std::shared_ptr<ime::Entity> pacman,
+        std::shared_ptr<ime::Entity> ghost,
+        ime::TileMap& grid);
 
     /**
      * @brief Initiate flashing grid animation
@@ -110,13 +110,13 @@ namespace SuperPacMan::Utils {
      *
      * Different levels have different flashing animations
      */
-    extern void flashGrid(IME::TileMap& grid, int level);
+    extern void flashGrid(ime::TileMap& grid, int level);
 
     /**
      * @brief Trigger an animation switch in the current direction
      * @param entity Entity whose animation is to be switched
      */
-    extern void triggerAnimationSwitch(std::shared_ptr<IME::Entity> entity);
+    extern void triggerAnimationSwitch(std::shared_ptr<ime::Entity> entity);
 }
 
 #endif

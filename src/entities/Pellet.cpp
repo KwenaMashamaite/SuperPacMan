@@ -25,9 +25,9 @@
 #include "Pellet.h"
 #include "../animations/PelletAnimations.h"
 
-namespace SuperPacMan {
-    Pellet::Pellet(PelletType pelletType, const IME::Vector2u &boundingRect) :
-        Entity(boundingRect, IME::Entity::Type::Collectable),
+namespace pacman {
+    Pellet::Pellet(PelletType pelletType, const ime::Vector2u &boundingRect) :
+        Entity(boundingRect, ime::Entity::Type::Collectable),
         pelletType_(pelletType)
     {
         auto animations = PelletAnimations();
@@ -39,7 +39,7 @@ namespace SuperPacMan {
         sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
         sprite_.scale(2.0f, 2.0f);
 
-        onEvent("positionChange", IME::Callback<float, float>([this](float x, float y) {
+        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
             sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
         }));
 
@@ -66,7 +66,7 @@ namespace SuperPacMan {
         return "Pellet";
     }
 
-    IME::Graphics::AnimatableSprite &Pellet::getSprite() {
+    ime::AnimatableSprite &Pellet::getSprite() {
         return sprite_;
     }
 

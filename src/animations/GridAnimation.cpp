@@ -24,7 +24,7 @@
 
 #include "GridAnimation.h"
 
-namespace SuperPacMan {
+namespace pacman {
     GridAnimation::GridAnimation() {
         createFlashAnimations("blue", {450, 0, 224, 244});
         createFlashAnimations("orange", {0, 249, 224, 244});
@@ -33,12 +33,12 @@ namespace SuperPacMan {
         createFlashAnimations("green", {675, 249, 224, 244});
     }
 
-    const std::vector<std::shared_ptr<IME::Animation>> & GridAnimation::getAnimations() {
+    const std::vector<std::shared_ptr<ime::Animation>> & GridAnimation::getAnimations() {
         return animations_;
     }
 
-    void GridAnimation::createFlashAnimations(const std::string& gridColour, IME::IntRect gridFrame) {
-        auto animation = std::make_shared<IME::Animation>("flash-" + gridColour, "grids.png", 0.20f);
+    void GridAnimation::createFlashAnimations(const std::string& gridColour, ime::IntRect gridFrame) {
+        auto animation = std::make_shared<ime::Animation>("flash-" + gridColour, "grids.png", 0.20f);
         animation->addFrames({gridFrame, {675, 0, 224, 244}});
         animation->setLoop(true);
         animations_.push_back(std::move(animation));

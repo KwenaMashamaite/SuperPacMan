@@ -26,11 +26,11 @@
 #include <IME/common/Vector2.h>
 
 //The size of each animation frame
-const auto frameSize = IME::Vector2i{16, 16};
+const auto frameSize = ime::Vector2i{16, 16};
 //The duration of each movement animation
 const auto movementAnimDuration = 0.18f;
 
-namespace SuperPacMan {
+namespace pacman {
     void GhostAnimations::createAnimationsFor(Ghost::Name ghostName) {
         if (!animations_.empty())
             animations_.clear();
@@ -40,12 +40,12 @@ namespace SuperPacMan {
         createFrightenedAnimations();
     }
 
-    const std::vector<std::shared_ptr<IME::Animation>> &GhostAnimations::getAll() const {
+    const std::vector<std::shared_ptr<ime::Animation>> &GhostAnimations::getAll() const {
         return animations_;
     }
 
-    void GhostAnimations::createAnimation(const std::string &name, IME::Vector2i startPos, IME::Arrangement arrangement) {
-        auto anim = std::make_shared<IME::Animation>(name, "spritesheet.png", movementAnimDuration);
+    void GhostAnimations::createAnimation(const std::string &name, ime::Vector2i startPos, ime::Arrangement arrangement) {
+        auto anim = std::make_shared<ime::Animation>(name, "spritesheet.png", movementAnimDuration);
         anim->setLoop(true);
         anim->addFrames(startPos, frameSize, 2, 1, arrangement);
         animations_.push_back(std::move(anim));
@@ -102,9 +102,9 @@ namespace SuperPacMan {
     }
 
     void GhostAnimations::createEatenAnimations() {
-        createAnimation("goingLeftEaten", {355, 171}, IME::Arrangement::Vertical);
-        createAnimation("goingRightEaten", {355, 137}, IME::Arrangement::Vertical);
-        createAnimation("goingUpEaten", {372, 171}, IME::Arrangement::Vertical);
-        createAnimation("goingDownEaten", {372, 137}, IME::Arrangement::Vertical);
+        createAnimation("goingLeftEaten", {355, 171}, ime::Arrangement::Vertical);
+        createAnimation("goingRightEaten", {355, 137}, ime::Arrangement::Vertical);
+        createAnimation("goingUpEaten", {372, 171}, ime::Arrangement::Vertical);
+        createAnimation("goingDownEaten", {372, 137}, ime::Arrangement::Vertical);
     }
 }

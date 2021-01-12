@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef FRIGHTENEDSTATE_H
-#define FRIGHTENEDSTATE_H
+#ifndef SUPERPACMAN_FRIGHTENEDSTATE_H
+#define SUPERPACMAN_FRIGHTENEDSTATE_H
 
 #include <IME/core/tilemap/TileMap.h>
 #include <IME/core/physics/RandomGridMover.h>
 #include "../TimedState.h"
 #include "../../Ghost.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Defines the state of a ghost when it is frightened.
      *
@@ -43,7 +43,7 @@ namespace SuperPacMan {
          * @param ghost Frightened ghost
          * @param grid Grid ghost is in
          */
-        FrightenedState(std::shared_ptr<IME::Entity> ghost, IME::TileMap& grid);
+        FrightenedState(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid);
 
         /**
          * @brief Initialize the state
@@ -75,7 +75,7 @@ namespace SuperPacMan {
 
     private:
         std::shared_ptr<Ghost> ghost_;    //!< Frightened Ghost
-        IME::RandomGridMover ghostMover_; //!< Ghost movement controller
+        ime::RandomGridMover ghostMover_; //!< Ghost movement controller
         bool isGhostFlashing_;            //!< Flags whether or not ghost is flashing
     };
 }

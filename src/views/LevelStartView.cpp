@@ -25,31 +25,31 @@
 #include "LevelStartView.h"
 #include "../common/SpriteContainer.h"
 #include "../animations/FruitAnimation.h"
-#include <IME/graphics/ui/widgets/Label.h>
-#include <IME/graphics/ui/widgets/HorizontalLayout.h>
+#include <IME/ui/widgets/Label.h>
+#include <IME/ui/widgets/HorizontalLayout.h>
 
-namespace SuperPacMan {
-    LevelStartView::LevelStartView(IME::Graphics::Window& renderTarget,
+namespace pacman {
+    LevelStartView::LevelStartView(ime::Window& renderTarget,
         int level, int lives, int score, int highScore) :
-            guiContainer_{renderTarget},
-            windowSize_{renderTarget.getSize()},
-            commonView_{renderTarget, level, lives},
-            level_{level},
-            score_{score},
-            highScore_{highScore}
+        guiContainer_{renderTarget},
+        windowSize_{renderTarget.getSize()},
+        commonView_{renderTarget, level, lives},
+        level_{level},
+        score_{score},
+        highScore_{highScore}
     {}
 
     void LevelStartView::init() {
         commonView_.init();
-        auto scoresValueContainer = commonView_.getWidget<IME::UI::HorizontalLayout>("scoresValueContainer");
-        scoresValueContainer->getWidget("scoreValue")->setText(std::to_string(score_));
-        scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highScore_));
+        auto scoresValueContainer = commonView_.getWidget<ime::ui::HorizontalLayout>("scoresValueContainer");
+        scoresValueContainer->getWidget<ime::ui::Label>("scoreValue")->setText(std::to_string(score_));
+        scoresValueContainer->getWidget<ime::ui::Label>("highscoresValue")->setText(std::to_string(highScore_));
 
         guiContainer_.setFont("namco.ttf");
         guiContainer_.setTextSize(12.0f);
         
-        auto stageText = IME::UI::Label::create("STAGE  " + std::to_string(level_));
-        stageText->getRenderer()->setTextColour(IME::Colour::White);
+        auto stageText = ime::ui::Label::create("STAGE  " + std::to_string(level_));
+        stageText->getRenderer()->setTextColour(ime::Colour::White);
         stageText->setOrigin(0.5f, 0.5f);
         stageText->setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
         guiContainer_.addWidget(stageText, "stageText");
@@ -62,8 +62,8 @@ namespace SuperPacMan {
         fruit_.setPosition(stageText->getPosition().x - stageText->getSize().x / 2.0f,
             stageText->getPosition().y + stageText->getSize().y * 2);
 
-        auto pointsText = IME::UI::Label::create(std::to_string(level_ * 10) + " PTS");
-        pointsText->getRenderer()->setTextColour(IME::Colour::White);
+        auto pointsText = ime::ui::Label::create(std::to_string(level_ * 10) + " PTS");
+        pointsText->getRenderer()->setTextColour(ime::Colour::White);
         pointsText->setPosition(fruit_.getPosition().x + (fruit_.getLocalBounds().width * 2),
             fruit_.getPosition().y + 6.0f);
         guiContainer_.addWidget(std::move(pointsText), "pointsText");
@@ -73,7 +73,7 @@ namespace SuperPacMan {
         commonView_.update(deltaTime);
     }
 
-    void LevelStartView::render(IME::Graphics::Window &renderTarget) {
+    void LevelStartView::render(ime::Window &renderTarget) {
         commonView_.render(renderTarget);
         guiContainer_.draw();
         renderTarget.draw(fruit_);

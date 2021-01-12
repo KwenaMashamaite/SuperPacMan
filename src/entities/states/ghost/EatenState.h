@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef EATENSTATE_H
-#define EATENSTATE_H
+#ifndef SUPERPACMAN_EATENSTATE_H
+#define SUPERPACMAN_EATENSTATE_H
 
 #include <IME/core/tilemap/TileMap.h>
 #include <IME/core/physics/TargetGridMover.h>
 #include "../IState.h"
 #include "../../Ghost.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Defines the behavior of a ghost when it is eaten
      *
@@ -44,7 +44,7 @@ namespace SuperPacMan {
          * @param ghost Eaten ghost
          * @param grid Grid ghost is in
          */
-        EatenState(std::shared_ptr<IME::Entity> ghost, IME::TileMap& grid);
+        EatenState(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid);
 
         /**
          * @brief Initialize the state
@@ -70,7 +70,7 @@ namespace SuperPacMan {
 
     private:
         std::shared_ptr<Ghost> ghost_;    //!< Eaten ghost
-        IME::TargetGridMover ghostMover_; //!< Ghost movement controller
+        ime::TargetGridMover ghostMover_; //!< Ghost movement controller
     };
 }
 

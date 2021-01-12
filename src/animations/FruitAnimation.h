@@ -22,13 +22,13 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef FRUITANIMATION_H
-#define FRUITANIMATION_H
+#ifndef SUPERPACMAN_FRUITANIMATION_H
+#define SUPERPACMAN_FRUITANIMATION_H
 
 #include <IME/core/animation/Animation.h>
 #include <memory>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Constructs a fruit animation
      *
@@ -46,10 +46,10 @@ namespace SuperPacMan {
          * @brief Get the fruit animation
          * @return The fruit animation
          */
-        std::shared_ptr<IME::Animation> getAnimation();
+        std::shared_ptr<ime::Animation> getAnimation();
 
     private:
-        std::shared_ptr<IME::Animation> animation_;
+        std::shared_ptr<ime::Animation> animation_;
     };
 }
 

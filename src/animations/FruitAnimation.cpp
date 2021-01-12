@@ -24,14 +24,14 @@
 
 #include "FruitAnimation.h"
 
-namespace SuperPacMan {
+namespace pacman {
     FruitAnimation::FruitAnimation() {
-        animation_ = std::make_shared<IME::Animation>("foodSlide", "spritesheet.png", 1.0f);
+        animation_ = std::make_shared<ime::Animation>("foodSlide", "spritesheet.png", 1.0f);
         animation_->addFrames({151, 52}, {16, 16}, 17);
         animation_->setLoop(true);
     }
 
-    std::shared_ptr<IME::Animation> FruitAnimation::getAnimation() {
+    std::shared_ptr<ime::Animation> FruitAnimation::getAnimation() {
         return animation_;
     }
 }

@@ -22,12 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef DOORLOCKER_H
-#define DOORLOCKER_H
+#ifndef SUPERPACMAN_DOORLOCKER_H
+#define SUPERPACMAN_DOORLOCKER_H
 
 #include "Key.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief A class for locking doors
      *

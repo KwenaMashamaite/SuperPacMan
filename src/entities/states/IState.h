@@ -22,10 +22,10 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef ISTATE_H
-#define ISTATE_H
+#ifndef SUPERPACMAN_ISTATE_H
+#define SUPERPACMAN_ISTATE_H
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Interface for entity states
      */

@@ -22,12 +22,12 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef INTROVIEW_H
-#define INTROVIEW_H
+#ifndef SUPERPACMAN_INTROVIEW_H
+#define SUPERPACMAN_INTROVIEW_H
 
 #include "CommonView.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Frontend for the intro state
      */
@@ -37,7 +37,7 @@ namespace SuperPacMan {
          * @brief Construct the view
          * @param renderTarget Target to render view on
          */
-        explicit IntroView(IME::Graphics::Window& renderTarget);
+        explicit IntroView(ime::Window& renderTarget);
 
         /**
          * @brief Initialize the view
@@ -48,7 +48,7 @@ namespace SuperPacMan {
          * @brief Render the view
          * @param renderTarget Target to render view on
          */
-        void render(IME::Graphics::Window& renderTarget);
+        void render(ime::Window& renderTarget);
 
         /**
          * @brief Update view
@@ -58,8 +58,8 @@ namespace SuperPacMan {
 
     private:
         CommonView commonView_;              //!< View displayed across all states
-        IME::UI::GuiContainer guiContainer_; //!< Container for all widgets in view
-        IME::Vector2u windowSize_;           //!< Size of the games render target
+        ime::ui::GuiContainer guiContainer_; //!< Container for all widgets in view
+        ime::Vector2u windowSize_;           //!< Size of the games render target
     };
 }
 

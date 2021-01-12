@@ -25,12 +25,12 @@
 #include "CommonView.h"
 #include "../animations/FruitAnimation.h"
 #include "../common/SpriteContainer.h"
-#include <IME/graphics/ui/widgets/Label.h>
-#include <IME/graphics/ui/widgets/HorizontalLayout.h>
+#include <IME/ui/widgets/Label.h>
+#include <IME/ui/widgets/HorizontalLayout.h>
 #include <IME/graphics/Colour.h>
 
-namespace SuperPacMan {
-    CommonView::CommonView(IME::Graphics::Window &renderTarget, int level, int lives) :
+namespace pacman {
+    CommonView::CommonView(ime::Window &renderTarget, int level, int lives) :
         guiContainer_(renderTarget),
         windowSize_(renderTarget.getSize()),
         level_{level},
@@ -47,28 +47,30 @@ namespace SuperPacMan {
 
     void CommonView::createText() {
         auto tileSize = 20;
-        auto scoresTextContainer = IME::UI::HorizontalLayout::create(windowSize_.x / 1.8f, tileSize);
+        auto scoresTextContainer = ime::ui::HorizontalLayout::create();
+        scoresTextContainer->setSize(windowSize_.x / 1.8f, tileSize);
         scoresTextContainer->setPosition({40.0f, 0.0f});
-        auto oneUpText = IME::UI::Label::create("1UP");
-        oneUpText->getRenderer()->setTextColour(IME::Colour::Red);
+        auto oneUpText = ime::ui::Label::create("1UP");
+        oneUpText->getRenderer()->setTextColour(ime::Colour::Red);
         scoresTextContainer->addWidget(std::move(oneUpText), "oneUpText");
 
-        auto highscoreText = IME::UI::Label::create("HIGH SCORE");
-        highscoreText->getRenderer()->setTextColour(IME::Colour::Red);
+        auto highscoreText = ime::ui::Label::create("HIGH SCORE");
+        highscoreText->getRenderer()->setTextColour(ime::Colour::Red);
         scoresTextContainer->addWidget(std::move(highscoreText), "highscoresText");
 
-        auto scoresValueContainer = IME::UI::HorizontalLayout::create(windowSize_.x / 1.6f, tileSize);
+        auto scoresValueContainer = ime::ui::HorizontalLayout::create();
+        scoresValueContainer->setSize(windowSize_.x / 1.6f, tileSize);
         scoresValueContainer->setPosition({60, scoresTextContainer->getSize().y});
-        auto scoreValue = IME::UI::Label::create("00");
-        scoreValue->getRenderer()->setTextColour(IME::Colour::White);
+        auto scoreValue = ime::ui::Label::create("00");
+        scoreValue->getRenderer()->setTextColour(ime::Colour::White);
         scoresValueContainer->addWidget(std::move(scoreValue), "scoreValue");
 
-        auto highscoreValue = IME::UI::Label::create("00");
-        highscoreValue->getRenderer()->setTextColour(IME::Colour::White);
+        auto highscoreValue = ime::ui::Label::create("00");
+        highscoreValue->getRenderer()->setTextColour(ime::Colour::White);
         scoresValueContainer->addWidget(std::move(highscoreValue), "highscoresValue");
 
-        auto creditText = IME::UI::Label::create(pacmanLives_ > 0 ? "" : "CREDIT 0");
-        creditText->getRenderer()->setTextColour(IME::Colour::White);
+        auto creditText = ime::ui::Label::create(pacmanLives_ > 0 ? "" : "CREDIT 0");
+        creditText->getRenderer()->setTextColour(ime::Colour::White);
         creditText->getRenderer()->setPadding({0, 0, 0, 0});
         creditText->setPosition(40.0f, windowSize_.y - creditText->getSize().y);
         guiContainer_.addWidget(std::move(creditText), "creditText");
@@ -80,7 +82,7 @@ namespace SuperPacMan {
     void CommonView::createSprites() {
         auto fruitAnim = FruitAnimation().getAnimation();
         for (int i = 0u; i < level_; ++i) {
-            auto fruitSprite = IME::Graphics::Sprite();
+            auto fruitSprite = ime::Sprite();
             fruitSprite.setTexture(fruitAnim->getSpriteSheet());
             fruitSprite.setTextureRect(fruitAnim->getFrameAt(i));
             fruitSprite.scale(1.7f, 1.7f);
@@ -99,7 +101,7 @@ namespace SuperPacMan {
         }
     }
 
-    void CommonView::render(IME::Graphics::Window &renderTarget) {
+    void CommonView::render(ime::Window &renderTarget) {
         guiContainer_.draw();
         for (auto& fruit : sprites)
             renderTarget.draw(fruit);
@@ -109,7 +111,7 @@ namespace SuperPacMan {
         flashTimeout_ -= deltaTime;
         if (flashTimeout_ <= 0) {
             flashTimeout_ = 0.2f;
-            guiContainer_.getWidget<IME::UI::HorizontalLayout>("scoresTextContainer")
+            guiContainer_.getWidget<ime::ui::HorizontalLayout>("scoresTextContainer")
                 ->getWidget("oneUpText")->toggleVisibility();
         }
     }

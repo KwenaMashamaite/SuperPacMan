@@ -23,99 +23,170 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "MainMenuView.h"
-#include <IME/graphics/ui/widgets/VerticalLayout.h>
-#include <IME/graphics/ui/widgets/HorizontalLayout.h>
-#include <IME/graphics/ui/widgets/Button.h>
-#include <IME/graphics/ui/widgets/Label.h>
-#include <IME/graphics/ui/widgets/BitmapButton.h>
+#include <IME/ui/widgets/VerticalLayout.h>
+#include <IME/ui/widgets/HorizontalLayout.h>
+#include <IME/ui/widgets/Button.h>
+#include <IME/ui/widgets/Label.h>
+#include <IME/ui/widgets/Slider.h>
+#include <IME/ui/widgets/CheckBox.h>
+#include <IME/ui/widgets/Panel.h>
+#include <IME/ui/widgets/Tabs.h>
+#include <IME/ui/widgets/TabsContainer.h>
+#include <IME/ui/widgets/Picture.h>
+#include <IME/ui/widgets/ChildWindow.h>
+#include <IME/utility/DiskFileReader.h>
 
-namespace SuperPacMan {
-    MainMenuView::MainMenuView(IME::Graphics::Window& renderTarget) :
-        commonView_(renderTarget, 1, 0),
-        mainViewContainer_{renderTarget},
-        infoViewContainer_{renderTarget},
-        currentView_(SubView::Main),
-        windowSize_(renderTarget.getSize())
+namespace pacman {
+    MainMenuView::MainMenuView(ime::Window& window) :
+        guiContainer_{window},
+        windowSize_(window.getSize()),
+        subView_{SubView::MainMenu}
     {}
 
-    void MainMenuView::init(int highScore) {
-        commonView_.init();
-        auto scoresValueContainer = commonView_.getWidget<IME::UI::HorizontalLayout>("scoresValueContainer");
-        scoresValueContainer->getWidget("highscoresValue")->setText(std::to_string(highScore));
-        createLogo();
-        createButtons();
+    void MainMenuView::init() {
+        // This panel is used to block a previous subview content from that of
+        // the current subview such that only one subview can be visible at a time
+        auto emptyPanel = ime::ui::Panel::create();
+        emptyPanel->getRenderer()->setBackgroundColour(ime::Colour::Black);
+        guiContainer_.addWidget(emptyPanel, "blank_panel");
 
-        //Create text block for showing information when a main menu button is clicked
-        auto infoBox = IME::UI::Label::create();
-        infoBox->setSize(windowSize_.x / 1.05f, windowSize_.y / 1.2f);
-        infoBox->setOrigin(0.5f, 0.5f);
-        infoBox->setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
-        infoViewContainer_.addWidget(std::move(infoBox), "info-box");
-
-        //Create button for returning to the main menu from the info panel
-        auto backButton = IME::UI::Button::create("< Back");
-        backButton->setTextSize(10.0f);
-        infoViewContainer_.addWidget(std::move(backButton), "back-btn");
+        createMainMenuView();
+        createOptionsMenuView();
+        createCreditsMenuView();
+        setSubView(subView_);
     }
 
-    void MainMenuView::createLogo() {
-        pacmanLogo_.setTexture("pacman_logo.png");
-        pacmanLogo_.setOrigin(pacmanLogo_.getLocalBounds().width / 2.0f, 0.0f);
-        pacmanLogo_.scale(0.75, 0.75);
-        pacmanLogo_.setPosition(windowSize_.x / 2.0f, windowSize_.y * 13.0f / 100.0f);
-    }
+    void MainMenuView::createMainMenuView() {
+        auto container = ime::ui::Panel::create();
+        container->getRenderer()->setBackgroundColour(ime::Colour::Black);
+        guiContainer_.addWidget(container, "main_view_panel");
 
-    void MainMenuView::createButtons() {
+        auto background = ime::ui::Picture::create("main_menu_background.jpg");
+        background->setSize("100%", "32%");
+        background->setOrigin(1.0f, 1.0f);
+        background->setPosition("100%", "100%");
+        container->addWidget(background, "background");
+
+        auto logo = ime::ui::Picture::create("pacman_logo.png");
+        logo->setOrigin(0.5f, 0.0f);
+        logo->setSize("62%", "17%");
+        logo->setPosition("50%", "10%");
+        container->addWidget(logo, "logo");
+
         struct ButtonDetails{std::string name; std::string text;};
         auto navigationButtons = std::vector<ButtonDetails>{
-            {"play-btn", "PLAY"},
-            {"controls-btn", "CONTROLS"},
-            {"options-btn", "OPTIONS"},
-            {"about-btn", "ABOUT"},
-            {"exit-btn", "EXIT"}
+            {"play_btn", "Play"}, {"options_btn", "Options"},
+            {"credits_btn", "Credits"}, {"quit_btn", "Quit"}
         };
-        auto buttonsContainer = IME::UI::VerticalLayout::create(120, 180);
-        buttonsContainer->setOrigin(0.5, 0.5);
-        buttonsContainer->getRenderer()->setSpaceBetweenWidgets(20.0f);
+        auto buttonsContainer = ime::ui::VerticalLayout::create("40%", "30%");
+        buttonsContainer->setOrigin(0.5f, 0.0f);
+        //Set the height of the container to 8% below the logo
+        buttonsContainer->setPosition("50%", ime::bindBottom(logo).append("+8%"));
+        container->addWidget(buttonsContainer, "nav_buttons_container");
+
         std::for_each(navigationButtons.begin(), navigationButtons.end(), [&](auto& buttonInfo) {
-            auto button = IME::UI::Button::create(buttonInfo.text);
+            auto button = ime::ui::Button::create(buttonInfo.text);
             button->setTextSize(15.0f);
-            button->getRenderer()->setBackgroundColour(IME::Colour::Transparent);
-            button->getRenderer()->setBorderColour(IME::Colour::Transparent);
-            button->getRenderer()->setBackgroundHoverColour(IME::Colour::Transparent);
-            button->getRenderer()->setTextColour(IME::Colour::Red);
-            button->getRenderer()->setTextHoverColour(IME::Colour::Grey);
+            button->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+            button->getRenderer()->setBorderColour(ime::Colour::Transparent);
+            button->getRenderer()->setBackgroundHoverColour(ime::Colour::Transparent);
+            button->getRenderer()->setTextColour(ime::Colour::Red);
+            button->getRenderer()->setTextHoverColour(ime::Colour::Grey);
+            button->getRenderer()->setFocusedBorderColour(ime::Colour::Transparent);
+            button->getRenderer()->setBackgroundColourDown(ime::Colour::Transparent);
             buttonsContainer->addWidget(std::move(button), buttonInfo.name);
         });
-        buttonsContainer->setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
-        mainViewContainer_.addWidget(std::move(buttonsContainer), "nav-btn-container");
+
+        buttonsContainer->getWidget("options_btn")->on("click", ime::Callback<>([this] {
+            setSubView(SubView::OptionsMenu);
+        }));
+
+        buttonsContainer->getWidget("credits_btn")->on("click", ime::Callback<>([this] {
+            setSubView(SubView::CreditsMenu);
+        }));
     }
 
-    void MainMenuView::render(IME::Graphics::Window &renderTarget) {
-        switch (currentView_) {
-            case SubView::Main:
-                commonView_.render(renderTarget);
-                renderTarget.draw(pacmanLogo_);
-                mainViewContainer_.draw();
-                break;
-            case SubView::Info:
-                infoViewContainer_.draw();
-                break;
-        }
+    void MainMenuView::createCreditsMenuView() {
+        auto container = ime::ui::Panel::create();
+        container->getRenderer()->setBackgroundTexture("credits_menu_background.jpg");
+        guiContainer_.addWidget(container, "credits_view_panel");
+
+        auto backButton = ime::ui::Button::create("BACK");
+        backButton->setPosition("1%", "2%");
+        backButton->on("click", ime::Callback<>([this] {
+            setSubView(SubView::MainMenu);
+        }));
+        container->addWidget(backButton, "back_btn");
     }
 
-    void MainMenuView::update(float deltaTime) {
-        commonView_.update(deltaTime);
+    void MainMenuView::createOptionsMenuView() {
+        auto container = ime::ui::Panel::create();
+        container->getRenderer()->setBackgroundTexture("options_menu_background.jpg");
+        guiContainer_.addWidget(container, "options_view_panel");
+
+        auto innerContainer = ime::ui::Panel::create("97%", "97%");
+        innerContainer->setOrigin(0.5f, 0.5f);
+        innerContainer->setPosition("50%", "50%");
+        innerContainer->getRenderer()->setBackgroundColour({0, 0, 0, 240});
+        container->addWidget(innerContainer, "inner_options_view_container");
+
+        auto optionsText = ime::ui::Label::create("OPTIONS");
+        optionsText->setTextSize(35);
+        optionsText->getRenderer()->setTextStyle(ime::TextStyle::Italic);
+        optionsText->setPosition("(&.w - w) / 2", "1%");
+        optionsText->getRenderer()->setTextColour({106, 90, 205});
+        innerContainer->addWidget(optionsText, "header_text");
+
+        auto options = ime::ui::TabsContainer::create("99%", "90%");
+        options->setPosition("1%", ime::bindBottom(optionsText).append("+2%"));
+        innerContainer->addWidget(options, "options_tabs");
+
+        auto backButton = ime::ui::Button::create("BACK");
+        backButton->on("click", ime::Callback<>([this] {setSubView(SubView::MainMenu);}));
+        backButton->setPosition("1%", ime::bindHeight(options).append("+5%"));
+        innerContainer->addWidget(backButton, "back_btn");
+        auto applyButton = ime::ui::Button::create("APPLY");
+        applyButton->setPosition(ime::bindRight(backButton).append("+1%"), ime::bindHeight(options).append("+5%"));
+        innerContainer->addWidget(applyButton, "apply_btn");
+
+        auto audioSettings = ime::ui::Panel::create();
+        audioSettings->getRenderer()->setBackgroundColour({128, 128, 128, 60});
+        audioSettings->getRenderer()->setBorders({1, 1, 1, 1});
+        audioSettings->getRenderer()->setBorderColour(ime::Colour::Black);
+        options->addPanel(audioSettings, "AUDIO");
+
+        auto controlSettings = ime::ui::Panel::create();
+        controlSettings->getRenderer()->setBackgroundColour({128, 128, 128, 60});
+        controlSettings->getRenderer()->setBorders({1, 1, 1, 1});
+        controlSettings->getRenderer()->setBorderColour(ime::Colour::Black);
+        options->addPanel(controlSettings, "CONTROLS");
+    }
+
+    void MainMenuView::render() {
+        guiContainer_.draw();
     }
 
     void MainMenuView::handleEvent(sf::Event event) {
-        if (currentView_ == SubView::Main)
-            mainViewContainer_.handleEvent(event);
-        else
-            infoViewContainer_.handleEvent(event);
+        guiContainer_.handleEvent(event);
     }
 
     void MainMenuView::setSubView(SubView view) {
-        currentView_ = view;
+        guiContainer_.moveWidgetToFront(guiContainer_.getWidget("blank_panel"));
+        switch (view) {
+            case SubView::MainMenu:
+                guiContainer_.moveWidgetToFront(guiContainer_.getWidget("main_view_panel"));
+                break;
+            case SubView::OptionsMenu:
+                guiContainer_.moveWidgetToFront(guiContainer_.getWidget("options_view_panel"));
+                break;
+            case SubView::CreditsMenu:
+                guiContainer_.moveWidgetToFront(guiContainer_.getWidget("credits_view_panel"));
+                break;
+        }
+        subView_ = view;
+    }
+
+    SubView MainMenuView::getView() const {
+        return subView_;
     }
 }

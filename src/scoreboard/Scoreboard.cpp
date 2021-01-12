@@ -26,13 +26,13 @@
 #include <IME/utility/DiskFileReader.h>
 #include <algorithm>
 
-namespace SuperPacMan {
+namespace pacman {
     Scoreboard::Scoreboard(const std::string &filename) : highScoresFile_(filename)
     {}
 
     void Scoreboard::load() {
         auto highScores = std::stringstream();
-        IME::Utility::DiskFileReader().readFileInto(highScoresFile_, highScores);
+        ime::utility::DiskFileReader().readFileInto(highScoresFile_, highScores);
         auto line = std::string();
         while (std::getline(highScores, line)) {
             auto spacePos = line.find_first_of(' ');
@@ -74,7 +74,7 @@ namespace SuperPacMan {
             std::for_each(++highScores_.begin(), highScores_.end(),[&](auto& score) {
                 newHighscoreList << "\n" + score.getOwner() + " " + std::to_string(score.getValue());
             });
-            IME::Utility::DiskFileReader().writeToFile(newHighscoreList, highScoresFile_);
+            ime::utility::DiskFileReader().writeToFile(newHighscoreList, highScoresFile_);
         }
     }
 

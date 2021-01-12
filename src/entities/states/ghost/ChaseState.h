@@ -22,8 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef CHASESTATE_H
-#define CHASESTATE_H
+#ifndef SUPERPACMAN_CHASESTATE_H
+#define SUPERPACMAN_CHASESTATE_H
 
 #include <IME/core/entity/Entity.h>
 #include <IME/core/tilemap/TileMap.h>
@@ -31,7 +31,7 @@
 #include "../TimedState.h"
 #include "../../Ghost.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Defines the behavior of a ghost when it is chasing pacman
      */
@@ -43,8 +43,8 @@ namespace SuperPacMan {
          * @param grid Grid ghost is in
          * @param pacmanTile Tile currently occupied by pacman
          */
-        ChaseState(std::shared_ptr<IME::Entity> ghost, IME::TileMap& grid,
-            IME::Graphics::Tile pacmanTile);
+        ChaseState(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid,
+            ime::Tile pacmanTile);
 
         /**
          * @brief Initialize the state
@@ -77,7 +77,7 @@ namespace SuperPacMan {
     private:
         std::shared_ptr<Ghost> ghost_;    //!< Eaten ghost
         int pacmanTileChangeHandler;      //!< Pacman tile change handler id
-        IME::TargetGridMover ghostMover_; //!< Ghost movement controller
+        ime::TargetGridMover ghostMover_; //!< Ghost movement controller
     };
 }
 

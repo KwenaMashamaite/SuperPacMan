@@ -24,7 +24,7 @@
 
 #include "TimedState.h"
 
-namespace SuperPacMan {
+namespace pacman {
     TimedState::TimedState() : timeout_(0.0f), timedOut_(false)
     {}
 

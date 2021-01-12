@@ -27,15 +27,14 @@
 #include "../entities/AllEntities.h"
 #include "../common/SpriteContainer.h"
 #include "../common/Drawer.h"
+#include "../common/Constants.h"
 #include "../utils/Utils.h"
 #include "../entities/states/pacman/SuperState.h"
 #include "../entities/states/ghost/FrightenedState.h"
 #include "../entities/states/pacman/NormalState.h"
 
-using namespace IME::Graphics;
-
-namespace SuperPacMan {
-    IntroState::IntroState(IME::Engine &engine) : State(engine),
+namespace pacman {
+    IntroState::IntroState(ime::Engine &engine) : State(engine),
         grid_(20, 20),
         introView_(engine.getRenderTarget())
     {
@@ -49,13 +48,26 @@ namespace SuperPacMan {
         pacmanPath_.push({19, 26});
     }
 
-    void IntroState::initialize() {
+    void IntroState::onEnter() {
         createGrid();
         createObjects();
+
+        for (auto& ghost : objects_.at("ghosts")) {
+            ghostControllers_.push_back(std::make_shared<ime::GridMover>(grid_, ghost));
+            ghostControllers_.back()->onAdjacentTileReached(
+                [controller = ghostControllers_.back()](ime::Tile) {
+                    if (controller->getTarget()->isVulnerable()) {
+                        controller->requestDirectionChange(ime::Direction::Right);
+                        std::dynamic_pointer_cast<Ghost>(controller->getTarget())->getSprite().switchAnimation("frightened");
+                    } else
+                        controller->requestDirectionChange(ime::Direction::Left);
+            });
+        }
+
         introView_.init(engine().getPersistentData().getValueFor<int>("high-score"));
-        pacmanController_ = std::make_unique<IME::TargetGridMover>(grid_, objects_.at("pacman")[0]);
-        pacmanController_->setDestination(IME::Index{8, 0});
-        pacmanController_->onDestinationReached([this](IME::Graphics::Tile) {
+        pacmanController_ = std::make_unique<ime::TargetGridMover>(grid_, objects_.at("pacman")[0]);
+        pacmanController_->setDestination(ime::Index{8, 0});
+        pacmanController_->onDestinationReached([this](ime::Tile) {
             if (pacmanPath_.empty())
                 engine().popState();
             else {
@@ -63,42 +75,50 @@ namespace SuperPacMan {
                 pacmanPath_.pop();
             }
         });
+
+        pacmanController_->onEnemyCollision([](auto pacman, std::shared_ptr<ime::Entity> ghost) {
+            ghost->setCollidable(false);
+            std::dynamic_pointer_cast<Ghost>(ghost)->getSprite().hide();
+        });
+
+        pacmanController_->onAdjacentTileReached([this](ime::Tile tile) {
+            if (tile.getIndex() == ime::Index{15, 24}) {
+                for (auto& ghostController : ghostControllers_)
+                    ghostController->requestDirectionChange(ime::Direction::Left);
+            }
+        });
         pacmanController_->startMovement();
 
         pacmanController_->onCollectableCollision([this](auto target, auto collectable) {
             if (collectable->getClassType() == "Fruit") {
-                engine().getAudioManager().play(IME::Audio::Type::Sfx, "WakkaWakka.wav");
+                engine().getAudioManager().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
                 std::dynamic_pointer_cast<Fruit>(collectable)->eat();
             } else if (collectable->getClassType() == "Pellet") {
                 auto pellet = std::dynamic_pointer_cast<Pellet>(collectable);
                 if (pellet->getPelletType() == PelletType::PowerPellet) {
-                    for (const auto& ghost : objects_.at("ghosts"))
-                        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Frightened, std::make_shared<FrightenedState>(ghost, grid_));
-                    engine().getAudioManager().play(IME::Audio::Type::Sfx, "powerPelletEaten.wav");
+                    for (const auto& ghost : objects_.at("ghosts")) {
+                        ghost->setVulnerable(true);
+                        std::dynamic_pointer_cast<Ghost>(ghost)->getSprite().switchAnimation("frightened");
+                        std::dynamic_pointer_cast<Ghost>(ghost)->setSpeed(std::dynamic_pointer_cast<Ghost>(ghost)->getSpeed() / 4.0f);
+                    }
+                    engine().getAudioManager().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
                 } else {
                     Utils::enlargePacman(objects_.at("pacman")[0], 10.0f);
-                    engine().getAudioManager().play(IME::Audio::Type::Sfx,"superPelletEaten.wav");
+                    engine().getAudioManager().play(ime::audio::Type::Sfx,"superPelletEaten.wav");
                 }
                 pellet->eat();
             } else if (collectable->getClassType() == "Key") {
-                engine().getAudioManager().play(IME::Audio::Type::Sfx, "keyEaten.wav");
-                for (const auto& doorPtr : objects_.at("doors")) {
-                    auto door = std::dynamic_pointer_cast<Door>(doorPtr);
-                    if (!door->isLocked())
-                        continue;
-
-                    door->unlockWith(*std::dynamic_pointer_cast<Key>(collectable));
-                    if (!door->isLocked()) {
-                        door->setActive(false);
-                        break;
-                    }
-                }
                 collectable->setActive(false);
+                for (const auto& door : objects_.at("doors")) {
+                    if (Utils::unlockDoor(door, collectable))
+                        door->setActive(false);
+                }
+                engine().getAudioManager().play(ime::audio::Type::Sfx, "keyEaten.wav");
             }
         });
 
         engine().onFrameEnd([this] {
-            grid_.removeChildrenIf([](std::shared_ptr<IME::Entity> child) {
+            grid_.removeChildrenIf([](std::shared_ptr<ime::Entity> child) {
                 return !child->isActive();
             });
 
@@ -109,7 +129,7 @@ namespace SuperPacMan {
         });
 
         //Make state skippable by pressing enter key
-        engine().getInputManager().addKeyListener(IME::Input::Keyboard::Event::KeyUp, IME::Input::Keyboard::Key::Enter, [this] {
+        engine().getInputManager().addKeyListener(ime::input::Keyboard::Event::KeyUp, ime::input::Keyboard::Key::Enter, [this] {
             engine().popState();
         });
     }
@@ -118,7 +138,7 @@ namespace SuperPacMan {
         grid_.loadFromFile("textFiles/levels/introMaze.txt");
         grid_.setPosition(-42, 0);
         grid_.setGridVisible(false);
-        dynamic_cast<IME::Graphics::Sprite&>(grid_.getBackground()) = SpriteContainer::getSprite("intro_grid");
+        dynamic_cast<ime::Sprite&>(grid_.getBackground()) = SpriteContainer::getSprite("intro_grid");
         grid_.getBackground().setPosition({5.0f, 6.0f});
         grid_.getBackground().scale(2.1f, 2.1f);
         grid_.showLayer("background");
@@ -130,6 +150,10 @@ namespace SuperPacMan {
         auto pacman = objects_.at("pacman")[0];
         std::dynamic_pointer_cast<PacMan>(objects_.at("pacman")[0])
             ->pushState(PacMan::States::Normal, std::make_shared<NormalState>(pacman));
+
+        for (auto i = 0u; i < objects_.at("ghosts").size(); ++i)
+            std::dynamic_pointer_cast<Ghost>(objects_.at("ghosts").at(i))
+                ->setSpeed(Constants::PacManNormalSpeed + 20.0f + 1.5f*i);
 
         //Lock all the doors
         for (auto i = 0; i < objects_.at("doors").size(); ++i) {
@@ -149,12 +173,11 @@ namespace SuperPacMan {
         }
     }
 
-    void IntroState::update(float deltaTime) {
-        introView_.update(deltaTime);
-        pacmanController_->update(deltaTime);
+    bool IntroState::isEntered() const {
+        return grid_.getSize().x > 0;
     }
 
-    void IntroState::render(IME::Graphics::Window &renderTarget) {
+    void IntroState::render(ime::Window &renderTarget) {
         grid_.draw(renderTarget);
         introView_.render(renderTarget);
         static auto objectsDrawer = Drawer(renderTarget);
@@ -166,8 +189,8 @@ namespace SuperPacMan {
         objectsDrawer.drawEntities(objects_.at("pacman"));
     }
 
-    bool IntroState::isInitialized() const {
-        return grid_.getSize().x > 0;
+    void IntroState::update(float deltaTime) {
+        introView_.update(deltaTime);
     }
 
     void IntroState::fixedUpdate(float deltaTime) {
@@ -177,9 +200,13 @@ namespace SuperPacMan {
             std::dynamic_pointer_cast<Ghost>(ghost)->update(deltaTime);
         for (auto& pacman : objects_.at("pacman"))
             std::dynamic_pointer_cast<PacMan>(pacman)->update(deltaTime);
+
+        pacmanController_->update(deltaTime);
+        for (auto& ghostController : ghostControllers_)
+            ghostController->update(deltaTime);
     }
 
-    void IntroState::pause() {
+    void IntroState::onPause() {
 
     }
 
@@ -187,12 +214,11 @@ namespace SuperPacMan {
 
     }
 
-    void IntroState::resume() {
+    void IntroState::onResume() {
 
     }
 
-    void IntroState::exit() {
+    void IntroState::onExit() {
         engine().onFrameEnd(nullptr);
     }
 }
-

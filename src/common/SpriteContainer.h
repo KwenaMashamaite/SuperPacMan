@@ -22,13 +22,13 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SPRITECONTAINER_H
-#define SPRITECONTAINER_H
+#ifndef SUPERPACMAN_SPRITECONTAINER_H
+#define SUPERPACMAN_SPRITECONTAINER_H
 
 #include <IME/graphics/Sprite.h>
 #include <unordered_map>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Container for storing static sprites that can be retrieved later.
      *        The container is accessible from anywhere in the program
@@ -40,7 +40,7 @@ namespace SuperPacMan {
          * @param name Unique identifier of the sprite
          * @param sprite Sprite to be added
          */
-        static void addSprite(const std::string& name, IME::Graphics::Sprite sprite);
+        static void addSprite(const std::string& name, ime::Sprite sprite);
 
         /**
          * @brief Get a copy of a sprite from the container
@@ -50,7 +50,7 @@ namespace SuperPacMan {
          * @warning The sprite must exist in the container before this
          * function is called, otherwise the behavior is undefined
          */
-        static IME::Graphics::Sprite getSprite(const std::string& name);
+        static ime::Sprite getSprite(const std::string& name);
 
         /**
          * @brief Check if the container has a sprite with a certain identifier
@@ -68,7 +68,7 @@ namespace SuperPacMan {
         static bool removeSprite(const std::string& name);
 
     private:
-        inline static std::unordered_map<std::string, IME::Graphics::Sprite> sprites_{};
+        inline static std::unordered_map<std::string, ime::Sprite> sprites_{};
     };
 }
 

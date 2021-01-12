@@ -22,14 +22,14 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PELLET_H
-#define PELLET_H
+#ifndef SUPERPACMAN_PELLET_H
+#define SUPERPACMAN_PELLET_H
 
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/AnimatableSprite.h>
 #include "IEatable.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Type of pellets in the game
      */
@@ -41,14 +41,14 @@ namespace SuperPacMan {
     /**
      * @brief A pellet that can be eaten by Pacman
      */
-    class Pellet : public IME::Entity, public IEatable {
+    class Pellet : public ime::Entity, public IEatable {
     public:
         /**
          * @brief Construct a pellet
          * @brief pelletType Type of the pellet
          * @param boundingRect Size of the pellets bounding rectangle
          */
-        explicit Pellet(PelletType pelletType, const IME::Vector2u &boundingRect);
+        explicit Pellet(PelletType pelletType, const ime::Vector2u &boundingRect);
 
         /**
          * @brief Eat pellet
@@ -77,7 +77,7 @@ namespace SuperPacMan {
          * @brief Get the pellets graphical representation
          * @return The pellets graphical representation
          */
-        IME::Graphics::AnimatableSprite& getSprite();
+        ime::AnimatableSprite& getSprite();
 
         /**
          * @brief Update pellet
@@ -87,7 +87,7 @@ namespace SuperPacMan {
 
     private:
         PelletType pelletType_;                  //!< The type of this pellet
-        IME::Graphics::AnimatableSprite sprite_; //!< Pellets graphical representation
+        ime::AnimatableSprite sprite_; //!< Pellets graphical representation
     };
 }
 

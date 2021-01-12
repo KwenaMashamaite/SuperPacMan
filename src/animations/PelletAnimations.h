@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PELLETANIMATIONS_H
-#define PELLETANIMATIONS_H
+#ifndef SUPERPACMAN_PELLETANIMATIONS_H
+#define SUPERPACMAN_PELLETANIMATIONS_H
 
 #include <IME/core/animation/Animation.h>
 #include <vector>
 #include <memory>
 #include "../entities/Pellet.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Constructs all the pellet animations
      */
@@ -46,10 +46,10 @@ namespace SuperPacMan {
          * @brief Get all of the created animations
          * @return A list of all the created animations
          */
-        const std::vector<std::shared_ptr<IME::Animation>>& getAll() const;
+        const std::vector<std::shared_ptr<ime::Animation>>& getAll() const;
 
     private:
-        std::vector<std::shared_ptr<IME::Animation>> animations_;
+        std::vector<std::shared_ptr<ime::Animation>> animations_;
     };
 }
 

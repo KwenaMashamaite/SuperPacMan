@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PACMANANIMATIONS_H
-#define PACMANANIMATIONS_H
+#ifndef SUPERPACMAN_PACMANANIMATIONS_H
+#define SUPERPACMAN_PACMANANIMATIONS_H
 
 #include <IME/core/animation/Animation.h>
 #include <IME/common/Rect.h>
 #include <vector>
 #include <memory>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Constructs all the pacman animations
      */
@@ -45,7 +45,7 @@ namespace SuperPacMan {
          * @brief Get all of the created animations
          * @return A list of all the pacman animations
          */
-        const std::vector<std::shared_ptr<IME::Animation>>& getAll() const;
+        const std::vector<std::shared_ptr<ime::Animation>>& getAll() const;
 
     private:
         /**
@@ -53,10 +53,10 @@ namespace SuperPacMan {
          * @param name Name of the animation
          * @param rect Animation frame
          */
-        void createAnimation(const std::string& name, IME::IntRect rect);
+        void createAnimation(const std::string& name, ime::IntRect rect);
 
     private:
-        std::vector<std::shared_ptr<IME::Animation>> animations_;
+        std::vector<std::shared_ptr<ime::Animation>> animations_;
     };
 }
 

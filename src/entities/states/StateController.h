@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef STATECONTROLLER_H
-#define STATECONTROLLER_H
+#ifndef SUPERPACMAN_STATECONTROLLER_H
+#define SUPERPACMAN_STATECONTROLLER_H
 
 #include "IState.h"
 #include <memory>
 #include <stack>
 #include <utility>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Finite State Machine (FSM) for an entity state
      */

@@ -13,6 +13,7 @@ set(SRC_FILES
         views/LevelStartView.cpp
         views/CommonView.cpp
         views/IntroView.cpp
+        views/StartUpView.cpp
         entities/states/StateController.cpp
         common/SpriteContainer.cpp
         entities/Door.cpp
@@ -30,6 +31,7 @@ set(SRC_FILES
         states/MainMenuState.cpp
         states/LevelStartState.cpp
         states/PlayingState.cpp
+        states/StartUpState.cpp
         utils/Utils.cpp
         entities/states/ghost/GhostIdleState.cpp
         entities/states/pacman/PacManIdleState.cpp
@@ -60,7 +62,7 @@ find_package(TGUI 0.9.0 REQUIRED)
 
 #Find IME
 set(IME_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/lib/cmake/IME")
-find_package(IME 1.0.0 REQUIRED)
+find_package(IME 2.0.0 REQUIRED)
 
 # Link TGUI, SFML and IME
 target_link_libraries (SuperPacMan PRIVATE tgui sfml-graphics sfml-window sfml-system sfml-audio ime)

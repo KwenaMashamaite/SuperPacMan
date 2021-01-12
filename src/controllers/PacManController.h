@@ -2,26 +2,26 @@
  * @brief Controls everything pacman can do
  */
 
-#ifndef PACMANCONTROLLER_H
-#define PACMANCONTROLLER_H
+#ifndef SUPERPACMAN_PACMANCONTROLLER_H
+#define SUPERPACMAN_PACMANCONTROLLER_H
 
 #include <IME/core/physics/GridMover.h>
 #include <IME/core//input/Keyboard.h>
 #include "../entities/PacMan.h"
 
 
-namespace SuperPacMan {
+namespace pacman {
     class PacManController {
     public:
-        PacManController(IME::TileMap& tileMap, std::shared_ptr<PacMan> pacMan,
-            IME::Graphics::AnimatableSprite& pacmanSprite);
+        PacManController(ime::TileMap& tileMap, std::shared_ptr<PacMan> pacMan,
+            ime::AnimatableSprite& pacmanSprite);
 
-        void handleInput(IME::Input::Keyboard::Key key);
+        void handleInput(ime::input::Keyboard::Key key);
         void update(float deltaTime);
 
 
     private:
-        IME::GridMover gridMover_;
+        ime::GridMover gridMover_;
     };
 }
 

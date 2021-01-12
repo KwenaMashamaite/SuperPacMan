@@ -22,15 +22,15 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GHOSTANIMATIONS_H
-#define GHOSTANIMATIONS_H
+#ifndef SUPERPACMAN_GHOSTANIMATIONS_H
+#define SUPERPACMAN_GHOSTANIMATIONS_H
 
 #include <IME/core/animation/Animation.h>
 #include <vector>
 #include <memory>
 #include "../entities/Ghost.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Constructs all the animations for a specific ghost
      */
@@ -46,7 +46,7 @@ namespace SuperPacMan {
          * @brief Get all of the created animations
          * @return A list of all the ghost animations
          */
-        const std::vector<std::shared_ptr<IME::Animation>>& getAll() const;
+        const std::vector<std::shared_ptr<ime::Animation>>& getAll() const;
 
     private:
         /**
@@ -55,8 +55,8 @@ namespace SuperPacMan {
          * @param startPos Starting position of the frame on the spritesheet
          * @param arrangement Arrangement of the animation frames on the spritesheet
          */
-        void createAnimation(const std::string& name, IME::Vector2i startPos,
-            IME::Arrangement arrangement = IME::Arrangement::Horizontal);
+        void createAnimation(const std::string& name, ime::Vector2i startPos,
+            ime::Arrangement arrangement = ime::Arrangement::Horizontal);
 
         /**
          * @brief Create normal and flat movement animations
@@ -75,7 +75,7 @@ namespace SuperPacMan {
         void createEatenAnimations();
 
     private:
-        std::vector<std::shared_ptr<IME::Animation>> animations_;
+        std::vector<std::shared_ptr<ime::Animation>> animations_;
     };
 }
 

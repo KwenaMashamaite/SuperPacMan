@@ -25,9 +25,9 @@
 #include "Fruit.h"
 #include "../common/SpriteContainer.h"
 
-namespace SuperPacMan {
-    Fruit::Fruit(const IME::Vector2u &boundingRect, const std::string &name) :
-        Entity(boundingRect, IME::Entity::Type::Collectable),
+namespace pacman {
+    Fruit::Fruit(const ime::Vector2u &boundingRect, const std::string &name) :
+        Entity(boundingRect, ime::Entity::Type::Collectable),
         name_(name),
         isEaten_(false)
     {
@@ -36,7 +36,7 @@ namespace SuperPacMan {
         sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
         sprite_.scale(2.0f, 2.0f);
 
-        onEvent("positionChange", IME::Callback<float, float>([this](float x, float y) {
+        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
             sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
         }));
     }
@@ -45,11 +45,11 @@ namespace SuperPacMan {
         return name_;
     }
 
-    std::string SuperPacMan::Fruit::getClassType() {
+    std::string pacman::Fruit::getClassType() {
         return "Fruit";
     }
 
-    IME::Graphics::Sprite &Fruit::getSprite() {
+    ime::Sprite &Fruit::getSprite() {
         return sprite_;
     }
 

@@ -26,12 +26,12 @@
 #include "../entities/AllEntities.h"
 #include "Drawer.h"
 
-namespace SuperPacMan {
-    Drawer::Drawer(IME::Graphics::Window &renderTarget) :
-            renderTarget_(renderTarget)
+namespace pacman {
+    Drawer::Drawer(ime::Window &renderTarget) :
+        renderTarget_(renderTarget)
     {}
 
-    void Drawer::drawEntities(const std::vector<std::shared_ptr<IME::Entity>> &entities) {
+    void Drawer::drawEntities(const std::vector<std::shared_ptr<ime::Entity>> &entities) {
         std::for_each(entities.begin(), entities.end(), [this](auto& entity) {
             if (entity->getClassType() == "Pellet")
                 renderTarget_.draw(std::dynamic_pointer_cast<Pellet>(entity)->getSprite());

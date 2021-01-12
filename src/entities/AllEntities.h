@@ -26,8 +26,8 @@
 // Includes all game entities
 /////////////////////////////////////////////////
 
-#ifndef ALLENTITIES_H
-#define ALLENTITIES_H
+#ifndef SUPERPACMAN_ALLENTITIES_H
+#define SUPERPACMAN_ALLENTITIES_H
 
 #include "Door.h"
 #include "Wall.h"

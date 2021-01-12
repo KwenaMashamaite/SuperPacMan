@@ -25,12 +25,12 @@
 #include "SpriteContainer.h"
 #include <cassert>
 
-namespace SuperPacMan {
-    void SpriteContainer::addSprite(const std::string &name, IME::Graphics::Sprite sprite) {
+namespace pacman {
+    void SpriteContainer::addSprite(const std::string &name, ime::Sprite sprite) {
         sprites_.insert({name, std::move(sprite)});
     }
 
-    IME::Graphics::Sprite SpriteContainer::getSprite(const std::string &name) {
+    ime::Sprite SpriteContainer::getSprite(const std::string &name) {
         assert(hasSprite(name) && "Cannot retrieve an unknown sprite from SpriteContainer");
         return sprites_[name];
     }

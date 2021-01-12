@@ -30,7 +30,7 @@
 #include <IME/core/entity/Entity.h>
 #include <memory>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Pacmans normal state
      *
@@ -42,7 +42,7 @@ namespace SuperPacMan {
          * @brief Constructor
          * @param pacman Pacman
          */
-        explicit NormalState(std::shared_ptr<IME::Entity> pacman);
+        explicit NormalState(std::shared_ptr<ime::Entity> pacman);
 
         /**
          * @brief Initialize the state

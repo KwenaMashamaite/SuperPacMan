@@ -24,7 +24,7 @@
 
 #include "DoorLocker.h"
 
-namespace SuperPacMan {
+namespace pacman {
     DoorLocker::DoorLocker(int id) : id_(id), isLocked_(false)
     {}
 

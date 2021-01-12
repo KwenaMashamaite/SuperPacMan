@@ -22,10 +22,10 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef IEATABLE_H
-#define IEATABLE_H
+#ifndef SUPERPACMAN_IEATABLE_H
+#define SUPERPACMAN_IEATABLE_H
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Interface for eatable entities
      */

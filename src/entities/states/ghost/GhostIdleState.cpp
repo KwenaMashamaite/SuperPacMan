@@ -26,8 +26,8 @@
 #include "../../Ghost.h"
 #include <cassert>
 
-namespace SuperPacMan {
-    GhostIdleState::GhostIdleState(std::shared_ptr<IME::Entity> ghost) {
+namespace pacman {
+    GhostIdleState::GhostIdleState(std::shared_ptr<ime::Entity> ghost) {
         assert(std::dynamic_pointer_cast<Ghost>(ghost) && "Cannot create Ghost state for non Ghost object");
     }
 

@@ -28,8 +28,8 @@
 #include <IME/core/event/EventDispatcher.h>
 #include <cassert>
 
-namespace SuperPacMan {
-    EatenState::EatenState(std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid) :
+namespace pacman {
+    EatenState::EatenState(std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid) :
         ghostMover_(grid, ghost)
     {
         assert(std::dynamic_pointer_cast<Ghost>(ghost) && "Cannot create ghost state for non ghost object");
@@ -41,13 +41,13 @@ namespace SuperPacMan {
         ghost_->setVulnerable(false);
         ghost_->setSpeed(ghost_->getSpeed() * 3.0f);
         auto prevDir = ghost_->getDirection();
-        ghost_->setDirection(IME::Direction::Unknown);
+        ghost_->setDirection(ime::Direction::Unknown);
         ghost_->setDirection(prevDir);
 
-        ghostMover_.onDestinationReached([this](IME::Graphics::Tile) {
+        ghostMover_.onDestinationReached([this](ime::Tile) {
             auto ghost = ghostMover_.getTarget();
             ghost_->popState();
-            IME::EventDispatcher::instance()->dispatchEvent("ghostRespawnTileReached", ghost);
+            ime::EventDispatcher::instance()->dispatchEvent("ghostRespawnTileReached", ghost);
         });
 
         ghostMover_.setDestination(Constants::EatenGhostRespawnTile);

@@ -22,53 +22,53 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PLAYINGSTATE_H
-#define PLAYINGSTATE_H
+#ifndef SUPERPACMAN_PLAYINGSTATE_H
+#define SUPERPACMAN_PLAYINGSTATE_H
 
 #include <IME/core/states/State.h>
 #include <IME/core/tilemap/TileMap.h>
-#include <IME/graphics/ui/GuiContainer.h>
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Sprite.h>
 #include <IME/core/physics/KeyboardControlledGridMover.h>
 #include "../views/CommonView.h"
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Defines the playing state of the game
      */
-    class PlayingState : public IME::State {
+    class PlayingState : public ime::State {
     public:
         /**
          * @brief Create state
          * @param engine Reference to the game
          */
-        explicit PlayingState(IME::Engine &engine);
+        explicit PlayingState(ime::Engine &engine);
 
         /**
-         * @brief Initialize state
+         * @brief Enter a state
          *
          * This function will be called by the engine before the state is
-         * entered for the first time. After the state is entered, the
-         * function isInitialized returns true
+         * entered for the first time.
          *
-         * @see isInitialized
+         * @note After the state is entered, the function isEntered
+         * returns true
+         *
+         * @see isEntered
          */
-        void initialize() override;
+        void onEnter() override;
 
         /**
-         * @brief Check if a state is initialized or not
-         * @return True if state is initialized or false if state is not
-         *         initialized
+         * @brief Check whether or not a state is entered
+         * @return True if the state is entered or false if the state
+         *         is not entered
          *
-         * This function will be called by the engine before a state push
-         * or a state pop operation. This ensures that a previously
-         * initialized state is resumed instead of being reinitialized and
-         * vice versa
+         * This function will be called by the engine after a state
+         * pop operation. This ensures that a previously entered state
+         * is resumed instead of being re-entered
          *
-         * @see initialize, pause and resume
+         * @see onEnter, onPause, onResume
          */
-        bool isInitialized() const override;
+        bool isEntered() const override;
 
         /**
          * @brief Handle an event
@@ -102,6 +102,8 @@ namespace SuperPacMan {
          * update that require a fixed time step are defined in this
          * function, such updates are frame-rate independent
          *
+         * The delta time is always 1.0f / FPS_LIMIT
+         *
          * @see update
          */
         void fixedUpdate(float deltaTime) override;
@@ -114,7 +116,7 @@ namespace SuperPacMan {
          * after all events have been handled and all updates have
          * been performed for the current frame
          */
-        void render(IME::Graphics::Window &entity) override;
+        void render(ime::Window &renderTarget) override;
 
         /**
          * @brief Pause the state
@@ -122,29 +124,31 @@ namespace SuperPacMan {
          * This function will be called by the game engine before a state
          * push operation. This function allows a state to pause itself
          * such that when it is returned to, it can resume where it left
-         * of instead of being reinitialized
+         * of instead of being re-entered
+         *
+         * @see onEnter and onResume
          */
-        void pause() override;
+        void onPause() override;
 
         /**
          * @brief Resume a paused state
          *
          * This function will be called by the game engine after a state
-         * pop if the state was paused
+         * pop operation if the state was paused
          *
-         * @see pause
+         * @see onPause
          */
-        void resume() override;
+        void onResume() override;
 
         /**
          * @brief Exit a state
          *
          * This function will be called by the engine before the state
-         * is destroyed. It may be useful if there are some cleanup
+         * is popped. It may be useful if there are some cleanup
          * procedures that need to be taken care of before the state
-         * object is destroyed
+         * is destroyed
          */
-        void exit() override;
+        void onExit() override;
 
     private:
         void createGrid();
@@ -157,7 +161,7 @@ namespace SuperPacMan {
 
     private:
         //Aliases
-        using EntityContainer = std::vector<std::shared_ptr<IME::Entity>>;
+        using EntityContainer = std::vector<std::shared_ptr<ime::Entity>>;
 
         //
         std::unique_ptr<CommonView> commonView_;
@@ -166,13 +170,13 @@ namespace SuperPacMan {
         //The current level
         int level_;
         //The grid of the game
-        IME::TileMap grid_;
+        ime::TileMap grid_;
         //Container for all game entities
         std::unordered_map<std::string, EntityContainer> objects_;
         //Pacman movement controller
-        std::unique_ptr<IME::KeyboardControlledGridMover> pacmanController_;
+        std::unique_ptr<ime::KeyboardControlledGridMover> pacmanController_;
         //Event publisher
-        IME::EventEmitter eventEmitter_;
+        ime::EventEmitter eventEmitter_;
     };
 }
 

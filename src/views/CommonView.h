@@ -22,14 +22,14 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef COMMONVIEW_H
-#define COMMONVIEW_H
+#ifndef SUPERPACMAN_COMMONVIEW_H
+#define SUPERPACMAN_COMMONVIEW_H
 
 #include <IME/graphics/Window.h>
-#include <IME/graphics/ui/GuiContainer.h>
+#include <IME/ui/GuiContainer.h>
 #include <IME/graphics/Sprite.h>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Defines the view that appears across all states
      *
@@ -48,7 +48,7 @@ namespace SuperPacMan {
          * @param level Current level
          * @param lives Pacman;s remaining lives
          */
-        CommonView(IME::Graphics::Window& renderTarget, int level, int lives);
+        CommonView(ime::Window& renderTarget, int level, int lives);
 
         /**
          * @brief Initialize the view
@@ -59,7 +59,7 @@ namespace SuperPacMan {
          * @brief Render the view
          * @param renderTarget Target to render view on
          */
-        void render(IME::Graphics::Window& renderTarget);
+        void render(ime::Window& renderTarget);
 
         /**
          * @brief Update view
@@ -91,9 +91,9 @@ namespace SuperPacMan {
         void createSprites();
 
     private:
-        IME::UI::GuiContainer guiContainer_;        //!< Container for all widgets
-        IME::Vector2u windowSize_;                  //!< Size of the render target
-        std::vector<IME::Graphics::Sprite> sprites; //!< Stores all sprites to be rendered
+        ime::ui::GuiContainer guiContainer_;        //!< Container for all widgets
+        ime::Vector2u windowSize_;                  //!< Size of the render target
+        std::vector<ime::Sprite> sprites; //!< Stores all sprites to be rendered
         int level_;                                 //!< Current level
         int pacmanLives_;                           //!< Remaining pacman lives
         float flashTimeout_;                        //!< How long the 1 up text stays in hidden and shown states

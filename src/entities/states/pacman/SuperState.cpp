@@ -27,8 +27,8 @@
 #include "../../../utils/Utils.h"
 #include <cassert>
 
-namespace SuperPacMan {
-    SuperState::SuperState(std::shared_ptr<IME::Entity> pacman) : isPacmanFlashing_{false} {
+namespace pacman {
+    SuperState::SuperState(std::shared_ptr<ime::Entity> pacman) : isPacmanFlashing_{false} {
         assert(std::dynamic_pointer_cast<PacMan>(pacman) && "Cannot create Pacman state for non Pacman object");
         pacman_ = std::move(std::dynamic_pointer_cast<PacMan>(pacman));
     }
@@ -61,7 +61,7 @@ namespace SuperPacMan {
     void SuperState::triggerAnimationSwitch() {
         //Trigger animation switch in current direction (Pacman will play normal size animations when vulnerable)
         auto prevDir = pacman_->getDirection();
-        pacman_->setDirection(IME::Direction::Unknown);
+        pacman_->setDirection(ime::Direction::Unknown);
         pacman_->setDirection(prevDir);
 
         //Accommodate change in sprite size

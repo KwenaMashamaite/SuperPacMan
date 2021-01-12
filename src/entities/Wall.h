@@ -22,16 +22,16 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef WALL_H
-#define WALL_H
+#ifndef SUPERPACMAN_WALL_H
+#define SUPERPACMAN_WALL_H
 
 #include <IME/core/entity/Entity.h>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief A wall
      */
-    class Wall : public IME::Entity {
+    class Wall : public ime::Entity {
     public:
         /**
          * @brief Construct wall object
@@ -39,7 +39,7 @@ namespace SuperPacMan {
          *
          * The wall is collidable by default
          */
-        explicit Wall(const IME::Vector2u &boundingRect);
+        explicit Wall(const ime::Vector2u &boundingRect);
 
         /**
          * @brief Get the class type

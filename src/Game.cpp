@@ -29,17 +29,18 @@
 #include "common/SpriteContainer.h"
 #include "scoreboard/Scoreboard.h"
 #include "states/PlayingState.h"
+#include "states/StartUpState.h"
 #include <IME/core/event/EventDispatcher.h>
 #include <memory>
 
-using Key = IME::Input::Keyboard::Key;
-using KeyEvent = IME::Input::Keyboard::Event;
+using Key = ime::input::Keyboard::Key;
+using KeyEvent = ime::input::Keyboard::Event;
 
-void createSprite(const std::string& name, const std::string& texture, IME::IntRect rect) {
-    auto sprite = IME::Graphics::Sprite();
+void createSprite(const std::string& name, const std::string& texture, ime::IntRect rect) {
+    auto sprite = ime::Sprite();
     sprite.setTexture(texture);
     sprite.setTextureRect(rect);
-    SuperPacMan::SpriteContainer::addSprite(name, std::move(sprite));
+    pacman::SpriteContainer::addSprite(name, std::move(sprite));
 }
 
 void createFruitSprites() {
@@ -49,8 +50,8 @@ void createFruitSprites() {
     };
 
     auto rectSpacing = 1;
-    auto rectSize = IME::Vector2i{16, 16};
-    auto rectPos = IME::Vector2i{151, 52};
+    auto rectSize = ime::Vector2i{16, 16};
+    auto rectPos = ime::Vector2i{151, 52};
     for (auto i = 0u; i < fruits.size(); ++i) {
         createSprite(fruits[i], "spritesheet.png", {rectPos.x, rectPos.y, rectSize.x, rectSize.y});
         rectPos.x += rectSize.x + rectSpacing;
@@ -61,7 +62,7 @@ void createFruitSprites() {
 }
 
 void createGridSprites() {
-    auto gridSize = IME::Vector2i{224, 244};
+    auto gridSize = ime::Vector2i{224, 244};
     createSprite("intro_grid", "grids.png", {225, 0, gridSize.x, gridSize.y});
     createSprite("level_1_to_4_grid", "grids.png", {450, 0, gridSize.x, gridSize.y});
     createSprite("level_5_to_8_grid", "grids.png", {0, 249, gridSize.x, gridSize.y});
@@ -75,9 +76,9 @@ void createGridSprites() {
     createSprite("unlocked_door", "spritesheet.png", {253, 35, 16, 16});
 }
 
-namespace SuperPacMan {
-    Game::Game()
-        : engine_("Super Pac-Man", "textFiles/config/settings.dat")
+namespace pacman {
+    Game::Game() :
+        engine_("Super Pac-Man", "textFiles/config/settings.dat")
     {}
 
     void Game::initialize() {
@@ -92,16 +93,14 @@ namespace SuperPacMan {
         engine_.getPersistentData().addProperty({"score", "INT", 0});
         engine_.getPersistentData().addProperty({"lives", "INT", 4});
 
-        //Push the initial states (States will be entered in reverse order: loading->intro->mainMenu)
+        //Push the initial states (States will be entered in reverse order: startUo->loading->intro->mainMenu)
         engine_.pushState(std::make_shared<MainMenuState>(engine_));
         engine_.pushState(std::make_shared<IntroState>(engine_));
         engine_.pushState(std::make_shared<LoadingState>(engine_));
-
-        //Prevent the game from being exited when in loading state (First state)
-        engine_.onWindowClose(nullptr);
+        engine_.pushState(std::make_shared<StartUpState>(engine_));
 
         //This event is emitted by the loading state after all assets have been loaded
-        IME::EventDispatcher::instance()->onEvent("resourceLoadingComplete", IME::Callback<>([this] {
+        ime::EventDispatcher::instance()->onEvent("resourceLoadingComplete", ime::Callback<>([this] {
             engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::Escape, [this] {
                 engine_.quit();
             });
@@ -113,14 +112,6 @@ namespace SuperPacMan {
             createFruitSprites();
             createGridSprites();
         }));
-
-        engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::A, [this] {
-            engine_.pushState(std::make_shared<PlayingState>(engine_));
-        });
-
-        engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::S, [this] {
-            engine_.popState();
-        });
     }
 
     void Game::start() {

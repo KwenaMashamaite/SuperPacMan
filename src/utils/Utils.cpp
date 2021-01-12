@@ -44,15 +44,13 @@
  * a certain key will always open specific doors, regardless of where the
  * key it is placed
  */
-int getLockerId(IME::Index doorIndex);
+int getLockerId(ime::Index doorIndex);
 
-using namespace IME::Graphics;
-
-namespace SuperPacMan::Utils {
-    ObjectsContainer createObjects(IME::TileMap &grid) {
+namespace pacman::Utils {
+    ObjectsContainer createObjects(ime::TileMap &grid) {
         int keyId = 0;
         ObjectsContainer objects;
-        grid.forEachTile([&](Tile& tile) {
+        grid.forEachTile([&](ime::Tile& tile) {
             if (tile.getId() == 'D') { //Doors
                 auto door = std::make_shared<Door>(grid.getTileSize());
                 if (tile.getIndex().row % 2 == 0)
@@ -103,28 +101,28 @@ namespace SuperPacMan::Utils {
         return objects;
     }
 
-    void removeInactiveObjectsFromContainer(std::vector<std::shared_ptr<IME::Entity>>& entities) {
-        entities.erase(std::remove_if(entities.begin(), entities.end(), [](std::shared_ptr<IME::Entity>& entity) {
+    void removeInactiveObjectsFromContainer(std::vector<std::shared_ptr<ime::Entity>>& entities) {
+        entities.erase(std::remove_if(entities.begin(), entities.end(), [](std::shared_ptr<ime::Entity>& entity) {
             return !entity->isActive();
         }), entities.end());
     }
 
-    std::string convertToString(IME::Direction direction) {
+    std::string convertToString(ime::Direction direction) {
         switch (direction) {
-            case IME::Direction::Left:
+            case ime::Direction::Left:
                 return "Left";
-            case IME::Direction::Right:
+            case ime::Direction::Right:
                 return "Right";
-            case IME::Direction::Up:
+            case ime::Direction::Up:
                 return "Up";
-            case IME::Direction::Down:
+            case ime::Direction::Down:
                 return "Down";
             default:
                 return "Unknown";
         }
     }
 
-    void frightenGhost(std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid) {
+    void frightenGhost(std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid) {
         auto frightenedState = std::make_shared<FrightenedState>(ghost, grid);
         frightenedState->setTimeout(10.0f, [ghost, &grid] {
             Utils::scatterGhost(ghost, grid);
@@ -132,7 +130,7 @@ namespace SuperPacMan::Utils {
         std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Frightened, std::move(frightenedState));
     }
 
-    void scatterGhost(std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid) {
+    void scatterGhost(std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid) {
         auto scatterPos = ScatterPosition::TopRightCorner;
         switch (std::dynamic_pointer_cast<Ghost>(ghost)->getGhostName()) {
             case Ghost::Name::Blinky:
@@ -155,7 +153,7 @@ namespace SuperPacMan::Utils {
         std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Scatter, std::move(scatterState));
     }
 
-    bool unlockDoor(std::shared_ptr<IME::Entity> doorPtr, std::shared_ptr<IME::Entity> key) {
+    bool unlockDoor(std::shared_ptr<ime::Entity> doorPtr, std::shared_ptr<ime::Entity> key) {
         auto door = std::dynamic_pointer_cast<Door>(doorPtr);
         if (!door->isLocked())
             return false;
@@ -165,15 +163,15 @@ namespace SuperPacMan::Utils {
         return false;
     }
 
-    void lockAllDoors(IME::TileMap& grid) {
-        grid.forEachTileWithId('D', [&grid](IME::Graphics::Tile& tile) {
+    void lockAllDoors(ime::TileMap& grid) {
+        grid.forEachTileWithId('D', [&grid](ime::Tile& tile) {
             auto door = std::dynamic_pointer_cast<Door>(grid.getOccupant(tile));
             door->addDoorLocker(std::make_unique<DoorLocker>(getLockerId(tile.getIndex())));
             door->lockWith(Key({}, getLockerId(tile.getIndex())));
         });
     }
 
-    void enlargePacman(std::shared_ptr<IME::Entity> pacman, float duration) {
+    void enlargePacman(std::shared_ptr<ime::Entity> pacman, float duration) {
         auto superState = std::make_shared<SuperState>(pacman);
         superState->setTimeout(duration, [pacman] {
             std::dynamic_pointer_cast<PacMan>(pacman)->pushState(PacMan::States::Normal,
@@ -182,7 +180,7 @@ namespace SuperPacMan::Utils {
         std::dynamic_pointer_cast<PacMan>(pacman)->pushState(PacMan::States::Super, std::move(superState));
     }
 
-    void flashGrid(IME::TileMap& grid, int level) {
+    void flashGrid(ime::TileMap& grid, int level) {
         if (level >= 1 && level <= 4)
             grid.getBackground().switchAnimation("flash-blue");
         else if (level >= 5 && level <= 8)
@@ -195,8 +193,8 @@ namespace SuperPacMan::Utils {
             grid.getBackground().switchAnimation("flash-green");
     }
 
-    void chasePacMan(std::shared_ptr<IME::Entity> pacman,
-         std::shared_ptr<IME::Entity> ghost, IME::TileMap &grid)
+    void chasePacMan(std::shared_ptr<ime::Entity> pacman,
+         std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid)
     {
         auto chaseState = std::make_shared<ChaseState>(ghost, grid, grid.getTileOccupiedByChild(pacman));
         chaseState->setTimeout(7.0f, [&grid, ghost] {
@@ -205,45 +203,45 @@ namespace SuperPacMan::Utils {
         std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Chasing, std::move(chaseState));
     }
 
-    void triggerAnimationSwitch(std::shared_ptr<IME::Entity> entity) {
+    void triggerAnimationSwitch(std::shared_ptr<ime::Entity> entity) {
         if (entity) {
             auto previousDirection = entity->getDirection();
-            entity->setDirection(IME::Direction::Unknown);
+            entity->setDirection(ime::Direction::Unknown);
             entity->setDirection(previousDirection);
         }
     }
 }
 
-int getLockerId(IME::Index doorIndex) {
-    if (doorIndex == IME::Index{4, 3} || doorIndex == IME::Index{6, 3})
+int getLockerId(ime::Index doorIndex) {
+    if (doorIndex == ime::Index{4, 3} || doorIndex == ime::Index{6, 3})
         return 0;
-    else if (doorIndex == IME::Index{4, 19} || doorIndex == IME::Index{6, 19})
+    else if (doorIndex == ime::Index{4, 19} || doorIndex == ime::Index{6, 19})
         return 1;
-    else if (doorIndex == IME::Index{5, 6} || doorIndex == IME::Index{4, 11})
+    else if (doorIndex == ime::Index{5, 6} || doorIndex == ime::Index{4, 11})
         return 2;
-    else if (doorIndex == IME::Index{5, 16})
+    else if (doorIndex == ime::Index{5, 16})
         return 3;
-    else if (doorIndex == IME::Index{10, 3} || doorIndex == IME::Index{13, 2} || doorIndex == IME::Index{13, 4})
+    else if (doorIndex == ime::Index{10, 3} || doorIndex == ime::Index{13, 2} || doorIndex == ime::Index{13, 4})
         return 4;
-    else if (doorIndex == IME::Index{10, 19} || doorIndex == IME::Index{13, 18} || doorIndex == IME::Index{13, 20})
+    else if (doorIndex == ime::Index{10, 19} || doorIndex == ime::Index{13, 18} || doorIndex == ime::Index{13, 20})
         return 5;
-    else if (doorIndex == IME::Index{16, 3} || doorIndex == IME::Index{20, 3})
+    else if (doorIndex == ime::Index{16, 3} || doorIndex == ime::Index{20, 3})
         return 6;
-    else if (doorIndex == IME::Index{13, 6} || doorIndex == IME::Index{16, 7} || doorIndex == IME::Index{17, 10})
+    else if (doorIndex == ime::Index{13, 6} || doorIndex == ime::Index{16, 7} || doorIndex == ime::Index{17, 10})
         return 7;
-    else if (doorIndex == IME::Index{13, 16} || doorIndex == IME::Index{17, 12} || doorIndex == IME::Index{16, 15})
+    else if (doorIndex == ime::Index{13, 16} || doorIndex == ime::Index{17, 12} || doorIndex == ime::Index{16, 15})
         return 8;
-    else if (doorIndex == IME::Index{16, 19} || doorIndex == IME::Index{20, 19})
+    else if (doorIndex == ime::Index{16, 19} || doorIndex == ime::Index{20, 19})
         return 9;
-    else if (doorIndex == IME::Index{22, 11} || doorIndex == IME::Index{13, 0} || doorIndex == IME::Index{13, 22})
+    else if (doorIndex == ime::Index{22, 11} || doorIndex == ime::Index{13, 0} || doorIndex == ime::Index{13, 22})
         return 10;
-    else if (doorIndex == IME::Index{22, 7} || doorIndex == IME::Index{25, 6} || doorIndex == IME::Index{24, 11})
+    else if (doorIndex == ime::Index{22, 7} || doorIndex == ime::Index{25, 6} || doorIndex == ime::Index{24, 11})
         return 11;
-    else if (doorIndex == IME::Index{22, 15} || doorIndex == IME::Index{25, 16})
+    else if (doorIndex == ime::Index{22, 15} || doorIndex == ime::Index{25, 16})
         return 12;
-    else if (doorIndex == IME::Index{22, 3} || doorIndex == IME::Index{24, 3})
+    else if (doorIndex == ime::Index{22, 3} || doorIndex == ime::Index{24, 3})
         return 13;
-    else if (doorIndex == IME::Index{22, 19} || doorIndex == IME::Index{24, 19})
+    else if (doorIndex == ime::Index{22, 19} || doorIndex == ime::Index{24, 19})
         return 14;
     else return -1;
 }

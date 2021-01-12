@@ -22,26 +22,26 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#ifndef SUPERPACMAN_CONSTANTS_H
+#define SUPERPACMAN_CONSTANTS_H
 
 #include <IME/core/tilemap/Index.h>
 
-namespace SuperPacMan {
+namespace pacman {
     /**
      * @brief Stores common date that doesn't change throughout the game
      */
     struct Constants {
         //Spawn positions in the grid
-        static constexpr auto PacManSpawnTile = IME::Index{13, 11};
-        static constexpr auto BlinkySpawnTile = IME::Index{7, 11};
-        static constexpr auto PinkySpawnTile = IME::Index{9, 9};
-        static constexpr auto InkySpawnTile = IME::Index{9, 13};
-        static constexpr auto ClydeSpawnTile = IME::Index{11, 11};
-        static constexpr auto EatenGhostRespawnTile = IME::Index{11, 11};
+        static constexpr auto PacManSpawnTile = ime::Index{13, 11};
+        static constexpr auto BlinkySpawnTile = ime::Index{7, 11};
+        static constexpr auto PinkySpawnTile = ime::Index{9, 9};
+        static constexpr auto InkySpawnTile = ime::Index{9, 13};
+        static constexpr auto ClydeSpawnTile = ime::Index{11, 11};
+        static constexpr auto EatenGhostRespawnTile = ime::Index{11, 11};
 
         //Speed
-        static constexpr auto PacManNormalSpeed = 100.0f;
+        static constexpr auto PacManNormalSpeed = 120.0f;
         static constexpr auto PacManSuperSpeed = 6.0f * PacManNormalSpeed;
         static constexpr auto GhostScatterSpeed = PacManNormalSpeed + 40.0f;
         static constexpr auto GhostChaseSpeed = PacManNormalSpeed + 3.0f;

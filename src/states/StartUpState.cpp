@@ -22,64 +22,68 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "LevelStartState.h"
-#include <IME/core/loop/Engine.h>
+#include "StartUpState.h"
+#include <ime/core/loop/Engine.h>
+#include <IME/ui/widgets/Panel.h>
 
 namespace pacman {
-    LevelStartState::LevelStartState(ime::Engine &engine) :
+    StartUpState::StartUpState(ime::Engine &engine) :
         State(engine),
+        view_(engine.getRenderTarget()),
         isInit_{false},
-        stateTimeout_{2.0f}
+        timeOut_{25.0f}
     {}
 
-    void LevelStartState::onEnter() {
-        auto level = engine().getPersistentData().getValueFor<int>("level");
-        auto lives = engine().getPersistentData().getValueFor<int>("lives");
-        auto score = engine().getPersistentData().getValueFor<int>("score");
-        auto highScore = engine().getPersistentData().getValueFor<int>("high-score");
-        view_ = std::make_unique<LevelStartView>(engine().getRenderTarget(), level, lives, score, highScore);
-        view_->init();
+    void StartUpState::onEnter() {
+        view_.init();
 
-        if (level == 1) { //Audio played for the first level only
-            sfx_.setSource("beginning.wav");
-            sfx_.play();
-            stateTimeout_ = sfx_.getDuration().Milliseconds / 1000.0f;
-        }
+        //Make state skippable by pressing enter key
+        engine().getInputManager().addKeyListener(ime::input::Keyboard::Event::KeyUp,
+            ime::input::Keyboard::Key::Enter, [this] {
+            engine().popState();
+        });
+
         isInit_ = true;
     }
 
-    bool LevelStartState::isEntered() const {
+    bool StartUpState::isEntered() const {
         return isInit_;
     }
 
-    void LevelStartState::render(ime::Window &renderTarget) {
-        view_->render(renderTarget);
-    }
-
-    void LevelStartState::update(float deltaTime) {
-        view_->update(deltaTime);
-        stateTimeout_ -= deltaTime;
-        if (stateTimeout_ <= 0)
-            engine().popState();
-    }
-
-    void LevelStartState::fixedUpdate(float deltaTime) {
+    void StartUpState::handleEvent(sf::Event event) {
 
     }
 
-    void LevelStartState::onPause() {
+    void StartUpState::update(float deltaTime) {
+        timeOut_ -= deltaTime;
+        static auto animationBegan = false;
+        if (timeOut_ <= 0.0f && !animationBegan) {
+            animationBegan = true;
+            auto viewContainer = view_.getWidget<ime::ui::Panel>("container");
+            viewContainer->hideWithEffect(ime::ShowAnimationType::SlideFromBottom, 2000);
+            viewContainer->on("animationFinish", ime::Callback<>([this] {
+                engine().popState();
+            }));
+        }
+    }
+
+    void StartUpState::fixedUpdate(float deltaTime) {
 
     }
 
-    void LevelStartState::handleEvent(sf::Event event) {
+    void StartUpState::render(ime::Window &renderTarget) {
+        view_.render();
+    }
+
+    void StartUpState::onPause() {
 
     }
 
-    void LevelStartState::onResume() {
+    void StartUpState::onResume() {
 
     }
 
-    void LevelStartState::onExit() {
+    void StartUpState::onExit() {
 
     }
 }
