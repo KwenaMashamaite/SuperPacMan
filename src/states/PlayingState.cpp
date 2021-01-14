@@ -38,7 +38,6 @@
 #include "../animations/GridAnimation.h"
 #include "LevelStartState.h"
 #include "../entities/states/pacman/DyingState.h"
-#include "../entities/states/pacman/NormalState.h"
 #include "../entities/states/ghost/GhostIdleState.h"
 
 namespace pacman {
@@ -82,9 +81,7 @@ namespace pacman {
                 eventEmitter_.emit("levelComplete");
         });
 
-        //Initiate pacman movement
-        std::dynamic_pointer_cast<PacMan>(objects_.at("pacman")[0])->pushState(PacMan::States::Normal, std::make_shared<NormalState>(pacmanController_->getTarget()));
-        pacmanController_->requestDirectionChange(pacmanController_->getTarget()->getDirection());
+        pacmanController_->movePacman(true);
         isInitialized_ = true;
     }
 
@@ -92,6 +89,7 @@ namespace pacman {
         grid_.loadFromFile("textFiles/levels/maze.txt");
         grid_.setGridVisible(false);
         setGridBackground();
+        grid_.setPosition(-grid_.getTileSize().x, 0);
         auto flashingAnimations = GridAnimation().getAnimations();
         for (const auto& animation : flashingAnimations)
             grid_.getBackground().addAnimation(animation);
@@ -129,41 +127,44 @@ namespace pacman {
     }
 
     void PlayingState::initCollisionHandler() {
-        pacmanController_->onCollectableCollision([this](auto, auto collectable) {
-            if (collectable->getClassType() == "Fruit") {
-                std::dynamic_pointer_cast<Fruit>(collectable)->eat();
-                updateScore(level_ * 10);
-                engine().getAudioManager().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
-            } else if (collectable->getClassType() == "Pellet") {
-                auto pellet = std::dynamic_pointer_cast<Pellet>(collectable);
-                pellet->eat();
-                updateScore(100);
-                if (pellet->getPelletType() == PelletType::PowerPellet)
-                    eventEmitter_.emit("powerPelletEaten");
-                else
-                    eventEmitter_.emit("superPelletEaten");
-            } else if (collectable->getClassType() == "Key") {
-                collectable->setActive(false);
-                updateScore(50);
-                eventEmitter_.emit("keyEaten", collectable);
+        pacmanController_->onKeyCollision([this](auto, auto key) {
+            key->setActive(false);
+            updateScore(50);
+            eventEmitter_.emit("keyEaten", key);
+        });
+
+        pacmanController_->onFruitCollision([this](auto, auto fruit) {
+            std::dynamic_pointer_cast<Fruit>(fruit)->eat();
+            updateScore(level_ * 10);
+            engine().getAudioManager().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
+        });
+
+        pacmanController_->onPelletCollision([this](auto, auto pellet) {
+            auto pelletPtr = std::dynamic_pointer_cast<Pellet>(pellet);
+            pelletPtr->eat();
+            updateScore(100);
+            if (pelletPtr->getPelletType() == PelletType::PowerPellet)
+                eventEmitter_.emit("powerPelletEaten");
+            else
+                eventEmitter_.emit("superPelletEaten");
+        });
+
+        pacmanController_->onDoorCollision([this](auto pacman, auto door) {
+            if ("Door" && !pacman->isVulnerable()) {
+                std::dynamic_pointer_cast<Door>(door)->forceOpen();
+                pacmanController_->advancePacManForward();
+                updateScore(200);
+                engine().getAudioManager().play(ime::audio::Type::Sfx, "doorBroken.wav");
             }
         });
 
-        pacmanController_->onEnemyCollision([this](std::shared_ptr<ime::Entity> pacman, std::shared_ptr<ime::Entity> ghost) {
-            if (std::dynamic_pointer_cast<Ghost>(ghost)->getState().first == Ghost::States::Frightened) {
+        pacmanController_->onGhostCollision([this](auto pacman, auto ghost) {
+            //@TODO - Fix game crashing when pacman eats a ghost
+            /*if (std::dynamic_pointer_cast<Ghost>(ghost)->getState().first == Ghost::States::Frightened) {
                 std::dynamic_pointer_cast<Ghost>(ghost)->popState();
                 std::dynamic_pointer_cast<Ghost>(ghost)->pushState(
                     Ghost::States::Eaten, std::make_shared<EatenState>(ghost, grid_));
-            }
-        });
-
-        pacmanController_->onObstacleCollision([this](std::shared_ptr<ime::Entity> pacman, std::shared_ptr<ime::Entity> obstacle) {
-            if (obstacle->getClassType() == "Door" && !pacman->isVulnerable()) {
-                std::dynamic_pointer_cast<Door>(obstacle)->forceOpen();
-                updateScore(200);
-                engine().getAudioManager().play(ime::audio::Type::Sfx, "doorBroken.wav");
-                pacmanController_->requestDirectionChange(pacman->getDirection());
-            }
+            }*/
         });
     }
 
@@ -185,15 +186,9 @@ namespace pacman {
         }));
 
         eventEmitter_.addEventListener("superPelletEaten", ime::Callback<>([this] {
-            auto pacman = std::dynamic_pointer_cast<PacMan>(objects_.at("pacman")[0]);
-            if (pacman->getState().first == PacMan::States::Super)
-                std::dynamic_pointer_cast<TimedState>(pacman->getState().second)->incrementTimeout(10.0f);
-            else {
-                pacman->popState();
-                Utils::enlargePacman(pacman, 10.0f);
-                for (auto &ghost : objects_.at("ghosts"))
-                    std::dynamic_pointer_cast<Ghost>(ghost)->flatten();
-            }
+            pacmanController_->handleEvent(GameEvent::SuperPelletEaten);
+            /*for (auto &ghost : objects_.at("ghosts"))
+                std::dynamic_pointer_cast<Ghost>(ghost)->flatten();*/
             engine().getAudioManager().play(ime::audio::Type::Sfx,"superPelletEaten.wav");
         }));
 
@@ -222,16 +217,8 @@ namespace pacman {
     }
 
     void PlayingState::initPacmanMovementController() {
-        pacmanController_ = std::make_unique<ime::KeyboardControlledGridMover>(grid_, objects_.at("pacman")[0]);
-        pacmanController_->setMovementTrigger(ime::MovementTrigger::OnKeyDown);
-        pacmanController_->setKeys(ime::input::Keyboard::Key::A, ime::input::Keyboard::Key::D,
-            ime::input::Keyboard::Key::W, ime::input::Keyboard::Key::S);
-
-        //Keep pacman moving in the same direction until he collides with something
-        pacmanController_->onAdjacentTileReached([this](ime::Tile tile) {
-            ime::EventDispatcher::instance()->dispatchEvent("pacmanTileChange", tile);
-                pacmanController_->requestDirectionChange(pacmanController_->getTarget()->getDirection());
-        });
+        pacmanController_ = std::make_unique<PacManController>(grid_, objects_.at("pacman")[0]);
+        pacmanController_->setGameLevel(level_);
     }
 
     void PlayingState::updateScore(int points) {

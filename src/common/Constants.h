@@ -61,6 +61,19 @@ namespace pacman {
         //Other
         static constexpr auto PacManLives = 4;
     };
+
+    /**
+     * @brief Events that take place during gameplay
+     */
+    enum class GameEvent {
+        PowerPelletEaten, //!< Occurs when pacman eats a power pellet
+        SuperPelletEaten, //!< Occurs when pacman eats a Super pellet
+        PacManDied,       //!< Occurs when pacman collides with a ghost and is not in super mode
+        GhostEaten,       //!< Occurs when a ghost is eaten by pacman
+        GhostRespawned,   //!< Occurs when an eaten ghost is revived
+        LevelCompleted,   //!< Occurs when a level is completed (All fruits and pellets eaten)
+        GameCompleted,    //!< Occurs when all 17 levels are completed
+    };
 }
 
 #endif

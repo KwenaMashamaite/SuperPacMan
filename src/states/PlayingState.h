@@ -25,12 +25,12 @@
 #ifndef SUPERPACMAN_PLAYINGSTATE_H
 #define SUPERPACMAN_PLAYINGSTATE_H
 
+#include "../views/CommonView.h"
+#include "../controllers/PacManController.h"
 #include <IME/core/states/State.h>
 #include <IME/core/tilemap/TileMap.h>
 #include <IME/core/entity/Entity.h>
 #include <IME/graphics/Sprite.h>
-#include <IME/core/physics/KeyboardControlledGridMover.h>
-#include "../views/CommonView.h"
 
 namespace pacman {
     /**
@@ -174,7 +174,7 @@ namespace pacman {
         //Container for all game entities
         std::unordered_map<std::string, EntityContainer> objects_;
         //Pacman movement controller
-        std::unique_ptr<ime::KeyboardControlledGridMover> pacmanController_;
+        std::unique_ptr<PacManController> pacmanController_;
         //Event publisher
         ime::EventEmitter eventEmitter_;
     };

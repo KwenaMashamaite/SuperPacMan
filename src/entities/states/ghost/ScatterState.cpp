@@ -25,10 +25,10 @@
 #include "ScatterState.h"
 #include <cassert>
 
-const auto topLeftPath = std::vector<ime::Index>{{7, 3}, {5, 5}, {3, 3}};
-const auto topRightPath = std::vector<ime::Index>{{5, 21}, {7, 19}, {3, 19}};
-const auto bottomLeftPath = std::vector<ime::Index>{{25, 3}, {23, 5}, {21, 3}};
-const auto bottomRightPath = std::vector<ime::Index>{{23, 21}, {21, 19}, {25, 19}};
+const auto topLeftPath = std::vector<ime::Index>{{7, 4}, {5, 6}, {3, 4}};
+const auto topRightPath = std::vector<ime::Index>{{5, 22}, {7, 20}, {3, 20}};
+const auto bottomLeftPath = std::vector<ime::Index>{{25, 4}, {23, 6}, {21, 4}};
+const auto bottomRightPath = std::vector<ime::Index>{{23, 22}, {21, 20}, {25, 20}};
 
 std::queue<ime::Index> vectorToQueue(const std::vector<ime::Index>& vector) {
     std::queue<ime::Index> queue;
