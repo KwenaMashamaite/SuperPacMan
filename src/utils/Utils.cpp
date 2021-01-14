@@ -149,19 +149,6 @@ namespace pacman::Utils {
         std::dynamic_pointer_cast<PacMan>(pacman)->pushState(PacMan::States::Super, std::move(superState));
     }
 
-    void flashGrid(ime::TileMap& grid, int level) {
-        if (level >= 1 && level <= 4)
-            grid.getBackground().switchAnimation("flash-blue");
-        else if (level >= 5 && level <= 8)
-            grid.getBackground().switchAnimation("flash-orange");
-        else if (level >= 9 && level <= 12)
-            grid.getBackground().switchAnimation("flash-purple");
-        else if (level >= 13 && level <= 16)
-            grid.getBackground().switchAnimation("flash-pink");
-        else
-            grid.getBackground().switchAnimation("flash-green");
-    }
-
     void teleportTarget(ime::GridMover& gridMover) {
         auto target = gridMover.getTarget();
         if (target->getDirection() != ime::Direction::Left

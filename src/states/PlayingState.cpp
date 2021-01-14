@@ -77,8 +77,11 @@ namespace pacman {
             Utils::removeInactiveObjectsFromContainer(objects_.at("pellets"));
             Utils::removeInactiveObjectsFromContainer(objects_.at("doors"));
 
-            if (objects_.at("pellets").empty() && objects_.at("fruits").empty())
+            if (objects_.at("pellets").empty() && objects_.at("fruits").empty()
+                && !grid_.getBackground().getCurrentAnimation())
+            {
                 eventEmitter_.emit("levelComplete");
+            }
         });
 
         pacmanController_->movePacman(true);
@@ -188,10 +191,30 @@ namespace pacman {
         }));
 
         eventEmitter_.on("levelComplete", ime::Callback<>([this] {
-            engine().getPersistentData().setValueFor("level", level_ + 1);
-            engine().popState();
-            engine().pushState(std::make_shared<PlayingState>(engine()));
-            engine().pushState(std::make_shared<LevelStartState>(engine()));
+            auto gridAnim = std::string();
+            if (level_ >= 1 && level_ <= 4)
+                gridAnim = "flash-blue";
+            else if (level_ >= 5 && level_ <= 8)
+                gridAnim = "flash-orange";
+            else if (level_ >= 9 && level_ <= 12)
+                gridAnim = "flash-purple";
+            else if (level_ >= 13 && level_ <= 16)
+                gridAnim = "flash-pink";
+            else
+                gridAnim = "flash-green";
+
+            objects_.at("keys").clear();
+            objects_.at("doors").clear();
+            objects_.at("ghosts").clear();
+            objects_.at("pacman").clear();
+
+            grid_.getBackground().switchAnimation(gridAnim);
+            grid_.getBackground().onAnimationFinish(gridAnim, [this] {
+                engine().getPersistentData().setValueFor("level", level_ + 1);
+                engine().popState();
+                engine().pushState(std::make_shared<PlayingState>(engine()));
+                engine().pushState(std::make_shared<LevelStartState>(engine()));
+            });
         }));
     }
 

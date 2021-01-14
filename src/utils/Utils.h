@@ -86,15 +86,6 @@ namespace pacman::Utils {
     extern void teleportTarget(ime::GridMover& gridMover);
 
     /**
-     * @brief Initiate flashing grid animation
-     * @param grid Grid to flash
-     * @param level Current game level
-     *
-     * Different levels have different flashing animations
-     */
-    extern void flashGrid(ime::TileMap& grid, int level);
-
-    /**
      * @brief Trigger an animation switch in the current direction
      * @param entity Entity whose animation is to be switched
      */
