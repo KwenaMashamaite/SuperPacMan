@@ -113,6 +113,14 @@ namespace pacman {
         void popState();
 
         /**
+         * @brief Get notified when pacmans state changes
+         * @param callback Function to execute when the state changes
+         *
+         * The callback is passed the name of the new state
+         */
+        void onStateChange(std::function<void(States)> callback);
+
+        /**
          * @brief Move pacman in the current direction at the current speed
          *
          * Pacman will continue moving until stopped
@@ -144,11 +152,12 @@ namespace pacman {
         void update(float deltaTime);
 
     private:
-        unsigned int numberOfLives_;             //!< Pacmans current number of lives
-        float speed_;                            //!< Pacmans speed
-        bool isMoving_;                          //!< Flags whether pacman is moving or not
-        StateController stateController_;        //!< Pacmans FSM
-        ime::AnimatableSprite sprite_; //!< Pacmans graphical representation
+        unsigned int numberOfLives_;       //!< Pacmans current number of lives
+        float speed_;                      //!< Pacmans speed
+        bool isMoving_;                    //!< Flags whether pacman is moving or not
+        StateController stateController_;  //!< Pacmans FSM
+        ime::AnimatableSprite sprite_;     //!< Pacmans graphical representation
+        std::vector<std::function<void(States)>> stateChangeListeners_; //!< Function called when pacmans state changes
     };
 }
 

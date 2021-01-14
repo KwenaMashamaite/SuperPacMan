@@ -92,6 +92,9 @@ namespace pacman {
 
     void PacMan::pushState(PacMan::States curState, std::shared_ptr<IState> state) {
         stateController_.pushState(std::to_string(static_cast<int>(curState)), std::move(state));
+        for (auto& callback : stateChangeListeners_)
+            if (callback)
+                callback(curState);
     }
 
     std::pair<PacMan::States, std::shared_ptr<IState>> PacMan::getState() {
@@ -102,13 +105,20 @@ namespace pacman {
 
     void PacMan::popState() {
         stateController_.popState();
+        if (!stateController_.isEmpty())
+            for (auto& callback : stateChangeListeners_)
+                if (callback)
+                    callback(getState().first);
+    }
+
+    void PacMan::onStateChange(std::function<void(States)> callback) {
+        stateChangeListeners_.push_back(std::move(callback));
     }
 
     void PacMan::move() {
         if (speed_ > 0.0f && getState().first != States::Idle)
             isMoving_ = true;
     }
-
 
     bool PacMan::isMoving() const {
         return isMoving_;
