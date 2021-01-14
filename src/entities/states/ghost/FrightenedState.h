@@ -41,9 +41,19 @@ namespace pacman {
         /**
          * @brief Construct state
          * @param ghost Frightened ghost
-         * @param grid Grid ghost is in
          */
-        FrightenedState(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid);
+        explicit FrightenedState(std::shared_ptr<ime::Entity> ghost);
+
+        /**
+         * @brief Set the ghosts grid mover
+         * @param gridMover The ghosts grid mover
+         *
+         * The grid mover is responsible for controlling the ghost movement
+         * while in this state
+         *
+         * @warning This function must be called before the update function
+         */
+        void setGridMover(std::shared_ptr<ime::RandomGridMover> gridMover);
 
         /**
          * @brief Initialize the state
@@ -74,9 +84,10 @@ namespace pacman {
         void onTimeout() override;
 
     private:
-        std::shared_ptr<Ghost> ghost_;    //!< Frightened Ghost
-        ime::RandomGridMover ghostMover_; //!< Ghost movement controller
-        bool isGhostFlashing_;            //!< Flags whether or not ghost is flashing
+        std::shared_ptr<ime::Entity> ghost_base;           //!< Pointer to ghost base class
+        std::shared_ptr<Ghost> ghost_;                     //!< Pointer to concrete ghost class (avoid a lot of dynamic casting)
+        std::shared_ptr<ime::RandomGridMover> ghostMover_; //!< Ghost movement controller
+        bool isGhostFlashing_;                             //!< Flags whether or not ghost is flashing
     };
 }
 

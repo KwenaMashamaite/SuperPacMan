@@ -23,31 +23,43 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "FrightenedState.h"
+#include "../../../utils/Utils.h"
 #include <cassert>
 
 namespace pacman {
-    FrightenedState::FrightenedState(std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid) :
-        TimedState(),
-        ghostMover_(grid, ghost),
-        isGhostFlashing_{false}
+    FrightenedState::FrightenedState(std::shared_ptr<ime::Entity> ghost) :
+        isGhostFlashing_{false},
+        ghost_base{ghost},
+        ghost_(std::dynamic_pointer_cast<Ghost>(ghost_base))
     {
-        assert(std::dynamic_pointer_cast<Ghost>(ghost) && "Cannot create ghost state for non ghost object");
-        ghost_ = std::move(std::dynamic_pointer_cast<Ghost>(ghost));
+        assert(ghost && "Cannot construct ghost state with nullptr");
+        assert((ghost->getClassType() == "Ghost") && "Cannot create ghost state with non ghost entity");
+    }
+
+    void FrightenedState::setGridMover(std::shared_ptr<ime::RandomGridMover> gridMover) {
+        assert(gridMover && "Cannot set nullptr as a grid mover");
+        ghostMover_ = std::move(gridMover);
+        ghostMover_->setTarget(ghost_base);
     }
 
     void FrightenedState::onEntry() {
+        assert(ghostMover_ && "Cannot initialize ghost state without grid mover");
         ghost_->setVulnerable(true);
         ghost_->setSpeed(ghost_->getSpeed() / 4.0f);
         ghost_->getSprite().switchAnimation("frightened");
-        ghostMover_.startMovement();
+        ghostMover_->onGridBorderCollision([this] {
+            Utils::teleportTarget(*ghostMover_);
+            ghostMover_->requestDirectionChange(ghost_->getDirection());
+        });
+        ghostMover_->startMovement();
         //ghostMover_.enableAdvancedMovement(true);
     }
 
     void FrightenedState::update(float deltaTime) {
         TimedState::update(deltaTime);
-        ghostMover_.update(deltaTime);
+        ghostMover_->update(deltaTime);
         if (ghost_->getSprite().getCurrentAnimation()->getName() != "flash"
-            && (getTimeout() > 0.0f && getTimeout() <= 2.0f))
+            && (getTimeout() >= 0.0f && getTimeout() <= 2.0f))
         {
             ghost_->getSprite().switchAnimation("flash");
             isGhostFlashing_ = true;
@@ -58,16 +70,17 @@ namespace pacman {
     }
 
     void FrightenedState::onExit() {
+        ghost_->getSprite().switchAnimation("going" + Utils::convertToString(ghost_->getDirection()));
         ghost_->setVulnerable(false);
         ghost_->setSpeed(ghost_->getSpeed() * 4.0f);
-        ghostMover_.stopMovement();
-        ghostMover_.teleportTargetToDestination();
-        ghostMover_.setTarget(nullptr);
+        ghostMover_->stopMovement();
+        ghostMover_->teleportTargetToDestination();
+        ghostMover_->setTarget(nullptr);
     }
 
     void FrightenedState::onTimeout() {
         //Make sure ghost is not stuck in between tiles when state is popped
-        ghostMover_.onAdjacentTileReached([this](ime::Tile) {
+        ghostMover_->onAdjacentTileReached([this](ime::Tile) {
             ghost_->popState();
             callback();
         });

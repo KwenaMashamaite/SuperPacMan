@@ -38,31 +38,38 @@ std::queue<ime::Index> vectorToQueue(const std::vector<ime::Index>& vector) {
 }
 
 namespace pacman {
-    ScatterState::ScatterState(ScatterPosition scatterPos, std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid) :
-        targetPos_(scatterPos),
-        ghostMover_(grid, ghost)
+    ScatterState::ScatterState(std::shared_ptr<ime::Entity> ghost, ScatterPosition scatterPos) :
+        targetPos_(scatterPos)
     {
-        assert(std::dynamic_pointer_cast<Ghost>(ghost) && "Cannot create ghost state for non ghost object");
-        ghost_ = std::move(std::dynamic_pointer_cast<Ghost>(ghost));
+        assert(ghost && "Cannot construct ghost state with nullptr");
+        assert((ghost->getClassType() == "Ghost") && "Cannot create ghost state with non ghost entity");
+        ghost_ = std::move(ghost);
+    }
+
+    void ScatterState::setGridMover(std::shared_ptr<ime::TargetGridMover> gridMover) {
+        assert(gridMover && "Cannot set nullptr as a grid mover");
+        ghostMover_ = std::move(gridMover);
+        ghostMover_->setTarget(ghost_);
     }
 
     void ScatterState::onEntry() {
+        assert(ghostMover_ && "Cannot initialize ghost state without grid mover");
         switch (targetPos_) {
             case ScatterPosition::TopLeftCorner:
-                ghostMover_.setDestination(ime::Index{3, 3});
+                ghostMover_->setDestination(ime::Index{3, 3});
                 break;
             case ScatterPosition::TopRightCorner:
-                ghostMover_.setDestination(ime::Index{3, 19});
+                ghostMover_->setDestination(ime::Index{3, 19});
                 break;
             case ScatterPosition::BottomLeftCorner:
-                ghostMover_.setDestination(ime::Index{21, 3});
+                ghostMover_->setDestination(ime::Index{21, 3});
                 break;
             case ScatterPosition::BottomRightCorner:
-                ghostMover_.setDestination(ime::Index{25, 19});
+                ghostMover_->setDestination(ime::Index{25, 19});
                 break;
         }
 
-        ghostMover_.onDestinationReached([this](ime::Tile tile) {
+        ghostMover_->onDestinationReached([this](ime::Tile tile) {
             if (ghostPath_.empty()) {
                 switch (targetPos_) {
                     case ScatterPosition::TopLeftCorner:
@@ -79,27 +86,27 @@ namespace pacman {
                         break;
                 }
             }
-            ghostMover_.setDestination(ghostPath_.front());
+            ghostMover_->setDestination(ghostPath_.front());
             ghostPath_.pop();
         });
 
-        ghostMover_.startMovement();
+        ghostMover_->startMovement();
     }
 
     void ScatterState::update(float deltaTime) {
         TimedState::update(deltaTime);
-        ghostMover_.update(deltaTime);
+        ghostMover_->update(deltaTime);
     }
 
     void ScatterState::onExit() {
-        ghostMover_.teleportTargetToDestination();
-        ghostMover_.setTarget(nullptr);
+        ghostMover_->teleportTargetToDestination();
+        ghostMover_->setTarget(nullptr);
     }
 
     void ScatterState::onTimeout() {
         //Make sure ghost is not stuck in between tiles when state is popped
-        ghostMover_.onAdjacentTileReached([this](ime::Tile) {
-            ghost_->popState();
+        ghostMover_->onAdjacentTileReached([this](ime::Tile) {
+            std::dynamic_pointer_cast<Ghost>(ghost_)->popState();
             callback();
         });
     }

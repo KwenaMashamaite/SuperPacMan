@@ -74,22 +74,7 @@ namespace pacman {
         });
 
         gridMover_.onGridBorderCollision([this] {
-            if (pacman_->getDirection() != ime::Direction::Left
-                && pacman_->getDirection() != ime::Direction::Right)
-            {
-                return;
-            }
-
-            auto prevTile = gridMover_.getGrid().getTileOccupiedByChild(gridMover_.getTarget());
-            gridMover_.getGrid().removeChild(gridMover_.getTarget());
-            if (pacman_->getDirection() == ime::Direction::Left)
-                gridMover_.getGrid().addChild(gridMover_.getTarget(), {prevTile.getIndex().row,
-                    static_cast<int>(gridMover_.getGrid().getSizeInTiles().x - 1)});
-            else if (pacman_->getDirection() == ime::Direction::Right)
-                gridMover_.getGrid().addChild(gridMover_.getTarget(), {prevTile.getIndex().row, 0});
-            else
-                return;
-            gridMover_.resetTargetTile();
+            Utils::teleportTarget(gridMover_);
             advancePacManForward();
         });
 

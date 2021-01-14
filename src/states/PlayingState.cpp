@@ -62,7 +62,7 @@ namespace pacman {
 
         createGrid();
         createEntities();
-        initPacmanMovementController();
+        initEntityControllers();
         initCollisionHandler();
         initEventHandlers();
 
@@ -150,7 +150,7 @@ namespace pacman {
         });
 
         pacmanController_->onDoorCollision([this](auto pacman, auto door) {
-            if ("Door" && !pacman->isVulnerable()) {
+            if (!pacman->isVulnerable()) {
                 std::dynamic_pointer_cast<Door>(door)->forceOpen();
                 pacmanController_->advancePacManForward();
                 updateScore(200);
@@ -159,53 +159,32 @@ namespace pacman {
         });
 
         pacmanController_->onGhostCollision([this](auto pacman, auto ghost) {
-            //@TODO - Fix game crashing when pacman eats a ghost
-            /*if (std::dynamic_pointer_cast<Ghost>(ghost)->getState().first == Ghost::States::Frightened) {
-                std::dynamic_pointer_cast<Ghost>(ghost)->popState();
-                std::dynamic_pointer_cast<Ghost>(ghost)->pushState(
-                    Ghost::States::Eaten, std::make_shared<EatenState>(ghost, grid_));
-            }*/
+
         });
     }
 
     void PlayingState::initEventHandlers() {
         eventEmitter_.addEventListener("powerPelletEaten", ime::Callback<>([this] {
-            for (const auto& ghostBase : objects_.at("ghosts")) {
-                auto currentGhostState = std::dynamic_pointer_cast<Ghost>(ghostBase)->getState().first;
-                auto ghost = std::dynamic_pointer_cast<Ghost>(ghostBase);
-                if (currentGhostState != Ghost::States::Eaten) {
-                    if (currentGhostState == Ghost::States::Frightened)
-                        std::dynamic_pointer_cast<TimedState>(ghost->getState().second)->incrementTimeout(10.0f - level_);
-                    else {
-                        ghost->popState();
-                        Utils::frightenGhost(ghost, grid_);
-                    }
-                }
-            }
+            pacmanController_->handleEvent(GameEvent::PowerPelletEaten);
+            for (auto& controller : ghostControllers_)
+                controller->handleEvent(GameEvent::PowerPelletEaten);
             engine().getAudioManager().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
         }));
 
         eventEmitter_.addEventListener("superPelletEaten", ime::Callback<>([this] {
             pacmanController_->handleEvent(GameEvent::SuperPelletEaten);
-            /*for (auto &ghost : objects_.at("ghosts"))
-                std::dynamic_pointer_cast<Ghost>(ghost)->flatten();*/
+            for (auto& controller : ghostControllers_)
+                controller->handleEvent(GameEvent::SuperPelletEaten);
             engine().getAudioManager().play(ime::audio::Type::Sfx,"superPelletEaten.wav");
         }));
 
         eventEmitter_.addEventListener("keyEaten", ime::Callback<std::shared_ptr<ime::Entity>>(
             [this](std::shared_ptr<ime::Entity> key) {
-                for (const auto& door : objects_.at("doors")) {
+                for (auto& door : objects_.at("doors")) {
                     if (Utils::unlockDoor(door, key))
                         door->setActive(false);
                 }
                 engine().getAudioManager().play(ime::audio::Type::Sfx, "keyEaten.wav");
-        }));
-
-        ime::EventDispatcher::instance()->onEvent("ghostRespawnTileReached",
-            ime::Callback<std::shared_ptr<ime::Entity>>([this](auto ghost) {
-                Utils::scatterGhost(ghost, grid_);
-                if (std::dynamic_pointer_cast<PacMan>(objects_.at("pacman")[0])->getState().first == PacMan::States::Super)
-                    std::dynamic_pointer_cast<Ghost>(ghost)->flatten();
         }));
 
         eventEmitter_.on("levelComplete", ime::Callback<>([this] {
@@ -216,9 +195,16 @@ namespace pacman {
         }));
     }
 
-    void PlayingState::initPacmanMovementController() {
+    void PlayingState::initEntityControllers() {
         pacmanController_ = std::make_unique<PacManController>(grid_, objects_.at("pacman")[0]);
         pacmanController_->setGameLevel(level_);
+
+        for (auto& ghost : objects_.at("ghosts")) {
+            ghostControllers_.push_back(std::move(std::make_unique<GhostController>(
+                grid_, ghost, objects_.at("pacman")[0])));
+
+            ghostControllers_.back()->setGameLevel(level_);
+        }
     }
 
     void PlayingState::updateScore(int points) {
@@ -235,7 +221,10 @@ namespace pacman {
     void PlayingState::update(float deltaTime) {
         grid_.getBackground().updateAnimation(deltaTime);
         commonView_->update(deltaTime);
+
         pacmanController_->update(deltaTime);
+        for (auto& controller : ghostControllers_)
+            controller->update(deltaTime);
 
         for (auto& pellet : objects_.at("pellets"))
             std::dynamic_pointer_cast<Pellet>(pellet)->update(deltaTime);

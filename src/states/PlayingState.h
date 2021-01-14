@@ -27,6 +27,7 @@
 
 #include "../views/CommonView.h"
 #include "../controllers/PacManController.h"
+#include "../controllers/GhostController.h"
 #include <IME/core/states/State.h>
 #include <IME/core/tilemap/TileMap.h>
 #include <IME/core/entity/Entity.h>
@@ -155,7 +156,7 @@ namespace pacman {
         void setGridBackground();
         void createEntities();
         void initCollisionHandler();
-        void initPacmanMovementController();
+        void initEntityControllers();
         void initEventHandlers();
         void updateScore(int points);
 
@@ -173,8 +174,10 @@ namespace pacman {
         ime::TileMap grid_;
         //Container for all game entities
         std::unordered_map<std::string, EntityContainer> objects_;
-        //Pacman movement controller
+        //Pacman controller
         std::unique_ptr<PacManController> pacmanController_;
+        //Ghost controller
+        std::vector<std::unique_ptr<GhostController>> ghostControllers_;
         //Event publisher
         ime::EventEmitter eventEmitter_;
     };

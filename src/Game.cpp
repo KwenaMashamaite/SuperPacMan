@@ -112,6 +112,16 @@ namespace pacman {
             createFruitSprites();
             createGridSprites();
         }));
+
+        #if !defined(NDEBUG)
+            engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::A, [this] {
+                engine_.pushState(std::make_shared<PlayingState>(engine_));
+            });
+
+            engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::S, [this] {
+                engine_.popState();
+            });
+        #endif
     }
 
     void Game::start() {

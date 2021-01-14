@@ -53,9 +53,19 @@ namespace pacman {
          * @brief Construct state
          * @param targetPos Position ghost targets in this state
          * @param ghost Ghost to scatter
-         * @param grid Grid ghost is in
          */
-        ScatterState(ScatterPosition targetPos, std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid);
+        ScatterState(std::shared_ptr<ime::Entity> ghost, ScatterPosition targetPos);
+
+        /**
+         * @brief Set the ghosts grid mover
+         * @param gridMover The ghosts grid mover
+         *
+         * The grid mover is responsible for controlling the ghost movement
+         * while in this state
+         *
+         * @warning This function must be called before the update function
+         */
+        void setGridMover(std::shared_ptr<ime::TargetGridMover> gridMover);
 
         /**
          * @brief Initialize the state
@@ -88,10 +98,10 @@ namespace pacman {
         void onTimeout() override;
 
     private:
-        std::shared_ptr<Ghost> ghost_;     //!< Scattering ghost
-        ime::TargetGridMover ghostMover_;  //!< Ghost movement controller
+        std::shared_ptr<ime::Entity> ghost_;     //!< Scattering ghost
         ScatterPosition targetPos_;        //!< Position ghost must reach before cycling corner
         std::queue<ime::Index> ghostPath_; //!< Cyclic path ghost follows after reaching target position
+        std::shared_ptr<ime::TargetGridMover> ghostMover_;  //!< Ghost movement controller
     };
 }
 

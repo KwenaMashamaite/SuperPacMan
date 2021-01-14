@@ -27,7 +27,6 @@
 
 #include <IME/core/physics/KeyboardControlledGridMover.h>
 #include <IME/core/entity/Entity.h>
-#include <IME/core/loop/Engine.h>
 #include "../entities/PacMan.h"
 #include "../common/Constants.h"
 

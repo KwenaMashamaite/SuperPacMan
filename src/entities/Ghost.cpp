@@ -109,8 +109,6 @@ namespace pacman {
             && getState().first != States::Frightened)
         {
             isFlattened_ = true;
-            // Animation switch is triggered by a direction change, check
-            // "directionChange" handler defined in constructor
             auto prevDir = getDirection();
             setDirection(ime::Direction::Unknown);
             setDirection(prevDir);
@@ -119,6 +117,13 @@ namespace pacman {
 
     void Ghost::unflatten() {
         isFlattened_ = false;
+        auto prevDir = getDirection();
+        setDirection(ime::Direction::Unknown);
+        setDirection(prevDir);
+    }
+
+    bool Ghost::isFlattened() const {
+        return isFlattened_;
     }
 
     void Ghost::move() {

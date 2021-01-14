@@ -40,11 +40,27 @@ namespace pacman {
         /**
          * @brief Construct state
          * @param ghost Eaten ghost
-         * @param grid Grid ghost is in
-         * @param pacmanTile Tile currently occupied by pacman
          */
-        ChaseState(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid,
-            ime::Tile pacmanTile);
+        explicit ChaseState(std::shared_ptr<ime::Entity> ghost);
+
+        /**
+         * @brief Set the ghosts grid mover
+         * @param gridMover The ghosts grid mover
+         *
+         * The grid mover is responsible for controlling the ghost movement
+         * while in this state
+         *
+         * @warning This function must be called before the update function
+         */
+        void setGridMover(std::shared_ptr<ime::TargetGridMover> gridMover);
+
+        /**
+         * @brief Set the target to be chased by the ghost
+         * @param target Target to be chased
+         *
+         * In this case the target is always Pacman
+         */
+        void setTarget(std::shared_ptr<ime::Entity> target);
 
         /**
          * @brief Initialize the state
@@ -75,9 +91,10 @@ namespace pacman {
         void onTimeout() override;
 
     private:
-        std::shared_ptr<Ghost> ghost_;    //!< Eaten ghost
-        int pacmanTileChangeHandler;      //!< Pacman tile change handler id
-        ime::TargetGridMover ghostMover_; //!< Ghost movement controller
+        std::shared_ptr<ime::Entity> ghost_;               //!< Chaser
+        std::shared_ptr<ime::Entity> target_;              //!> Target to be chased by ghost
+        int targetPosChangeHandler_;
+        std::shared_ptr<ime::TargetGridMover> ghostMover_; //!< Ghost movement controller
     };
 }
 

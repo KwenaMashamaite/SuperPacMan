@@ -29,6 +29,7 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <IME/core/physics/GridMover.h>
 
 using ObjectsContainer = std::unordered_map<std::string, std::vector<std::shared_ptr<ime::Entity>>>;
 
@@ -59,20 +60,6 @@ namespace pacman::Utils {
     extern std::string convertToString(ime::Direction direction);
 
     /**
-     * @brief Frighten a ghost
-     * @param ghost Ghost to be frightened
-     * @param grid Grid ghost is in
-     */
-    extern void frightenGhost(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid);
-
-    /**
-     * @brief Scatter a ghost
-     * @param ghost Ghost to be scattered
-     * @param grid Grid the ghost is in
-     */
-    extern void scatterGhost(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid);
-
-    /**
      * @brief Unlock a door using  key
      * @param door Door to be unlocked
      * @param key Key to unlock door with
@@ -94,14 +81,9 @@ namespace pacman::Utils {
     extern void enlargePacman(std::shared_ptr<ime::Entity> pacman, float duration);
 
     /**
-     * @brief Make ghost chase pacman
-     * @param pacman Pacman
-     * @param ghost Ghost that must chase pacman
-     * @param grid The grid that contains pacman and the ghost
+     * @brief
      */
-    extern void chasePacMan(std::shared_ptr<ime::Entity> pacman,
-        std::shared_ptr<ime::Entity> ghost,
-        ime::TileMap& grid);
+    extern void teleportTarget(ime::GridMover& gridMover);
 
     /**
      * @brief Initiate flashing grid animation

@@ -23,41 +23,56 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "ChaseState.h"
-#include <IME/core/event/EventDispatcher.h>
 #include <cassert>
 
 namespace pacman {
-    ChaseState::ChaseState(std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid,
-        ime::Tile pacmanTile) :
-        ghostMover_(grid, ghost), pacmanTileChangeHandler{-1}
-    {
-        assert(std::dynamic_pointer_cast<Ghost>(ghost) && "Cannot create ghost state for non ghost object");
-        ghost_ = std::move(std::dynamic_pointer_cast<Ghost>(ghost));
-        ghostMover_.setDestination(pacmanTile.getIndex());
+    ChaseState::ChaseState(std::shared_ptr<ime::Entity> ghost) {
+        assert(ghost && "Cannot construct ghost state with nullptr");
+        assert((ghost->getClassType() == "Ghost") && "Cannot create ghost state with non ghost entity");
+        ghost_ = std::move(ghost);
+        targetPosChangeHandler_ = -1;
+    }
+
+    void ChaseState::setGridMover(std::shared_ptr<ime::TargetGridMover> gridMover) {
+        assert(gridMover && "Cannot set nullptr as a grid mover");
+        ghostMover_ = std::move(gridMover);
+        ghostMover_->setTarget(ghost_);
+    }
+
+    void ChaseState::setTarget(std::shared_ptr<ime::Entity> target) {
+        assert(target && "Cannot set nullptr as target");
+        target_ = std::move(target);
     }
 
     void ChaseState::onEntry() {
-        pacmanTileChangeHandler = ime::EventDispatcher::instance()->onEvent("pacmanTileChange", ime::Callback<ime::Tile>(
-            [this](ime::Tile tile) {
-                ghostMover_.setDestination(tile.getIndex());
+        assert(target_ && "Cannot initialize chase state without target to be chased");
+        assert(ghostMover_ && "Cannot initialize chase state without a grid mover");
+        targetPosChangeHandler_ = target_->onEvent("positionChange",
+            ime::Callback<float, float>([this](float x, float y) {
+                auto pacmanTile = ghostMover_->getGrid().getTile(ime::Vector2f{x, y}).getIndex();
+                if (ghostMover_->getDestination() != pacmanTile)
+                    ghostMover_->setDestination(pacmanTile);
         }));
 
-        ghostMover_.startMovement();
+        ghostMover_->setDestination(ghostMover_->getGrid().getTileOccupiedByChild(target_).getIndex());
+        ghostMover_->startMovement();
     }
 
     void ChaseState::update(float deltaTime) {
         TimedState::update(deltaTime);
-        ghostMover_.update(deltaTime);
+        ghostMover_->update(deltaTime);
     }
 
     void ChaseState::onExit() {
-        ime::EventDispatcher::instance()->removeEventListener("pacmanTileChange", pacmanTileChangeHandler);
+        target_->unsubscribe("positionChange", targetPosChangeHandler_);
+        ghostMover_->teleportTargetToDestination();
+        ghostMover_->setTarget(nullptr);
     }
 
     void ChaseState::onTimeout() {
         //Make sure ghost is not stuck in between tiles when state is popped
-        ghostMover_.onAdjacentTileReached([this](ime::Tile) {
-            ghost_->popState();
+        ghostMover_->onAdjacentTileReached([this](ime::Tile) {
+            std::dynamic_pointer_cast<Ghost>(ghost_)->popState();
             callback();
         });
     }

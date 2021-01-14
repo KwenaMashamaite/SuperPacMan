@@ -128,6 +128,12 @@ namespace pacman {
         void unflatten();
 
         /**
+         * @brief Check whether or not ghost is flattened
+         * @return True if ghost is flattened, otherwise false
+         */
+        bool isFlattened() const;
+
+        /**
          * @brief Move the ghost in the current direction at the current speed
          *
          * The ghost will keep moving until stopped. The ghost cannot move

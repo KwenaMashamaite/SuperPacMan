@@ -122,37 +122,6 @@ namespace pacman::Utils {
         }
     }
 
-    void frightenGhost(std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid) {
-        auto frightenedState = std::make_shared<FrightenedState>(ghost, grid);
-        frightenedState->setTimeout(10.0f, [ghost, &grid] {
-            Utils::scatterGhost(ghost, grid);
-        });
-        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Frightened, std::move(frightenedState));
-    }
-
-    void scatterGhost(std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid) {
-        auto scatterPos = ScatterPosition::TopRightCorner;
-        switch (std::dynamic_pointer_cast<Ghost>(ghost)->getGhostName()) {
-            case Ghost::Name::Blinky:
-                break;
-            case Ghost::Name::Pinky:
-                scatterPos = ScatterPosition::TopLeftCorner;
-                break;
-            case Ghost::Name::Inky:
-                scatterPos = ScatterPosition::BottomRightCorner;
-                break;
-            case Ghost::Name::Clyde:
-                scatterPos = ScatterPosition::BottomLeftCorner;
-                break;
-        }
-        auto scatterState = std::make_shared<ScatterState>(scatterPos, ghost, grid);
-        scatterState->setTimeout(10.0f, [ghost, &grid] {
-            std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Eaten,
-                std::make_shared<EatenState>(ghost, grid));
-        });
-        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Scatter, std::move(scatterState));
-    }
-
     bool unlockDoor(std::shared_ptr<ime::Entity> doorPtr, std::shared_ptr<ime::Entity> key) {
         auto door = std::dynamic_pointer_cast<Door>(doorPtr);
         if (!door->isLocked())
@@ -193,14 +162,23 @@ namespace pacman::Utils {
             grid.getBackground().switchAnimation("flash-green");
     }
 
-    void chasePacMan(std::shared_ptr<ime::Entity> pacman,
-         std::shared_ptr<ime::Entity> ghost, ime::TileMap &grid)
-    {
-        auto chaseState = std::make_shared<ChaseState>(ghost, grid, grid.getTileOccupiedByChild(pacman));
-        chaseState->setTimeout(7.0f, [&grid, ghost] {
-            Utils::scatterGhost(ghost, grid);
-        });
-        std::dynamic_pointer_cast<Ghost>(ghost)->pushState(Ghost::States::Chasing, std::move(chaseState));
+    void teleportTarget(ime::GridMover& gridMover) {
+        auto target = gridMover.getTarget();
+        if (target->getDirection() != ime::Direction::Left
+            && target->getDirection() != ime::Direction::Right)
+        {
+            return;
+        }
+
+        auto& grid = gridMover.getGrid();
+        auto prevTile = grid.getTileOccupiedByChild(target);
+        grid.removeChild(target);
+        if (target->getDirection() == ime::Direction::Left)
+            grid.addChild(target, {prevTile.getIndex().row,
+                static_cast<int>(grid.getSizeInTiles().x - 1)});
+        else if (target->getDirection() == ime::Direction::Right)
+            grid.addChild(target, {prevTile.getIndex().row, 0});
+        gridMover.resetTargetTile();
     }
 
     void triggerAnimationSwitch(std::shared_ptr<ime::Entity> entity) {
