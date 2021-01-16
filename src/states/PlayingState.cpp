@@ -281,15 +281,11 @@ namespace pacman {
         return isInitialized_;
     }
 
-    void PlayingState::onPause() {
-
-    }
-
-    void PlayingState::onResume() {
-
-    }
-
     void PlayingState::onExit() {
         engine().onFrameEnd(nullptr);
     }
+
+    void PlayingState::onPause() {}
+
+    void PlayingState::onResume() {}
 }

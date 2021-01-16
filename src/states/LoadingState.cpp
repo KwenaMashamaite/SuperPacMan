@@ -134,21 +134,9 @@ namespace pacman {
         loadingFinished_ = true;
     }
 
-    void LoadingState::update(float deltaTime) {
-
-    }
-
-    void LoadingState::fixedUpdate(float deltaTime) {
-
-    }
-
     void LoadingState::render(ime::Window &renderTarget) {
         std::lock_guard<std::mutex> lock(mtx_);
         view_.render();
-    }
-
-    void LoadingState::onPause() {
-
     }
 
     void LoadingState::handleEvent(sf::Event event) {
@@ -156,11 +144,15 @@ namespace pacman {
         view_.handleEvent(event);
     }
 
-    void LoadingState::onResume() {
-
-    }
-
     void LoadingState::onExit() {
         ime::EventDispatcher::instance()->dispatchEvent("resourceLoadingComplete");
     }
+
+    void LoadingState::update(float deltaTime) {}
+
+    void LoadingState::fixedUpdate(float deltaTime) {}
+
+    void LoadingState::onPause() {}
+
+    void LoadingState::onResume() {}
 }

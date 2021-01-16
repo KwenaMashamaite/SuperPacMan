@@ -206,19 +206,13 @@ namespace pacman {
             ghostController->update(deltaTime);
     }
 
-    void IntroState::onPause() {
-
-    }
-
-    void IntroState::handleEvent(sf::Event event) {
-
-    }
-
-    void IntroState::onResume() {
-
-    }
-
     void IntroState::onExit() {
         engine().onFrameEnd(nullptr);
     }
+
+    void IntroState::handleEvent(sf::Event event) {}
+
+    void IntroState::onPause() {}
+
+    void IntroState::onResume() {}
 }

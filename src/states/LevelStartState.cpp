@@ -63,23 +63,13 @@ namespace pacman {
         view_->update(deltaTime);
     }
 
-    void LevelStartState::fixedUpdate(float deltaTime) {
+    void LevelStartState::fixedUpdate(float deltaTime) {}
 
-    }
+    void LevelStartState::handleEvent(sf::Event event) {}
 
-    void LevelStartState::onPause() {
+    void LevelStartState::onPause() {}
 
-    }
+    void LevelStartState::onResume() {}
 
-    void LevelStartState::handleEvent(sf::Event event) {
-
-    }
-
-    void LevelStartState::onResume() {
-
-    }
-
-    void LevelStartState::onExit() {
-
-    }
+    void LevelStartState::onExit() {}
 }

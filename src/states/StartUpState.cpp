@@ -58,31 +58,19 @@ namespace pacman {
         return isInit_;
     }
 
-    void StartUpState::handleEvent(sf::Event event) {
-
-    }
-
-    void StartUpState::update(float deltaTime) {
-
-    }
-
-    void StartUpState::fixedUpdate(float deltaTime) {
-
-    }
-
     void StartUpState::render(ime::Window &renderTarget) {
         view_.render();
     }
 
-    void StartUpState::onPause() {
+    void StartUpState::handleEvent(sf::Event event) {}
 
-    }
+    void StartUpState::update(float deltaTime) {}
 
-    void StartUpState::onResume() {
+    void StartUpState::fixedUpdate(float deltaTime) {}
 
-    }
+    void StartUpState::onPause() {}
 
-    void StartUpState::onExit() {
+    void StartUpState::onResume() {}
 
-    }
+    void StartUpState::onExit() {}
 }

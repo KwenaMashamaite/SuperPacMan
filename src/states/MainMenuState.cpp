@@ -69,23 +69,13 @@ namespace pacman {
         return isInitialized_;
     }
 
-    void MainMenuState::update(float deltaTime) {
+    void MainMenuState::update(float deltaTime) {}
 
-    }
+    void MainMenuState::fixedUpdate(float deltaTime) {}
 
-    void MainMenuState::fixedUpdate(float deltaTime) {
+    void MainMenuState::onPause() {}
 
-    }
+    void MainMenuState::onResume() {}
 
-    void MainMenuState::onPause() {
-
-    }
-
-    void MainMenuState::onResume() {
-
-    }
-
-    void MainMenuState::onExit() {
-
-    }
+    void MainMenuState::onExit() {}
 }
