@@ -14,7 +14,7 @@ point out issues and suggest new features or enhancements. Thanks in advance :sm
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/download/v1.0-alpha) 
+1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.0-alpha) 
    the latest game version
 2. Extract the zip archive
 3. Run _SuperPacMan.exe_
