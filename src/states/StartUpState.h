@@ -151,7 +151,6 @@ namespace pacman {
     private:
         StartUpView view_; //!< View for this state
         bool isInit_;      //!< Initialization state
-        float timeOut_;    //!< StateTimeout
     };
 }
 

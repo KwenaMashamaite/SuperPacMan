@@ -25,39 +25,22 @@
 #include "TimedState.h"
 
 namespace pacman {
-    TimedState::TimedState() : timeout_(0.0f), timedOut_(false)
-    {}
-
-    void TimedState::setTimeout(float timeout, std::function<void()> callback) {
-        timeout_ = timeout;
+    void TimedState::setTimeout(float timeout, ime::Callback<> callback) {
+        timer_ = ime::Timer::create([this]{onTimeout();}, timeout);
+        timer_.start();
         callback_ = std::move(callback);
     }
 
     float TimedState::getTimeout() const {
-        return timeout_;
+        return timer_.getRemainingDuration();
     }
 
     void TimedState::incrementTimeout(float value) {
-        timeout_ += value;
-    }
-
-    void TimedState::decrementTimeout(float value) {
-        timeout_ -= value;
-        if (timeout_ <= 0.0f && !timedOut_) {
-            timedOut_ = true;
-            onTimeout();
-        }
+        timer_.setInterval(timer_.getRemainingDuration() + value);
     }
 
     void TimedState::update(float deltaTime) {
-        if (timedOut_)
-            return;
-
-        timeout_ -= deltaTime;
-        if (timeout_ <= 0) {
-            timedOut_ = true;
-            onTimeout();
-        }
+        timer_.update(deltaTime);
     }
 
     void TimedState::callback() {

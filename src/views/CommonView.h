@@ -28,6 +28,7 @@
 #include <IME/graphics/Window.h>
 #include <IME/ui/GuiContainer.h>
 #include <IME/graphics/Sprite.h>
+#include <IME/core/time/Timer.h>
 
 namespace pacman {
     /**
@@ -91,12 +92,12 @@ namespace pacman {
         void createSprites();
 
     private:
-        ime::ui::GuiContainer guiContainer_;        //!< Container for all widgets
-        ime::Vector2u windowSize_;                  //!< Size of the render target
-        std::vector<ime::Sprite> sprites; //!< Stores all sprites to be rendered
-        int level_;                                 //!< Current level
-        int pacmanLives_;                           //!< Remaining pacman lives
-        float flashTimeout_;                        //!< How long the 1 up text stays in hidden and shown states
+        ime::ui::GuiContainer guiContainer_;  //!< Container for all widgets
+        ime::Vector2u windowSize_;            //!< Size of the render target
+        std::vector<ime::Sprite> sprites;     //!< Stores all sprites to be rendered
+        int level_;                           //!< Current level
+        int pacmanLives_;                     //!< Remaining pacman lives
+        ime::Timer timer_;                    //!< Timer
     };
 }
 

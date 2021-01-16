@@ -28,8 +28,7 @@
 namespace pacman {
     LevelStartState::LevelStartState(ime::Engine &engine) :
         State(engine),
-        isInit_{false},
-        stateTimeout_{2.0f}
+        isInit_{false}
     {}
 
     void LevelStartState::onEnter() {
@@ -43,8 +42,12 @@ namespace pacman {
         if (level == 1) { //Audio played for the first level only
             sfx_.setSource("beginning.wav");
             sfx_.play();
-            stateTimeout_ = sfx_.getDuration().Milliseconds / 1000.0f;
-        }
+            engine().setTimeout(sfx_.getDuration().Milliseconds / 1000.0f, [this] {
+                engine().popState();
+            });
+        } else
+            engine().setTimeout(2.0f, [this] {engine().popState();});
+
         isInit_ = true;
     }
 
@@ -58,9 +61,6 @@ namespace pacman {
 
     void LevelStartState::update(float deltaTime) {
         view_->update(deltaTime);
-        stateTimeout_ -= deltaTime;
-        if (stateTimeout_ <= 0)
-            engine().popState();
     }
 
     void LevelStartState::fixedUpdate(float deltaTime) {

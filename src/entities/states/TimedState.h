@@ -25,8 +25,8 @@
 #ifndef SUPERPACMAN_TIMEDSTATE_H
 #define SUPERPACMAN_TIMEDSTATE_H
 
-#include <functional>
 #include "IState.h"
+#include <IME/core/time/Timer.h>
 
 namespace pacman {
     /**
@@ -36,17 +36,11 @@ namespace pacman {
     class TimedState : public IState {
     public:
         /**
-         * @brief Constructor
-         * @param timeout States active duration
-         */
-        TimedState();
-
-        /**
          * @brief Initiate state countdown
          * @param timeout New duration
          * @param callback Function to be executed when the state timeout
          */
-        void setTimeout(float timeout, std::function<void()> callback = nullptr);
+        void setTimeout(float timeout, ime::Callback<> callback = nullptr);
 
         /**
          * @brief Get time left before state timeout
@@ -59,15 +53,6 @@ namespace pacman {
          * @param value Value to increment by
          */
         void incrementTimeout(float value);
-
-        /**
-         * @brief Decrement the current timeout
-         * @param value Value to decrement by
-         *
-         * If the operation results in a timeout that is less than or
-         * equal to zero then the state will timeout
-         */
-        void decrementTimeout(float value);
 
         /**
          * @brief Update state
@@ -89,8 +74,7 @@ namespace pacman {
         void callback();
 
     private:
-        float timeout_;                  //!< State duration
-        bool timedOut_;                  //!< State timeout flag
+        ime::Timer timer_;
         std::function<void()> callback_; //!< Function executed on state timeout
     };
 }

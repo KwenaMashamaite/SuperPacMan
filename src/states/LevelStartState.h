@@ -154,7 +154,6 @@ namespace pacman {
     private:
         std::unique_ptr<LevelStartView> view_; //!< View for this state
         bool isInit_;                          //!< Initialization state
-        float stateTimeout_;                   //!< How long the state is active
         ime::audio::SoundEffect sfx_;          //!< Sound effect player
     };
 }

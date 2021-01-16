@@ -30,8 +30,7 @@ namespace pacman {
     StartUpState::StartUpState(ime::Engine &engine) :
         State(engine),
         view_(engine.getRenderTarget()),
-        isInit_{false},
-        timeOut_{25.0f}
+        isInit_{false}
     {}
 
     void StartUpState::onEnter() {
@@ -41,6 +40,15 @@ namespace pacman {
         engine().getInputManager().addKeyListener(ime::input::Keyboard::Event::KeyUp,
             ime::input::Keyboard::Key::Enter, [this] {
             engine().popState();
+        });
+
+        //Exit state with an effect after a certain time has passed
+        engine().setTimeout(20.0f, [this] {
+            auto viewContainer = view_.getWidget<ime::ui::Panel>("container");
+            viewContainer->hideWithEffect(ime::ShowAnimationType::SlideFromBottom, 2000);
+            viewContainer->on("animationFinish", ime::Callback<>([this] {
+                engine().popState();
+            }));
         });
 
         isInit_ = true;
@@ -55,16 +63,7 @@ namespace pacman {
     }
 
     void StartUpState::update(float deltaTime) {
-        timeOut_ -= deltaTime;
-        static auto animationBegan = false;
-        if (timeOut_ <= 0.0f && !animationBegan) {
-            animationBegan = true;
-            auto viewContainer = view_.getWidget<ime::ui::Panel>("container");
-            viewContainer->hideWithEffect(ime::ShowAnimationType::SlideFromBottom, 2000);
-            viewContainer->on("animationFinish", ime::Callback<>([this] {
-                engine().popState();
-            }));
-        }
+
     }
 
     void StartUpState::fixedUpdate(float deltaTime) {

@@ -34,8 +34,7 @@ namespace pacman {
         guiContainer_(renderTarget),
         windowSize_(renderTarget.getSize()),
         level_{level},
-        pacmanLives_{lives},
-        flashTimeout_{0.2f}
+        pacmanLives_{lives}
     {
         guiContainer_.setFont("namco.ttf");
     }
@@ -43,6 +42,11 @@ namespace pacman {
     void CommonView::init() {
         createText();
         createSprites();
+
+        timer_ = ime::Timer::create([this] {
+            guiContainer_.getWidget<ime::ui::Label>("oneUpText")->toggleVisibility();
+        }, 0.2f, true);
+        timer_.start();
     }
 
     void CommonView::createText() {
@@ -108,11 +112,6 @@ namespace pacman {
     }
 
     void CommonView::update(float deltaTime) {
-        flashTimeout_ -= deltaTime;
-        if (flashTimeout_ <= 0) {
-            flashTimeout_ = 0.2f;
-            guiContainer_.getWidget<ime::ui::HorizontalLayout>("scoresTextContainer")
-                ->getWidget("oneUpText")->toggleVisibility();
-        }
+        timer_.update(deltaTime);
     }
 }
