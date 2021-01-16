@@ -28,6 +28,7 @@
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
 #include <IME/graphics/Colour.h>
+#include <IME/ui/widgets/Panel.h>
 
 namespace pacman {
     CommonView::CommonView(ime::Window &renderTarget, int level, int lives) :
@@ -44,43 +45,41 @@ namespace pacman {
         createSprites();
 
         timer_ = ime::Timer::create([this] {
-            guiContainer_.getWidget<ime::ui::Label>("oneUpText")->toggleVisibility();
+            guiContainer_.getWidget<ime::ui::Label>("one_up")->toggleVisibility();
         }, 0.2f, true);
         timer_.start();
     }
 
     void CommonView::createText() {
-        auto tileSize = 20;
-        auto scoresTextContainer = ime::ui::HorizontalLayout::create();
-        scoresTextContainer->setSize(windowSize_.x / 1.8f, tileSize);
-        scoresTextContainer->setPosition({40.0f, 0.0f});
+        auto container = ime::ui::Panel::create();
+        container->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        guiContainer_.addWidget(container, "container");
+
         auto oneUpText = ime::ui::Label::create("1UP");
+        oneUpText->setPosition("8.3%", "0");
         oneUpText->getRenderer()->setTextColour(ime::Colour::Red);
-        scoresTextContainer->addWidget(std::move(oneUpText), "oneUpText");
+        container->addWidget(oneUpText, "one_up");
 
         auto highscoreText = ime::ui::Label::create("HIGH SCORE");
         highscoreText->getRenderer()->setTextColour(ime::Colour::Red);
-        scoresTextContainer->addWidget(std::move(highscoreText), "highscoresText");
+        highscoreText->setPosition("(&.w - w) / 2", "0");
+        container->addWidget(highscoreText, "high_score_text");
 
-        auto scoresValueContainer = ime::ui::HorizontalLayout::create();
-        scoresValueContainer->setSize(windowSize_.x / 1.6f, tileSize);
-        scoresValueContainer->setPosition({60, scoresTextContainer->getSize().y});
         auto scoreValue = ime::ui::Label::create("00");
         scoreValue->getRenderer()->setTextColour(ime::Colour::White);
-        scoresValueContainer->addWidget(std::move(scoreValue), "scoreValue");
+        scoreValue->setPosition("9%", ime::bindBottom(oneUpText));
+        container->addWidget(std::move(scoreValue), "current_score_value");
 
         auto highscoreValue = ime::ui::Label::create("00");
         highscoreValue->getRenderer()->setTextColour(ime::Colour::White);
-        scoresValueContainer->addWidget(std::move(highscoreValue), "highscoresValue");
+        highscoreValue->setPosition("(&.w - w) / 2", ime::bindBottom(highscoreText));
+        container->addWidget(std::move(highscoreValue), "high_score_value");
 
-        auto creditText = ime::ui::Label::create(pacmanLives_ > 0 ? "" : "CREDIT 0");
+        auto creditText = ime::ui::Label::create("CREDIT 0");
+        creditText->setVisible(pacmanLives_ <= 0);
         creditText->getRenderer()->setTextColour(ime::Colour::White);
-        creditText->getRenderer()->setPadding({0, 0, 0, 0});
-        creditText->setPosition(40.0f, windowSize_.y - creditText->getSize().y);
-        guiContainer_.addWidget(std::move(creditText), "creditText");
-
-        guiContainer_.addWidget(std::move(scoresTextContainer), "scoresTextContainer");
-        guiContainer_.addWidget(std::move(scoresValueContainer), "scoresValueContainer");
+        creditText->setPosition("8.3%", "&.h - h");
+        container->addWidget(std::move(creditText), "credit_text");
     }
 
     void CommonView::createSprites() {

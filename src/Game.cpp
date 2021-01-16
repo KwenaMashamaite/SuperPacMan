@@ -33,50 +33,52 @@
 #include <IME/core/event/EventDispatcher.h>
 #include <memory>
 
-using Key = ime::input::Keyboard::Key;
-using KeyEvent = ime::input::Keyboard::Event;
+namespace pacman {
+    namespace {
+        using Key = ime::input::Keyboard::Key;
+        using KeyEvent = ime::input::Keyboard::Event;
 
-void createSprite(const std::string& name, const std::string& texture, ime::IntRect rect) {
-    auto sprite = ime::Sprite();
-    sprite.setTexture(texture);
-    sprite.setTextureRect(rect);
-    pacman::SpriteContainer::addSprite(name, std::move(sprite));
-}
+        void createSprite(const std::string& name, const std::string& texture, ime::IntRect rect) {
+            auto sprite = ime::Sprite();
+            sprite.setTexture(texture);
+            sprite.setTextureRect(rect);
+            pacman::SpriteContainer::addSprite(name, std::move(sprite));
+        }
 
-void createFruitSprites() {
-    auto fruits = std::vector{
-        "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake", "peach",
-        "melon", "coffee", "mushroom", "bell", "clover", "galaxian", "gift"
-    };
+        void createFruitSprites() {
+            auto fruits = std::vector{
+                "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake", "peach",
+                "melon", "coffee", "mushroom", "bell", "clover", "galaxian", "gift"
+            };
 
-    auto rectSpacing = 1;
-    auto rectSize = ime::Vector2i{16, 16};
-    auto rectPos = ime::Vector2i{151, 52};
-    for (auto i = 0u; i < fruits.size(); ++i) {
-        createSprite(fruits[i], "spritesheet.png", {rectPos.x, rectPos.y, rectSize.x, rectSize.y});
-        rectPos.x += rectSize.x + rectSpacing;
+            auto rectSpacing = 1;
+            auto rectSize = ime::Vector2i{16, 16};
+            auto rectPos = ime::Vector2i{151, 52};
+            for (auto i = 0u; i < fruits.size(); ++i) {
+                createSprite(fruits[i], "spritesheet.png", {rectPos.x, rectPos.y, rectSize.x, rectSize.y});
+                rectPos.x += rectSize.x + rectSpacing;
+            }
+
+            createSprite("key", "spritesheet.png", {151, 35, rectSize.x, rectSize.y});
+            createSprite("life", "spritesheet.png", {440, 52, rectSize.x, rectSize.y});
+        }
+
+        void createGridSprites() {
+            auto gridSize = ime::Vector2i{224, 244};
+            createSprite("intro_grid", "grids.png", {225, 0, gridSize.x, gridSize.y});
+            createSprite("level_1_to_4_grid", "grids.png", {450, 0, gridSize.x, gridSize.y});
+            createSprite("level_5_to_8_grid", "grids.png", {0, 249, gridSize.x, gridSize.y});
+            createSprite("level_9_to_12_grid", "grids.png", {225, 249, gridSize.x, gridSize.y});
+            createSprite("level_13_to_16_grid", "grids.png", {450, 249, gridSize.x, gridSize.y});
+            createSprite("level_17_to_20_grid", "grids.png", {675, 249, gridSize.x, gridSize.y});
+            createSprite("locked_door_vertical", "spritesheet.png", {270, 137, 16, 16});
+            createSprite("locked_door_horizontal", "spritesheet.png", {236, 137, 16, 16});
+            createSprite("broken_door_vertical", "spritesheet.png", {287, 137, 16, 16});
+            createSprite("broken_door_horizontal", "spritesheet.png", {253, 137, 16, 16});
+            createSprite("unlocked_door", "spritesheet.png", {253, 35, 16, 16});
+        }
     }
 
-    createSprite("key", "spritesheet.png", {151, 35, rectSize.x, rectSize.y});
-    createSprite("life", "spritesheet.png", {440, 52, rectSize.x, rectSize.y});
-}
-
-void createGridSprites() {
-    auto gridSize = ime::Vector2i{224, 244};
-    createSprite("intro_grid", "grids.png", {225, 0, gridSize.x, gridSize.y});
-    createSprite("level_1_to_4_grid", "grids.png", {450, 0, gridSize.x, gridSize.y});
-    createSprite("level_5_to_8_grid", "grids.png", {0, 249, gridSize.x, gridSize.y});
-    createSprite("level_9_to_12_grid", "grids.png", {225, 249, gridSize.x, gridSize.y});
-    createSprite("level_13_to_16_grid", "grids.png", {450, 249, gridSize.x, gridSize.y});
-    createSprite("level_17_to_20_grid", "grids.png", {675, 249, gridSize.x, gridSize.y});
-    createSprite("locked_door_vertical", "spritesheet.png", {270, 137, 16, 16});
-    createSprite("locked_door_horizontal", "spritesheet.png", {236, 137, 16, 16});
-    createSprite("broken_door_vertical", "spritesheet.png", {287, 137, 16, 16});
-    createSprite("broken_door_horizontal", "spritesheet.png", {253, 137, 16, 16});
-    createSprite("unlocked_door", "spritesheet.png", {253, 35, 16, 16});
-}
-
-namespace pacman {
     Game::Game() :
         engine_("Super Pac-Man", "textFiles/config/settings.dat")
     {}
@@ -113,7 +115,7 @@ namespace pacman {
             createGridSprites();
         }));
 
-        #if !defined(NDEBUG)
+#if !defined(NDEBUG)
             engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::A, [this] {
                 engine_.pushState(std::make_shared<PlayingState>(engine_));
             });
@@ -121,7 +123,7 @@ namespace pacman {
             engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Key::S, [this] {
                 engine_.popState();
             });
-        #endif
+#endif
     }
 
     void Game::start() {

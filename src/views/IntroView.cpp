@@ -34,8 +34,7 @@ namespace pacman {
 
     void IntroView::init(int highScore) {
         commonView_.init();
-        auto scoresValueContainer = commonView_.getWidget<ime::ui::HorizontalLayout>("scoresValueContainer");
-        scoresValueContainer->getWidget<ime::ui::Label>("highscoresValue")->setText(std::to_string(highScore));
+        commonView_.getWidget<ime::ui::Label>("high_score_value")->setText(std::to_string(highScore));
 
         guiContainer_.setFont("namco.ttf");
         auto textContainer = ime::ui::VerticalLayout::create();

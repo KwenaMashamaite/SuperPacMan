@@ -54,10 +54,9 @@ namespace pacman {
 
     void PlayingState::onEnter() {
         commonView_->init();
-        auto scoresValueContainer = commonView_->getWidget<ime::ui::HorizontalLayout>("scoresValueContainer");
-        scoresValueContainer->getWidget<ime::ui::Label>("highscoresValue")->setText(std::to_string(
+        commonView_->getWidget<ime::ui::Label>("high_score_value")->setText(std::to_string(
             engine().getPersistentData().getValueFor<int>("high-score")));
-        scoresValueContainer->getWidget<ime::ui::Label>("scoreValue")->setText(std::to_string(
+        commonView_->getWidget<ime::ui::Label>("current_score_value")->setText(std::to_string(
             engine().getPersistentData().getValueFor<int>("score")));
 
         createGrid();
@@ -231,13 +230,12 @@ namespace pacman {
     }
 
     void PlayingState::updateScore(int points) {
-        auto scoresValueContainer = commonView_->getWidget<ime::ui::HorizontalLayout>("scoresValueContainer");
         auto newScore = engine().getPersistentData().getValueFor<int>("score") + points;
         engine().getPersistentData().setValueFor("score", newScore);
-        scoresValueContainer->getWidget<ime::ui::Label>("scoreValue")->setText(std::to_string(newScore));
+        commonView_->getWidget<ime::ui::Label>("current_score_value")->setText(std::to_string(newScore));
         if (newScore > engine().getPersistentData().getValueFor<int>("high-score")) {
             engine().getPersistentData().setValueFor("high-score", newScore);
-            scoresValueContainer->getWidget<ime::ui::Label>("highscoresValue")->setText(std::to_string(newScore));
+            commonView_->getWidget<ime::ui::Label>("high_score_value")->setText(std::to_string(newScore));
         }
     }
 
