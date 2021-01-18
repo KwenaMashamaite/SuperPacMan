@@ -41,8 +41,8 @@ namespace pacman {
 
     void LevelStartView::init() {
         commonView_.init();
-        commonView_.getWidget<ime::ui::Label>("current_score_value")->setText(std::to_string(score_));
-        commonView_.getWidget<ime::ui::Label>("high_score_value")->setText(std::to_string(highScore_));
+        commonView_.setScore(score_);
+        commonView_.setHighScore(highScore_);
 
         guiContainer_.setFont("namco.ttf");
         guiContainer_.setTextSize(12.0f);

@@ -57,6 +57,28 @@ namespace pacman {
         void init();
 
         /**
+         * @brief Set the score value to be displayed
+         * @param score The score to display
+         *
+         * @warning This function must be called after the view is
+         * initialized
+         *
+         * @see init
+         */
+        void setScore(int score);
+
+        /**
+         * @brief Set the high score value to be displayed
+         * @param highScore The score to display
+         *
+         * @warning This function must be called after the view is
+         * initialized
+         *
+         * @see init
+         */
+        void setHighScore(int highScore);
+
+        /**
          * @brief Render the view
          * @param renderTarget Target to render view on
          */

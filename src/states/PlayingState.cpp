@@ -232,10 +232,10 @@ namespace pacman {
     void PlayingState::updateScore(int points) {
         auto newScore = engine().getPersistentData().getValueFor<int>("score") + points;
         engine().getPersistentData().setValueFor("score", newScore);
-        commonView_->getWidget<ime::ui::Label>("current_score_value")->setText(std::to_string(newScore));
+        commonView_->setScore(newScore);
         if (newScore > engine().getPersistentData().getValueFor<int>("high-score")) {
             engine().getPersistentData().setValueFor("high-score", newScore);
-            commonView_->getWidget<ime::ui::Label>("high_score_value")->setText(std::to_string(newScore));
+            commonView_->setHighScore(newScore);
         }
     }
 

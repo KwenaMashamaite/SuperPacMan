@@ -50,6 +50,16 @@ namespace pacman {
         timer_.start();
     }
 
+    void CommonView::setScore(int score) {
+        guiContainer_.getWidget<ime::ui::Label>("current_score_value")
+            ->setText(std::to_string(score));
+    }
+
+    void CommonView::setHighScore(int highScore) {
+        guiContainer_.getWidget<ime::ui::Label>("high_score_value")
+            ->setText(std::to_string(highScore));
+    }
+
     void CommonView::createText() {
         auto container = ime::ui::Panel::create();
         container->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
