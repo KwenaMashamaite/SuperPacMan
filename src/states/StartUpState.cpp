@@ -36,19 +36,20 @@ namespace pacman {
     void StartUpState::onEnter() {
         view_.init();
 
-        //Make state skippable by pressing enter key
-        engine().getInputManager().addKeyListener(ime::input::Keyboard::Event::KeyUp,
-            ime::input::Keyboard::Key::Enter, [this] {
-            engine().popState();
-        });
-
         //Exit state with an effect after a certain time has passed
-        engine().setTimeout(20.0f, [this] {
+        auto& timer = engine().setTimeout(15.0f, [this] {
             auto viewContainer = view_.getWidget<ime::ui::Panel>("container");
             viewContainer->hideWithEffect(ime::ShowAnimationType::SlideFromBottom, 2000);
             viewContainer->on("animationFinish", ime::Callback<>([this] {
                 engine().popState();
             }));
+        });
+
+        //Make state skippable by pressing enter key
+        engine().getInputManager().addKeyListener(ime::input::Keyboard::Event::KeyUp,
+            ime::input::Keyboard::Key::Enter, [this, t = &timer] {
+                t->stop();
+                engine().popState();
         });
 
         isInit_ = true;
