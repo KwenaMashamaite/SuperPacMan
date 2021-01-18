@@ -77,12 +77,15 @@ namespace pacman {
             if (state != PacMan::States::Super && ghost_->isFlattened())
                 ghost_->unflatten();
         });
-
-        roam();
     }
 
     void GhostController::setGameLevel(std::size_t level) {
         curGameLevel_ = level;
+    }
+
+    void GhostController::moveGhost() {
+        if (ghost_->getState().first == Ghost::States::Idle)
+            roam();
     }
 
     void GhostController::handleEvent(GameEvent event) {

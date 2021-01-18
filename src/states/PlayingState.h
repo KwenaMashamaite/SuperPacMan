@@ -180,6 +180,7 @@ namespace pacman {
         std::vector<std::unique_ptr<GhostController>> ghostControllers_;
         //Event publisher
         ime::EventEmitter eventEmitter_;
+
     };
 }
 

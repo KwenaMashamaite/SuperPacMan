@@ -48,11 +48,15 @@ namespace pacman {
         /**
          * @brief Set the current game level
          * @param level The current game level
-         *
-         * Set @a level to 0 during intro state or intermission for longer
-         * PacMan::States::Super durations
          */
         void setGameLevel(std::size_t level);
+
+        /**
+         * @brief Initiate ghost movement
+         *
+         * By default the ghost is idle
+         */
+        void moveGhost();
 
         /**
          * @brief Handle a game event

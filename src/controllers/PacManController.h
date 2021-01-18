@@ -55,8 +55,10 @@ namespace pacman {
         /**
          * @brief Set whether pacman can respond to move commands or not
          * @param move True to enable movement, or false to disable
+         *
+         * By default pacman is idle
          */
-        void movePacman(bool move);
+        void movePacman(bool move = true);
 
         /**
          * @brief Handle a game event

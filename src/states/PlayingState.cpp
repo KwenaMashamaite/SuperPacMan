@@ -24,21 +24,14 @@
 
 #include "PlayingState.h"
 #include <IME/core/loop/Engine.h>
-#include <IME/ui/widgets/HorizontalLayout.h>
-#include <IME/ui/widgets/Label.h>
 #include "../entities/AllEntities.h"
 #include "../common/SpriteContainer.h"
 #include "../common/Drawer.h"
 #include "../utils/Utils.h"
 #include "../entities/states/ghost/ScatterState.h"
-#include "../entities/states/ghost/FrightenedState.h"
-#include "../entities/states/ghost/EatenState.h"
-#include "../entities/states/ghost/ChaseState.h"
 #include "../animations/FruitAnimation.h"
 #include "../animations/GridAnimation.h"
 #include "LevelStartState.h"
-#include "../entities/states/pacman/DyingState.h"
-#include "../entities/states/ghost/GhostIdleState.h"
 
 namespace pacman {
     PlayingState::PlayingState(ime::Engine &engine) :
@@ -54,10 +47,8 @@ namespace pacman {
 
     void PlayingState::onEnter() {
         commonView_->init();
-        commonView_->getWidget<ime::ui::Label>("high_score_value")->setText(std::to_string(
-            engine().getPersistentData().getValueFor<int>("high-score")));
-        commonView_->getWidget<ime::ui::Label>("current_score_value")->setText(std::to_string(
-            engine().getPersistentData().getValueFor<int>("score")));
+        commonView_->setHighScore(engine().getPersistentData().getValueFor<int>("high-score"));
+        commonView_->setScore(engine().getPersistentData().getValueFor<int>("score"));
 
         createGrid();
         createEntities();
@@ -83,7 +74,14 @@ namespace pacman {
             }
         });
 
-        pacmanController_->movePacman(true);
+        engine().setTimeout(2.0f, [this] {
+            grid_.getTile(ime::Index{13, 9}).getSprite().hide(); //Ready sprite
+            std::static_pointer_cast<PacMan>(objects_.at("pacman")[0])->getSprite().show();
+            pacmanController_->movePacman();
+            for (auto& controller : ghostControllers_)
+                controller->moveGhost();
+        });
+
         isInitialized_ = true;
     }
 
@@ -95,6 +93,10 @@ namespace pacman {
         auto flashingAnimations = GridAnimation().getAnimations();
         for (const auto& animation : flashingAnimations)
             grid_.getBackground().addAnimation(animation);
+
+        auto& readySprite = grid_.getTile(ime::Index{13, 9}).getSprite();
+        readySprite.setTexture("ready.png");
+        readySprite.scale(0.8f, 0.6f);
     }
 
     void PlayingState::setGridBackground() {
@@ -118,6 +120,9 @@ namespace pacman {
     void PlayingState::createEntities() {
         objects_ = Utils::createObjects(grid_);
         Utils::lockAllDoors(grid_);
+
+        //Pacman will be shown a couple of seconds after the level has began
+        std::static_pointer_cast<PacMan>(objects_.at("pacman")[0])->getSprite().hide();
 
         //Select fruit texture based on current level
         auto fruitAnimation = FruitAnimation();

@@ -33,7 +33,7 @@
 
 //Warning!! This number must be updated each time a new resource is added to the
 //resources to be loaded
-const auto numOfResources = 18;
+const auto numOfResources = 19;
 
 namespace pacman {
     LoadingState::LoadingState(ime::Engine &engine) :
@@ -110,7 +110,7 @@ namespace pacman {
         ime::ResourceManager::getInstance()->loadFromFile(ime::ResourceType::Texture,  {
             "icon.png", "grids.png", "pacman_logo.png", "spritesheet.png",
             "main_menu_background.jpg", "credits_menu_background.jpg",
-            "options_menu_background.jpg"
+            "options_menu_background.jpg", "ready.png"
         }, updateProgressBar);
 
         //LOAD SOUND EFFECTS
