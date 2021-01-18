@@ -94,21 +94,27 @@ namespace pacman {
 
     void CommonView::createSprites() {
         auto fruitAnim = FruitAnimation().getAnimation();
-        for (int i = 0u; i < level_; ++i) {
+
+        // Limit the number of sprites that depict the current level to 10, otherwise
+        // they overlap with the sprites that depict pacmans remaining lives
+        auto i = level_ <= 10 ? 0u : level_ - 10u;
+        auto j = 0u; // Controls the fruit sprite positioning
+        for (; i < level_; ++i, ++j) {
             auto fruitSprite = ime::Sprite();
             fruitSprite.setTexture(fruitAnim->getSpriteSheet());
             fruitSprite.setTextureRect(fruitAnim->getFrameAt(i));
             fruitSprite.scale(1.7f, 1.7f);
             fruitSprite.setPosition(windowSize_.x - fruitSprite.getGlobalBounds().width
-                - i * fruitSprite.getGlobalBounds().width,
+                - j * fruitSprite.getGlobalBounds().width,
                 windowSize_.y - fruitSprite.getGlobalBounds().height);
             sprites.push_back(std::move(fruitSprite));
         }
 
-        for (auto i = 0u; i < pacmanLives_; ++i) {
+        //Sprites that depict pacmans remaining lives
+        for (auto k = 0u; k < pacmanLives_; ++k) {
             auto lifeSprite = SpriteContainer::getSprite("life");
             lifeSprite.scale(1.8f, 1.8f);
-            lifeSprite.setPosition(i * lifeSprite.getGlobalBounds().width,
+            lifeSprite.setPosition(k * lifeSprite.getGlobalBounds().width,
                 windowSize_.y - lifeSprite.getGlobalBounds().height);
             sprites.push_back(std::move(lifeSprite));
         }
