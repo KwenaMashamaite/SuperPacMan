@@ -22,24 +22,35 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PacManIdleState.h"
-#include "../../PacMan.h"
+#include "RoamState.h"
+#include "../../Ghost.h"
 #include <cassert>
 
 namespace pacman {
-    PacManIdleState::PacManIdleState(std::shared_ptr<ime::Entity> pacman) {
-        assert(std::dynamic_pointer_cast<PacMan>(pacman) && "Cannot create Pacman state for non Pacman object");
+    RoamState::RoamState(std::shared_ptr<ime::Entity> ghost) {
+        assert(ghost && "Cannot construct ghost state with nullptr");
+        assert((ghost->getClassType() == "Ghost") && "Cannot create ghost state with non ghost entity");
+        ghost_ = std::move(ghost);
     }
 
-    void PacManIdleState::onEntry() {
-
+    void RoamState::setGridMover(std::shared_ptr<ime::RandomGridMover> gridMover) {
+        assert(gridMover && "Cannot set nullptr as a grid mover");
+        ghostMover_ = std::move(gridMover);
+        ghostMover_->setTarget(ghost_);
+        //ghostMover_->enableAdvancedMovement(true);
     }
 
-    void PacManIdleState::update(float deltaTime) {
-
+    void RoamState::onEntry() {
+        assert(ghostMover_ && "Cannot initialize chase state without a grid mover");
+        ghostMover_->startMovement();
     }
 
-    void PacManIdleState::onExit() {
+    void RoamState::update(float deltaTime) {
+        ghostMover_->update(deltaTime);
+    }
 
+    void RoamState::onExit() {
+        ghostMover_->teleportTargetToDestination();
+        ghostMover_->setTarget(nullptr);
     }
 }

@@ -35,15 +35,15 @@
 namespace pacman {
     class GhostController {
     public:
-        using Callback = ime::Callback<std::shared_ptr<ime::Entity>, std::shared_ptr<ime::Entity>>;
+        using sharedPtr = std::shared_ptr<ime::Entity>;
+        using Callback = ime::Callback<sharedPtr , sharedPtr>;
 
         /**
          * @brief Constructor
          * @param ghosts Ghost container
          * @param pacman Pacman
          */
-        GhostController(ime::TileMap& grid, std::shared_ptr<ime::Entity>& ghost,
-            std::shared_ptr<ime::Entity> pacman);
+        GhostController(ime::TileMap& grid, sharedPtr& ghost, sharedPtr pacman);
 
         /**
          * @brief Set the current game level
@@ -94,12 +94,17 @@ namespace pacman {
          */
         void chasePacMan();
 
+        /**
+         * @brief Makes the ghost randomly move in the grid
+         */
+        void roam();
+
     private:
-        ime::TileMap& grid_;             //!< Grid ghost and pacman are in
-        std::size_t curGameLevel_;       //!< Current game level
-        std::shared_ptr<Ghost> ghost_;   //!< Ghost to be controlled
-        std::shared_ptr<PacMan> pacman_; //!< Pointer to pacman
-        std::shared_ptr<ime::Entity> pacman_base; //!< Pointer to pacman
+        ime::TileMap& grid_;                       //!< Grid ghost and pacman are in
+        std::size_t curGameLevel_;                 //!< Current game level
+        std::shared_ptr<Ghost> ghost_;             //!< Ghost to be controlled
+        std::shared_ptr<PacMan> pacman_;           //!< Pointer to pacman
+        sharedPtr pacman_base;                     //!< Pointer to pacman base class
         std::unique_ptr<ime::GridMover> gridMover_;
         Callback onPacManCollision_;     //!< Function executed the ghost collides with pacman
     };

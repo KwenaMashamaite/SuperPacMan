@@ -28,39 +28,42 @@
 #include "../entities/states/ghost/ChaseState.h"
 #include "../entities/states/ghost/GhostIdleState.h"
 #include "../entities/states/ghost/ScatterState.h"
-
-//@TODO Replace all the free functions below with a timer
-
-float getFrightenedStateDuration(std::size_t curLevel) {
-    if (curLevel >= 1 && curLevel <= 3)
-        return 4.0f;
-    else if (curLevel > 3 && curLevel <= 6)
-        return 2.0f;
-    else if (curLevel > 6 && curLevel <= 9)
-        return 1.0f;
-    else
-        return 0.1f;
-}
-
-float getChaseStateDuration(std::size_t curLevel) {
-    if (curLevel >= 1 && curLevel <= 9)
-        return 20.0f;
-    else
-        return 120.0f;
-}
-
-float getScatterStateDuration(std::size_t curLevel) {
-    if (curLevel >= 1 && curLevel <= 3)
-        return 7.0f;
-    else if (curLevel > 3 && curLevel <= 6)
-        return 5.0f;
-    else if (curLevel > 6 && curLevel <= 9)
-        return 3.0f;
-    else
-        return 1.0f;
-}
+#include "../entities/states/ghost/RoamState.h"
 
 namespace pacman {
+    namespace {
+        //@TODO Replace all the free functions below with a timer
+
+        float getFrightenedStateDuration(std::size_t curLevel) {
+            if (curLevel >= 1 && curLevel <= 3)
+                return 4.0f;
+            else if (curLevel > 3 && curLevel <= 6)
+                return 2.0f;
+            else if (curLevel > 6 && curLevel <= 9)
+                return 1.0f;
+            else
+                return 0.1f;
+        }
+
+        float getChaseStateDuration(std::size_t curLevel) {
+            if (curLevel >= 1 && curLevel <= 9)
+                return 20.0f;
+            else
+                return 120.0f;
+        }
+
+        float getScatterStateDuration(std::size_t curLevel) {
+            if (curLevel >= 1 && curLevel <= 3)
+                return 7.0f;
+            else if (curLevel > 3 && curLevel <= 6)
+                return 5.0f;
+            else if (curLevel > 6 && curLevel <= 9)
+                return 3.0f;
+            else
+                return 1.0f;
+        }
+    }
+
     GhostController::GhostController(ime::TileMap &grid, std::shared_ptr<ime::Entity> &ghost,
         std::shared_ptr<ime::Entity> pacman) :
             grid_(grid),
@@ -75,8 +78,7 @@ namespace pacman {
                 ghost_->unflatten();
         });
 
-        ghost_->popState();
-        scatterGhost();
+        roam();
     }
 
     void GhostController::setGameLevel(std::size_t level) {
@@ -85,8 +87,8 @@ namespace pacman {
 
     void GhostController::handleEvent(GameEvent event) {
         auto state = ghost_->getState().first;
-        if (event == GameEvent::SuperPelletEaten && (state == Ghost::States::Idle
-            || state == Ghost::States::Scatter || state == Ghost::States::Chasing))
+        if (event == GameEvent::SuperPelletEaten && state != Ghost::States::Eaten
+            && state != Ghost::States::Frightened)
         {
             ghost_->flatten();
         } else if (event == GameEvent::PowerPelletEaten) {
@@ -155,5 +157,20 @@ namespace pacman {
             scatterGhost();
         });
         ghost_->pushState(Ghost::States::Chasing, std::move(chaseState));
+    }
+
+    void GhostController::roam() {
+        auto state = ghost_->getState().first;
+        if (state != Ghost::States::Eaten && state != Ghost::States::Frightened) {
+            ghost_->popState();
+            auto roamState = std::make_shared<RoamState>(gridMover_->getTarget());
+            auto ghostMover = std::make_shared<ime::RandomGridMover>(grid_);
+            ghostMover->onPlayerCollision([this](sharedPtr ghost, sharedPtr pacman) {
+                if (onPacManCollision_)
+                    onPacManCollision_(std::move(ghost), std::move(pacman));
+            });
+            roamState->setGridMover(std::move(ghostMover));
+            ghost_->pushState(Ghost::States::Roaming, std::move(roamState));
+        }
     }
 }

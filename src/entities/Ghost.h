@@ -52,7 +52,8 @@ namespace pacman {
             Chasing,      //!< Chasing pacman
             Scatter,      //!< Running around in circles at a corner
             Eaten,        //!< Eaten by pacman
-            Frightened    //!< In a vulnerable state (Can be eaten)
+            Frightened,   //!< In a vulnerable state (Can be eaten)
+            Roaming       //!< Ghost randomly moving in the grid
         };
 
         /**

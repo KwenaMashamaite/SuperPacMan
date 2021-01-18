@@ -226,6 +226,9 @@ namespace pacman {
                 grid_, ghost, objects_.at("pacman")[0])));
 
             ghostControllers_.back()->setGameLevel(level_);
+            ghostControllers_.back()->onPacManCollision([](auto, auto){
+
+            });
         }
     }
 

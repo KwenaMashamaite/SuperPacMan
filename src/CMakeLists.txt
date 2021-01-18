@@ -44,7 +44,7 @@ set(SRC_FILES
         entities/states/ghost/ChaseState.cpp
         animations/GridAnimation.cpp
         entities/states/pacman/NormalState.cpp
-        )
+        entities/states/ghost/RoamState.cpp)
 
 #Set executables output folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
