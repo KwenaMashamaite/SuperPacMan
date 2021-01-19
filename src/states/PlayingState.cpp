@@ -134,31 +134,30 @@ namespace pacman {
     }
 
     void PlayingState::initCollisionHandler() {
-        pacmanController_->onKeyCollision([this](auto, auto key) {
+        pacmanController_->onKeyCollision([this](std::shared_ptr<ime::Entity> key) {
             key->setActive(false);
             updateScore(50);
-            eventEmitter_.emit("keyEaten", key);
+            eventEmitter_.emit("keyEaten", std::move(key));
         });
 
-        pacmanController_->onFruitCollision([this](auto, auto fruit) {
-            std::dynamic_pointer_cast<Fruit>(fruit)->eat();
+        pacmanController_->onFruitCollision([this](std::shared_ptr<Fruit> fruit) {
+            fruit->eat();
             updateScore(level_ * 10);
             engine().getAudioManager().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
         });
 
-        pacmanController_->onPelletCollision([this](auto, auto pellet) {
-            auto pelletPtr = std::dynamic_pointer_cast<Pellet>(pellet);
-            pelletPtr->eat();
+        pacmanController_->onPelletCollision([this](std::shared_ptr<Pellet> pellet) {
+            pellet->eat();
             updateScore(100);
-            if (pelletPtr->getPelletType() == PelletType::PowerPellet)
+            if (pellet->getPelletType() == PelletType::PowerPellet)
                 eventEmitter_.emit("powerPelletEaten");
             else
                 eventEmitter_.emit("superPelletEaten");
         });
 
-        pacmanController_->onDoorCollision([this](auto pacman, auto door) {
-            if (!pacman->isVulnerable()) {
-                std::dynamic_pointer_cast<Door>(door)->forceOpen();
+        pacmanController_->onDoorCollision([this](std::shared_ptr<PacMan> pacman, std::shared_ptr<Door> door) {
+            if (pacman->getState().first == PacMan::States::Super) {
+                door->forceOpen();
                 pacmanController_->advancePacManForward();
                 updateScore(200);
                 engine().getAudioManager().play(ime::audio::Type::Sfx, "doorBroken.wav");

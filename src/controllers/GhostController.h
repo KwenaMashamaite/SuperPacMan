@@ -53,10 +53,11 @@ namespace pacman {
 
         /**
          * @brief Initiate ghost movement
+         * @param True to move ghost or false to idle ghost
          *
          * By default the ghost is idle
          */
-        void moveGhost();
+        void moveGhost(bool move = true);
 
         /**
          * @brief Handle a game event

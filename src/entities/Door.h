@@ -120,26 +120,8 @@ namespace pacman {
 
         /**
          * @brief Force the door to open
-         *
-         * This function will break the doors locker if it has one, therefore
-         * the door cannot be locked after it has been forced open. In order
-         * for the door to be lockable again, the locker must be replaced
-         *
-         * @see addDoorLocker
          */
         void forceOpen();
-
-        /**
-         * @brief Add an event listener to a door lock event
-         * @param callback Function to execute when the door is locked
-         */
-        int onLock(ime::Callback<> callback);
-
-        /**
-         * @brief Add an event listener to a door unlock event
-         * @param callback Function to execute when the door is unlocked
-         */
-        int onUnlock(ime::Callback<> callback);
 
         /**
          * @brief Get the class type
@@ -156,7 +138,7 @@ namespace pacman {
     private:
         std::unique_ptr<DoorLocker> doorLocker_; //!< Door locker
         Orientation orientation_;                //!< The current orientation of the door
-        ime::Sprite sprite_;           //!< The doors graphical representation
+        ime::Sprite sprite_;                     //!< The doors graphical representation
     };
 }
 

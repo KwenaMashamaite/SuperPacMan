@@ -83,8 +83,11 @@ namespace pacman {
         curGameLevel_ = level;
     }
 
-    void GhostController::moveGhost() {
-        if (ghost_->getState().first == Ghost::States::Idle)
+    void GhostController::moveGhost(bool move) {
+        if (!move && ghost_->getState().first != Ghost::States::Idle) {
+            ghost_->popState();
+            ghost_->pushState(Ghost::States::Idle, std::make_shared<GhostIdleState>(gridMover_->getTarget()));
+        } else if (move && ghost_->getState().first == Ghost::States::Idle)
             roam();
     }
 

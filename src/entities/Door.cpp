@@ -116,14 +116,6 @@ namespace pacman {
         publishEvent("broken");
     }
 
-    int Door::onLock(ime::Callback<> callback) {
-        return onEvent("locked", std::move(callback));
-    }
-
-    int Door::onUnlock(ime::Callback<> callback) {
-        return onEvent("unlocked", std::move(callback));
-    }
-
     std::string Door::getClassType() {
         return "Door";
     }

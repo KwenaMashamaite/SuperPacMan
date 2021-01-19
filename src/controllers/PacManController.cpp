@@ -61,10 +61,6 @@ namespace pacman {
         pacman_(std::dynamic_pointer_cast<PacMan>(pacman)),
         curGameLevel_{0}
     {
-        //Pacmans initial state
-        pacman_->pushState(PacMan::States::Idle,
-            std::make_shared<PacManIdleState>(gridMover_.getTarget()));
-
         gridMover_.setMovementTrigger(ime::MovementTrigger::OnKeyDown);
         gridMover_.setKeys(ime::input::Keyboard::Key::Left, ime::input::Keyboard::Key::Right, 
             ime::input::Keyboard::Key::Up, ime::input::Keyboard::Key::Down);
@@ -88,21 +84,23 @@ namespace pacman {
     void PacManController::initCollisionHandlers() {
         gridMover_.onCollectableCollision([this](auto pacman, auto collectable) {
             if (collectable->getClassType() == "Fruit" && onFruitCollision_)
-                onFruitCollision_(pacman, collectable);
+                onFruitCollision_(std::static_pointer_cast<Fruit>(collectable));
             else if (collectable->getClassType() == "Pellet" && onPelletCollision_)
-                onPelletCollision_(pacman, collectable);
+                onPelletCollision_(std::static_pointer_cast<Pellet>(collectable));
             else if (collectable->getClassType() == "Key" && onKeyCollision_)
-                onKeyCollision_(pacman, collectable);
+                onKeyCollision_(collectable);
         });
 
         gridMover_.onEnemyCollision([this](std::shared_ptr<ime::Entity> pacman, std::shared_ptr<ime::Entity> enemy) {
             if (enemy->getClassType() == "Ghost" && onGhostCollision_)
-                onGhostCollision_(std::move(pacman), enemy);
+                onGhostCollision_(std::static_pointer_cast<PacMan>(pacman),
+                    std::static_pointer_cast<Ghost>(enemy));
         });
 
         gridMover_.onObstacleCollision([this](std::shared_ptr<ime::Entity> pacman, std::shared_ptr<ime::Entity> obstacle) {
             if (obstacle->getClassType() == "Door" && onDoorCollision_)
-                onDoorCollision_(pacman, obstacle);
+                onDoorCollision_(std::static_pointer_cast<PacMan>(pacman),
+                    std::static_pointer_cast<Door>(obstacle));
         });
     }
 
@@ -150,6 +148,9 @@ namespace pacman {
     }
 
     void PacManController::handleEvent(sf::Event event) {
+        if (pacman_ ->getState().first == PacMan::States::Dying) //Can't move pacman while his dying
+            return;
+
         if (pacman_->getState().first == PacMan::States::Idle) {
             if (event.type == event.KeyPressed) {
                 if (event.key.code == sf::Keyboard::Left)
@@ -170,26 +171,30 @@ namespace pacman {
     }
 
     void PacManController::advancePacManForward() {
-        gridMover_.requestDirectionChange(pacman_->getDirection());
+        if (pacman_->getState().first != PacMan::States::Dying
+            && pacman_->getState().first != PacMan::States::Idle)
+        {
+            gridMover_.requestDirectionChange(pacman_->getDirection());
+        }
     }
 
-    void PacManController::onKeyCollision(PacManController::Callback callback) {
+    void PacManController::onKeyCollision(ime::Callback<std::shared_ptr<ime::Entity>> callback) {
         onKeyCollision_ = std::move(callback);
     }
 
-    void PacManController::onFruitCollision(PacManController::Callback callback) {
+    void PacManController::onFruitCollision(ime::Callback<std::shared_ptr<Fruit>> callback) {
         onFruitCollision_ = std::move(callback);
     }
 
-    void PacManController::onPelletCollision(PacManController::Callback callback) {
+    void PacManController::onPelletCollision(ime::Callback<std::shared_ptr<Pellet>> callback) {
         onPelletCollision_ = std::move(callback);
     }
 
-    void PacManController::onDoorCollision(PacManController::Callback callback) {
+    void PacManController::onDoorCollision(ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Door>> callback) {
         onDoorCollision_ = std::move(callback);
     }
 
-    void PacManController::onGhostCollision(PacManController::Callback callback) {
+    void PacManController::onGhostCollision(ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Ghost>> callback) {
         onGhostCollision_ = std::move(callback);
     }
 }

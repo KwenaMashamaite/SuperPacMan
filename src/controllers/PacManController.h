@@ -29,6 +29,10 @@
 #include <IME/core/entity/Entity.h>
 #include "../entities/PacMan.h"
 #include "../common/Constants.h"
+#include "../entities/Pellet.h"
+#include "../entities/Fruit.h"
+#include "../entities/Door.h"
+#include "../entities/Ghost.h"
 
 namespace pacman {
     class PacManController {
@@ -92,23 +96,23 @@ namespace pacman {
          *
          * The function is passed pacman and the key respectively
          */
-        void onKeyCollision(Callback callback);
+        void onKeyCollision(ime::Callback<std::shared_ptr<ime::Entity>> callback);
 
         /**
          * @brief Execute a callback when pacman collides with a pellet
          * @param callback Function to execute
          *
-         * The callback is passed pacman and the pellet respectively
+         * The callback is passed the pellet pacman collided with
          */
-        void onPelletCollision(Callback callback);
+        void onPelletCollision(ime::Callback<std::shared_ptr<Pellet>> callback);
 
         /**
          * @brief Execute a callback when pacman collides with a fruit
          * @param callback Function to execute
          *
-         * The callback is passed pacman and the fruit respectively
+         * The callback is passed the fruit pacman collided with
          */
-        void onFruitCollision(Callback callback);
+        void onFruitCollision(ime::Callback<std::shared_ptr<Fruit>> callback);
 
         /**
          * @brief Execute a callback when pacman collides with a door
@@ -116,7 +120,7 @@ namespace pacman {
          *
          * The callback is passed pacman and the door respectively
          */
-        void onDoorCollision(Callback callback);
+        void onDoorCollision(ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Door>> callback);
 
         /**
          * @brief Execute a callback when pacman collides with a ghost
@@ -124,7 +128,7 @@ namespace pacman {
          *
          * The callback is passed pacman and the ghost respectively
          */
-        void onGhostCollision(Callback callback);
+        void onGhostCollision(ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Ghost>> callback);
 
     private:
         /**
@@ -145,11 +149,12 @@ namespace pacman {
         ime::KeyboardControlledGridMover gridMover_; //!< Controls the movement of pacman in the grid
         std::shared_ptr<PacMan> pacman_;             //!< Pacman
         std::size_t curGameLevel_;                   //!< The current game level
-        Callback onKeyCollision_;                    //!< Function called when pacman collides with a key
-        Callback onFruitCollision_;                  //!< Function called when pacman collides with a fruit
-        Callback onPelletCollision_;                 //!< Function called when pacman collides with a pellet
-        Callback onDoorCollision_;                   //!< Function called when pacman collides with a door
-        Callback onGhostCollision_;                  //!< Function called when pacman collides with a ghost
+
+        ime::Callback<std::shared_ptr<ime::Entity>> onKeyCollision_; //!< Function called when pacman collides with a key
+        ime::Callback<std::shared_ptr<Fruit>> onFruitCollision_;     //!< Function called when pacman collides with a fruit
+        ime::Callback<std::shared_ptr<Pellet>> onPelletCollision_;   //!< Function called when pacman collides with a pellet
+        ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Door>> onDoorCollision_; //!< Function called when pacman collides with a door
+        ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Ghost>> onGhostCollision_; //!< Function called when pacman collides with a ghost
     };
 }
 
