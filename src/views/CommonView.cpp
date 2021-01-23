@@ -44,9 +44,9 @@ namespace pacman {
         createText();
         createSprites();
 
-        timer_ = ime::Timer::create([this] {
+        timer_ = ime::Timer::create(ime::milliseconds(200), [this] {
             guiContainer_.getWidget<ime::ui::Label>("one_up")->toggleVisibility();
-        }, 0.2f, true);
+        }, true);
         timer_.start();
     }
 
@@ -126,7 +126,7 @@ namespace pacman {
             renderTarget.draw(fruit);
     }
 
-    void CommonView::update(float deltaTime) {
+    void CommonView::update(ime::Time deltaTime) {
         timer_.update(deltaTime);
     }
 }

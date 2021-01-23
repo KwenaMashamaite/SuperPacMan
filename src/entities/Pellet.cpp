@@ -70,7 +70,7 @@ namespace pacman {
         return sprite_;
     }
 
-    void Pellet::update(float deltaTime) {
+    void Pellet::update(ime::Time deltaTime) {
         sprite_.updateAnimation(deltaTime);
     }
 }

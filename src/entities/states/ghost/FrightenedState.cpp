@@ -55,15 +55,15 @@ namespace pacman {
         //ghostMover_.enableAdvancedMovement(true);
     }
 
-    void FrightenedState::update(float deltaTime) {
+    void FrightenedState::update(ime::Time deltaTime) {
         TimedState::update(deltaTime);
         ghostMover_->update(deltaTime);
         if (ghost_->getSprite().getCurrentAnimation()->getName() != "flash"
-            && (getTimeout() >= 0.0f && getTimeout() <= 2.0f))
+            && (getTimeout() >= ime::Time::Zero && getTimeout() <= ime::seconds(2)))
         {
             ghost_->getSprite().switchAnimation("flash");
             isGhostFlashing_ = true;
-        } else if (isGhostFlashing_ && getTimeout() > 2.0f) {
+        } else if (isGhostFlashing_ && getTimeout() > ime::seconds(2)) {
             ghost_->getSprite().switchAnimation("frightened");
             isGhostFlashing_ = false;
         }

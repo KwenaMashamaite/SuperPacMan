@@ -128,10 +128,10 @@ namespace pacman {
         isMoving_ = false;
     }
 
-    void PacMan::update(float deltaTime) {
+    void PacMan::update(ime::Time deltaTime) {
         assert(stateController_.getCurrentState().second && "Pacman without state");
         if (isMoving()) {
-            auto velocity = getSpeed() * deltaTime;
+            auto velocity = getSpeed() * deltaTime.asSeconds();
             switch (getDirection()) {
                 case ime::Direction::Unknown:
                     break;

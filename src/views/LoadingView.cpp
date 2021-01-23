@@ -82,7 +82,7 @@ namespace pacman {
         guiContainer_.draw();
     }
 
-    void pacman::LoadingView::handleEvent(sf::Event event) {
+    void pacman::LoadingView::handleEvent(ime::Event event) {
         guiContainer_.handleEvent(event);
     }
 }

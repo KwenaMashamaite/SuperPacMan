@@ -139,7 +139,7 @@ namespace pacman {
         view_.render();
     }
 
-    void LoadingState::handleEvent(sf::Event event) {
+    void LoadingState::handleEvent(ime::Event event) {
         std::lock_guard<std::mutex> lock(mtx_);
         view_.handleEvent(event);
     }
@@ -148,9 +148,9 @@ namespace pacman {
         ime::EventDispatcher::instance()->dispatchEvent("resourceLoadingComplete");
     }
 
-    void LoadingState::update(float deltaTime) {}
+    void LoadingState::update(ime::Time deltaTime) {}
 
-    void LoadingState::fixedUpdate(float deltaTime) {}
+    void LoadingState::fixedUpdate(ime::Time deltaTime) {}
 
     void LoadingState::onPause() {}
 

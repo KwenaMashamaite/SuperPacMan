@@ -166,7 +166,7 @@ namespace pacman {
         guiContainer_.draw();
     }
 
-    void MainMenuView::handleEvent(sf::Event event) {
+    void MainMenuView::handleEvent(ime::Event event) {
         guiContainer_.handleEvent(event);
     }
 

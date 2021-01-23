@@ -64,7 +64,7 @@ namespace pacman {
          * @brief Pass an event to be handled by the current main menu view
          * @param event Event to be handled
          */
-        void handleEvent(sf::Event event);
+        void handleEvent(ime::Event event);
 
         /**
          * @brief Switch to a different view within the main menu

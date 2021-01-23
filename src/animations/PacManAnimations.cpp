@@ -25,11 +25,13 @@
 #include "PacManAnimations.h"
 #include <IME/common/Vector2.h>
 
-const auto normalFrameSize = ime::Vector2i{16, 16};
-const auto superFrameSize = ime::Vector2i{2 * normalFrameSize.x, 2 * normalFrameSize.y};
-const auto movementAnimDuration = 0.15f;
-
 namespace pacman {
+    namespace {
+        const auto normalFrameSize = ime::Vector2i{16, 16};
+        const auto superFrameSize = ime::Vector2i{2 * normalFrameSize.x, 2 * normalFrameSize.y};
+        const auto movementAnimDuration = ime::milliseconds(150);
+    }
+
     void PacManAnimations::create() {
         createAnimation("goingLeft", {100, 1, normalFrameSize.x, normalFrameSize.y});
         createAnimation("goingLeftSuper", {1, 1, superFrameSize.x, superFrameSize.y});
@@ -44,7 +46,7 @@ namespace pacman {
         createAnimation("goingDownSuper", {1, 100, superFrameSize.x, superFrameSize.y});
         createAnimation("goingDownFlashing", {389, 185, superFrameSize.x, superFrameSize.y});
 
-        auto deathAnimation = std::make_shared<ime::Animation>("dying", "spritesheet.png", 2.0f);
+        auto deathAnimation = ime::Animation::create("dying", "spritesheet.png", ime::seconds(2));
         deathAnimation->addFrames({151, 1}, normalFrameSize, 11, 1);
         animations_.push_back(std::move(deathAnimation));
     }
@@ -54,7 +56,7 @@ namespace pacman {
     }
 
     void PacManAnimations::createAnimation(const std::string &name, ime::IntRect rect) {
-        auto anim = std::make_shared<ime::Animation>(name, "spritesheet.png", movementAnimDuration);
+        auto anim = ime::Animation::create(name, "spritesheet.png", movementAnimDuration);
         anim->addFrames(rect.getPosition(), rect.getSize(), 3);
         anim->setLoop(true);
         animations_.push_back(std::move(anim));

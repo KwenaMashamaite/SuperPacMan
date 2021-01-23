@@ -63,7 +63,7 @@ namespace pacman {
          * @brief update the state
          * @param deltaTime Time passed since the state was last updated
          */
-        void update(float deltaTime) override;
+        void update(ime::Time deltaTime) override;
 
         /**
          * @brief Exit a state

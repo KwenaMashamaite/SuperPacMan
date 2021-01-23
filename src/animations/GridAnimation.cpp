@@ -38,7 +38,7 @@ namespace pacman {
     }
 
     void GridAnimation::createFlashAnimations(const std::string& gridColour, ime::IntRect gridFrame) {
-        auto animation = std::make_shared<ime::Animation>("flash-" + gridColour, "grids.png", 3.0f);
+        auto animation = ime::Animation::create("flash-" + gridColour, "grids.png", ime::seconds(3.0f));
         for (auto i = 0; i < 15; ++i) //Add the same frame multiple time because animation is not looped and should play really fast
             animation->addFrames({gridFrame, {675, 0, 224, 244}});
         animations_.push_back(std::move(animation));

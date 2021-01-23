@@ -35,7 +35,7 @@ namespace pacman {
         
     }
 
-    void GhostIdleState::update(float deltaTime) {
+    void GhostIdleState::update(ime::Time deltaTime) {
 
     }
 

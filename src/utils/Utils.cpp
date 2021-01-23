@@ -142,7 +142,7 @@ namespace pacman::Utils {
 
     void enlargePacman(std::shared_ptr<ime::Entity> pacman, float duration) {
         auto superState = std::make_shared<SuperState>(pacman);
-        superState->setTimeout(duration, [pacman] {
+        superState->setTimeout(ime::seconds(duration), [pacman] {
             std::dynamic_pointer_cast<PacMan>(pacman)->pushState(PacMan::States::Normal,
                  std::make_shared<NormalState>(pacman));
         });

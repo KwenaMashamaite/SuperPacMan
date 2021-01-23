@@ -61,7 +61,7 @@ namespace pacman {
         mainMenuView_.render();
     }
 
-    void MainMenuState::handleEvent(sf::Event event) {
+    void MainMenuState::handleEvent(ime::Event event) {
         mainMenuView_.handleEvent(event);
     }
 
@@ -69,9 +69,9 @@ namespace pacman {
         return isInitialized_;
     }
 
-    void MainMenuState::update(float deltaTime) {}
+    void MainMenuState::update(ime::Time deltaTime) {}
 
-    void MainMenuState::fixedUpdate(float deltaTime) {}
+    void MainMenuState::fixedUpdate(ime::Time deltaTime) {}
 
     void MainMenuState::onPause() {}
 

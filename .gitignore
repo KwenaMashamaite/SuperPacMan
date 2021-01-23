@@ -49,13 +49,18 @@ obj/
 # specific to JetBrains CLion IDE
 .idea
 
+### VS IDE ####
+# specific to Visual Studio ide
+.vs
+
 ### VS CODE IDE ####
-# specific to vscode ide
+# specific to Visual Studio Code ide
 .vscode
 
 ### CMAKE BUILD FILES ###
 build
 cmake-build-debug
+cmake-build-debug-coverage
 
 ### Dependencies ###
 extlibs

@@ -40,7 +40,7 @@ namespace pacman {
         });
     }
 
-    void DyingState::update(float deltaTime) {
+    void DyingState::update(ime::Time deltaTime) {
         TimedState::update(deltaTime);
     }
 

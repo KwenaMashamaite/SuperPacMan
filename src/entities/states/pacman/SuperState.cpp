@@ -39,14 +39,14 @@ namespace pacman {
         triggerAnimationSwitch();
     }
 
-    void SuperState::update(float deltaTime) {
+    void SuperState::update(ime::Time deltaTime) {
         TimedState::update(deltaTime);
         if (pacman_->getSprite().getCurrentAnimation()->getName().find("Flashing") == std::string::npos
-            && (getTimeout() > 0.0f && getTimeout() <= 2.0f))
+            && (getTimeout() > ime::Time::Zero && getTimeout() <= ime::seconds(2)))
         {
             pacman_->getSprite().switchAnimation("going" + Utils::convertToString(pacman_->getDirection()) + "Flashing");
             isPacmanFlashing_ = true;
-        } else if (isPacmanFlashing_ && getTimeout() > 2.0f) {
+        } else if (isPacmanFlashing_ && getTimeout() > ime::seconds(2)) {
             pacman_->getSprite().switchAnimation("going" + Utils::convertToString(pacman_->getDirection()) + "Super");
             isPacmanFlashing_ = false;
         }

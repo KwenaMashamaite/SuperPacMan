@@ -71,7 +71,7 @@ namespace pacman {
         guiContainer_.draw();
     }
 
-    void IntroView::update(float deltaTime) {
+    void IntroView::update(ime::Time deltaTime) {
         commonView_.update(deltaTime);
     }
 }

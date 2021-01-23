@@ -34,33 +34,33 @@ namespace pacman {
     namespace {
         //@TODO Replace all the free functions below with a timer
 
-        float getFrightenedStateDuration(std::size_t curLevel) {
+        ime::Time getFrightenedStateDuration(std::size_t curLevel) {
             if (curLevel >= 1 && curLevel <= 3)
-                return 4.0f;
+                return ime::seconds(4);
             else if (curLevel > 3 && curLevel <= 6)
-                return 2.0f;
+                return ime::seconds(2);
             else if (curLevel > 6 && curLevel <= 9)
-                return 1.0f;
+                return ime::seconds(1);
             else
-                return 0.1f;
+                return ime::milliseconds(100);
         }
 
-        float getChaseStateDuration(std::size_t curLevel) {
+        ime::Time getChaseStateDuration(std::size_t curLevel) {
             if (curLevel >= 1 && curLevel <= 9)
-                return 20.0f;
+                return ime::seconds(20);
             else
-                return 120.0f;
+                return ime::minutes(2);
         }
 
-        float getScatterStateDuration(std::size_t curLevel) {
+        ime::Time getScatterStateDuration(std::size_t curLevel) {
             if (curLevel >= 1 && curLevel <= 3)
-                return 7.0f;
+                return ime::seconds(7);
             else if (curLevel > 3 && curLevel <= 6)
-                return 5.0f;
+                return ime::seconds(5);
             else if (curLevel > 6 && curLevel <= 9)
-                return 3.0f;
+                return ime::seconds(3);
             else
-                return 1.0f;
+                return ime::seconds(1);
         }
     }
 
@@ -113,7 +113,7 @@ namespace pacman {
         }
     }
 
-    void GhostController::update(float deltaTime) {
+    void GhostController::update(ime::Time deltaTime) {
         gridMover_->update(deltaTime);
     }
 

@@ -37,7 +37,7 @@ namespace pacman {
         view_.init();
 
         //Exit state with an effect after a certain time has passed
-        auto& timer = engine().setTimeout(15.0f, [this] {
+        auto& timer = engine().setTimeout(ime::seconds(15), [this] {
             auto viewContainer = view_.getWidget<ime::ui::Panel>("container");
             viewContainer->hideWithEffect(ime::ShowAnimationType::SlideFromBottom, 2000);
             viewContainer->on("animationFinish", ime::Callback<>([this] {
@@ -46,7 +46,7 @@ namespace pacman {
         });
 
         //Make state skippable by pressing enter key
-        engine().getInputManager().addKeyListener(ime::input::Keyboard::Event::KeyUp,
+        engine().getInputManager().addKeyListener(ime::KeyEvent::KeyUp,
             ime::input::Keyboard::Key::Enter, [this, t = &timer] {
                 t->stop();
                 engine().popState();
@@ -63,11 +63,11 @@ namespace pacman {
         view_.render();
     }
 
-    void StartUpState::handleEvent(sf::Event event) {}
+    void StartUpState::handleEvent(ime::Event event) {}
 
-    void StartUpState::update(float deltaTime) {}
+    void StartUpState::update(ime::Time deltaTime) {}
 
-    void StartUpState::fixedUpdate(float deltaTime) {}
+    void StartUpState::fixedUpdate(ime::Time deltaTime) {}
 
     void StartUpState::onPause() {}
 

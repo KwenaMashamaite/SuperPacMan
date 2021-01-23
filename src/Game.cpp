@@ -36,7 +36,6 @@
 namespace pacman {
     namespace {
         using Keyboard = ime::input::Keyboard;
-        using KeyEvent = Keyboard::Event;
 
         void createSprite(const std::string& name, const std::string& texture, ime::IntRect rect) {
             auto sprite = ime::Sprite();
@@ -103,7 +102,7 @@ namespace pacman {
 
         //This event is emitted by the loading state after all assets have been loaded
         ime::EventDispatcher::instance()->onEvent("resourceLoadingComplete", ime::Callback<>([this] {
-            engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Keyboard::Key::Escape, [this] {
+            engine_.getGlobalInputManager().addKeyListener(ime::KeyEvent::KeyUp, Keyboard::Key::Escape, [this] {
                 engine_.quit();
             });
 
@@ -116,11 +115,11 @@ namespace pacman {
         }));
 
 #if !defined(NDEBUG)
-            engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Keyboard::Key::A, [this] {
+            engine_.getGlobalInputManager().addKeyListener(ime::KeyEvent::KeyUp, Keyboard::Key::A, [this] {
                 engine_.pushState(std::make_shared<PlayingState>(engine_));
             });
 
-            engine_.getGlobalInputManager().addKeyListener(KeyEvent::KeyUp, Keyboard::Key::S, [this] {
+            engine_.getGlobalInputManager().addKeyListener(ime::KeyEvent::KeyUp, Keyboard::Key::S, [this] {
                 engine_.popState();
             });
 #endif

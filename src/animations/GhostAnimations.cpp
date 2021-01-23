@@ -25,12 +25,14 @@
 #include "GhostAnimations.h"
 #include <IME/common/Vector2.h>
 
-//The size of each animation frame
-const auto frameSize = ime::Vector2i{16, 16};
-//The duration of each movement animation
-const auto movementAnimDuration = 0.18f;
-
 namespace pacman {
+    namespace {
+        //The size of each animation frame
+        const auto frameSize = ime::Vector2i{16, 16};
+        //The duration of each movement animation
+        const auto movementAnimDuration = ime::milliseconds(180);
+    }
+
     void GhostAnimations::createAnimationsFor(Ghost::Name ghostName) {
         if (!animations_.empty())
             animations_.clear();
@@ -45,7 +47,7 @@ namespace pacman {
     }
 
     void GhostAnimations::createAnimation(const std::string &name, ime::Vector2i startPos, ime::Arrangement arrangement) {
-        auto anim = std::make_shared<ime::Animation>(name, "spritesheet.png", movementAnimDuration);
+        auto anim = ime::Animation::create(name, "spritesheet.png", movementAnimDuration);
         anim->setLoop(true);
         anim->addFrames(startPos, frameSize, 2, 1, arrangement);
         animations_.push_back(std::move(anim));

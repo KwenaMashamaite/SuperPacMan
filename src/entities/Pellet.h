@@ -83,7 +83,7 @@ namespace pacman {
          * @brief Update pellet
          * @param deltaTime Time passed since pellet was last updated
          */
-        void update(float deltaTime);
+        void update(ime::Time deltaTime);
 
     private:
         PelletType pelletType_;                  //!< The type of this pellet

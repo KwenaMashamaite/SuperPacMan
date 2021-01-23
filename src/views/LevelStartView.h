@@ -26,6 +26,7 @@
 #define SUPERPACMAN_LEVELSTARTVIEW_H
 
 #include <IME/graphics/Sprite.h>
+#include <IME/core/time/Time.h>
 #include "CommonView.h"
 
 namespace pacman {
@@ -57,7 +58,7 @@ namespace pacman {
          * @brief Update view
          * @param deltaTime Time passed since view was last updated
          */
-        void update(float deltaTime);
+        void update(ime::Time deltaTime);
 
         /**
          * @brief Render the view

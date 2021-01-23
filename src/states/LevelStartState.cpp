@@ -39,14 +39,14 @@ namespace pacman {
         view_ = std::make_unique<LevelStartView>(engine().getRenderTarget(), level, lives, score, highScore);
         view_->init();
 
-        if (level == 1) { //Audio played for the first level only
+        if (level == 1) {
             sfx_.setSource("beginning.wav");
             sfx_.play();
-            engine().setTimeout(sfx_.getDuration().Milliseconds / 1000.0f, [this] {
+            engine().setTimeout(ime::seconds(sfx_.getDuration().asSeconds()), [this] {
                 engine().popState();
             });
         } else
-            engine().setTimeout(2.0f, [this] {engine().popState();});
+            engine().setTimeout(ime::seconds(2), [this] {engine().popState();});
 
         isInit_ = true;
     }
@@ -59,13 +59,13 @@ namespace pacman {
         view_->render(renderTarget);
     }
 
-    void LevelStartState::update(float deltaTime) {
+    void LevelStartState::update(ime::Time deltaTime) {
         view_->update(deltaTime);
     }
 
-    void LevelStartState::fixedUpdate(float deltaTime) {}
+    void LevelStartState::fixedUpdate(ime::Time deltaTime) {}
 
-    void LevelStartState::handleEvent(sf::Event event) {}
+    void LevelStartState::handleEvent(ime::Event event) {}
 
     void LevelStartState::onPause() {}
 

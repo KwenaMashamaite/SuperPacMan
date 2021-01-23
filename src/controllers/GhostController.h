@@ -69,7 +69,7 @@ namespace pacman {
          * @brief Update controller
          * @param deltaTime Time passed since controller was last updated
          */
-        void update(float deltaTime);
+        void update(ime::Time deltaTime);
 
         /**
          * @brief Execute a callback when the ghost collides with Pacman

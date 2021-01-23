@@ -40,25 +40,25 @@ namespace pacman {
          * @param timeout New duration
          * @param callback Function to be executed when the state timeout
          */
-        void setTimeout(float timeout, ime::Callback<> callback = nullptr);
+        void setTimeout(ime::Time timeout, ime::Callback<> callback = nullptr);
 
         /**
          * @brief Get time left before state timeout
          * @return The time left before state timeout
          */
-        float getTimeout() const;
+        ime::Time getTimeout() const;
 
         /**
          * @brief Increment the current timeout
          * @param value Value to increment by
          */
-        void incrementTimeout(float value);
+        void incrementTimeout(ime::Time value);
 
         /**
          * @brief Update state
          * @param deltaTime Time passed since state was last updated
          */
-        void update(float deltaTime) override;
+        void update(ime::Time deltaTime) override;
 
     protected:
         /**

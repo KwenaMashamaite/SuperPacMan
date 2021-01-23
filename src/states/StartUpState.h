@@ -69,13 +69,13 @@ namespace pacman {
         bool isEntered() const override;
 
         /**
-         * @brief Handle an event
+         * @brief Handle a system event
          * @param event Event to handle
          *
          * This function wil be called by the engine at the start of
          * the current frame
          */
-        void handleEvent(sf::Event event) override;
+        void handleEvent(ime::Event event) override;
 
         /**
          * @brief Update the state
@@ -89,7 +89,7 @@ namespace pacman {
          *
          * @see fixedUpdate
          */
-        void update(float deltaTime) override;
+        void update(ime::Time deltaTime) override;
 
         /**
          * @brief Update state in fixed time steps
@@ -104,7 +104,7 @@ namespace pacman {
          *
          * @see update
          */
-        void fixedUpdate(float deltaTime) override;
+        void fixedUpdate(ime::Time deltaTime) override;
 
         /**
          * @brief Render the state on a render target

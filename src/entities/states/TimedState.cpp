@@ -25,21 +25,24 @@
 #include "TimedState.h"
 
 namespace pacman {
-    void TimedState::setTimeout(float timeout, ime::Callback<> callback) {
-        timer_ = ime::Timer::create([this]{onTimeout();}, timeout);
+    void TimedState::setTimeout(ime::Time timeout, ime::Callback<> callback) {
+        timer_ = ime::Timer::create(timeout, [this] {
+            onTimeout();
+        });
+
         timer_.start();
         callback_ = std::move(callback);
     }
 
-    float TimedState::getTimeout() const {
+    ime::Time TimedState::getTimeout() const {
         return timer_.getRemainingDuration();
     }
 
-    void TimedState::incrementTimeout(float value) {
+    void TimedState::incrementTimeout(ime::Time value) {
         timer_.setInterval(timer_.getRemainingDuration() + value);
     }
 
-    void TimedState::update(float deltaTime) {
+    void TimedState::update(ime::Time deltaTime) {
         timer_.update(deltaTime);
     }
 

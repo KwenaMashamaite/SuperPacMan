@@ -26,6 +26,7 @@
 #define SUPERPACMAN_INTROVIEW_H
 
 #include "CommonView.h"
+#include <IME/core/time/Time.h>
 
 namespace pacman {
     /**
@@ -54,7 +55,7 @@ namespace pacman {
          * @brief Update view
          * @param deltaTime Time passed since view was last updated
          */
-        void update(float deltaTime);
+        void update(ime::Time deltaTime);
 
     private:
         CommonView commonView_;              //!< View displayed across all states

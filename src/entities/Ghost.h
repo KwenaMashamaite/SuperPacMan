@@ -164,7 +164,7 @@ namespace pacman {
          * @warning This function must not be called if the ghost has
          * no active state, otherwise the behavior is undefined
          */
-        void update(float deltaTime);
+        void update(ime::Time deltaTime);
 
     private:
         Name ghostName_;                         //!< Name of the ghost

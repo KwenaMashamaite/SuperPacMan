@@ -29,6 +29,7 @@
 #include <memory>
 #include <stack>
 #include <utility>
+#include <string>
 
 namespace pacman {
     /**

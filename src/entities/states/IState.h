@@ -25,6 +25,8 @@
 #ifndef SUPERPACMAN_ISTATE_H
 #define SUPERPACMAN_ISTATE_H
 
+#include <IME/core/time/Time.h>
+
 namespace pacman {
     /**
      * @brief Interface for entity states
@@ -43,7 +45,7 @@ namespace pacman {
          * @brief update the state
          * @param deltaTime Time passed since the state was last updated
          */
-        virtual void update(float deltaTime) = 0;
+        virtual void update(ime::Time deltaTime) = 0;
 
         /**
          * @brief Exit a state

@@ -74,13 +74,13 @@ namespace pacman {
          * @brief Handle a system event
          * @param event Event to be handled
          */
-        void handleEvent(sf::Event event);
+        void handleEvent(ime::Event event);
 
         /**
          * @brief Update controller
          * @param deltaTime Time passed since controller was last updated
          */
-        void update(float deltaTime);
+        void update(ime::Time deltaTime);
 
         /**
          * @brief Try to move pacman in his current direction
@@ -128,7 +128,7 @@ namespace pacman {
          *
          * The callback is passed pacman and the ghost respectively
          */
-        void onGhostCollision(ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Ghost>> callback);
+        void onGhostCollision(ime::Callback<std::shared_ptr<ime::Entity>, std::shared_ptr<ime::Entity>> callback);
 
     private:
         /**
@@ -154,7 +154,7 @@ namespace pacman {
         ime::Callback<std::shared_ptr<Fruit>> onFruitCollision_;     //!< Function called when pacman collides with a fruit
         ime::Callback<std::shared_ptr<Pellet>> onPelletCollision_;   //!< Function called when pacman collides with a pellet
         ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Door>> onDoorCollision_; //!< Function called when pacman collides with a door
-        ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Ghost>> onGhostCollision_; //!< Function called when pacman collides with a ghost
+        ime::Callback<std::shared_ptr<ime::Entity>, std::shared_ptr<ime::Entity>> onGhostCollision_; //!< Function called when pacman collides with a ghost
     };
 }
 

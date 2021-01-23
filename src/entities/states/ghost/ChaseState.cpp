@@ -58,7 +58,7 @@ namespace pacman {
         ghostMover_->startMovement();
     }
 
-    void ChaseState::update(float deltaTime) {
+    void ChaseState::update(ime::Time deltaTime) {
         TimedState::update(deltaTime);
         ghostMover_->update(deltaTime);
     }

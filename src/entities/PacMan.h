@@ -149,7 +149,7 @@ namespace pacman {
          * @warning This function must not be called if pacman has
          * no active state, otherwise the behavior is undefined
          */
-        void update(float deltaTime);
+        void update(ime::Time deltaTime);
 
     private:
         unsigned int numberOfLives_;       //!< Pacmans current number of lives

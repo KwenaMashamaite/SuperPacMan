@@ -29,6 +29,7 @@
 #include <IME/ui/GuiContainer.h>
 #include <IME/graphics/Sprite.h>
 #include <IME/core/time/Timer.h>
+#include <IME/core/time/Time.h>
 
 namespace pacman {
     /**
@@ -88,7 +89,7 @@ namespace pacman {
          * @brief Update view
          * @param deltaTime Time passed since view was last updated
          */
-        void update(float deltaTime);
+        void update(ime::Time deltaTime);
 
         /**
          * @brief Get access to a widget in the view

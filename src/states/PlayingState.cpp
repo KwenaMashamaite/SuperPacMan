@@ -32,6 +32,7 @@
 #include "../animations/FruitAnimation.h"
 #include "../animations/GridAnimation.h"
 #include "LevelStartState.h"
+#include "../entities/states/pacman/DyingState.h"
 
 namespace pacman {
     PlayingState::PlayingState(ime::Engine &engine) :
@@ -74,7 +75,7 @@ namespace pacman {
             }
         });
 
-        engine().setTimeout(2.0f, [this] {
+        engine().setTimeout(ime::seconds(2), [this] {
             grid_.getTile(ime::Index{13, 9}).getSprite().hide(); //Ready sprite
             std::static_pointer_cast<PacMan>(objects_.at("pacman")[0])->getSprite().show();
             pacmanController_->movePacman();
@@ -164,8 +165,14 @@ namespace pacman {
             }
         });
 
-        pacmanController_->onGhostCollision([this](auto pacman, auto ghost) {
-
+        pacmanController_->onGhostCollision([this](std::shared_ptr<ime::Entity> pacmanBasePtr, std::shared_ptr<ime::Entity> ghostBasePtr) {
+            /*auto pacman = std::static_pointer_cast<PacMan>(pacmanBasePtr);
+            auto ghost = std::static_pointer_cast<Ghost>(ghostBasePtr);
+            if (pacman->getState().first != PacMan::States::Super) {
+                pacman->popState();
+                pacman->pushState(PacMan::States::Dying, std::make_shared<DyingState>(pacman));
+                engine().getAudioManager().play(ime::audio::Type::Sfx, "pacmanDying.wav");
+            }*/
         });
     }
 
@@ -246,7 +253,7 @@ namespace pacman {
         }
     }
 
-    void PlayingState::update(float deltaTime) {
+    void PlayingState::update(ime::Time deltaTime) {
         grid_.getBackground().updateAnimation(deltaTime);
         commonView_->update(deltaTime);
 
@@ -262,7 +269,7 @@ namespace pacman {
             std::dynamic_pointer_cast<PacMan>(pacman)->update(deltaTime);
     }
 
-    void PlayingState::fixedUpdate(float deltaTime) {
+    void PlayingState::fixedUpdate(ime::Time deltaTime) {
 
     }
 
@@ -278,7 +285,7 @@ namespace pacman {
         objectsDrawer.drawEntities(objects_.at("pacman"));
     }
 
-    void PlayingState::handleEvent(sf::Event event) {
+    void PlayingState::handleEvent(ime::Event event) {
         pacmanController_->handleEvent(event);
     }
 

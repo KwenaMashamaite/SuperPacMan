@@ -54,7 +54,7 @@ namespace pacman {
          * @brief Pass an event to be handled by the view
          * @param event Event to be handled
          */
-        void handleEvent(sf::Event event);
+        void handleEvent(ime::Event event);
 
         /**
          * @brief Get access to a widget in the view

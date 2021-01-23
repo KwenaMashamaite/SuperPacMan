@@ -31,31 +31,34 @@
 #include "../utils/Utils.h"
 #include "../entities/states/TimedState.h"
 #include "../entities/states/pacman/SuperState.h"
+#include <IME/core/event/Event.h>
 #include <cassert>
 #include <utility>
 
-/**
- * @brief Get the how long the pacmans super state should last
- * @param curLevel The current game level
- * @return The duration of the super state depending on the current
- *          level
- *
- * The duration decreases as the game levels increase
- */
-float getSuperStateDuration(std::size_t curLevel) {
-    if (curLevel == 0) //Intro state or intermission
-        return 15.0f;
-    if (curLevel >= 1 && curLevel <= 3)
-        return 10.0f;
-    else if (curLevel > 3 && curLevel <= 6)
-        return 7.0f;
-    else if (curLevel > 6 && curLevel <= 9)
-        return 4.0f;
-    else
-        return 2.0f;
-}
-
 namespace pacman {
+    namespace {
+        /**
+         * @brief Get the how long the pacmans super state should last
+         * @param curLevel The current game level
+         * @return The duration of the super state depending on the current
+         *          level
+         *
+         * The duration decreases as the game levels increase
+         */
+        ime::Time getSuperStateDuration(std::size_t curLevel) {
+            if (curLevel == 0) //Intro state or intermission
+                return ime::seconds(15);
+            if (curLevel >= 1 && curLevel <= 3)
+                return ime::seconds(10);
+            else if (curLevel > 3 && curLevel <= 6)
+                return ime::seconds(7);
+            else if (curLevel > 6 && curLevel <= 9)
+                return ime::seconds(4);
+            else
+                return ime::seconds(2);
+        }
+    }
+
     PacManController::PacManController(ime::TileMap &grid, std::shared_ptr<ime::Entity> pacman) :
         gridMover_(grid, pacman),
         pacman_(std::dynamic_pointer_cast<PacMan>(pacman)),
@@ -93,8 +96,7 @@ namespace pacman {
 
         gridMover_.onEnemyCollision([this](std::shared_ptr<ime::Entity> pacman, std::shared_ptr<ime::Entity> enemy) {
             if (enemy->getClassType() == "Ghost" && onGhostCollision_)
-                onGhostCollision_(std::static_pointer_cast<PacMan>(pacman),
-                    std::static_pointer_cast<Ghost>(enemy));
+                onGhostCollision_(std::move(pacman), std::move(enemy));
         });
 
         gridMover_.onObstacleCollision([this](std::shared_ptr<ime::Entity> pacman, std::shared_ptr<ime::Entity> obstacle) {
@@ -147,26 +149,26 @@ namespace pacman {
         }
     }
 
-    void PacManController::handleEvent(sf::Event event) {
+    void PacManController::handleEvent(ime::Event event) {
         if (pacman_ ->getState().first == PacMan::States::Dying) //Can't move pacman while his dying
             return;
 
         if (pacman_->getState().first == PacMan::States::Idle) {
             if (event.type == event.KeyPressed) {
-                if (event.key.code == sf::Keyboard::Left)
+                if (event.key.code == ime::input::Keyboard::Key::Left)
                     pacman_->setDirection(ime::Direction::Left);
-                else if (event.key.code == sf::Keyboard::Right)
+                else if (event.key.code == ime::input::Keyboard::Key::Right)
                     pacman_->setDirection(ime::Direction::Right);
-                else if (event.key.code == sf::Keyboard::Up)
+                else if (event.key.code == ime::input::Keyboard::Key::Up)
                     pacman_->setDirection(ime::Direction::Up);
-                else if (event.key.code == sf::Keyboard::Down)
+                else if (event.key.code == ime::input::Keyboard::Key::Down)
                     pacman_->setDirection(ime::Direction::Down);
             }
         } else
             gridMover_.handleEvent(event);
     }
 
-    void PacManController::update(float deltaTime) {
+    void PacManController::update(ime::Time deltaTime) {
         gridMover_.update(deltaTime);
     }
 
@@ -194,7 +196,7 @@ namespace pacman {
         onDoorCollision_ = std::move(callback);
     }
 
-    void PacManController::onGhostCollision(ime::Callback<std::shared_ptr<PacMan>, std::shared_ptr<Ghost>> callback) {
+    void PacManController::onGhostCollision(ime::Callback<std::shared_ptr<ime::Entity>, std::shared_ptr<ime::Entity>> callback) {
         onGhostCollision_ = std::move(callback);
     }
 }

@@ -26,7 +26,7 @@
 
 namespace pacman {
     FruitAnimation::FruitAnimation() {
-        animation_ = std::make_shared<ime::Animation>("foodSlide", "spritesheet.png", 1.0f);
+        animation_ = ime::Animation::create("foodSlide", "spritesheet.png", ime::seconds(1));
         animation_->addFrames({151, 52}, {16, 16}, 17);
         animation_->setLoop(true);
     }

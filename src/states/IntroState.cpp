@@ -129,7 +129,7 @@ namespace pacman {
         });
 
         //Make state skippable by pressing enter key
-        engine().getInputManager().addKeyListener(ime::input::Keyboard::Event::KeyUp, ime::input::Keyboard::Key::Enter, [this] {
+        engine().getInputManager().addKeyListener(ime::KeyEvent::KeyUp, ime::input::Keyboard::Key::Enter, [this] {
             engine().popState();
         });
     }
@@ -189,11 +189,11 @@ namespace pacman {
         objectsDrawer.drawEntities(objects_.at("pacman"));
     }
 
-    void IntroState::update(float deltaTime) {
+    void IntroState::update(ime::Time deltaTime) {
         introView_.update(deltaTime);
     }
 
-    void IntroState::fixedUpdate(float deltaTime) {
+    void IntroState::fixedUpdate(ime::Time deltaTime) {
         for (auto& pellet : objects_.at("pellets"))
             std::dynamic_pointer_cast<Pellet>(pellet)->update(deltaTime);
         for (auto& ghost : objects_.at("ghosts"))
@@ -210,7 +210,7 @@ namespace pacman {
         engine().onFrameEnd(nullptr);
     }
 
-    void IntroState::handleEvent(sf::Event event) {}
+    void IntroState::handleEvent(ime::Event event) {}
 
     void IntroState::onPause() {}
 

@@ -26,12 +26,12 @@
 
 namespace pacman {
     void PelletAnimations::createAnimationFor(PelletType pelletType) {
-        auto blinkAnimation = std::make_shared<ime::Animation>("blink", "spritesheet.png", 0.3f);
+        auto blinkAnimation = ime::Animation::create("blink", "spritesheet.png", ime::milliseconds(300));
         blinkAnimation->setLoop(true);
         if (pelletType == PelletType::PowerPellet)
             blinkAnimation->addFrames({151, 18}, {16, 16}, 2);
         else if (pelletType == PelletType::SuperPellet) {
-            blinkAnimation->setDuration(1.0f);
+            blinkAnimation->setDuration(ime::seconds(1));
             blinkAnimation->addFrames({168, 35}, {16, 16}, 6);
         }
         animations_.push_back(std::move(blinkAnimation));

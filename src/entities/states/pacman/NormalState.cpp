@@ -35,7 +35,7 @@ namespace pacman {
         pacman_->setVulnerable(true);
     }
 
-    void NormalState::update(float deltaTime) {
+    void NormalState::update(ime::Time deltaTime) {
 
     }
 

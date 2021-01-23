@@ -54,7 +54,7 @@ namespace pacman {
         ghostMover_.startMovement();
     }
 
-    void EatenState::update(float deltaTime) {
+    void EatenState::update(ime::Time deltaTime) {
         ghostMover_.update(deltaTime);
     }
 

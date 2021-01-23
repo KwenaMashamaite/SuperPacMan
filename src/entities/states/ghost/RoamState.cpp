@@ -45,7 +45,7 @@ namespace pacman {
         ghostMover_->startMovement();
     }
 
-    void RoamState::update(float deltaTime) {
+    void RoamState::update(ime::Time deltaTime) {
         ghostMover_->update(deltaTime);
     }
 

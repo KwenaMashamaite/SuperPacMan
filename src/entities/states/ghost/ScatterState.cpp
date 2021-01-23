@@ -93,7 +93,7 @@ namespace pacman {
         ghostMover_->startMovement();
     }
 
-    void ScatterState::update(float deltaTime) {
+    void ScatterState::update(ime::Time deltaTime) {
         TimedState::update(deltaTime);
         ghostMover_->update(deltaTime);
     }

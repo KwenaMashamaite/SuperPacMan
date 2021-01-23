@@ -68,7 +68,7 @@ namespace pacman {
         guiContainer_.addWidget(std::move(pointsText), "pointsText");
     }
 
-    void LevelStartView::update(float deltaTime) {
+    void LevelStartView::update(ime::Time deltaTime) {
         commonView_.update(deltaTime);
     }
 

@@ -139,10 +139,10 @@ namespace pacman {
         isMoving_ = false;
     }
 
-    void Ghost::update(float deltaTime) {
+    void Ghost::update(ime::Time deltaTime) {
         assert(stateController_.getCurrentState().second && "Ghost without state");
         if (isMoving_) {
-            auto velocity = getSpeed() * deltaTime;
+            auto velocity = getSpeed() * deltaTime.asSeconds();
             switch (getDirection()) {
                 case ime::Direction::Unknown:
                     break;

@@ -81,7 +81,7 @@ namespace pacman {
          * This function will be called by the FSM before a state is entered
          * for the first time
          */
-        void update(float deltaTime) override;
+        void update(ime::Time deltaTime) override;
 
         /**
          * @brief Initialize the state
