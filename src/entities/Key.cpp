@@ -31,13 +31,8 @@ namespace pacman {
         id_(id)
     {
         setCollidable(true);
-        sprite_ = SpriteContainer::getSprite("key");
-        sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
-        sprite_.scale(2.0f, 2.0f);
-
-        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
-            sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
-        }));
+        getSprite() = SpriteContainer::getSprite("key");
+        //getTransform().scale(2.0f, 2.0f);
     }
 
     int Key::getId() const {
@@ -46,9 +41,5 @@ namespace pacman {
 
     std::string Key::getClassType() {
         return "Key";
-    }
-
-    ime::Sprite &Key::getSprite() {
-        return sprite_;
     }
 }

@@ -26,12 +26,12 @@ set(SRC_FILES
         entities/Wall.cpp
         scoreboard/Score.cpp
         scoreboard/Scoreboard.cpp
-        states/IntroState.cpp
-        states/LoadingState.cpp
-        states/MainMenuState.cpp
-        states/LevelStartState.cpp
-        states/PlayingState.cpp
-        states/StartUpState.cpp
+        scenes/IntroScene.cpp
+        scenes/LoadingScene.cpp
+        scenes/MainMenuScene.cpp
+        scenes/LevelStartScene.cpp
+        scenes/PlayScene.cpp
+        scenes/StartUpScene.cpp
         utils/Utils.cpp
         entities/states/ghost/GhostIdleState.cpp
         entities/states/pacman/PacManIdleState.cpp
@@ -61,7 +61,7 @@ set(TGUI_DIR "${PROJECT_SOURCE_DIR}/extlibs/TGUI/lib/cmake/TGUI")
 find_package(TGUI 0.9.0 REQUIRED)
 
 #Find IME
-set(IME_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/lib/cmake/IME")
+#set(IME_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/lib/cmake/IME")
 find_package(IME 2.0.0 REQUIRED)
 
 # Link TGUI, SFML and IME

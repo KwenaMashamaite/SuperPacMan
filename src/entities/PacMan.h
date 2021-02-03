@@ -26,7 +26,7 @@
 #define SUPERPACMAN_PACMAN_H
 
 #include <IME/core/entity/Entity.h>
-#include <IME/graphics/AnimatableSprite.h>
+#include <IME/graphics/Sprite.h>
 #include <IME/core/entity/IMovable.h>
 #include "states/IState.h"
 #include "states/StateController.h"
@@ -90,12 +90,6 @@ namespace pacman {
         std::string getClassType() override;
 
         /**
-         * @brief Get the pacmans graphical representation
-         * @return Pacmans graphical representation
-         */
-        ime::AnimatableSprite& getSprite();
-
-        /**
          * @brief Push a pacman state
          * @param state State to be pushed
          */
@@ -156,7 +150,6 @@ namespace pacman {
         float speed_;                      //!< Pacmans speed
         bool isMoving_;                    //!< Flags whether pacman is moving or not
         StateController stateController_;  //!< Pacmans FSM
-        ime::AnimatableSprite sprite_;     //!< Pacmans graphical representation
         std::vector<std::function<void(States)>> stateChangeListeners_; //!< Function called when pacmans state changes
     };
 }

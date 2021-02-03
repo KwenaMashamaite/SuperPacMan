@@ -24,33 +24,26 @@
 
 #include "Fruit.h"
 #include "../common/SpriteContainer.h"
+#include "../animations/FruitAnimation.h"
 
 namespace pacman {
     Fruit::Fruit(const ime::Vector2u &boundingRect, const std::string &name) :
         Entity(boundingRect, ime::Entity::Type::Collectable),
-        name_(name),
         isEaten_(false)
     {
+        setName(name);
         setCollidable(true);
-        sprite_ = SpriteContainer::getSprite(name);
-        sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
-        sprite_.scale(2.0f, 2.0f);
+        auto animation = FruitAnimation();
+        getSprite().getAnimator().addAnimation(animation.getAnimation());
+        getSprite() = SpriteContainer::getSprite(name);
 
-        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
-            sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
+        onEvent("nameChange", ime::Callback<std::string>([this](std::string name) {
+            getSprite() = SpriteContainer::getSprite(name);
         }));
-    }
-
-    const std::string &Fruit::getName() const {
-        return name_;
     }
 
     std::string pacman::Fruit::getClassType() {
         return "Fruit";
-    }
-
-    ime::Sprite &Fruit::getSprite() {
-        return sprite_;
     }
 
     void Fruit::eat() {
@@ -58,7 +51,7 @@ namespace pacman {
             isEaten_ = true;
             setActive(false);
             setCollidable(false);
-            publishEvent("eaten");
+            dispatchEvent("eaten");
         }
     }
 

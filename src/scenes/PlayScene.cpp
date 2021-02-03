@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "PlayingState.h"
+#include "PlayScene.h"
 #include <IME/core/loop/Engine.h>
 #include "../entities/AllEntities.h"
 #include "../common/SpriteContainer.h"
@@ -31,25 +31,24 @@
 #include "../entities/states/ghost/ScatterState.h"
 #include "../animations/FruitAnimation.h"
 #include "../animations/GridAnimation.h"
-#include "LevelStartState.h"
+#include "LevelStartScene.h"
 #include "../entities/states/pacman/DyingState.h"
 
 namespace pacman {
-    PlayingState::PlayingState(ime::Engine &engine) :
-        State(engine),
-        isInitialized_(false),
+    PlayScene::PlayScene(ime::Engine &engine) :
+        Scene(engine),
         level_{-1},
         grid_{20, 20}
     {
-        level_ = engine.getPersistentData().getValueFor<int>("level");
+        level_ = cache().getValue<int>("level");
         commonView_ = std::make_unique<CommonView>(engine.getRenderTarget(), level_,
-            engine.getPersistentData().getValueFor<int>("lives"));
+            cache().getValue<int>("lives"));
     }
 
-    void PlayingState::onEnter() {
+    void PlayScene::onEnter() {
         commonView_->init();
-        commonView_->setHighScore(engine().getPersistentData().getValueFor<int>("high-score"));
-        commonView_->setScore(engine().getPersistentData().getValueFor<int>("score"));
+        commonView_->setHighScore(cache().getValue<int>("high-score"));
+        commonView_->setScore(cache().getValue<int>("score"));
 
         createGrid();
         createEntities();
@@ -69,38 +68,37 @@ namespace pacman {
             Utils::removeInactiveObjectsFromContainer(objects_.at("doors"));
 
             if (objects_.at("pellets").empty() && objects_.at("fruits").empty()
-                && !grid_.getBackground().getCurrentAnimation())
+                && !grid_.getBackground().getAnimator().isAnimationPlaying())
             {
-                eventEmitter_.emit("levelComplete");
+                eventEmitter().emit("levelComplete");
             }
         });
 
-        engine().setTimeout(ime::seconds(2), [this] {
-            grid_.getTile(ime::Index{13, 9}).getSprite().hide(); //Ready sprite
-            std::static_pointer_cast<PacMan>(objects_.at("pacman")[0])->getSprite().show();
+        timer().setTimeout(ime::seconds(2), [this] {
+            grid_.getTile(ime::Index{13, 9}).getSprite().setVisible(false); //Ready sprite
+            objects_.at("pacman")[0]->getSprite().setVisible(true);
             pacmanController_->movePacman();
             for (auto& controller : ghostControllers_)
                 controller->moveGhost();
         });
-
-        isInitialized_ = true;
     }
 
-    void PlayingState::createGrid() {
+    void PlayScene::createGrid() {
         grid_.loadFromFile("textFiles/levels/maze.txt");
         grid_.setGridVisible(false);
         setGridBackground();
+
         grid_.setPosition(-grid_.getTileSize().x, 0);
         auto flashingAnimations = GridAnimation().getAnimations();
         for (const auto& animation : flashingAnimations)
-            grid_.getBackground().addAnimation(animation);
+            grid_.getBackground().getAnimator().addAnimation(animation);
 
         auto& readySprite = grid_.getTile(ime::Index{13, 9}).getSprite();
         readySprite.setTexture("ready.png");
         readySprite.scale(0.8f, 0.6f);
     }
 
-    void PlayingState::setGridBackground() {
+    void PlayScene::setGridBackground() {
         auto& background = dynamic_cast<ime::Sprite&>(grid_.getBackground());
         if (level_ >= 1 && level_ <= 4)
             background = SpriteContainer::getSprite("level_1_to_4_grid");
@@ -118,42 +116,44 @@ namespace pacman {
         grid_.showLayer("background");
     }
 
-    void PlayingState::createEntities() {
+    void PlayScene::createEntities() {
         objects_ = Utils::createObjects(grid_);
         Utils::lockAllDoors(grid_);
 
         //Pacman will be shown a couple of seconds after the level has began
-        std::static_pointer_cast<PacMan>(objects_.at("pacman")[0])->getSprite().hide();
+        objects_.at("pacman")[0]->getSprite().setVisible(false);
 
-        //Select fruit texture based on current level
-        auto fruitAnimation = FruitAnimation();
-        for (auto& fruit : objects_.at("fruits")) {
-            auto& fruitSprite = std::dynamic_pointer_cast<Fruit>(fruit)->getSprite();
-            fruitSprite.setTexture(fruitAnimation.getAnimation()->getSpriteSheet());
-            fruitSprite.setTextureRect(fruitAnimation.getAnimation()->getFrameAt(level_ - 1));
+        //Set the fruit sprite based on the current level
+        for (auto i = 0u; i < objects_.at("fruits").size(); ++i) {
+            auto newSprite = SpriteContainer::getSprite(Utils::getFruitName(level_));
+            auto& oldSprite = objects_.at("fruits").at(i)->getSprite();
+            newSprite.setOrigin(oldSprite.getOrigin());
+            newSprite.setPosition(oldSprite.getPosition());
+            newSprite.setScale(oldSprite.getScale());
+            oldSprite = newSprite;
         }
     }
 
-    void PlayingState::initCollisionHandler() {
+    void PlayScene::initCollisionHandler() {
         pacmanController_->onKeyCollision([this](std::shared_ptr<ime::Entity> key) {
             key->setActive(false);
             updateScore(50);
-            eventEmitter_.emit("keyEaten", std::move(key));
+            eventEmitter().emit("keyEaten", std::move(key));
         });
 
         pacmanController_->onFruitCollision([this](std::shared_ptr<Fruit> fruit) {
             fruit->eat();
             updateScore(level_ * 10);
-            engine().getAudioManager().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
+            audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
         });
 
         pacmanController_->onPelletCollision([this](std::shared_ptr<Pellet> pellet) {
             pellet->eat();
             updateScore(100);
             if (pellet->getPelletType() == PelletType::PowerPellet)
-                eventEmitter_.emit("powerPelletEaten");
+                eventEmitter().emit("powerPelletEaten");
             else
-                eventEmitter_.emit("superPelletEaten");
+                eventEmitter().emit("superPelletEaten");
         });
 
         pacmanController_->onDoorCollision([this](std::shared_ptr<PacMan> pacman, std::shared_ptr<Door> door) {
@@ -161,7 +161,7 @@ namespace pacman {
                 door->forceOpen();
                 pacmanController_->advancePacManForward();
                 updateScore(200);
-                engine().getAudioManager().play(ime::audio::Type::Sfx, "doorBroken.wav");
+                audio().play(ime::audio::Type::Sfx, "doorBroken.wav");
             }
         });
 
@@ -176,31 +176,31 @@ namespace pacman {
         });
     }
 
-    void PlayingState::initEventHandlers() {
-        eventEmitter_.addEventListener("powerPelletEaten", ime::Callback<>([this] {
+    void PlayScene::initEventHandlers() {
+        eventEmitter().on("powerPelletEaten", ime::Callback<>([this] {
             pacmanController_->handleEvent(GameEvent::PowerPelletEaten);
             for (auto& controller : ghostControllers_)
                 controller->handleEvent(GameEvent::PowerPelletEaten);
-            engine().getAudioManager().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
+            audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
         }));
 
-        eventEmitter_.addEventListener("superPelletEaten", ime::Callback<>([this] {
+        eventEmitter().on("superPelletEaten", ime::Callback<>([this] {
             pacmanController_->handleEvent(GameEvent::SuperPelletEaten);
             for (auto& controller : ghostControllers_)
                 controller->handleEvent(GameEvent::SuperPelletEaten);
-            engine().getAudioManager().play(ime::audio::Type::Sfx,"superPelletEaten.wav");
+            audio().play(ime::audio::Type::Sfx,"superPelletEaten.wav");
         }));
 
-        eventEmitter_.addEventListener("keyEaten", ime::Callback<std::shared_ptr<ime::Entity>>(
+        eventEmitter().on("keyEaten", ime::Callback<std::shared_ptr<ime::Entity>>(
             [this](std::shared_ptr<ime::Entity> key) {
                 for (auto& door : objects_.at("doors")) {
                     if (Utils::unlockDoor(door, key))
                         door->setActive(false);
                 }
-                engine().getAudioManager().play(ime::audio::Type::Sfx, "keyEaten.wav");
+                audio().play(ime::audio::Type::Sfx, "keyEaten.wav");
         }));
 
-        eventEmitter_.on("levelComplete", ime::Callback<>([this] {
+        eventEmitter().on("levelComplete", ime::Callback<>([this] {
             auto gridAnim = std::string();
             if (level_ >= 1 && level_ <= 4)
                 gridAnim = "flash-blue";
@@ -218,17 +218,17 @@ namespace pacman {
             objects_.at("ghosts").clear();
             objects_.at("pacman").clear();
 
-            grid_.getBackground().switchAnimation(gridAnim);
-            grid_.getBackground().onAnimationFinish(gridAnim, [this] {
-                engine().getPersistentData().setValueFor("level", level_ + 1);
-                engine().popState();
-                engine().pushState(std::make_shared<PlayingState>(engine()));
-                engine().pushState(std::make_shared<LevelStartState>(engine()));
+            grid_.getBackground().getAnimator().startAnimation(gridAnim);
+            grid_.getBackground().getAnimator().on(ime::Animator::Event::AnimationComplete, gridAnim, [this] {
+                cache().setValue("level", level_ + 1);
+                engine().popScene();
+                engine().pushScene(std::make_shared<PlayScene>(engine()));
+                engine().pushScene(std::make_shared<LevelStartScene>(engine()));
             });
         }));
     }
 
-    void PlayingState::initEntityControllers() {
+    void PlayScene::initEntityControllers() {
         pacmanController_ = std::make_unique<PacManController>(grid_, objects_.at("pacman")[0]);
         pacmanController_->setGameLevel(level_);
 
@@ -243,17 +243,17 @@ namespace pacman {
         }
     }
 
-    void PlayingState::updateScore(int points) {
-        auto newScore = engine().getPersistentData().getValueFor<int>("score") + points;
-        engine().getPersistentData().setValueFor("score", newScore);
+    void PlayScene::updateScore(int points) {
+        auto newScore = cache().getValue<int>("score") + points;
+        cache().setValue("score", newScore);
         commonView_->setScore(newScore);
-        if (newScore > engine().getPersistentData().getValueFor<int>("high-score")) {
-            engine().getPersistentData().setValueFor("high-score", newScore);
+        if (newScore > cache().getValue<int>("high-score")) {
+            cache().setValue("high-score", newScore);
             commonView_->setHighScore(newScore);
         }
     }
 
-    void PlayingState::update(ime::Time deltaTime) {
+    void PlayScene::update(ime::Time deltaTime) {
         grid_.getBackground().updateAnimation(deltaTime);
         commonView_->update(deltaTime);
 
@@ -269,11 +269,11 @@ namespace pacman {
             std::dynamic_pointer_cast<PacMan>(pacman)->update(deltaTime);
     }
 
-    void PlayingState::fixedUpdate(ime::Time deltaTime) {
+    void PlayScene::fixedUpdate(ime::Time deltaTime) {
 
     }
 
-    void PlayingState::render(ime::Window &renderTarget) {
+    void PlayScene::render(ime::Window &renderTarget) {
         commonView_->render(renderTarget);
         grid_.draw(renderTarget);
         static auto objectsDrawer = Drawer(renderTarget);
@@ -285,19 +285,11 @@ namespace pacman {
         objectsDrawer.drawEntities(objects_.at("pacman"));
     }
 
-    void PlayingState::handleEvent(ime::Event event) {
+    void PlayScene::handleEvent(ime::Event event) {
         pacmanController_->handleEvent(event);
     }
 
-    bool PlayingState::isEntered() const {
-        return isInitialized_;
-    }
-
-    void PlayingState::onExit() {
+    void PlayScene::onExit() {
         engine().onFrameEnd(nullptr);
     }
-
-    void PlayingState::onPause() {}
-
-    void PlayingState::onResume() {}
 }

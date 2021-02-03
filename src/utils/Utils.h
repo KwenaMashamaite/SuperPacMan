@@ -81,6 +81,13 @@ namespace pacman::Utils {
     extern void enlargePacman(std::shared_ptr<ime::Entity> pacman, float duration);
 
     /**
+     * @brief Get the name of the fruit that pacman eats on the current level
+     * @param level The current level
+     * @return The name of the fruit
+     */
+    extern std::string getFruitName(int level);
+
+    /**
      * @brief
      */
     extern void teleportTarget(ime::GridMover& gridMover);

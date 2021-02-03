@@ -25,22 +25,27 @@
 #include "GridAnimation.h"
 
 namespace pacman {
-    GridAnimation::GridAnimation() {
-        createFlashAnimations("blue", {450, 0, 224, 244});
-        createFlashAnimations("orange", {0, 249, 224, 244});
-        createFlashAnimations("purple", {225, 249, 224, 244});
-        createFlashAnimations("pink", {450, 249, 224, 244});
-        createFlashAnimations("green", {675, 249, 224, 244});
+    GridAnimation::GridAnimation() :
+        spritesheet_{"grid-sheet", "spritesheet.png", {224, 244}, {1, 1}}
+    {
+        spritesheet_.create({0, 237, 901, 491});
+        createFlashAnimations("blue", {0, 2});
+        createFlashAnimations("orange", {1, 0});
+        createFlashAnimations("purple", {1, 1});
+        createFlashAnimations("pink", {1, 2});
+        createFlashAnimations("green", {1, 3});
     }
 
     const std::vector<std::shared_ptr<ime::Animation>> & GridAnimation::getAnimations() {
         return animations_;
     }
 
-    void GridAnimation::createFlashAnimations(const std::string& gridColour, ime::IntRect gridFrame) {
-        auto animation = ime::Animation::create("flash-" + gridColour, "grids.png", ime::seconds(3.0f));
-        for (auto i = 0; i < 15; ++i) //Add the same frame multiple time because animation is not looped and should play really fast
-            animation->addFrames({gridFrame, {675, 0, 224, 244}});
+    void GridAnimation::createFlashAnimations(const std::string& gridColour, ime::Index gridFrame) {
+        auto animation = ime::Animation::create("flash-" + gridColour, spritesheet_, ime::seconds(3.0f));
+        for (auto i = 0; i < 15; ++i) { //Add the same frame multiple time because it should play really fast (ime does not support interpolation yet)
+            animation->addFrame(gridFrame);
+            animation->addFrame({0, 3}); // White grid
+        }
         animations_.push_back(std::move(animation));
     }
 }

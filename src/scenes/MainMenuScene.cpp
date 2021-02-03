@@ -22,30 +22,28 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "MainMenuState.h"
-#include "PlayingState.h"
-#include "LevelStartState.h"
+#include "MainMenuScene.h"
+#include "PlayScene.h"
+#include "LevelStartScene.h"
 #include <IME/core/loop/Engine.h>
 #include <IME/ui/widgets/Button.h>
 
 namespace pacman {
-    MainMenuState::MainMenuState(ime::Engine &engine) :
-        State(engine),
-        isInitialized_(false),
+    MainMenuScene::MainMenuScene(ime::Engine &engine) :
+        Scene(engine),
         mainMenuView_(engine.getRenderTarget())
     {}
 
-    void MainMenuState::onEnter() {
+    void MainMenuScene::onEnter() {
         mainMenuView_.init();
         initUIButtonsBehavior();
-        isInitialized_ = true;
     }
 
-    void MainMenuState::initUIButtonsBehavior() {
+    void MainMenuScene::initUIButtonsBehavior() {
         mainMenuView_.getWidget<ime::ui::Button>("play_btn")->on("click", ime::Callback<>([this] {
-            engine().popState();
-            engine().pushState(std::move(std::make_shared<PlayingState>(engine())));
-            engine().pushState(std::move(std::make_shared<LevelStartState>(engine())));
+            engine().popScene();
+            engine().pushScene(std::move(std::make_shared<PlayScene>(engine())));
+            engine().pushScene(std::move(std::make_shared<LevelStartScene>(engine())));
         }));
 
         mainMenuView_.getWidget<ime::ui::Button>("quit_btn")->on("click", ime::Callback<>([this]{
@@ -57,25 +55,13 @@ namespace pacman {
         }));
     }
 
-    void MainMenuState::render(ime::Window &renderTarget) {
+    void MainMenuScene::render(ime::Window &renderTarget) {
         mainMenuView_.render();
     }
 
-    void MainMenuState::handleEvent(ime::Event event) {
+    void MainMenuScene::handleEvent(ime::Event event) {
         mainMenuView_.handleEvent(event);
     }
 
-    bool MainMenuState::isEntered() const {
-        return isInitialized_;
-    }
-
-    void MainMenuState::update(ime::Time deltaTime) {}
-
-    void MainMenuState::fixedUpdate(ime::Time deltaTime) {}
-
-    void MainMenuState::onPause() {}
-
-    void MainMenuState::onResume() {}
-
-    void MainMenuState::onExit() {}
+    void MainMenuScene::update(ime::Time deltaTime) {}
 }

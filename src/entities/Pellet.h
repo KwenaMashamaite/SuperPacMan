@@ -26,7 +26,7 @@
 #define SUPERPACMAN_PELLET_H
 
 #include <IME/core/entity/Entity.h>
-#include <IME/graphics/AnimatableSprite.h>
+#include <IME/graphics/Sprite.h>
 #include "IEatable.h"
 
 namespace pacman {
@@ -74,12 +74,6 @@ namespace pacman {
         std::string getClassType() override;
 
         /**
-         * @brief Get the pellets graphical representation
-         * @return The pellets graphical representation
-         */
-        ime::AnimatableSprite& getSprite();
-
-        /**
          * @brief Update pellet
          * @param deltaTime Time passed since pellet was last updated
          */
@@ -87,7 +81,6 @@ namespace pacman {
 
     private:
         PelletType pelletType_;                  //!< The type of this pellet
-        ime::AnimatableSprite sprite_; //!< Pellets graphical representation
     };
 }
 

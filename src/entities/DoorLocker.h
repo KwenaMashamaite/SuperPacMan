@@ -80,7 +80,7 @@ namespace pacman {
 
     private:
         int id_;        //!< The lockers id
-        bool isLocked_; //!< The lockers locked state
+        bool isLocked_; //!< A flag indicating whether or not the locker is locked
     };
 }
 

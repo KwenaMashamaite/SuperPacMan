@@ -34,8 +34,8 @@ namespace pacman {
 
     void DyingState::onEntry() {
         pacman_->setNumberOfLives(pacman_->getNumberOfLives() - 1);
-        pacman_->getSprite().switchAnimation("dying");
-        setTimeout(pacman_->getSprite().getCurrentAnimation()->getDuration(), [this] {
+        pacman_->getSprite().getAnimator().startAnimation("dying");
+        setTimeout(pacman_->getSprite().getAnimator().getCurrentAnimation()->getDuration(), [this] {
             pacman_->popState();
         });
     }

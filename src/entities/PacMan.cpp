@@ -39,26 +39,21 @@ namespace pacman {
         auto animations = PacManAnimations();
         animations.create();
         for (const auto& animation : animations.getAll())
-            sprite_.addAnimation(animation);
+            getSprite().getAnimator().addAnimation(animation);
 
-        setDirection(ime::Direction::Left);
-        sprite_.switchAnimation("goingLeft");
-        sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
-        sprite_.scale(2.0f, 2.0f);
-
-        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
-            sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
-        }));
+        //getTransform().scale(2.0f, 2.0f);
 
         onEvent("directionChange", ime::Callback<ime::Direction>([this](ime::Direction dir) {
             auto newDir = Utils::convertToString(dir);
             if (stateController_.getCurrentState().first != std::to_string(static_cast<int>(States::Super)))
-                sprite_.switchAnimation("going" + newDir);
-            else if (sprite_.getCurrentAnimation()->getName().find("Flashing") != std::string::npos)
-                sprite_.switchAnimation("going" + newDir + "Flashing");
+                getSprite().getAnimator().startAnimation("going" + newDir);
+            else if (getSprite().getAnimator().getCurrentAnimation()->getName().find("Flashing") != std::string::npos)
+                getSprite().getAnimator().startAnimation("going" + newDir + "Flashing");
             else
-                sprite_.switchAnimation("going" + newDir + "Super");
+                getSprite().getAnimator().startAnimation("going" + newDir + "Super");
         }));
+
+        setDirection(ime::Direction::Left);
     }
 
     void PacMan::setNumberOfLives(unsigned int numOfLives) {
@@ -84,10 +79,6 @@ namespace pacman {
 
     std::string PacMan::getClassType() {
         return "PacMan";
-    }
-
-    ime::AnimatableSprite &PacMan::getSprite() {
-        return sprite_;
     }
 
     void PacMan::pushState(PacMan::States curState, std::shared_ptr<IState> state) {
@@ -136,21 +127,21 @@ namespace pacman {
                 case ime::Direction::Unknown:
                     break;
                 case ime::Direction::Left:
-                    setPosition(getPosition().x - velocity, getPosition().y);
+                    getTransform().move(-velocity, 0);
                     break;
                 case ime::Direction::Right:
-                    setPosition(getPosition().x + velocity, getPosition().y);
+                    getTransform().move(velocity, 0);
                     break;
                 case ime::Direction::Up:
-                    setPosition(getPosition().x, getPosition().y - velocity);
+                    getTransform().move(0, -velocity);
                     break;
                 case ime::Direction::Down:
-                    setPosition(getPosition().x, getPosition().y + velocity);
+                    getTransform().move(0, velocity);
                     break;
             }
         }
 
         stateController_.getCurrentState().second->update(deltaTime);
-        sprite_.updateAnimation(deltaTime);
+        getSprite().updateAnimation(deltaTime);
     }
 }

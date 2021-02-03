@@ -37,6 +37,11 @@ namespace pacman {
     class PacManAnimations {
     public:
         /**
+         * @brief Default constructor
+         */
+        PacManAnimations();
+
+        /**
          * @brief Create the pacman animations
          */
         void create();
@@ -51,12 +56,17 @@ namespace pacman {
         /**
          * @brief Create an animation
          * @param name Name of the animation
-         * @param rect Animation frame
+         * @param index Index of the frame in the spritesheet
+         * @param super True to use super size spritesheet or false  to use
+         *              normal size spritesheet
          */
-        void createAnimation(const std::string& name, ime::IntRect rect);
+        void createAnimation(const std::string& name, ime::Index index, bool super = false);
 
     private:
         std::vector<std::shared_ptr<ime::Animation>> animations_;
+        ime::SpriteSheet normalSizeSpritesheet_;
+        ime::SpriteSheet superSizeSpritesheet_;
+        ime::SpriteSheet deathSpritesheet_;
     };
 }
 

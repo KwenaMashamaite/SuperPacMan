@@ -70,7 +70,7 @@ namespace pacman {
         ime::ui::GuiContainer guiContainer_; //!< Container for all widgets in this view
         ime::Vector2u windowSize_;           //!< Size of the games render target
         CommonView commonView_;              //!< View displayed across all states
-        ime::Sprite fruit_;        //!< Displays the current level fruit
+        ime::Sprite fruit_;                  //!< The the current level fruit
         int level_;                          //!< Current level
         int score_;                          //!< Current player score
         int highScore_;                      //!< Current top score

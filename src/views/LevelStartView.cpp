@@ -25,6 +25,7 @@
 #include "LevelStartView.h"
 #include "../common/SpriteContainer.h"
 #include "../animations/FruitAnimation.h"
+#include "../utils/Utils.h"
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
 
@@ -53,10 +54,7 @@ namespace pacman {
         stageText->setPosition(windowSize_.x / 2.0f, windowSize_.y / 2.0f);
         guiContainer_.addWidget(stageText, "stageText");
 
-        //This animation contains all the fruits accessible by frames
-        auto fruitAnimation = FruitAnimation();
-        fruit_.setTexture(fruitAnimation.getAnimation()->getSpriteSheet());
-        fruit_.setTextureRect(fruitAnimation.getAnimation()->getFrameAt(level_ - 1)); //Frames start at 0 but level starts at 1
+        fruit_ = SpriteContainer::getSprite(Utils::getFruitName(level_));
         fruit_.scale({1.5f, 1.5f});
         fruit_.setPosition(stageText->getPosition().x - stageText->getSize().x / 2.0f,
             stageText->getPosition().y + stageText->getSize().y * 2);

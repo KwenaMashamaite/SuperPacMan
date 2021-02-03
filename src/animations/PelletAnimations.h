@@ -37,6 +37,11 @@ namespace pacman {
     class PelletAnimations {
     public:
         /**
+         * @brief Default constructor
+         */
+        PelletAnimations();
+
+        /**
          * @brief Create animations for a specific pellet
          * @param pelletType Pellet to create animations for
          */
@@ -46,10 +51,11 @@ namespace pacman {
          * @brief Get all of the created animations
          * @return A list of all the created animations
          */
-        const std::vector<std::shared_ptr<ime::Animation>>& getAll() const;
+        const std::vector<ime::Animation::sharedPtr>& getAll() const;
 
     private:
-        std::vector<std::shared_ptr<ime::Animation>> animations_;
+        std::vector<ime::Animation::sharedPtr> animations_;
+        ime::SpriteSheet spritesheet_;
     };
 }
 

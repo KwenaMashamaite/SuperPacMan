@@ -23,13 +23,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Game.h"
-#include "states/LoadingState.h"
-#include "states/IntroState.h"
-#include "states/MainMenuState.h"
+#include "scenes/LoadingScene.h"
+#include "scenes/IntroScene.h"
+#include "scenes/MainMenuScene.h"
 #include "common/SpriteContainer.h"
 #include "scoreboard/Scoreboard.h"
-#include "states/PlayingState.h"
-#include "states/StartUpState.h"
+#include "scenes/PlayScene.h"
+#include "scenes/StartUpScene.h"
 #include <IME/core/event/EventDispatcher.h>
 #include <memory>
 
@@ -37,11 +37,11 @@ namespace pacman {
     namespace {
         using Keyboard = ime::input::Keyboard;
 
-        void createSprite(const std::string& name, const std::string& texture, ime::IntRect rect) {
+        void createSprite(const std::string& name, const std::string& texture, ime::UIntRect rect) {
             auto sprite = ime::Sprite();
             sprite.setTexture(texture);
             sprite.setTextureRect(rect);
-            pacman::SpriteContainer::addSprite(name, std::move(sprite));
+            pacman::SpriteContainer::addSprite(name, sprite);
         }
 
         void createFruitSprites() {
@@ -51,35 +51,35 @@ namespace pacman {
             };
 
             auto rectSpacing = 1;
-            auto rectSize = ime::Vector2i{16, 16};
-            auto rectPos = ime::Vector2i{151, 52};
+            auto rectSize = ime::Vector2u{16, 16};
+            auto startPos = ime::Vector2u{1, 142};
             for (auto i = 0u; i < fruits.size(); ++i) {
-                createSprite(fruits[i], "spritesheet.png", {rectPos.x, rectPos.y, rectSize.x, rectSize.y});
-                rectPos.x += rectSize.x + rectSpacing;
+                createSprite(fruits[i], "spritesheet.png", {startPos.x, startPos.y, rectSize.x, rectSize.y});
+                startPos.x += rectSize.x + rectSpacing;
             }
 
-            createSprite("key", "spritesheet.png", {151, 35, rectSize.x, rectSize.y});
-            createSprite("life", "spritesheet.png", {440, 52, rectSize.x, rectSize.y});
+            createSprite("key", "spritesheet.png", {290, 142, rectSize.x, rectSize.y});
+            createSprite("life", "spritesheet.png", {216, 1, rectSize.x, rectSize.y});
         }
 
         void createGridSprites() {
-            auto gridSize = ime::Vector2i{224, 244};
-            createSprite("intro_grid", "grids.png", {225, 0, gridSize.x, gridSize.y});
-            createSprite("level_1_to_4_grid", "grids.png", {450, 0, gridSize.x, gridSize.y});
-            createSprite("level_5_to_8_grid", "grids.png", {0, 249, gridSize.x, gridSize.y});
-            createSprite("level_9_to_12_grid", "grids.png", {225, 249, gridSize.x, gridSize.y});
-            createSprite("level_13_to_16_grid", "grids.png", {450, 249, gridSize.x, gridSize.y});
-            createSprite("level_17_to_20_grid", "grids.png", {675, 249, gridSize.x, gridSize.y});
-            createSprite("locked_door_vertical", "spritesheet.png", {270, 137, 16, 16});
-            createSprite("locked_door_horizontal", "spritesheet.png", {236, 137, 16, 16});
-            createSprite("broken_door_vertical", "spritesheet.png", {287, 137, 16, 16});
-            createSprite("broken_door_horizontal", "spritesheet.png", {253, 137, 16, 16});
-            createSprite("unlocked_door", "spritesheet.png", {253, 35, 16, 16});
+            auto gridSize = ime::Vector2u{224, 244};
+            createSprite("intro_grid", "spritesheet.png", {226, 238, gridSize.x, gridSize.y});
+            createSprite("level_1_to_4_grid", "spritesheet.png", {451, 238, gridSize.x, gridSize.y});
+            createSprite("level_5_to_8_grid", "spritesheet.png", {1, 483, gridSize.x, gridSize.y});
+            createSprite("level_9_to_12_grid", "spritesheet.png", {226, 483, gridSize.x, gridSize.y});
+            createSprite("level_13_to_16_grid", "spritesheet.png", {451, 483, gridSize.x, gridSize.y});
+            createSprite("level_17_to_20_grid", "spritesheet.png", {676, 483, gridSize.x, gridSize.y});
+            createSprite("locked_door_vertical", "spritesheet.png", {420, 18, 16, 16});
+            createSprite("locked_door_horizontal", "spritesheet.png", {386, 18, 16, 16});
+            createSprite("broken_door_vertical", "spritesheet.png", {437, 18, 16, 16});
+            createSprite("broken_door_horizontal", "spritesheet.png", {403, 18, 16, 16});
+            createSprite("unlocked_door", "spritesheet.png", {369, 18, 16, 16});
         }
     }
 
     Game::Game() :
-        engine_("Super Pac-Man", "textFiles/config/settings.dat")
+        engine_{"Super Pac-Man", "textFiles/config/settings.dat"}
     {}
 
     void Game::initialize() {
@@ -95,15 +95,16 @@ namespace pacman {
         engine_.getPersistentData().addProperty({"lives", "INT", 4});
 
         //Push the initial states (States will be entered in reverse order: startUo->loading->intro->mainMenu)
-        engine_.pushState(std::make_shared<MainMenuState>(engine_));
-        engine_.pushState(std::make_shared<IntroState>(engine_));
-        engine_.pushState(std::make_shared<LoadingState>(engine_));
-        engine_.pushState(std::make_shared<StartUpState>(engine_));
+        engine_.pushScene(std::make_shared<MainMenuScene>(engine_));
+        engine_.pushScene(std::make_shared<IntroScene>(engine_));
+        engine_.pushScene(std::make_shared<LoadingScene>(engine_));
+        engine_.pushScene(std::make_shared<StartUpScene>(engine_));
 
         //This event is emitted by the loading state after all assets have been loaded
         ime::EventDispatcher::instance()->onEvent("resourceLoadingComplete", ime::Callback<>([this] {
-            engine_.getGlobalInputManager().addKeyListener(ime::KeyEvent::KeyUp, Keyboard::Key::Escape, [this] {
-                engine_.quit();
+            engine_.getInputManager().onKeyUp([this] (Keyboard::Key key) {
+                if (key == Keyboard::Key::Escape)
+                    engine_.quit();
             });
 
             engine_.onWindowClose([this] {
@@ -115,12 +116,11 @@ namespace pacman {
         }));
 
 #if !defined(NDEBUG)
-            engine_.getGlobalInputManager().addKeyListener(ime::KeyEvent::KeyUp, Keyboard::Key::A, [this] {
-                engine_.pushState(std::make_shared<PlayingState>(engine_));
-            });
-
-            engine_.getGlobalInputManager().addKeyListener(ime::KeyEvent::KeyUp, Keyboard::Key::S, [this] {
-                engine_.popState();
+            engine_.getInputManager().onKeyUp([this] (Keyboard::Key key) {
+                if (key == Keyboard::Key::A)
+                    engine_.pushScene(std::make_shared<PlayScene>(engine_));
+                else if (key == Keyboard::Key::S)
+                    engine_.popScene();
             });
 #endif
     }

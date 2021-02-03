@@ -54,12 +54,13 @@ namespace pacman {
         /**
          * @brief Create a flashing animation
          * @param gridColour Colour of the grid in lower case
-         * @param gridFrame Frame of the grid on the spritesheet
+         * @param gridFrame Index of the grid frame on the spritesheet
          */
-        void createFlashAnimations(const std::string& gridColour, ime::IntRect gridFrame);
+        void createFlashAnimations(const std::string& gridColour, ime::Index gridFrame);
 
     private:
         std::vector<std::shared_ptr<ime::Animation>> animations_;
+        ime::SpriteSheet spritesheet_;
     };
 }
 

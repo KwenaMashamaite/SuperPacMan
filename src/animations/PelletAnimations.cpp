@@ -25,14 +25,20 @@
 #include "PelletAnimations.h"
 
 namespace pacman {
+    PelletAnimations::PelletAnimations() :
+        spritesheet_{"pellets-sheet", "spritesheet.png", {16, 16}, {1, 1}}
+    {
+        spritesheet_.create({249, 17, 121, 18});
+    }
+
     void PelletAnimations::createAnimationFor(PelletType pelletType) {
-        auto blinkAnimation = ime::Animation::create("blink", "spritesheet.png", ime::milliseconds(300));
+        auto blinkAnimation = ime::Animation::create("blink", spritesheet_, ime::milliseconds(300));
         blinkAnimation->setLoop(true);
         if (pelletType == PelletType::PowerPellet)
-            blinkAnimation->addFrames({151, 18}, {16, 16}, 2);
+            blinkAnimation->addFrames({0, 0}, 2);
         else if (pelletType == PelletType::SuperPellet) {
             blinkAnimation->setDuration(ime::seconds(1));
-            blinkAnimation->addFrames({168, 35}, {16, 16}, 6);
+            blinkAnimation->addFrames({0, 1}, 6);
         }
         animations_.push_back(std::move(blinkAnimation));
     }

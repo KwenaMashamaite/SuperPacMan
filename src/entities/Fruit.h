@@ -43,22 +43,10 @@ namespace pacman {
         Fruit(const ime::Vector2u &boundingRect, const std::string &name);
 
         /**
-         * @brief Get the name of the fruit
-         * @return Name of the fruit
-         */
-        const std::string& getName() const;
-
-        /**
          * @brief Get the class type
          * @return Name of the concrete class the fruit belongs to
          */
         std::string getClassType() override;
-
-        /**
-         * @brief Get the fruits graphical representation
-         * @return The fruits graphical representation
-         */
-        ime::Sprite& getSprite();
 
         /**
          * @brief Eat fruit
@@ -75,9 +63,7 @@ namespace pacman {
         bool isEaten() const override;
 
     private:
-        std::string name_;             //!< Name of the fruit
-        bool isEaten_;                 //!< The fruits eaten state
-        ime::Sprite sprite_; //!< Fruits visual presentation
+        bool isEaten_; //!< The fruits eaten state
     };
 }
 

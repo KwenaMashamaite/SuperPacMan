@@ -27,27 +27,37 @@
 
 namespace pacman {
     namespace {
-        const auto normalFrameSize = ime::Vector2i{16, 16};
-        const auto superFrameSize = ime::Vector2i{2 * normalFrameSize.x, 2 * normalFrameSize.y};
         const auto movementAnimDuration = ime::milliseconds(150);
     }
 
-    void PacManAnimations::create() {
-        createAnimation("goingLeft", {100, 1, normalFrameSize.x, normalFrameSize.y});
-        createAnimation("goingLeftSuper", {1, 1, superFrameSize.x, superFrameSize.y});
-        createAnimation("goingLeftFlashing", { 389, 86, superFrameSize.x, superFrameSize.y});
-        createAnimation("goingRight", {100, 35, normalFrameSize.x, normalFrameSize.y});
-        createAnimation("goingRightSuper", {1, 67, superFrameSize.x, superFrameSize.y});
-        createAnimation("goingRightFlashing", {389, 152, superFrameSize.x, superFrameSize.y});
-        createAnimation("goingUp", {100, 18, normalFrameSize.x, normalFrameSize.y});
-        createAnimation("goingUpSuper", {1, 34, superFrameSize.x, superFrameSize.y});
-        createAnimation("goingUpFlashing", {389, 119, superFrameSize.x, superFrameSize.y});
-        createAnimation("goingDown", {100, 52, normalFrameSize.x, normalFrameSize.y});
-        createAnimation("goingDownSuper", {1, 100, superFrameSize.x, superFrameSize.y});
-        createAnimation("goingDownFlashing", {389, 185, superFrameSize.x, superFrameSize.y});
+    PacManAnimations::PacManAnimations() :
+        normalSizeSpritesheet_{"normal-size-sheet", "spritesheet.png", {16, 16}, {1, 1}},
+        superSizeSpritesheet_{"super-size-sheet", "spritesheet.png", {32, 32}, {1, 1}},
+        deathSpritesheet_{"death-sheet", "spritesheet.png", {16, 16}, {1, 1}}
+    {
+        normalSizeSpritesheet_.create({198, 0, 52, 69});
+        superSizeSpritesheet_.create({0, 0, 199, 132});
+        deathSpritesheet_.create({198, 0, 239, 18});
+    }
 
-        auto deathAnimation = ime::Animation::create("dying", "spritesheet.png", ime::seconds(2));
-        deathAnimation->addFrames({151, 1}, normalFrameSize, 11, 1);
+    void PacManAnimations::create() {
+        createAnimation("goingLeft", {0, 0});
+        createAnimation("goingUp", {1, 0});
+        createAnimation("goingRight", {2, 0});
+        createAnimation("goingDown", {3, 0});
+
+        createAnimation("goingLeftSuper", {0, 0}, true);
+        createAnimation("goingUpSuper", {1, 0}, true);
+        createAnimation("goingRightSuper", {2, 0}, true);
+        createAnimation("goingDownSuper", {3, 0}, true);
+
+        createAnimation("goingLeftFlashing", { 0, 3}, true);
+        createAnimation("goingUpFlashing", {1, 3}, true);
+        createAnimation("goingRightFlashing", {2, 3}, true);
+        createAnimation("goingDownFlashing", {3, 3}, true);
+
+        auto deathAnimation = ime::Animation::create("dying", deathSpritesheet_, ime::seconds(2));
+        deathAnimation->addFrames({0, 0}, 14);
         animations_.push_back(std::move(deathAnimation));
     }
 
@@ -55,10 +65,15 @@ namespace pacman {
         return animations_;
     }
 
-    void PacManAnimations::createAnimation(const std::string &name, ime::IntRect rect) {
-        auto anim = ime::Animation::create(name, "spritesheet.png", movementAnimDuration);
-        anim->addFrames(rect.getPosition(), rect.getSize(), 3);
-        anim->setLoop(true);
-        animations_.push_back(std::move(anim));
+    void PacManAnimations::createAnimation(const std::string &name, ime::Index index, bool super) {
+        ime::Animation::sharedPtr animation;
+        if (super)
+            animation = ime::Animation::create(name, superSizeSpritesheet_, movementAnimDuration);
+        else
+            animation = ime::Animation::create(name, normalSizeSpritesheet_, movementAnimDuration);
+
+        animation->addFrames(index, 3);
+        animation->setLoop(true);
+        animations_.push_back(std::move(animation));
     }
 }

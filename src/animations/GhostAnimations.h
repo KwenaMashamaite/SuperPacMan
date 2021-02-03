@@ -37,6 +37,11 @@ namespace pacman {
     class GhostAnimations {
     public:
         /**
+         * @brief Default constructor
+         */
+        GhostAnimations();
+
+        /**
          * @brief Create animations for a ghost with the specified name
          * @param ghostName Name of the ghost to create animations for
          */
@@ -46,17 +51,15 @@ namespace pacman {
          * @brief Get all of the created animations
          * @return A list of all the ghost animations
          */
-        const std::vector<std::shared_ptr<ime::Animation>>& getAll() const;
+        const std::vector<ime::Animation::sharedPtr>& getAll() const;
 
     private:
         /**
          * @brief Create a movement animation
          * @param name Name of the animation
          * @param startPos Starting position of the frame on the spritesheet
-         * @param arrangement Arrangement of the animation frames on the spritesheet
          */
-        void createAnimation(const std::string& name, ime::Vector2i startPos,
-            ime::Arrangement arrangement = ime::Arrangement::Horizontal);
+        void createAnimation(const std::string& name, ime::Index startPos);
 
         /**
          * @brief Create normal and flat movement animations
@@ -75,7 +78,8 @@ namespace pacman {
         void createEatenAnimations();
 
     private:
-        std::vector<std::shared_ptr<ime::Animation>> animations_;
+        std::vector<ime::Animation::sharedPtr> animations_;
+        ime::SpriteSheet spritesheet_;                      //!< Spr
     };
 }
 

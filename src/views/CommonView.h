@@ -117,7 +117,7 @@ namespace pacman {
     private:
         ime::ui::GuiContainer guiContainer_;  //!< Container for all widgets
         ime::Vector2u windowSize_;            //!< Size of the render target
-        std::vector<ime::Sprite> sprites;     //!< Stores all sprites to be rendered
+        std::vector<ime::Sprite> sprites_;    //!< Stores all sprites to be rendered
         int level_;                           //!< Current level
         int pacmanLives_;                     //!< Remaining pacman lives
         ime::Timer timer_;                    //!< Timer

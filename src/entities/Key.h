@@ -26,7 +26,7 @@
 #define SUPERPACMAN_KEY_H
 
 #include <IME/core/entity/Entity.h>
-#include <IME/graphics/AnimatableSprite.h>
+#include <IME/graphics/Sprite.h>
 
 namespace pacman {
     /**
@@ -73,15 +73,8 @@ namespace pacman {
          */
         std::string getClassType() override;
 
-        /**
-         * @brief Get the sprites graphical representation
-         * @return The sprites graphical representation
-         */
-        ime::Sprite& getSprite();
-
     private:
         int id_;                       //!< The keys id
-        ime::Sprite sprite_; //!< Keys graphical representation
     };
 }
 

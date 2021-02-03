@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "LoadingState.h"
+#include "LoadingScene.h"
 #include <IME/core/loop/Engine.h>
 #include <IME/ui/widgets/ProgressBar.h>
 #include <IME/ui/widgets/Label.h>
@@ -33,17 +33,16 @@
 
 //Warning!! This number must be updated each time a new resource is added to the
 //resources to be loaded
-const auto numOfResources = 19;
+const auto numOfResources = 18;
 
 namespace pacman {
-    LoadingState::LoadingState(ime::Engine &engine) :
-        State(engine),
-        isEntered_{false},
+    LoadingScene::LoadingScene(ime::Engine &engine) :
+        Scene(engine),
         view_(engine.getRenderTarget()),
         loadingFinished_{false}
     {}
 
-    void LoadingState::onEnter() {
+    void LoadingScene::onEnter() {
         // Prevent the game from being exited while assets are being loaded
         // The resource loading thread must finish first before we can stop
         // the main thread
@@ -64,7 +63,7 @@ namespace pacman {
         // Transition to next state if all resources are loaded
         engine().onFrameEnd([this] {
             if (loadingFinished_) {
-                engine().popState();
+                engine().popScene();
                 engine().onFrameEnd(nullptr);
             }
         });
@@ -75,15 +74,9 @@ namespace pacman {
                 loadResources();
             }).detach();
         }));
-
-        isEntered_ = true;
     }
 
-    bool LoadingState::isEntered() const {
-        return isEntered_;
-    }
-
-    void LoadingState::loadResources() {
+    void LoadingScene::loadResources() {
         auto updateProgressBar = [this](const std::string& text) {
             static auto loadingProgressBar = view_.getWidget<ime::ui::ProgressBar>("loading_progress_bar");
             
@@ -108,7 +101,7 @@ namespace pacman {
         loadingText->setText("Loading textures...");
         lock.unlock();
         ime::ResourceManager::getInstance()->loadFromFile(ime::ResourceType::Texture,  {
-            "icon.png", "grids.png", "pacman_logo.png", "spritesheet.png",
+            "icon.png", "pacman_logo.png", "spritesheet.png",
             "main_menu_background.jpg", "credits_menu_background.jpg",
             "options_menu_background.jpg", "ready.png"
         }, updateProgressBar);
@@ -134,25 +127,19 @@ namespace pacman {
         loadingFinished_ = true;
     }
 
-    void LoadingState::render(ime::Window &renderTarget) {
+    void LoadingScene::render(ime::Window &renderTarget) {
         std::lock_guard<std::mutex> lock(mtx_);
         view_.render();
     }
 
-    void LoadingState::handleEvent(ime::Event event) {
+    void LoadingScene::handleEvent(ime::Event event) {
         std::lock_guard<std::mutex> lock(mtx_);
         view_.handleEvent(event);
     }
 
-    void LoadingState::onExit() {
+    void LoadingScene::onExit() {
         ime::EventDispatcher::instance()->dispatchEvent("resourceLoadingComplete");
     }
 
-    void LoadingState::update(ime::Time deltaTime) {}
-
-    void LoadingState::fixedUpdate(ime::Time deltaTime) {}
-
-    void LoadingState::onPause() {}
-
-    void LoadingState::onResume() {}
+    void LoadingScene::update(ime::Time deltaTime) {}
 }

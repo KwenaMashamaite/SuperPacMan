@@ -22,54 +22,39 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "LevelStartState.h"
+#include "LevelStartScene.h"
 #include <IME/core/loop/Engine.h>
 
 namespace pacman {
-    LevelStartState::LevelStartState(ime::Engine &engine) :
-        State(engine),
-        isInit_{false}
+    LevelStartScene::LevelStartScene(ime::Engine &engine) :
+        Scene(engine)
     {}
 
-    void LevelStartState::onEnter() {
-        auto level = engine().getPersistentData().getValueFor<int>("level");
-        auto lives = engine().getPersistentData().getValueFor<int>("lives");
-        auto score = engine().getPersistentData().getValueFor<int>("score");
-        auto highScore = engine().getPersistentData().getValueFor<int>("high-score");
+    void LevelStartScene::onEnter() {
+        auto level = cache().getValue<int>("level");
+        auto lives = cache().getValue<int>("lives");
+        auto score = cache().getValue<int>("score");
+        auto highScore = cache().getValue<int>("high-score");
         view_ = std::make_unique<LevelStartView>(engine().getRenderTarget(), level, lives, score, highScore);
         view_->init();
 
         if (level == 1) {
             sfx_.setSource("beginning.wav");
             sfx_.play();
-            engine().setTimeout(ime::seconds(sfx_.getDuration().asSeconds()), [this] {
-                engine().popState();
+            timer().setTimeout(ime::seconds(4), [this] {
+                engine().popScene();
             });
         } else
-            engine().setTimeout(ime::seconds(2), [this] {engine().popState();});
-
-        isInit_ = true;
+            timer().setTimeout(ime::seconds(2), [this] {engine().popScene();});
     }
 
-    bool LevelStartState::isEntered() const {
-        return isInit_;
-    }
-
-    void LevelStartState::render(ime::Window &renderTarget) {
+    void LevelStartScene::render(ime::Window &renderTarget) {
         view_->render(renderTarget);
     }
 
-    void LevelStartState::update(ime::Time deltaTime) {
+    void LevelStartScene::update(ime::Time deltaTime) {
         view_->update(deltaTime);
     }
 
-    void LevelStartState::fixedUpdate(ime::Time deltaTime) {}
-
-    void LevelStartState::handleEvent(ime::Event event) {}
-
-    void LevelStartState::onPause() {}
-
-    void LevelStartState::onResume() {}
-
-    void LevelStartState::onExit() {}
+    void LevelStartScene::handleEvent(ime::Event event) {}
 }

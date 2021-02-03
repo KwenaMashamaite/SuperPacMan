@@ -46,10 +46,11 @@ namespace pacman {
          * @brief Get the fruit animation
          * @return The fruit animation
          */
-        std::shared_ptr<ime::Animation> getAnimation();
+        ime::Animation::sharedPtr getAnimation();
 
     private:
-        std::shared_ptr<ime::Animation> animation_;
+        ime::Animation::sharedPtr animation_; //!< The fruit animation
+        ime::SpriteSheet spritesheet_;        //!< Spritesheet used by the animation
     };
 }
 

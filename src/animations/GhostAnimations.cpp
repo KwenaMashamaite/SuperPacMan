@@ -27,86 +27,66 @@
 
 namespace pacman {
     namespace {
-        //The size of each animation frame
-        const auto frameSize = ime::Vector2i{16, 16};
         //The duration of each movement animation
         const auto movementAnimDuration = ime::milliseconds(180);
     }
 
+    GhostAnimations::GhostAnimations() :
+        spritesheet_{"ghosts-sheet", "spritesheet.png", {16, 16}, {1, 1}}
+    {
+        spritesheet_.create({0, 158, 358, 69});
+    }
+
     void GhostAnimations::createAnimationsFor(Ghost::Name ghostName) {
-        if (!animations_.empty())
-            animations_.clear();
+        animations_.clear();
 
         createMovementAnimations(ghostName);
         createEatenAnimations();
         createFrightenedAnimations();
     }
 
-    const std::vector<std::shared_ptr<ime::Animation>> &GhostAnimations::getAll() const {
+    const std::vector<ime::Animation::sharedPtr> &GhostAnimations::getAll() const {
         return animations_;
     }
 
-    void GhostAnimations::createAnimation(const std::string &name, ime::Vector2i startPos, ime::Arrangement arrangement) {
-        auto anim = ime::Animation::create(name, "spritesheet.png", movementAnimDuration);
+    void GhostAnimations::createAnimation(const std::string &name, ime::Index startPos) {
+        auto anim = ime::Animation::create(name, spritesheet_, movementAnimDuration);
         anim->setLoop(true);
-        anim->addFrames(startPos, frameSize, 2, 1, arrangement);
+        anim->addFrames(startPos, 2);
         animations_.push_back(std::move(anim));
     }
 
     void GhostAnimations::createMovementAnimations(Ghost::Name ghostName) {
-        switch (ghostName) {
-            case Ghost::Name::Blinky:
-                createAnimation("goingLeft", {100, 69});
-                createAnimation("goingLeftFlat", {236, 69});
-                createAnimation("goingRight", {168, 69});
-                createAnimation("goingRightFlat", {304, 69});
-                createAnimation("goingUp", {134, 69});
-                createAnimation("goingUpFlat", {270, 69});
-                createAnimation("goingDown", {202, 69});
-                createAnimation("goingDownFlat", {338, 69});
-                break;
-            case Ghost::Name::Pinky:
-                createAnimation("goingLeft", {100, 86});
-                createAnimation("goingLeftFlat", {236, 86});
-                createAnimation("goingRight", {168, 86});
-                createAnimation("goingRightFlat", {304, 86});
-                createAnimation("goingUp", {134, 86});
-                createAnimation("goingUpFlat", {270, 86});
-                createAnimation("goingDown", {202, 86});
-                createAnimation("goingDownFlat", {338, 86});
-                break;
-            case Ghost::Name::Inky:
-                createAnimation("goingLeft", {100, 103});
-                createAnimation("goingLeftFlat", {236, 103});
-                createAnimation("goingRight", {168, 103});
-                createAnimation("goingRightFlat", {304, 103});
-                createAnimation("goingUp", {134, 103});
-                createAnimation("goingUpFlat", {270, 103});
-                createAnimation("goingDown", {202, 103});
-                createAnimation("goingDownFlat", {338, 103});
-                break;
-            case Ghost::Name::Clyde:
-                createAnimation("goingLeft", {100, 120});
-                createAnimation("goingLeftFlat", {236, 120});
-                createAnimation("goingRight", {168, 120});
-                createAnimation("goingRightFlat", {304, 120});
-                createAnimation("goingUp", {134, 120});
-                createAnimation("goingUpFlat", {270, 120});
-                createAnimation("goingDown", {202, 120});
-                createAnimation("goingDownFlat", {338, 120});
-                break;
-        }
+        auto row = -1;
+        if (ghostName == Ghost::Name::Blinky)
+            row = 0;
+        else if (ghostName == Ghost::Name::Pinky)
+            row = 1;
+        else if (ghostName == Ghost::Name::Inky)
+            row = 2;
+        else
+            row = 3;
+
+        createAnimation("goingLeft", {row, 0});
+        createAnimation("goingUp", {row, 2});
+        createAnimation("goingRight", {row, 4});
+        createAnimation("goingDown", {row, 6});
+
+        createAnimation("goingLeftFlat", {row, 8});
+        createAnimation("goingUpFlat", {row, 10});
+        createAnimation("goingRightFlat", {row, 12});
+        createAnimation("goingDownFlat", {row, 14});
     }
 
     void GhostAnimations::createFrightenedAnimations() {
-        createAnimation("frightened", {389, 69});
-        createAnimation("flash", {304, 137});
+        createAnimation("frightened", {2, 17});
+        createAnimation("flash", {2, 19});
     }
 
     void GhostAnimations::createEatenAnimations() {
-        createAnimation("goingLeftEaten", {355, 171}, ime::Arrangement::Vertical);
-        createAnimation("goingRightEaten", {355, 137}, ime::Arrangement::Vertical);
-        createAnimation("goingUpEaten", {372, 171}, ime::Arrangement::Vertical);
-        createAnimation("goingDownEaten", {372, 137}, ime::Arrangement::Vertical);
+        createAnimation("goingLeftEaten", {0, 17});
+        createAnimation("goingUpEaten", {0, 19});
+        createAnimation("goingRightEaten", {1, 17});
+        createAnimation("goingDownEaten", {1, 19});
     }
 }

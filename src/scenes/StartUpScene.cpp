@@ -22,56 +22,40 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "StartUpState.h"
+#include "StartUpScene.h"
 #include <ime/core/loop/Engine.h>
 #include <IME/ui/widgets/Panel.h>
 
 namespace pacman {
-    StartUpState::StartUpState(ime::Engine &engine) :
-        State(engine),
-        view_(engine.getRenderTarget()),
-        isInit_{false}
+    StartUpScene::StartUpScene(ime::Engine &engine) :
+        Scene(engine),
+        view_(engine.getRenderTarget())
     {}
 
-    void StartUpState::onEnter() {
+    void StartUpScene::onEnter() {
         view_.init();
 
-        //Exit state with an effect after a certain time has passed
-        auto& timer = engine().setTimeout(ime::seconds(15), [this] {
+        //Exit the scene with an effect after a certain time has passed
+        timer().setTimeout(ime::seconds(15), [this] {
             auto viewContainer = view_.getWidget<ime::ui::Panel>("container");
             viewContainer->hideWithEffect(ime::ShowAnimationType::SlideFromBottom, 2000);
             viewContainer->on("animationFinish", ime::Callback<>([this] {
-                engine().popState();
+                engine().popScene();
             }));
         });
 
-        //Make state skippable by pressing enter key
-        engine().getInputManager().addKeyListener(ime::KeyEvent::KeyUp,
-            ime::input::Keyboard::Key::Enter, [this, t = &timer] {
-                t->stop();
-                engine().popState();
+        //Make scene skippable by pressing enter key
+        input().onKeyUp([this](ime::input::Keyboard::Key key) {
+            if (key == ime::input::Keyboard::Key::Enter)
+                engine().popScene();
         });
-
-        isInit_ = true;
     }
 
-    bool StartUpState::isEntered() const {
-        return isInit_;
-    }
-
-    void StartUpState::render(ime::Window &renderTarget) {
+    void StartUpScene::render(ime::Window &renderTarget) {
         view_.render();
     }
 
-    void StartUpState::handleEvent(ime::Event event) {}
+    void StartUpScene::handleEvent(ime::Event event) {}
 
-    void StartUpState::update(ime::Time deltaTime) {}
-
-    void StartUpState::fixedUpdate(ime::Time deltaTime) {}
-
-    void StartUpState::onPause() {}
-
-    void StartUpState::onResume() {}
-
-    void StartUpState::onExit() {}
+    void StartUpScene::update(ime::Time deltaTime) {}
 }

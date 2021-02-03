@@ -46,7 +46,7 @@ namespace pacman {
         assert(ghostMover_ && "Cannot initialize ghost state without grid mover");
         ghost_->setVulnerable(true);
         ghost_->setSpeed(ghost_->getSpeed() / 4.0f);
-        ghost_->getSprite().switchAnimation("frightened");
+        ghost_->getSprite().getAnimator().startAnimation("frightened");
         ghostMover_->onGridBorderCollision([this] {
             Utils::teleportTarget(*ghostMover_);
             ghostMover_->requestDirectionChange(ghost_->getDirection());
@@ -58,19 +58,19 @@ namespace pacman {
     void FrightenedState::update(ime::Time deltaTime) {
         TimedState::update(deltaTime);
         ghostMover_->update(deltaTime);
-        if (ghost_->getSprite().getCurrentAnimation()->getName() != "flash"
+        if (ghost_->getSprite().getAnimator().getCurrentAnimation()->getName() != "flash"
             && (getTimeout() >= ime::Time::Zero && getTimeout() <= ime::seconds(2)))
         {
-            ghost_->getSprite().switchAnimation("flash");
+            ghost_->getSprite().getAnimator().startAnimation("flash");
             isGhostFlashing_ = true;
         } else if (isGhostFlashing_ && getTimeout() > ime::seconds(2)) {
-            ghost_->getSprite().switchAnimation("frightened");
+            ghost_->getSprite().getAnimator().startAnimation("frightened");
             isGhostFlashing_ = false;
         }
     }
 
     void FrightenedState::onExit() {
-        ghost_->getSprite().switchAnimation("going" + Utils::convertToString(ghost_->getDirection()));
+        ghost_->getSprite().getAnimator().startAnimation("going" + Utils::convertToString(ghost_->getDirection()));
         ghost_->setVulnerable(false);
         ghost_->setSpeed(ghost_->getSpeed() * 4.0f);
         ghostMover_->stopMovement();

@@ -25,6 +25,7 @@
 #include "CommonView.h"
 #include "../animations/FruitAnimation.h"
 #include "../common/SpriteContainer.h"
+#include "../utils/Utils.h"
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
 #include <IME/graphics/Colour.h>
@@ -46,7 +47,7 @@ namespace pacman {
 
         timer_ = ime::Timer::create(ime::milliseconds(200), [this] {
             guiContainer_.getWidget<ime::ui::Label>("one_up")->toggleVisibility();
-        }, true);
+        }, -1);
         timer_.start();
     }
 
@@ -93,37 +94,28 @@ namespace pacman {
     }
 
     void CommonView::createSprites() {
-        auto fruitAnim = FruitAnimation().getAnimation();
-
-        // Limit the number of sprites that depict the current level to 10, otherwise
-        // they overlap with the sprites that depict pacmans remaining lives
-        auto i = level_ <= 10 ? 0u : level_ - 10u;
-        auto j = 0u; // Controls the fruit sprite positioning
-        for (; i < level_; ++i, ++j) {
-            auto fruitSprite = ime::Sprite();
-            fruitSprite.setTexture(fruitAnim->getSpriteSheet());
-            fruitSprite.setTextureRect(fruitAnim->getFrameAt(i));
-            fruitSprite.scale(1.7f, 1.7f);
-            fruitSprite.setPosition(windowSize_.x - fruitSprite.getGlobalBounds().width
-                - j * fruitSprite.getGlobalBounds().width,
-                windowSize_.y - fruitSprite.getGlobalBounds().height);
-            sprites.push_back(std::move(fruitSprite));
+        for (auto i = 0u; i < sprites_.size(); ++i) {
+            auto sprite = SpriteContainer::getSprite(Utils::getFruitName(level_));
+            sprite.scale(1.7f, 1.7f);
+            sprite.setPosition(windowSize_.x - sprites_[i].getGlobalBounds().width
+                - i * sprite.getGlobalBounds().width, windowSize_.y - sprite.getGlobalBounds().height);
+            sprites_.push_back(std::move(sprite));
         }
 
         //Sprites that depict pacmans remaining lives
-        for (auto k = 0u; k < pacmanLives_; ++k) {
+        for (auto i = 0u; i < pacmanLives_; ++i) {
             auto lifeSprite = SpriteContainer::getSprite("life");
             lifeSprite.scale(1.8f, 1.8f);
-            lifeSprite.setPosition(k * lifeSprite.getGlobalBounds().width,
+            lifeSprite.setPosition(i * lifeSprite.getGlobalBounds().width,
                 windowSize_.y - lifeSprite.getGlobalBounds().height);
-            sprites.push_back(std::move(lifeSprite));
+            sprites_.push_back(std::move(lifeSprite));
         }
     }
 
     void CommonView::render(ime::Window &renderTarget) {
         guiContainer_.draw();
-        for (auto& fruit : sprites)
-            renderTarget.draw(fruit);
+        for (auto& sprite : sprites_)
+            renderTarget.draw(sprite);
     }
 
     void CommonView::update(ime::Time deltaTime) {

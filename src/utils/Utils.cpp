@@ -149,6 +149,17 @@ namespace pacman::Utils {
         std::dynamic_pointer_cast<PacMan>(pacman)->pushState(PacMan::States::Super, std::move(superState));
     }
 
+    std::string getFruitName(int level) {
+        auto static fruitName = std::vector{
+            "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake", "peach",
+            "melon", "coffee", "mushroom", "bell", "clover", "galaxian", "gift"
+        };
+
+        if (level < fruitName.size())
+            return fruitName.at(level - 1);
+        return "unknown";
+    }
+
     void teleportTarget(ime::GridMover& gridMover) {
         auto target = gridMover.getTarget();
         if (target->getDirection() != ime::Direction::Left

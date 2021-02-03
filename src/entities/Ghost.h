@@ -27,7 +27,7 @@
 
 #include <IME/core/entity/Entity.h>
 #include <IME/core/entity/IMovable.h>
-#include <IME/graphics/AnimatableSprite.h>
+#include <IME/graphics/Sprite.h>
 #include "states/StateController.h"
 
 namespace pacman {
@@ -88,12 +88,6 @@ namespace pacman {
          * @return The name of the ghost
          */
         Name getGhostName() const;
-
-        /**
-         * @brief Get the ghosts graphical representation
-         * @return The ghosts graphical representation
-         */
-        ime::AnimatableSprite& getSprite();
 
         /**
          * @brief Push a ghost state
@@ -171,7 +165,6 @@ namespace pacman {
         StateController stateController_;        //!< Ghosts FSM
         bool isMoving_;                          //!< Flags whether ghost is moving or not
         float speed_;                            //!< The speed of the ghost
-        ime::AnimatableSprite sprite_; //!< Ghosts graphical representation
         bool isFlattened_;                       //!< Flattened state
     };
 }

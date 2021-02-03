@@ -31,46 +31,26 @@ namespace pacman {
         orientation_(Orientation::Vertical)
     {
         setCollidable(true);
-        sprite_ = SpriteContainer::getSprite("unlocked_door");
-        sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
-        sprite_.scale(2.07f, 2.07f);
-
-        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
-            sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
-        }));
+        getSprite() = SpriteContainer::getSprite("unlocked_door");
+        //getTransform().scale(2.07f, 2.07f);
 
         onEvent("locked", ime::Callback<>([this] {
             if (orientation_ == Orientation::Horizontal)
-                sprite_.setTextureRect(SpriteContainer::getSprite("locked_door_horizontal").getTextureRect());
+                getSprite().setTextureRect(SpriteContainer::getSprite("locked_door_horizontal").getTextureRect());
             else
-                sprite_.setTextureRect(SpriteContainer::getSprite("locked_door_vertical").getTextureRect());
+                getSprite().setTextureRect(SpriteContainer::getSprite("locked_door_vertical").getTextureRect());
         }));
 
         onEvent("broken", ime::Callback<>([this] {
             if (orientation_ == Orientation::Horizontal)
-                sprite_.setTextureRect(SpriteContainer::getSprite("broken_door_horizontal").getTextureRect());
+                getSprite().setTextureRect(SpriteContainer::getSprite("broken_door_horizontal").getTextureRect());
             else
-                sprite_.setTextureRect(SpriteContainer::getSprite("broken_door_vertical").getTextureRect());
+                getSprite().setTextureRect(SpriteContainer::getSprite("broken_door_vertical").getTextureRect());
         }));
 
         onEvent("unlocked", ime::Callback<>([this] {
-            sprite_.setTextureRect(SpriteContainer::getSprite("unlocked_door").getTextureRect());
+            getSprite().setTextureRect(SpriteContainer::getSprite("unlocked_door").getTextureRect());
         }));
-    }
-
-    Door::Door(const Door &other)
-        : ime::Entity(*this), doorLocker_(std::make_unique<DoorLocker>(*other.doorLocker_)),
-          orientation_(other.orientation_)
-    {}
-
-    Door::Door(Door &&other) noexcept
-        : ime::Entity(*this), doorLocker_(std::move(other.doorLocker_)),
-          orientation_(other.orientation_)
-    {}
-
-    Door &Door::operator=(Door rhs) {
-        std::swap(*this, rhs);
-        return *this;
     }
 
     void Door::setOrientation(Orientation orientation) {
@@ -90,7 +70,7 @@ namespace pacman {
             doorLocker_->lock(key);
             if (doorLocker_->isLocked()) {
                 setCollidable(true);
-                publishEvent("locked");
+                dispatchEvent("locked");
             }
         }
     }
@@ -100,7 +80,7 @@ namespace pacman {
             doorLocker_->unlock(key);
             if (!doorLocker_->isLocked()) {
                 setCollidable(false);
-                publishEvent("unlocked");
+                dispatchEvent("unlocked");
             }
         }
     }
@@ -113,14 +93,10 @@ namespace pacman {
 
     void Door::forceOpen() {
         setCollidable(false);
-        publishEvent("broken");
+        dispatchEvent("broken");
     }
 
     std::string Door::getClassType() {
         return "Door";
-    }
-
-    ime::Sprite &Door::getSprite() {
-        return sprite_;
     }
 }

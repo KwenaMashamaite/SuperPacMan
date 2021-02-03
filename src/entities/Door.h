@@ -50,21 +50,6 @@ namespace pacman {
         explicit Door(const ime::Vector2u &boundingRect);
 
         /**
-         * @brief Copy constructor
-         */
-        Door(const Door& other);
-
-        /**
-         * @brief Move constructor
-         */
-        Door(Door&& other) noexcept;
-
-        /**
-         * @brief Assignment operator
-         */
-        Door& operator=(Door rhs);
-
-        /**
          * @brief Set the orientation of the door
          * @param orientation Orientation of the door
          *
@@ -129,16 +114,9 @@ namespace pacman {
          */
         std::string getClassType() override;
 
-        /**
-         * @brief Get the doors graphical representation
-         * @return The doors graphical representation
-         */
-        ime::Sprite& getSprite();
-
     private:
         std::unique_ptr<DoorLocker> doorLocker_; //!< Door locker
         Orientation orientation_;                //!< The current orientation of the door
-        ime::Sprite sprite_;                     //!< The doors graphical representation
     };
 }
 

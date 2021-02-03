@@ -41,13 +41,13 @@ namespace pacman {
 
     void SuperState::update(ime::Time deltaTime) {
         TimedState::update(deltaTime);
-        if (pacman_->getSprite().getCurrentAnimation()->getName().find("Flashing") == std::string::npos
+        if (pacman_->getSprite().getAnimator().getCurrentAnimation()->getName().find("Flashing") == std::string::npos
             && (getTimeout() > ime::Time::Zero && getTimeout() <= ime::seconds(2)))
         {
-            pacman_->getSprite().switchAnimation("going" + Utils::convertToString(pacman_->getDirection()) + "Flashing");
+            pacman_->getSprite().getAnimator().startAnimation("going" + Utils::convertToString(pacman_->getDirection()) + "Flashing");
             isPacmanFlashing_ = true;
         } else if (isPacmanFlashing_ && getTimeout() > ime::seconds(2)) {
-            pacman_->getSprite().switchAnimation("going" + Utils::convertToString(pacman_->getDirection()) + "Super");
+            pacman_->getSprite().getAnimator().startAnimation("going" + Utils::convertToString(pacman_->getDirection()) + "Super");
             isPacmanFlashing_ = false;
         }
     }
@@ -65,8 +65,8 @@ namespace pacman {
         pacman_->setDirection(prevDir);
 
         //Accommodate change in sprite size
-        pacman_->getSprite().setOrigin(pacman_->getSprite().getLocalBounds().width / 2.0f,
-            pacman_->getSprite().getLocalBounds().height / 2.0f);
+        /*pacman_->getTransform().setOrigin(pacman_->getSprite().getLocalBounds().width / 2.0f,
+            pacman_->getSprite().getLocalBounds().height / 2.0f);*/
     }
 
     void SuperState::onTimeout() {

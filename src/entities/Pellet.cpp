@@ -33,14 +33,13 @@ namespace pacman {
         auto animations = PelletAnimations();
         animations.createAnimationFor(pelletType);
         for (const auto& animation : animations.getAll())
-            sprite_.addAnimation(animation);
+            getSprite().getAnimator().addAnimation(animation);
 
-        sprite_.switchAnimation("blink");
-        sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
-        sprite_.scale(2.0f, 2.0f);
+        getSprite().getAnimator().startAnimation("blink");
+        //getSprite().scale(2.0f, 2.0f);
 
         onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
-            sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
+            getSprite().setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
         }));
 
         setCollidable(true);
@@ -50,7 +49,7 @@ namespace pacman {
         if (!isEaten()){
             setActive(false);
             setCollidable(false);
-            publishEvent("eaten");
+            dispatchEvent("eaten");
         }
     }
 
@@ -66,11 +65,7 @@ namespace pacman {
         return "Pellet";
     }
 
-    ime::AnimatableSprite &Pellet::getSprite() {
-        return sprite_;
-    }
-
     void Pellet::update(ime::Time deltaTime) {
-        sprite_.updateAnimation(deltaTime);
+        getSprite().updateAnimation(deltaTime);
     }
 }

@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "IntroState.h"
+#include "IntroScene.h"
 #include <IME/core/loop/Engine.h>
 #include "../entities/AllEntities.h"
 #include "../common/SpriteContainer.h"
@@ -34,7 +34,8 @@
 #include "../entities/states/pacman/NormalState.h"
 
 namespace pacman {
-    IntroState::IntroState(ime::Engine &engine) : State(engine),
+    IntroScene::IntroScene(ime::Engine &engine) :
+        Scene(engine),
         grid_(20, 20),
         introView_(engine.getRenderTarget())
     {
@@ -48,7 +49,7 @@ namespace pacman {
         pacmanPath_.push({19, 26});
     }
 
-    void IntroState::onEnter() {
+    void IntroScene::onEnter() {
         createGrid();
         createObjects();
 
@@ -58,18 +59,18 @@ namespace pacman {
                 [controller = ghostControllers_.back()](ime::Tile) {
                     if (controller->getTarget()->isVulnerable()) {
                         controller->requestDirectionChange(ime::Direction::Right);
-                        std::dynamic_pointer_cast<Ghost>(controller->getTarget())->getSprite().switchAnimation("frightened");
+                        controller->getTarget()->getSprite().getAnimator().startAnimation("frightened");
                     } else
                         controller->requestDirectionChange(ime::Direction::Left);
             });
         }
 
-        introView_.init(engine().getPersistentData().getValueFor<int>("high-score"));
+        introView_.init(cache().getValue<int>("high-score"));
         pacmanController_ = std::make_unique<ime::TargetGridMover>(grid_, objects_.at("pacman")[0]);
         pacmanController_->setDestination(ime::Index{8, 0});
         pacmanController_->onDestinationReached([this](ime::Tile) {
             if (pacmanPath_.empty())
-                engine().popState();
+                engine().popScene();
             else {
                 pacmanController_->setDestination(pacmanPath_.front());
                 pacmanPath_.pop();
@@ -78,7 +79,7 @@ namespace pacman {
 
         pacmanController_->onEnemyCollision([](auto pacman, std::shared_ptr<ime::Entity> ghost) {
             ghost->setCollidable(false);
-            std::dynamic_pointer_cast<Ghost>(ghost)->getSprite().hide();
+            ghost->getSprite().setVisible(false);
         });
 
         pacmanController_->onAdjacentTileReached([this](ime::Tile tile) {
@@ -91,20 +92,20 @@ namespace pacman {
 
         pacmanController_->onCollectableCollision([this](auto target, auto collectable) {
             if (collectable->getClassType() == "Fruit") {
-                engine().getAudioManager().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
-                std::dynamic_pointer_cast<Fruit>(collectable)->eat();
+                audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
+                std::static_pointer_cast<Fruit>(collectable)->eat();
             } else if (collectable->getClassType() == "Pellet") {
-                auto pellet = std::dynamic_pointer_cast<Pellet>(collectable);
+                auto pellet = std::static_pointer_cast<Pellet>(collectable);
                 if (pellet->getPelletType() == PelletType::PowerPellet) {
                     for (const auto& ghost : objects_.at("ghosts")) {
                         ghost->setVulnerable(true);
-                        std::dynamic_pointer_cast<Ghost>(ghost)->getSprite().switchAnimation("frightened");
-                        std::dynamic_pointer_cast<Ghost>(ghost)->setSpeed(std::dynamic_pointer_cast<Ghost>(ghost)->getSpeed() / 4.0f);
+                        ghost->getSprite().getAnimator().startAnimation("frightened");
+                        std::static_pointer_cast<Ghost>(ghost)->setSpeed(std::static_pointer_cast<Ghost>(ghost)->getSpeed() / 4.0f);
                     }
-                    engine().getAudioManager().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
+                    audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
                 } else {
                     Utils::enlargePacman(objects_.at("pacman")[0], 10.0f);
-                    engine().getAudioManager().play(ime::audio::Type::Sfx,"superPelletEaten.wav");
+                    audio().play(ime::audio::Type::Sfx,"superPelletEaten.wav");
                 }
                 pellet->eat();
             } else if (collectable->getClassType() == "Key") {
@@ -113,7 +114,7 @@ namespace pacman {
                     if (Utils::unlockDoor(door, collectable))
                         door->setActive(false);
                 }
-                engine().getAudioManager().play(ime::audio::Type::Sfx, "keyEaten.wav");
+                audio().play(ime::audio::Type::Sfx, "keyEaten.wav");
             }
         });
 
@@ -128,23 +129,24 @@ namespace pacman {
             Utils::removeInactiveObjectsFromContainer(objects_.at("doors"));
         });
 
-        //Make state skippable by pressing enter key
-        engine().getInputManager().addKeyListener(ime::KeyEvent::KeyUp, ime::input::Keyboard::Key::Enter, [this] {
-            engine().popState();
+        //Make scene skippable by pressing enter key
+        input().onKeyUp([this](ime::input::Keyboard::Key key) {
+            if (key == ime::input::Keyboard::Key::Enter)
+                engine().popScene();
         });
     }
 
-    void IntroState::createGrid() {
+    void IntroScene::createGrid() {
         grid_.loadFromFile("textFiles/levels/introMaze.txt");
         grid_.setPosition(-42, 0);
         grid_.setGridVisible(false);
-        dynamic_cast<ime::Sprite&>(grid_.getBackground()) = SpriteContainer::getSprite("intro_grid");
+        grid_.getBackground() = SpriteContainer::getSprite("intro_grid");
         grid_.getBackground().setPosition({5.0f, 6.0f});
         grid_.getBackground().scale(2.1f, 2.1f);
         grid_.showLayer("background");
     }
 
-    void IntroState::createObjects() {
+    void IntroScene::createObjects() {
         objects_ = Utils::createObjects(grid_);
 
         auto pacman = objects_.at("pacman")[0];
@@ -165,7 +167,7 @@ namespace pacman {
         auto fruits = std::vector{"apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake", "peach"};
         for (auto i = 0u; i < objects_.at("fruits").size(); ++i) {
             auto newSprite = SpriteContainer::getSprite(fruits[i]);
-            auto& oldSprite = std::dynamic_pointer_cast<Fruit>(objects_.at("fruits").at(i))->getSprite();
+            auto& oldSprite = objects_.at("fruits").at(i)->getSprite();
             newSprite.setOrigin(oldSprite.getOrigin());
             newSprite.setPosition(oldSprite.getPosition());
             newSprite.setScale(oldSprite.getScale());
@@ -173,11 +175,7 @@ namespace pacman {
         }
     }
 
-    bool IntroState::isEntered() const {
-        return grid_.getSize().x > 0;
-    }
-
-    void IntroState::render(ime::Window &renderTarget) {
+    void IntroScene::render(ime::Window &renderTarget) {
         grid_.draw(renderTarget);
         introView_.render(renderTarget);
         static auto objectsDrawer = Drawer(renderTarget);
@@ -189,11 +187,11 @@ namespace pacman {
         objectsDrawer.drawEntities(objects_.at("pacman"));
     }
 
-    void IntroState::update(ime::Time deltaTime) {
+    void IntroScene::update(ime::Time deltaTime) {
         introView_.update(deltaTime);
     }
 
-    void IntroState::fixedUpdate(ime::Time deltaTime) {
+    void IntroScene::fixedUpdate(ime::Time deltaTime) {
         for (auto& pellet : objects_.at("pellets"))
             std::dynamic_pointer_cast<Pellet>(pellet)->update(deltaTime);
         for (auto& ghost : objects_.at("ghosts"))
@@ -206,13 +204,9 @@ namespace pacman {
             ghostController->update(deltaTime);
     }
 
-    void IntroState::onExit() {
+    void IntroScene::onExit() {
         engine().onFrameEnd(nullptr);
     }
 
-    void IntroState::handleEvent(ime::Event event) {}
-
-    void IntroState::onPause() {}
-
-    void IntroState::onResume() {}
+    void IntroScene::handleEvent(ime::Event event) {}
 }

@@ -22,10 +22,10 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_INTROSTATE_H
-#define SUPERPACMAN_INTROSTATE_H
+#ifndef SUPERPACMAN_INTROSCENE_H
+#define SUPERPACMAN_INTROSCENE_H
 
-#include <IME/core/states/State.h>
+#include <IME/core/scene/Scene.h>
 #include <IME/core/tilemap/TileMap.h>
 #include <IME/core/entity/Entity.h>
 #include <IME/core/physics/TargetGridMover.h>
@@ -35,73 +35,54 @@
 
 namespace pacman {
     /**
-     * @brief Defines the intro state of the game
+     * @brief Defines the intro scene of the game
      *
-     * This state is a demonstration of how the game works. Pacman moves
+     * This scene is a demonstration of how the game works. Pacman moves
      * back and forth between the left and right edges of the screen while
      * eating collectables (keys, fruits and pellets). Each collectable
-     * demonstrate what it does when it is eaten. The state pops itself
+     * demonstrate what it does when it is eaten. The scene pops itself
      * after Pacman and all the ghosts leave the screen (demo finished)
      */
-    class IntroState : public ime::State {
+    class IntroScene : public ime::Scene {
     public:
         /**
-         * @brief Create state
+         * @brief Create the scene
          * @param engine Reference to the game
          */
-        explicit IntroState(ime::Engine &engine);
+        explicit IntroScene(ime::Engine &engine);
 
         /**
-         * @brief Enter a state
+         * @brief Enter the scene
          *
-         * This function will be called by the engine before the state is
-         * entered for the first time.
-         *
-         * @note After the state is entered, the function isEntered
-         * returns true
-         *
-         * @see isEntered
+         * This function is called by the game engine when the scene
+         * is entered for the first time
          */
         void onEnter() override;
 
         /**
-         * @brief Check whether or not a state is entered
-         * @return True if the state is entered or false if the state
-         *         is not entered
-         *
-         * This function will be called by the engine after a state
-         * pop operation. This ensures that a previously entered state
-         * is resumed instead of being re-entered
-         *
-         * @see onEnter, onPause, onResume
-         */
-        bool isEntered() const override;
-
-        /**
          * @brief Handle a system event
-         * @param event Event to handle
+         * @param event System event to be handled
          *
-         * This function wil be called by the engine at the start of
-         * the current frame
+         * This function is called by the game engine before the
+         * scene is updated
          */
         void handleEvent(ime::Event event) override;
 
         /**
-         * @brief Update the state
+         * @brief Update the scene
          * @param deltaTime Time passed since last update
          *
-         * This function will be called once per frame by the engine.
-         * The delta passed to it is frame rate dependent. This means
-         * that it depends on how long the current frames takes to
-         * complete. All updates that need a variable time step are
-         * defined in this function
+         * This function is called by the game engine after the scene
+         * has handled system events and external inputs (Keyboard and
+         * mouse). The function is called once per frame and the delta
+         * passed to it is frame rate dependent
          *
          * @see fixedUpdate
          */
         void update(ime::Time deltaTime) override;
 
         /**
-         * @brief Update state in fixed time steps
+         * @brief Update the scene in a fixed time steps
          * @param deltaTime Time passed since last update
          *
          * This function may be called multiple times per frame or not
@@ -116,44 +97,21 @@ namespace pacman {
         void fixedUpdate(ime::Time deltaTime) override;
 
         /**
-         * @brief Render the state on a render target
-         * @param renderTarget Target to render state on
+         * @brief Render the scene on a render target
+         * @param renderTarget Target to render scene on
          *
-         * This function will be called once per frame by the engine
-         * after all events have been handled and all updates have
-         * been performed for the current frame
+         * This function is called by the game engine after all events
+         * have been handled and all updates have been performed for the
+         * current frame
          */
         void render(ime::Window &renderTarget) override;
 
         /**
-         * @brief Pause the state
+         * @brief Exit the scene
          *
-         * This function will be called by the game engine before a state
-         * push operation. This function allows a state to pause itself
-         * such that when it is returned to, it can resume where it left
-         * of instead of being re-entered
-         *
-         * @see onEnter and onResume
-         */
-        void onPause() override;
-
-        /**
-         * @brief Resume a paused state
-         *
-         * This function will be called by the game engine after a state
-         * pop operation if the state was paused
-         *
-         * @see onPause
-         */
-        void onResume() override;
-
-        /**
-         * @brief Exit a state
-         *
-         * This function will be called by the engine before the state
-         * is popped. It may be useful if there are some cleanup
-         * procedures that need to be taken care of before the state
-         * is destroyed
+         * This function is called by the engine before the scene
+         * is popped. It is used to perform clean up before the scene
+         * is removed from the game engine
          */
         void onExit() override;
 
@@ -171,11 +129,11 @@ namespace pacman {
     private:
         //Grid
         ime::TileMap grid_;
-        //Frontend for this state
+        //Frontend for this scene
         IntroView introView_;
         //Container for all game entities
         std::unordered_map<std::string, std::vector<std::shared_ptr<ime::Entity>>> objects_;
-        //Path pacman follows in this state
+        //Path pacman follows in this scene
         std::queue<ime::Index> pacmanPath_;
         //Pacmans movement controller
         std::unique_ptr<ime::TargetGridMover> pacmanController_;

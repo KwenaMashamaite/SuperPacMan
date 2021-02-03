@@ -25,7 +25,9 @@
 #include "DoorLocker.h"
 
 namespace pacman {
-    DoorLocker::DoorLocker(int id) : id_(id), isLocked_(false)
+    DoorLocker::DoorLocker(int id) :
+        id_(id),
+        isLocked_(false)
     {}
 
     void DoorLocker::lock(const Key &key) {

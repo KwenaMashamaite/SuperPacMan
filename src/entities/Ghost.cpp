@@ -41,17 +41,11 @@ namespace pacman {
         auto animations = GhostAnimations();
         animations.createAnimationsFor(ghostName);
         for (const auto& animation : animations.getAll())
-            sprite_.addAnimation(animation);
+            getSprite().getAnimator().addAnimation(animation);
 
         setDirection(ime::Direction::Left);
-        sprite_.switchAnimation("goingLeft");
-        sprite_.setOrigin(sprite_.getLocalBounds().width / 2.0f, sprite_.getLocalBounds().height / 2.0f);
-        sprite_.scale(2.0f, 2.0f);
-
-        //Make the sprite track the position of the ghost
-        onEvent("positionChange", ime::Callback<float, float>([this](float x, float y) {
-            sprite_.setPosition(x + getSize().x / 2.0f, y + getSize().y / 2.0f);
-        }));
+        getSprite().getAnimator().startAnimation("goingLeft");
+        //getSprite().scale(2.0f, 2.0f);
 
         onEvent("directionChange", ime::Callback<ime::Direction>([this](ime::Direction newDir) {
             if (getState().first == States::Frightened || newDir == ime::Direction::Unknown)
@@ -59,11 +53,11 @@ namespace pacman {
 
             auto dir = Utils::convertToString(newDir);
             if (getState().first == States::Eaten)
-                sprite_.switchAnimation("going" + dir + "Eaten");
+                getSprite().getAnimator().startAnimation("going" + dir + "Eaten");
             else if (isFlattened_)
-                sprite_.switchAnimation("going" + dir + "Flat");
+                getSprite().getAnimator().startAnimation("going" + dir + "Flat");
             else
-                sprite_.switchAnimation("going" + dir);
+                getSprite().getAnimator().startAnimation("going" + dir);
         }));
     }
 
@@ -84,10 +78,6 @@ namespace pacman {
 
     Ghost::Name Ghost::getGhostName() const {
         return ghostName_;
-    }
-
-    ime::AnimatableSprite &Ghost::getSprite() {
-        return sprite_;
     }
 
     void Ghost::pushState(States curState, std::shared_ptr<IState> state) {
@@ -147,21 +137,21 @@ namespace pacman {
                 case ime::Direction::Unknown:
                     break;
                 case ime::Direction::Left:
-                    setPosition(getPosition().x - velocity, getPosition().y);
+                    getTransform().move(-velocity, 0);
                     break;
                 case ime::Direction::Right:
-                    setPosition(getPosition().x + velocity, getPosition().y);
+                    getTransform().move(velocity, 0);
                     break;
                 case ime::Direction::Up:
-                    setPosition(getPosition().x, getPosition().y - velocity);
+                    getTransform().move(0, -velocity);
                     break;
                 case ime::Direction::Down:
-                    setPosition(getPosition().x, getPosition().y + velocity);
+                    getTransform().move(0, velocity);
                     break;
             }
         }
 
         stateController_.getCurrentState().second->update(deltaTime);
-        sprite_.updateAnimation(deltaTime);
+        getSprite().updateAnimation(deltaTime);
     }
 }

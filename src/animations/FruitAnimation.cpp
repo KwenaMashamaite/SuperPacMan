@@ -25,9 +25,12 @@
 #include "FruitAnimation.h"
 
 namespace pacman {
-    FruitAnimation::FruitAnimation() {
-        animation_ = ime::Animation::create("foodSlide", "spritesheet.png", ime::seconds(1));
-        animation_->addFrames({151, 52}, {16, 16}, 17);
+    FruitAnimation::FruitAnimation() :
+        spritesheet_{"fruits-sheet", "spritesheet.png", {16, 16}, {1, 1}}
+    {
+        spritesheet_.create({0, 141, 290, 18});
+        animation_ = ime::Animation::create("fruits-slide", spritesheet_, ime::seconds(1));
+        animation_->addFrames({0, 0}, 17);
         animation_->setLoop(true);
     }
 
