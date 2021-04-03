@@ -160,25 +160,6 @@ namespace pacman::Utils {
         return "unknown";
     }
 
-    void teleportTarget(ime::GridMover& gridMover) {
-        auto target = gridMover.getTarget();
-        if (target->getDirection() != ime::Direction::Left
-            && target->getDirection() != ime::Direction::Right)
-        {
-            return;
-        }
-
-        auto& grid = gridMover.getGrid();
-        auto prevTile = grid.getTileOccupiedByChild(target);
-        grid.removeChild(target);
-        if (target->getDirection() == ime::Direction::Left)
-            grid.addChild(target, {prevTile.getIndex().row,
-                static_cast<int>(grid.getSizeInTiles().x - 1)});
-        else if (target->getDirection() == ime::Direction::Right)
-            grid.addChild(target, {prevTile.getIndex().row, 0});
-        gridMover.resetTargetTile();
-    }
-
     void triggerAnimationSwitch(std::shared_ptr<ime::Entity> entity) {
         if (entity) {
             auto previousDirection = entity->getDirection();

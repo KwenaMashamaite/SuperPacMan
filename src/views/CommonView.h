@@ -25,44 +25,41 @@
 #ifndef SUPERPACMAN_COMMONVIEW_H
 #define SUPERPACMAN_COMMONVIEW_H
 
-#include <IME/graphics/Window.h>
 #include <IME/ui/GuiContainer.h>
-#include <IME/graphics/Sprite.h>
 #include <IME/core/time/Timer.h>
-#include <IME/core/time/Time.h>
 
-namespace pacman {
+namespace spm {
     /**
-     * @brief Defines the view that appears across all states
+     * @brief Defines the view that appears across all scenes
      *
      * This view includes the score and high score displayed at the top of
      * the screen, the flashing 1 UP text at the top left edge of the screen,
      * Pacman's current number of lives at the bottom left edge of the screen
      * and the level fruits at the bottom right of the screen
      *
-     * This view is used by all game states except the loading state
+     * This view is used by all game scenes except the LoadingScene
      */
     class CommonView {
     public:
         /**
-         * @brief Create view
-         * @param renderTarget Target to render view on
-         * @param level Current level
-         * @param lives Pacman;s remaining lives
+         * @brief Constructor
+         * @param gui Container for all UI widgets in the view
          */
-        CommonView(ime::Window& renderTarget, int level, int lives);
+        explicit CommonView(ime::ui::GuiContainer& gui);
 
         /**
          * @brief Initialize the view
+         * @param level The current game level
+         * @param lives The current number of pacman lives
          */
-        void init();
+        void init(unsigned int level, unsigned int lives);
 
         /**
          * @brief Set the score value to be displayed
          * @param score The score to display
          *
          * @warning This function must be called after the view is
-         * initialized
+         * initialized, otherwise undefined behavior
          *
          * @see init
          */
@@ -70,57 +67,37 @@ namespace pacman {
 
         /**
          * @brief Set the high score value to be displayed
-         * @param highScore The score to display
+         * @param highScore The high score to display
          *
          * @warning This function must be called after the view is
-         * initialized
+         * initialized, otherwise undefined behavior
          *
          * @see init
          */
         void setHighScore(int highScore);
 
         /**
-         * @brief Render the view
-         * @param renderTarget Target to render view on
-         */
-        void render(ime::Window& renderTarget);
-
-        /**
-         * @brief Update view
+         * @brief Update the view
          * @param deltaTime Time passed since view was last updated
          */
         void update(ime::Time deltaTime);
 
-        /**
-         * @brief Get access to a widget in the view
-         * @param widgetName Name of the widget to get access to
-         * @return The specified widget if it exists, otherwise a nullptr
-         *
-         * The object will be casted to the desired type if it's valid
-         */
-        template <typename T>
-        std::shared_ptr<T> getWidget(const std::string& widgetName) const {
-            return guiContainer_.getWidget<T>(widgetName);
-        }
-
     private:
         /**
-         * @brief Create high score texts
+         * @brief Create view widgets
          */
-        void createText();
+        void createWidgets();
 
         /**
-         * @brief Create fruit and pacman lives sprites
+         * @brief Create current level fruit and pacman lives depictions
+         * @param level The current game level
+         * @param The current number of lives of Pacman
          */
-        void createSprites();
+        void createSprites(unsigned int level, unsigned int lives);
 
     private:
-        ime::ui::GuiContainer guiContainer_;  //!< Container for all widgets
-        ime::Vector2u windowSize_;            //!< Size of the render target
-        std::vector<ime::Sprite> sprites_;    //!< Stores all sprites to be rendered
-        int level_;                           //!< Current level
-        int pacmanLives_;                     //!< Remaining pacman lives
-        ime::Timer timer_;                    //!< Timer
+        ime::ui::GuiContainer& gui_;  //!< Container for all widgets
+        ime::Timer timer_;            //!< One up text flash Timer
     };
 }
 
