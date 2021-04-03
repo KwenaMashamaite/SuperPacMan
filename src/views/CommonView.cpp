@@ -22,100 +22,105 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "CommonView.h"
-#include "../animations/FruitAnimation.h"
-#include "../common/SpriteContainer.h"
-#include "../utils/Utils.h"
+#include "src/views/CommonView.h"
 #include <IME/ui/widgets/Label.h>
-#include <IME/ui/widgets/HorizontalLayout.h>
-#include <IME/graphics/Colour.h>
+#include <IME/ui/widgets/Picture.h>
 #include <IME/ui/widgets/Panel.h>
 
-namespace pacman {
-    CommonView::CommonView(ime::Window &renderTarget, int level, int lives) :
-        guiContainer_(renderTarget),
-        windowSize_(renderTarget.getSize()),
-        level_{level},
-        pacmanLives_{lives}
+namespace spm {
+    CommonView::CommonView(ime::ui::GuiContainer &gui) :
+        gui_{gui}
     {
-        guiContainer_.setFont("namco.ttf");
+        gui_.setFont("namco.ttf");
     }
 
-    void CommonView::init() {
-        createText();
-        createSprites();
+    void CommonView::init(unsigned int level, unsigned int lives) {
+        createWidgets();
+        createSprites(level, lives);
 
         timer_ = ime::Timer::create(ime::milliseconds(200), [this] {
-            guiContainer_.getWidget<ime::ui::Label>("one_up")->toggleVisibility();
+            gui_.getWidget<ime::ui::Label>("lblOneUp")->toggleVisibility();
         }, -1);
         timer_.start();
     }
 
     void CommonView::setScore(int score) {
-        guiContainer_.getWidget<ime::ui::Label>("current_score_value")
-            ->setText(std::to_string(score));
+        gui_.getWidget<ime::ui::Label>("lblScoreValue")
+            ->setText(score == 0 ? "00" : std::to_string(score));
     }
 
     void CommonView::setHighScore(int highScore) {
-        guiContainer_.getWidget<ime::ui::Label>("high_score_value")
-            ->setText(std::to_string(highScore));
+        gui_.getWidget<ime::ui::Label>("lblHighScoreValue")
+            ->setText(highScore == 0 ? "00" : std::to_string(highScore));
     }
 
-    void CommonView::createText() {
-        auto container = ime::ui::Panel::create();
-        container->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
-        guiContainer_.addWidget(container, "container");
+    void CommonView::createWidgets() {
+        auto pnlContainer = ime::ui::Panel::create();
+        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        gui_.addWidget(pnlContainer, "pnlContainer");
 
-        auto oneUpText = ime::ui::Label::create("1UP");
-        oneUpText->setPosition("8.3%", "0");
-        oneUpText->getRenderer()->setTextColour(ime::Colour::Red);
-        container->addWidget(oneUpText, "one_up");
+        auto lblOneUp = ime::ui::Label::create("1UP");
+        lblOneUp->setPosition("8.3%", "0");
+        lblOneUp->getRenderer()->setTextColour(ime::Colour::Red);
+        pnlContainer->addWidget(lblOneUp, "lblOneUp");
 
-        auto highscoreText = ime::ui::Label::create("HIGH SCORE");
-        highscoreText->getRenderer()->setTextColour(ime::Colour::Red);
-        highscoreText->setPosition("(&.w - w) / 2", "0");
-        container->addWidget(highscoreText, "high_score_text");
+        auto lblScoreValue = ime::ui::Label::create("00");
+        lblScoreValue->getRenderer()->setTextColour(ime::Colour::White);
+        lblScoreValue->setPosition("4%", ime::bindBottom(lblOneUp));
+        pnlContainer->addWidget(std::move(lblScoreValue), "lblScoreValue");
 
-        auto scoreValue = ime::ui::Label::create("00");
-        scoreValue->getRenderer()->setTextColour(ime::Colour::White);
-        scoreValue->setPosition("9%", ime::bindBottom(oneUpText));
-        container->addWidget(std::move(scoreValue), "current_score_value");
+        auto lblHighScore = ime::ui::Label::create("HIGH SCORE");
+        lblHighScore->getRenderer()->setTextColour(ime::Colour::Red);
+        lblHighScore->setPosition("(&.w - w) / 2", "0");
+        pnlContainer->addWidget(lblHighScore, "lblHighScore");
 
-        auto highscoreValue = ime::ui::Label::create("00");
-        highscoreValue->getRenderer()->setTextColour(ime::Colour::White);
-        highscoreValue->setPosition("(&.w - w) / 2", ime::bindBottom(highscoreText));
-        container->addWidget(std::move(highscoreValue), "high_score_value");
+        auto lblHighScoreValue = ime::ui::Label::create("00");
+        lblHighScoreValue->getRenderer()->setTextColour(ime::Colour::White);
+        lblHighScoreValue->setPosition("(&.w - w) / 2", ime::bindBottom(lblHighScore));
+        pnlContainer->addWidget(std::move(lblHighScoreValue), "lblHighScoreValue");
 
-        auto creditText = ime::ui::Label::create("CREDIT 0");
-        creditText->setVisible(pacmanLives_ <= 0);
-        creditText->getRenderer()->setTextColour(ime::Colour::White);
-        creditText->setPosition("8.3%", "&.h - h");
-        container->addWidget(std::move(creditText), "credit_text");
+        auto lblCredit = ime::ui::Label::create("CREDIT 0");
+        lblCredit->getRenderer()->setTextColour(ime::Colour::White);
+        lblCredit->setPosition("8.3%", "&.h - h");
+        pnlContainer->addWidget(std::move(lblCredit), "lblCredit");
     }
 
-    void CommonView::createSprites() {
-        for (auto i = 0u; i < sprites_.size(); ++i) {
-            auto sprite = SpriteContainer::getSprite(Utils::getFruitName(level_));
-            sprite.scale(1.7f, 1.7f);
-            sprite.setPosition(windowSize_.x - sprites_[i].getGlobalBounds().width
-                - i * sprite.getGlobalBounds().width, windowSize_.y - sprite.getGlobalBounds().height);
-            sprites_.push_back(std::move(sprite));
+    void CommonView::createSprites(unsigned int level, unsigned int lives) {
+        auto pnlContainer = gui_.getWidget<ime::ui::Panel>("pnlContainer");
+
+        // Depict the current game level as fruit images
+        auto frameSize = ime::Vector2u{16, 16};
+        auto startPos = ime::Vector2u{1, 142}; //Top-left position of the first frame on the spritesheet
+        for (auto i = 0u; i < level; ++i) {
+            auto picFruit = ime::ui::Picture::create("spritesheet.png", {startPos.x + (i * (frameSize.x + 1)), startPos.y, frameSize.x, frameSize.y});
+            picFruit->setOrigin(1.0f, 1.0f);
+            if (i == 0)
+                picFruit->setPosition(pnlContainer->getSize());
+            else {
+                auto pivPrevFruit = pnlContainer->getWidget("picFruit" + std::to_string(i - 1));
+                picFruit->setPosition(ime::bindLeft(pivPrevFruit), std::to_string(pivPrevFruit->getPosition().y));
+            }
+
+            pnlContainer->addWidget(std::move(picFruit), "picFruit" + std::to_string(i));
         }
 
-        //Sprites that depict pacmans remaining lives
-        for (auto i = 0u; i < pacmanLives_; ++i) {
-            auto lifeSprite = SpriteContainer::getSprite("life");
-            lifeSprite.scale(1.8f, 1.8f);
-            lifeSprite.setPosition(i * lifeSprite.getGlobalBounds().width,
-                windowSize_.y - lifeSprite.getGlobalBounds().height);
-            sprites_.push_back(std::move(lifeSprite));
-        }
-    }
+        // Depict the remaining lives of pacman as a sprite image
+        if (lives > 0) {
+            pnlContainer->getWidget("lblCredit")->setVisible(false);
 
-    void CommonView::render(ime::Window &renderTarget) {
-        guiContainer_.draw();
-        for (auto& sprite : sprites_)
-            renderTarget.draw(sprite);
+            startPos = {216, 1};
+            auto picLife = ime::ui::Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y});
+            picLife->setOrigin(0.0f, 1.0f);
+            picLife->setPosition(0, pnlContainer->getSize().y);
+            pnlContainer->addWidget(picLife, "picLife0");
+
+            for (auto i = 1u; i < lives; ++i) {
+                auto picLifeCopy = picLife->clone();
+                auto picPrev = pnlContainer->getWidget("picLife" + std::to_string(i - 1));
+                picLifeCopy->setPosition(ime::bindRight(picPrev), std::to_string(picPrev->getPosition().y));
+                pnlContainer->addWidget(std::move(picLifeCopy), "picLife" + std::to_string(i));
+            }
+        }
     }
 
     void CommonView::update(ime::Time deltaTime) {

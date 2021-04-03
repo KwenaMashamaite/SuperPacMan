@@ -22,56 +22,59 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_Utils_H
-#define SUPERPACMAN_Utils_H
+#ifndef SUPERPACMAN_GHOST_H
+#define SUPERPACMAN_GHOST_H
 
-#include <IME/core/tilemap/TileMap.h>
+#include <IME/core/game_object/GameObject.h>
 #include <IME/core/physics/tilemap/GridMover.h>
-#include <unordered_map>
-#include <vector>
-#include <memory>
 
-/**
- * @brief Defines a bunch of helper functions
- */
 namespace spm {
-    class Door;
-    class Key;
-
-    namespace utils {
-        /**
-         * @brief Get a string representation of ime::Direction
-         * @param direction Direction to get the string version of
-         * @return A string version of ime::Direction
-         */
-        extern std::string convertToString(ime::Direction direction);
+    /**
+     * @brief Ghost actor
+     */
+    class Ghost : public ime::GameObject {
+    public:
+        using Ptr = std::shared_ptr<Ghost>; //!< Shared actor pointer
 
         /**
-         * @brief Unlock a door using  key
-         * @param door Door to be unlocked
-         * @param key Key to unlock door with
-         * @return True if door was unlocked or false if door is already unlocked
-         *         or the given key is not compatible with the door locker
+         * @brief The colour of the ghost (For Cosmetic purposes only)
          */
-        extern bool unlockDoor(Door* door, const Key* key);
+        enum class Colour {
+            Red,     //!< Blinky
+            Pink,    //!< Pinky
+            Cyan,    //!< Inky
+            Orange,  //!< Clyde
+        };
+
 
         /**
-         * @brief Lock a door with a key
-         * @param door Door to be locked the door with
-         * @param key Key to lock the door with
-         *
-         * Note that grid doors are always locked in a predetermined order,
-         * depending on where they are in the grid
+         * @brief Constructor
+         * @param scene The scene that the actor is in
+         * @param colour The colour of the ghost
          */
-        extern void lockDoor(Door* key);
+        explicit Ghost(ime::Scene& scene, Colour colour);
 
         /**
-         * @brief Get the name of the fruit that pacman eats on the current level
-         * @param level The current level
-         * @return The name of the fruit
+         * @brief Get the name of this class
+         * @return The name of this class
          */
-        extern std::string getFruitName(int level);
-    }
+        std::string getClassName() const override;
+
+        /**
+         * @brief Set the movement controller of the ghost
+         * @param gridMover The ghosts movement controller
+         */
+        void setMovementController(ime::GridMover* gridMover);
+
+        /**
+         * @brief Get the ghosts movement controller
+         * @return The ghosts movement controller
+         */
+        ime::GridMover*getMoveController() const;
+
+    private:
+        ime::GridMover* gridMover_; //!< Controls the movement of the ghost in the grid
+    };
 }
 
 #endif

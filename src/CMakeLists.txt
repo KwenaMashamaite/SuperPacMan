@@ -1,68 +1,57 @@
 set(SRC_FILES
-        main.cpp
-        Game.cpp
-        common/Drawer.cpp
-        animations/GhostAnimations.cpp
-        animations/PacManAnimations.cpp
-        animations/PelletAnimations.cpp
-        animations/FruitAnimation.cpp
-        controllers/PacManController.cpp
-        controllers/GhostController.cpp
-        views/LoadingView.cpp
-        views/MainMenuView.cpp
-        views/LevelStartView.cpp
-        views/CommonView.cpp
-        views/IntroView.cpp
-        views/StartUpView.cpp
-        entities/states/StateController.cpp
-        common/SpriteContainer.cpp
-        entities/Door.cpp
-        entities/DoorLocker.cpp
-        entities/Fruit.cpp
-        entities/Ghost.cpp
-        entities/Key.cpp
-        entities/PacMan.cpp
-        entities/Pellet.cpp
-        entities/Wall.cpp
-        scoreboard/Score.cpp
-        scoreboard/Scoreboard.cpp
-        scenes/IntroScene.cpp
-        scenes/LoadingScene.cpp
-        scenes/MainMenuScene.cpp
-        scenes/LevelStartScene.cpp
-        scenes/PlayScene.cpp
-        scenes/StartUpScene.cpp
-        utils/Utils.cpp
-        entities/states/ghost/GhostIdleState.cpp
-        entities/states/pacman/PacManIdleState.cpp
-        entities/states/ghost/EatenState.cpp
-        entities/states/ghost/ScatterState.cpp
-        entities/states/ghost/FrightenedState.cpp
-        entities/states/pacman/SuperState.cpp
-        entities/states/pacman/DyingState.cpp
-        entities/states/TimedState.cpp
-        entities/states/ghost/ChaseState.cpp
-        animations/GridAnimation.cpp
-        entities/states/pacman/NormalState.cpp
-        entities/states/ghost/RoamState.cpp)
+    main.cpp
+    models/actors/Door.cpp
+    models/actors/DoorLocker.cpp
+    models/actors/Fruit.cpp
+    models/actors/Ghost.cpp
+    models/actors/Key.cpp
+    models/actors/PacMan.cpp
+    models/actors/Pellet.cpp
+    models/actors/Wall.cpp
+    models/game/Game.cpp
+    models/scenes/GameplayScene.cpp
+    models/scenes/IntroScene.cpp
+    models/scenes/LevelStartScene.cpp
+    models/scenes/LoadingScene.cpp
+    models/scenes/MainMenuScene.cpp
+    models/scenes/StartUpScene.cpp
+    models/scoreboard/Score.cpp
+    models/scoreboard/Scoreboard.cpp
+    models/world/Grid.cpp
+    utils/ObjectCreator.cpp
+    utils/Utils.cpp
+    views/animations/FruitAnimation.cpp
+    views/animations/GhostAnimations.cpp
+    views/animations/PacManAnimations.cpp
+    views/animations/PelletAnimations.cpp
+    views/animations/GridAnimation.cpp
+    views/CommonView.cpp
+    views/IntroSceneView.cpp
+    views/LevelStartSceneView.cpp
+    views/LoadingSceneView.cpp
+    views/MainMenuSceneView.cpp
+    views/StartUpSceneView.cpp)
 
-#Set executables output folder
+# Set executables output folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
-#Create executable project source files
+# Create executable project source files
 add_executable(SuperPacMan ${SRC_FILES})
 
-#Find SFML
-set(SFML_DIR "${PROJECT_SOURCE_DIR}/extlibs/SFML/lib/cmake/SFML")
-find_package(SFML 2.5.1 COMPONENTS REQUIRED system window graphics audio)
-
-#Find TGUI
-set(TGUI_DIR "${PROJECT_SOURCE_DIR}/extlibs/TGUI/lib/cmake/TGUI")
-find_package(TGUI 0.9.0 REQUIRED)
-
-#Find IME
-#set(IME_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/lib/cmake/IME")
+# Find third party dependency
+set(IME_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/lib/cmake/IME")
+set(IME_BIN_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/bin")
 find_package(IME 2.0.0 REQUIRED)
 
-# Link TGUI, SFML and IME
-target_link_libraries (SuperPacMan PRIVATE tgui sfml-graphics sfml-window sfml-system sfml-audio ime)
+# Link third party dependency to executable
+target_link_libraries (SuperPacMan PRIVATE ime)
+
+# Add <project>/ as include directory
+include_directories(${PROJECT_SOURCE_DIR}/)
+
+# Copy runtime dependencies to the executable output folder
+add_custom_command(TARGET SuperPacMan PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/bin
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${IME_BIN_DIR}/${CMAKE_BUILD_TYPE}/" $<TARGET_FILE_DIR:SuperPacMan>
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/assets" $<TARGET_FILE_DIR:SuperPacMan>/assets
+)

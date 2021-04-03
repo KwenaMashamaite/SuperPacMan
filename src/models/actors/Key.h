@@ -22,56 +22,48 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_Utils_H
-#define SUPERPACMAN_Utils_H
+#ifndef SUPERPACMAN_KEY_H
+#define SUPERPACMAN_KEY_H
 
-#include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/tilemap/GridMover.h>
-#include <unordered_map>
-#include <vector>
-#include <memory>
+#include <IME/core/game_object/GameObject.h>
 
-/**
- * @brief Defines a bunch of helper functions
- */
 namespace spm {
-    class Door;
-    class Key;
-
-    namespace utils {
+    /**
+     * @brief A key that can lock or unlock a Door
+     */
+    class Key : public ime::GameObject {
+    public:
         /**
-         * @brief Get a string representation of ime::Direction
-         * @param direction Direction to get the string version of
-         * @return A string version of ime::Direction
-         */
-        extern std::string convertToString(ime::Direction direction);
-
-        /**
-         * @brief Unlock a door using  key
-         * @param door Door to be unlocked
-         * @param key Key to unlock door with
-         * @return True if door was unlocked or false if door is already unlocked
-         *         or the given key is not compatible with the door locker
-         */
-        extern bool unlockDoor(Door* door, const Key* key);
-
-        /**
-         * @brief Lock a door with a key
-         * @param door Door to be locked the door with
-         * @param key Key to lock the door with
+         * @brief Construct the key
+         * @param scene The scene the object belongs to
+         * @param id Identification code of the key
          *
-         * Note that grid doors are always locked in a predetermined order,
-         * depending on where they are in the grid
+         * The id is used for distinguishing between different key
+         * objects. Multiple key objects can have the same identifier
          */
-        extern void lockDoor(Door* key);
+        explicit Key(ime::Scene& scene, int id = -1);
 
         /**
-         * @brief Get the name of the fruit that pacman eats on the current level
-         * @param level The current level
-         * @return The name of the fruit
+         * @brief Change the id of the key
+         * @param id The new id of the key
          */
-        extern std::string getFruitName(int level);
-    }
+        void setId(int id);
+
+        /**
+         * @brief Get the keys identification code
+         * @return The keys identification code
+         */
+        int getId() const;
+
+        /**
+         * @brief Get the name of this class
+         * @return The name of this class
+         */
+        std::string getClassName() const override;
+
+    private:
+        int id_;
+    };
 }
 
 #endif

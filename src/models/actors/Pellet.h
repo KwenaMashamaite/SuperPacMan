@@ -22,56 +22,49 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_Utils_H
-#define SUPERPACMAN_Utils_H
+#ifndef SUPERPACMAN_PELLET_H
+#define SUPERPACMAN_PELLET_H
 
-#include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/tilemap/GridMover.h>
-#include <unordered_map>
-#include <vector>
-#include <memory>
+#include <IME/core/game_object/GameObject.h>
 
-/**
- * @brief Defines a bunch of helper functions
- */
 namespace spm {
-    class Door;
-    class Key;
-
-    namespace utils {
-        /**
-         * @brief Get a string representation of ime::Direction
-         * @param direction Direction to get the string version of
-         * @return A string version of ime::Direction
-         */
-        extern std::string convertToString(ime::Direction direction);
+    /**
+     * @brief A pellet that can be eaten by Pacman
+     */
+    class Pellet : public ime::GameObject {
+    public:
+        using Ptr = std::shared_ptr<Pellet>; //!< Shared actor pointer
 
         /**
-         * @brief Unlock a door using  key
-         * @param door Door to be unlocked
-         * @param key Key to unlock door with
-         * @return True if door was unlocked or false if door is already unlocked
-         *         or the given key is not compatible with the door locker
+         * @brief Pellet type
          */
-        extern bool unlockDoor(Door* door, const Key* key);
+        enum class Type {
+            Power, //!< Makes ghosts vulnerable when eaten
+            Super  //!< Gives Pacman super powers when eaten
+        };
 
         /**
-         * @brief Lock a door with a key
-         * @param door Door to be locked the door with
-         * @param key Key to lock the door with
-         *
-         * Note that grid doors are always locked in a predetermined order,
-         * depending on where they are in the grid
+         * @brief Constructor
+         * @param scene The scene the object is in
+         * @param type The type of the pellet
          */
-        extern void lockDoor(Door* key);
+        explicit Pellet(ime::Scene& scene, Type type);
 
         /**
-         * @brief Get the name of the fruit that pacman eats on the current level
-         * @param level The current level
-         * @return The name of the fruit
+         * @brief Get the class type
+         * @return Name of the concrete class the pellet belongs to
          */
-        extern std::string getFruitName(int level);
-    }
+        std::string getClassName() const override;
+
+        /**
+         * @brief Get the type of the pellet
+         * @return The type of the pellet
+         */
+        Type getPelletType() const;
+
+    private:
+        Type type_;
+    };
 }
 
 #endif

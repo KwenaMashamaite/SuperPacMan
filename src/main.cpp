@@ -1,9 +1,9 @@
-#include "Game.h"
+#include "src/models/game/Game.h"
 
 int main() {
-    auto pacman = pacman::Game();
-    pacman.initialize();
-    pacman.start();
+    auto superPacMan = spm::Game();
+    superPacMan.initialize();
+    superPacMan.start();
 
     return 0;
 }

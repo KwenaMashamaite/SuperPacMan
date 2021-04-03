@@ -22,56 +22,56 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_Utils_H
-#define SUPERPACMAN_Utils_H
+#ifndef SUPERPACMAN_STATECONTROLLER_H
+#define SUPERPACMAN_STATECONTROLLER_H
 
-#include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/tilemap/GridMover.h>
-#include <unordered_map>
-#include <vector>
+#include "IActorState.h"
 #include <memory>
+#include <stack>
+#include <utility>
+#include <string>
 
-/**
- * @brief Defines a bunch of helper functions
- */
-namespace spm {
-    class Door;
-    class Key;
-
-    namespace utils {
+namespace pacman {
+    /**
+     * @brief Finite State Machine (FSM) for an entity state
+     */
+    class StateController {
+    public:
         /**
-         * @brief Get a string representation of ime::Direction
-         * @param direction Direction to get the string version of
-         * @return A string version of ime::Direction
-         */
-        extern std::string convertToString(ime::Direction direction);
-
-        /**
-         * @brief Unlock a door using  key
-         * @param door Door to be unlocked
-         * @param key Key to unlock door with
-         * @return True if door was unlocked or false if door is already unlocked
-         *         or the given key is not compatible with the door locker
-         */
-        extern bool unlockDoor(Door* door, const Key* key);
-
-        /**
-         * @brief Lock a door with a key
-         * @param door Door to be locked the door with
-         * @param key Key to lock the door with
+         * @brief Add a state to the state controller
+         * @param name Name of the state
+         * @param state The sate to be added
          *
-         * Note that grid doors are always locked in a predetermined order,
-         * depending on where they are in the grid
+         * @warning The @a state must not be null
          */
-        extern void lockDoor(Door* key);
+        void pushState(const std::string& name, std::shared_ptr<IState> state);
 
         /**
-         * @brief Get the name of the fruit that pacman eats on the current level
-         * @param level The current level
-         * @return The name of the fruit
+         * @brief Remove a state from the state controller
          */
-        extern std::string getFruitName(int level);
-    }
+        void popState();
+
+        /**
+         * @brief Get the current/active state
+         * @return A pair in which the first element is the name of the active
+         *         and the second is the actual state object
+         *
+         * @warning If the state controller is empty then the first element
+         * is an empty string whilst the second element is a nullptr
+         */
+        std::pair<std::string, std::shared_ptr<IState>> getCurrentState();
+        std::pair<std::string, std::shared_ptr<IState>> getCurrentState() const;
+
+        /**
+         * @brief Check if the state controller is empty or not
+         * @return True if its empty, otherwise false
+         */
+        bool isEmpty() const;
+
+    private:
+        //States container
+        std::stack<std::pair<std::string, std::shared_ptr<IState>>> states_;
+    };
 }
 
 #endif
