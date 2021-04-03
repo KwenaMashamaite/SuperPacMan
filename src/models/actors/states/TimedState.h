@@ -22,56 +22,50 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_Utils_H
-#define SUPERPACMAN_Utils_H
+#ifndef SUPERPACMAN_TIMEDSTATE_H
+#define SUPERPACMAN_TIMEDSTATE_H
 
-#include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/tilemap/GridMover.h>
-#include <unordered_map>
-#include <vector>
-#include <memory>
+#include "IActorState.h"
+#include <IME/core/time/Timer.h>
 
-/**
- * @brief Defines a bunch of helper functions
- */
 namespace spm {
-    class Door;
-    class Key;
-
-    namespace utils {
+    /**
+     * @brief Abstract base class for actor states that are only active
+     *        for predetermined duration after which onExit is called
+     */
+    class TimedState : public IActorState {
+    public:
         /**
-         * @brief Get a string representation of ime::Direction
-         * @param direction Direction to get the string version of
-         * @return A string version of ime::Direction
-         */
-        extern std::string convertToString(ime::Direction direction);
-
-        /**
-         * @brief Unlock a door using  key
-         * @param door Door to be unlocked
-         * @param key Key to unlock door with
-         * @return True if door was unlocked or false if door is already unlocked
-         *         or the given key is not compatible with the door locker
-         */
-        extern bool unlockDoor(Door* door, const Key* key);
-
-        /**
-         * @brief Lock a door with a key
-         * @param door Door to be locked the door with
-         * @param key Key to lock the door with
+         * @brief Constructor
+         * @param timeout The duration of the state
          *
-         * Note that grid doors are always locked in a predetermined order,
-         * depending on where they are in the grid
+         * The state count down starts immediately
          */
-        extern void lockDoor(Door* key);
+        explicit TimedState(ime::Time timeout);
 
         /**
-         * @brief Get the name of the fruit that pacman eats on the current level
-         * @param level The current level
-         * @return The name of the fruit
+         * @brief Get the time left before state timeout
+         * @return The time left before state timeout
          */
-        extern std::string getFruitName(int level);
-    }
+        ime::Time getTimeout() const;
+
+        /**
+         * @brief Increment the current timeout
+         * @param value Value to increment by
+         *
+         * Note that a negative value decreases the timeout
+         */
+        void incrementTimeout(ime::Time value);
+
+        /**
+         * @brief Update state
+         * @param deltaTime Time passed since state was last updated
+         */
+        void update(ime::Time deltaTime) override;
+
+    private:
+        ime::Timer timer_;
+    };
 }
 
 #endif

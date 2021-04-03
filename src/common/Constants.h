@@ -27,7 +27,7 @@
 
 #include <IME/core/tilemap/Index.h>
 
-namespace pacman {
+namespace spm {
     /**
      * @brief Stores common date that doesn't change throughout the game
      */
@@ -42,7 +42,7 @@ namespace pacman {
 
         //Speed
         static constexpr auto PacManNormalSpeed = 120.0f;
-        static constexpr auto PacManSuperSpeed = 6.0f * PacManNormalSpeed;
+        static constexpr auto PacManSuperSpeed = 3.0f * PacManNormalSpeed;
         static constexpr auto GhostScatterSpeed = PacManNormalSpeed + 40.0f;
         static constexpr auto GhostChaseSpeed = PacManNormalSpeed + 3.0f;
         static constexpr auto GhostFrightenedSpeed = GhostChaseSpeed / 2.0f;
@@ -55,11 +55,19 @@ namespace pacman {
         static constexpr auto GhostPoints = 200;
 
         //Modes (All the duration are in seconds)
-        static constexpr auto SuperModeDuration = 10;
-        static constexpr auto PowerModeDuration = 10;
+        static constexpr auto InitialSuperModeTimeout = 15.0f;
+        static constexpr auto PowerModeDuration = 10.0f;
 
         //Other
         static constexpr auto PacManLives = 4;
+
+        struct Points {
+            static constexpr int FRUIT = 10;
+            static constexpr int KEY = 50;
+            static constexpr int POWER_PELLET = 50;
+            static constexpr int SUPER_PELLET = 100;
+            static constexpr int BROKEN_DOOR = 200;
+        };
     };
 
     /**

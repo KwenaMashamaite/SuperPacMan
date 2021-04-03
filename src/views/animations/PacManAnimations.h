@@ -22,56 +22,50 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_Utils_H
-#define SUPERPACMAN_Utils_H
+#ifndef SUPERPACMAN_PACMANANIMATIONS_H
+#define SUPERPACMAN_PACMANANIMATIONS_H
 
-#include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/tilemap/GridMover.h>
-#include <unordered_map>
+#include <IME/core/animation/Animation.h>
 #include <vector>
-#include <memory>
 
-/**
- * @brief Defines a bunch of helper functions
- */
 namespace spm {
-    class Door;
-    class Key;
-
-    namespace utils {
+    /**
+     * @brief Constructs all the pacman animations
+     */
+    class PacManAnimations {
+    public:
         /**
-         * @brief Get a string representation of ime::Direction
-         * @param direction Direction to get the string version of
-         * @return A string version of ime::Direction
+         * @brief Constructor
          */
-        extern std::string convertToString(ime::Direction direction);
-
-        /**
-         * @brief Unlock a door using  key
-         * @param door Door to be unlocked
-         * @param key Key to unlock door with
-         * @return True if door was unlocked or false if door is already unlocked
-         *         or the given key is not compatible with the door locker
-         */
-        extern bool unlockDoor(Door* door, const Key* key);
+        PacManAnimations();
 
         /**
-         * @brief Lock a door with a key
-         * @param door Door to be locked the door with
-         * @param key Key to lock the door with
-         *
-         * Note that grid doors are always locked in a predetermined order,
-         * depending on where they are in the grid
+         * @brief Create the pacman animations
          */
-        extern void lockDoor(Door* key);
+        void create();
 
         /**
-         * @brief Get the name of the fruit that pacman eats on the current level
-         * @param level The current level
-         * @return The name of the fruit
+         * @brief Get all of the created animations
+         * @return A list of all the pacman animations
          */
-        extern std::string getFruitName(int level);
-    }
+        const std::vector<ime::Animation::Ptr>& getAll() const;
+
+    private:
+        /**
+         * @brief Create an animation
+         * @param name Name of the animation
+         * @param index Index of the frame in the spritesheet
+         * @param super True to use super size spritesheet or false  to use
+         *              normal size spritesheet
+         */
+        void createAnimation(const std::string& name, ime::Index index, bool super = false);
+
+    private:
+        std::vector<ime::Animation::Ptr> animations_;
+        ime::SpriteSheet normalSizeSpritesheet_;
+        ime::SpriteSheet superSizeSpritesheet_;
+        ime::SpriteSheet deathSpritesheet_;
+    };
 }
 
 #endif

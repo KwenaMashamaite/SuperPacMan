@@ -22,56 +22,52 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_Utils_H
-#define SUPERPACMAN_Utils_H
+#ifndef SUPERPACMAN_GHOSTIDLESTATE_H
+#define SUPERPACMAN_GHOSTIDLESTATE_H
 
-#include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/tilemap/GridMover.h>
-#include <unordered_map>
-#include <vector>
+#include "../IActorState.h"
+#include <IME/core/entity/Entity.h>
 #include <memory>
 
-/**
- * @brief Defines a bunch of helper functions
- */
-namespace spm {
-    class Door;
-    class Key;
-
-    namespace utils {
+namespace pacman {
+    /**
+     * @brief A ghosts idle state
+     *
+     * In this state, the ghost cannot remains at its current position
+     * and cannot move around the maze
+     */
+    class GhostIdleState final : public IState {
+    public:
         /**
-         * @brief Get a string representation of ime::Direction
-         * @param direction Direction to get the string version of
-         * @return A string version of ime::Direction
+         * @brief Constructor
+         * @param ghost Ghost to be put in idle state
          */
-        extern std::string convertToString(ime::Direction direction);
+        explicit GhostIdleState(std::shared_ptr<ime::Entity> ghost);
 
         /**
-         * @brief Unlock a door using  key
-         * @param door Door to be unlocked
-         * @param key Key to unlock door with
-         * @return True if door was unlocked or false if door is already unlocked
-         *         or the given key is not compatible with the door locker
-         */
-        extern bool unlockDoor(Door* door, const Key* key);
-
-        /**
-         * @brief Lock a door with a key
-         * @param door Door to be locked the door with
-         * @param key Key to lock the door with
+         * @brief Initialize the state
          *
-         * Note that grid doors are always locked in a predetermined order,
-         * depending on where they are in the grid
+         * This function will be called by the FSM before a state is entered
+         * for the first time
          */
-        extern void lockDoor(Door* key);
+        void onEntry() override;
 
         /**
-         * @brief Get the name of the fruit that pacman eats on the current level
-         * @param level The current level
-         * @return The name of the fruit
+         * @brief Initialize the state
+         *
+         * This function will be called by the FSM before a state is entered
+         * for the first time
          */
-        extern std::string getFruitName(int level);
-    }
+        void update(ime::Time deltaTime) override;
+
+        /**
+         * @brief Initialize the state
+         *
+         * This function will be called by the FSM before a state is entered
+         * for the first time
+         */
+        void onExit() override;
+    };
 }
 
 #endif

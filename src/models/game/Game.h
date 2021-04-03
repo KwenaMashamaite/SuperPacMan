@@ -22,56 +22,46 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_Utils_H
-#define SUPERPACMAN_Utils_H
+#ifndef SUPERPACMAN_GAME_H
+#define SUPERPACMAN_GAME_H
 
-#include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/tilemap/GridMover.h>
-#include <unordered_map>
-#include <vector>
-#include <memory>
+#include <IME/core/engine/Engine.h>
 
-/**
- * @brief Defines a bunch of helper functions
- */
 namespace spm {
-    class Door;
-    class Key;
-
-    namespace utils {
+    /**
+     * @brief Initializes the game engine and runs the main loop
+     */
+    class Game {
+    public:
         /**
-         * @brief Get a string representation of ime::Direction
-         * @param direction Direction to get the string version of
-         * @return A string version of ime::Direction
+         * @brief Constructor
          */
-        extern std::string convertToString(ime::Direction direction);
-
-        /**
-         * @brief Unlock a door using  key
-         * @param door Door to be unlocked
-         * @param key Key to unlock door with
-         * @return True if door was unlocked or false if door is already unlocked
-         *         or the given key is not compatible with the door locker
-         */
-        extern bool unlockDoor(Door* door, const Key* key);
+        Game();
 
         /**
-         * @brief Lock a door with a key
-         * @param door Door to be locked the door with
-         * @param key Key to lock the door with
-         *
-         * Note that grid doors are always locked in a predetermined order,
-         * depending on where they are in the grid
+         * @brief Initialize the game
          */
-        extern void lockDoor(Door* key);
+        void initialize();
 
         /**
-         * @brief Get the name of the fruit that pacman eats on the current level
-         * @param level The current level
-         * @return The name of the fruit
+         * @brief Start the game
          */
-        extern std::string getFruitName(int level);
-    }
+        void start();
+
+    private:
+        /**
+         * @brief Prompt user if they want to quit game or not
+         */
+        void openQuitPrompt();
+
+        /**
+         * @return Remove the user prompt
+         */
+        void closeQuitPPromp();
+
+    private:
+        ime::Engine engine_; //!< Runs the main game loop
+    };
 }
 
 #endif
