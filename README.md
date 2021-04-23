@@ -6,11 +6,8 @@ that was created in 1982 as a spin-off from the popular Pac-Man game.
 ## Overview
 
 This project is a Super Pac-Man clone using C++17. In addition, the project is a 
-demo for the [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME), a
-2D state-based game engine. The main aim of this project is to demonstrate 
-extensive use of the engines features. I would greatly appreciate it if you could 
-check out the engine and provide some constructive feedback (especially on OO design), 
-point out issues and suggest new features or enhancements. Thanks in advance :smile: .
+demo for my game engine, [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME), 
+which is a 2D state-based game engine.
 
 ## How to play
 
@@ -22,5 +19,4 @@ point out issues and suggest new features or enhancements. Thanks in advance :sm
 
 ## Platform
 
-This game is developed for the Windows platform. It was tested on the latest 
-version of windows 10.
+This game is developed for the Windows platform. It was tested on windows 10, version 20H2.
