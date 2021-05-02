@@ -35,7 +35,7 @@
 
 //Warning!! This number must be updated each time a new resource is added to the
 //resources to be loaded
-const auto numOfResources = 18;
+const auto numOfResources = 17;
 
 namespace spm {
     LoadingScene::LoadingScene() :
@@ -119,7 +119,7 @@ namespace spm {
         loadFromFile(ime::ResourceType::Texture,  {
             "icon.png", "pacman_logo.png", "spritesheet.png",
             "main_menu_background.jpg", "credits_menu_background.jpg",
-            "options_menu_background.jpg", "ready.png"
+            "ready.png"
         });
 
         loadFromFile(ime::ResourceType::SoundBuffer, {
