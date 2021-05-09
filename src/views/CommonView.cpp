@@ -94,11 +94,12 @@ namespace spm {
         for (auto i = 0u; i < level; ++i) {
             auto picFruit = ime::ui::Picture::create("spritesheet.png", {startPos.x + (i * (frameSize.x + 1)), startPos.y, frameSize.x, frameSize.y});
             picFruit->setOrigin(1.0f, 1.0f);
+            picFruit->scale(0.4f, 0.4f);
             if (i == 0)
                 picFruit->setPosition(pnlContainer->getSize());
             else {
                 auto pivPrevFruit = pnlContainer->getWidget("picFruit" + std::to_string(i - 1));
-                picFruit->setPosition(ime::bindLeft(pivPrevFruit), std::to_string(pivPrevFruit->getPosition().y));
+                picFruit->setPosition(ime::bindLeft(pivPrevFruit).append("-1%"), std::to_string(pivPrevFruit->getPosition().y));
             }
 
             pnlContainer->addWidget(std::move(picFruit), "picFruit" + std::to_string(i));
@@ -111,14 +112,15 @@ namespace spm {
             startPos = {216, 1};
             auto picLife = ime::ui::Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y});
             picLife->setOrigin(0.0f, 1.0f);
+            picLife->scale(0.2f, 0.2f);
             picLife->setPosition(0, pnlContainer->getSize().y);
             pnlContainer->addWidget(picLife, "picLife0");
 
             for (auto i = 1u; i < lives; ++i) {
                 auto picLifeCopy = picLife->clone();
                 auto picPrev = pnlContainer->getWidget("picLife" + std::to_string(i - 1));
-                picLifeCopy->setPosition(ime::bindRight(picPrev), std::to_string(picPrev->getPosition().y));
-                pnlContainer->addWidget(std::move(picLifeCopy), "picLife" + std::to_string(i));
+                picLifeCopy->setPosition(ime::bindRight(picPrev).append("+0.5%"), std::to_string(picPrev->getPosition().y));
+                pnlContainer->addWidget(picLifeCopy, "picLife" + std::to_string(i));
             }
         }
     }

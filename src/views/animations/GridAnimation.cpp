@@ -40,12 +40,12 @@ namespace spm {
     }
 
     void GridAnimation::createFlashAnimation(const std::string& gridColour, ime::Index gridFrame) {
-        auto animation = ime::Animation::create("flash" + gridColour, spritesheet_, ime::seconds(3.0f));
-        const int MAX_NUM_OF_FRAMES = 15;
-        for (auto i = 0; i <= MAX_NUM_OF_FRAMES; ++i) { //Add the same frame multiple time because it should play really fast
+        auto animation = ime::Animation::create("flash" + gridColour, spritesheet_, ime::seconds(2.0f));
+        const int MAX_NUM_OF_FRAMES = 10;
+        for (auto i = 0; i <= MAX_NUM_OF_FRAMES; ++i) {
             animation->addFrame(gridFrame);
 
-            if (i != MAX_NUM_OF_FRAMES) // Make the animation finish on the current level grid and not on the white grid
+            if (i != MAX_NUM_OF_FRAMES) // Make the animation finish on the current level grid colour and not on the white grid
                 animation->addFrame({0, 3}); // White grid
         }
         animations_.push_back(std::move(animation));

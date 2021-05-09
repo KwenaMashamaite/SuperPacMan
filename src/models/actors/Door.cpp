@@ -88,7 +88,6 @@ namespace spm {
 
         isBroken_ = true;
         setCollidable(false);
-        doorLocker_.setId(-1);
         if (orientation_ == Orientation::Horizontal)
             setDoorTexture("broken_door_horizontal");
         else

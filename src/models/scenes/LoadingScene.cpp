@@ -33,11 +33,13 @@
 #include <thread>
 #include <chrono>
 
-//Warning!! This number must be updated each time a new resource is added to the
-//resources to be loaded
-const auto numOfResources = 17;
-
 namespace spm {
+    namespace {
+        //Warning!! This number must be updated each time a new resource is added to the
+        // Number of assets to be loaded
+        const auto numOfResources = 19;
+    }
+
     LoadingScene::LoadingScene() :
         loadingFinished_{false}
     {}
@@ -125,7 +127,7 @@ namespace spm {
         loadFromFile(ime::ResourceType::SoundBuffer, {
             "doorBroken.wav", "fruitEaten.wav", "ghostEaten.wav",
             "pacmanDying.wav", "powerPelletEaten.wav", "superPelletEaten.wav",
-            "beginning.wav"
+            "beginning.wav", "levelComplete.ogg", "wieu_wieu_slow.ogg"
         });
 
         loadFromFile(ime::ResourceType::Music, {

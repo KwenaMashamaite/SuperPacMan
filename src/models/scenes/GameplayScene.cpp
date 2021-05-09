@@ -78,7 +78,11 @@ namespace spm {
         grid_->setPosition({-21, 0});
         grid_->setBackground(currentLevel_);
         grid_->setBackgroundImagePosition({7.0f, 48.0f});
+#ifndef NDEBUG
+        grid_->setVisible(true);
+#else
         grid_->setVisible(false);
+#endif
     }
 
     void GameplayScene::createActors() {
@@ -248,17 +252,27 @@ namespace spm {
 
         eventEmitter().on("levelComplete", ime::Callback<>([this] {
             engine().onFrameEnd(nullptr);
-            gameObjects().removeByTag("pacman");
             gameObjects().getGroup("Ghost").removeAll();
             gridMovers().removeAll();
             gridMovers().removeAllGroups();
 
-            grid_->playFlashAnimation(currentLevel_);
-            grid_->onAnimationFinish([this] { // Start next level
+            gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(0);
+            gameObjects().findByTag("pacman")->getRigidBody()->setLinearVelocity({0.0f, 0.0f});
+
+            // Momentarily freeze the game before changing to new level
+            timer().setTimeout(ime::milliseconds(500), [this] {
+                audio().stopAllAudio();
+                gameObjects().removeByTag("pacman");
+                grid_->playFlashAnimation(currentLevel_);
                 cache().setValue("level", currentLevel_ + 1);
-                engine().popScene();
-                engine().pushScene(std::make_unique<GameplayScene>());
-                engine().pushScene(std::make_unique<LevelStartScene>());
+                audio().play(ime::audio::Type::Sfx, "levelComplete.ogg");
+
+                // Start new level after shortly after the grid stops flashing (flashes for 2 seconds)
+                timer().setTimeout(ime::seconds(3.0), [this] {
+                    engine().popScene();
+                    engine().pushScene(std::make_unique<GameplayScene>());
+                    engine().pushScene(std::make_unique<LevelStartScene>());
+                });
             });
         }));
     }
@@ -290,6 +304,8 @@ namespace spm {
                     moveer->startMovement();
                 }
             });
+
+            audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg", true);
         });
     }
 
