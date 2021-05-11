@@ -22,55 +22,29 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_EATENSTATE_H
-#define SUPERPACMAN_EATENSTATE_H
+#ifndef SUPERPACMAN_GIDLESTATE_H
+#define SUPERPACMAN_GIDLESTATE_H
 
-#include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/TargetGridMover.h>
-#include "../IActorState.h"
-#include "../../Ghost.h"
+#include "src/models/actors/states/ghost/GhostState.h"
 
-namespace pacman {
+namespace spm {
     /**
-     * @brief Defines the behavior of a ghost when it is eaten
+     * @brief A ghosts idle state
      *
-     * This state is entered when Pacman collides with a ghost after eating
-     * a power pellet
+     * In this state, the ghost cannot remains at its current position
+     * and cannot move around the maze
      */
-    class EatenState final : public IState {
+    class GIdleState final : public GhostState {
     public:
         /**
-         * @brief Construct state
-         * @param ghost Eaten ghost
-         * @param grid Grid ghost is in
-         */
-        EatenState(std::shared_ptr<ime::Entity> ghost, ime::TileMap& grid);
-
-        /**
          * @brief Initialize the state
-         *
-         * This function will be called by the FSM when a state is entered
-         * for the first time
          */
         void onEntry() override;
 
         /**
-         * @brief update the state
-         * @param deltaTime Time passed since the state was last updated
-         */
-        void update(ime::Time deltaTime) override;
-
-        /**
-         * @brief Exit a state
-         *
-         * This function will be called by the FSM before the state is
-         * destroyed
+         * @brief Exit the state
          */
         void onExit() override;
-
-    private:
-        std::shared_ptr<Ghost> ghost_;    //!< Eaten ghost
-        ime::TargetGridMover ghostMover_; //!< Ghost movement controller
     };
 }
 

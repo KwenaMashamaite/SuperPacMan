@@ -22,24 +22,16 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "GhostIdleState.h"
-#include "../../Ghost.h"
-#include <cassert>
+#include "src/models/actors/states/ghost/GIdleState.h"
+#include "src/models/actors/Ghost.h"
 
-namespace pacman {
-    GhostIdleState::GhostIdleState(std::shared_ptr<ime::Entity> ghost) {
-        assert(std::dynamic_pointer_cast<Ghost>(ghost) && "Cannot create Ghost state for non Ghost object");
+namespace spm {
+    void GIdleState::onEntry() {
+        TimedState::onEntry();
+        ghost_->getMoveController()->setMovementRestriction(ime::GridMover::MoveRestriction::All);
     }
 
-    void GhostIdleState::onEntry() {
-        
-    }
-
-    void GhostIdleState::update(ime::Time deltaTime) {
-
-    }
-
-    void GhostIdleState::onExit() {
-
+    void GIdleState::onExit() {
+        ghost_->getMoveController()->setMovementRestriction(ime::GridMover::MoveRestriction::None);
     }
 }

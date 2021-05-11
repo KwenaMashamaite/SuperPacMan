@@ -62,6 +62,7 @@ namespace spm {
 
         auto pbrAssetLoading = ime::ui::ProgressBar::create("loading fonts...");
         pbrAssetLoading->getRenderer()->setBorderColour({0, 230, 64, 135});
+        pbrAssetLoading->getRenderer()->setFillColour(ime::Colour("#4d05e8"));
         pbrAssetLoading->setOrigin(0.5f, 0.0f);
         pbrAssetLoading->setSize("80%", std::to_string(pbrAssetLoading->getSize().y));
         pbrAssetLoading->setPosition("50%", "90%");

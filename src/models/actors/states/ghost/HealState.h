@@ -22,38 +22,43 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_INTROSCENEVIEW_H
-#define SUPERPACMAN_INTROSCENEVIEW_H
+#ifndef SUPERPACMAN_HEALSTATE_H
+#define SUPERPACMAN_HEALSTATE_H
 
-#include "CommonView.h"
+#include "src/models/actors/states/ghost/GhostState.h"
 
 namespace spm {
     /**
-     * @brief Frontend for the intro scene
+     * @brief Defines the behavior of a ghost when it is eaten by pacman
+     *
+     * In this state the ghost retreats to the ghost house to for a magic
+     * pill that completely heals it
      */
-    class IntroSceneView {
+    class HealState final : public GhostState {
     public:
         /**
          * @brief Constructor
-         * @param gui Gui container for all UI widgets in the view
          */
-        explicit IntroSceneView(ime::ui::GuiContainer& gui);
+        HealState();
 
         /**
-         * @brief Initialize the view
-         * @param highScore Highest score from last gameplay
+         * @brief Initialize the state
+         *
+         * This function will be called by the FSM when a state is entered
+         * for the first time
          */
-        void init(int highScore);
+        void onEntry() override;
 
         /**
-         * @brief Update view
-         * @param deltaTime Time passed since view was last updated
+         * @brief Exit a state
+         *
+         * This function will be called by the FSM before the state is
+         * destroyed
          */
-        void update(ime::Time deltaTime);
+        void onExit() override;
 
     private:
-        CommonView commonView_;     //!< View displayed across all states
-        ime::ui::GuiContainer& gui_; //!< Container for all widgets in view
+        int destFoundHandler_; //!< Handler id for a target destination event
     };
 }
 

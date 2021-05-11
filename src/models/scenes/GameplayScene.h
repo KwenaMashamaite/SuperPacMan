@@ -26,6 +26,7 @@
 #define SUPERPACMAN_GAMEPLAYSCENE_H
 
 #include <IME/core/scene/Scene.h>
+#include "src/common/Events.h"
 #include "src/models/world/Grid.h"
 #include "src/views/CommonView.h"
 
@@ -116,6 +117,12 @@ namespace spm {
          * @brief Reset pacman and the ghosts to thier respective spawm tiles
          */
         void resetActors();
+
+        /**
+         * @brief Emit a game event
+         * @param event The event to be emitted
+         */
+        void emit(GameEvent event);
 
     private:
         int currentLevel_;           //!< Current game level

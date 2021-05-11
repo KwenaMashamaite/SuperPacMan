@@ -37,6 +37,7 @@ namespace spm {
         MainMenu,    //!< View rendered when main menu state is rendered
         OptionsMenu, //!< View rendered when options view is clicked
         CreditsMenu, //!< View rendered when credits button is clicked
+        HighScores,  //!< View rendered when high scores button is clicked
     };
 
     /**
@@ -86,6 +87,14 @@ namespace spm {
          * is displayed when the credits button from the main view is clicked
          */
         void createCreditsMenuView();
+
+        /**
+         * @brief Create the high score view
+         *
+         * This view displays the game to high score. The view is displayed
+         * when the high score button from the main view is clicked
+         */
+        void createHighScoresView();
 
     private:
         ime::ui::GuiContainer& gui_;   //!< Container for all main menu widgets

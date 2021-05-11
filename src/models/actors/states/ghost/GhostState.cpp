@@ -22,52 +22,24 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_GHOSTIDLESTATE_H
-#define SUPERPACMAN_GHOSTIDLESTATE_H
+#include "src/models/actors/states/ghost/GhostState.h"
+#include <cassert>
 
-#include "../IActorState.h"
-#include <IME/core/entity/Entity.h>
-#include <memory>
+namespace spm {
+    GhostState::GhostState() :
+        TimedState(ime::nanoseconds(1)),
+        ghost_{nullptr},
+        ghostMover_{nullptr}
+    {}
 
-namespace pacman {
-    /**
-     * @brief A ghosts idle state
-     *
-     * In this state, the ghost cannot remains at its current position
-     * and cannot move around the maze
-     */
-    class GhostIdleState final : public IState {
-    public:
-        /**
-         * @brief Constructor
-         * @param ghost Ghost to be put in idle state
-         */
-        explicit GhostIdleState(std::shared_ptr<ime::Entity> ghost);
+    void GhostState::setTarget(Ghost *ghost) {
+        assert(ghost && "Ghost must not be a nullptr");
+        ghost_ = ghost;
+    }
 
-        /**
-         * @brief Initialize the state
-         *
-         * This function will be called by the FSM before a state is entered
-         * for the first time
-         */
-        void onEntry() override;
-
-        /**
-         * @brief Initialize the state
-         *
-         * This function will be called by the FSM before a state is entered
-         * for the first time
-         */
-        void update(ime::Time deltaTime) override;
-
-        /**
-         * @brief Initialize the state
-         *
-         * This function will be called by the FSM before a state is entered
-         * for the first time
-         */
-        void onExit() override;
-    };
+    void GhostState::setGridMover(ime::GridMover* gridMover) {
+        assert(gridMover && "Grid mover must not be nullptr");
+        ghostMover_ = gridMover;
+    }
 }
 
-#endif

@@ -1,5 +1,14 @@
 set(SRC_FILES
     main.cpp
+    models/actors/states/TimedState.cpp
+    models/actors/states/ghost/GhostState.cpp
+    models/actors/states/ghost/ScatterState.cpp
+    models/actors/states/ghost/ChaseState.cpp
+    models/actors/states/ghost/FrightenedState.cpp
+    models/actors/states/ghost/HealState.cpp
+    models/actors/states/ghost/RoamState.cpp
+    models/actors/states/ghost/GIdleState.cpp
+    models/actors/states/ghost/GStateController.cpp
     models/actors/Door.cpp
     models/actors/DoorLocker.cpp
     models/actors/Fruit.cpp
@@ -10,7 +19,6 @@ set(SRC_FILES
     models/actors/Wall.cpp
     models/game/Game.cpp
     models/scenes/GameplayScene.cpp
-    models/scenes/IntroScene.cpp
     models/scenes/LevelStartScene.cpp
     models/scenes/LoadingScene.cpp
     models/scenes/MainMenuScene.cpp
@@ -26,7 +34,6 @@ set(SRC_FILES
     views/animations/PelletAnimations.cpp
     views/animations/GridAnimation.cpp
     views/CommonView.cpp
-    views/IntroSceneView.cpp
     views/LevelStartSceneView.cpp
     views/LoadingSceneView.cpp
     views/MainMenuSceneView.cpp

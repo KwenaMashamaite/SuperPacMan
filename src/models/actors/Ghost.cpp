@@ -23,11 +23,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/Ghost.h"
+#include "src/utils/Utils.h"
+#include "src/models/actors/states/ghost/GStateController.h"
 #include "src/views/animations/GhostAnimations.h"
+#include <cassert>
 
 namespace spm {
     Ghost::Ghost(ime::Scene& scene, Colour colour) :
-        ime::GameObject(scene, ime::GameObject::Type::Enemy)
+        ime::GameObject(scene, ime::GameObject::Type::Enemy),
+        gridMover_{nullptr},
+        isPacmanSuper_{false}
     {
         auto animations = GhostAnimations();
         int spriteSheetRow;
@@ -43,6 +48,8 @@ namespace spm {
         } else if (colour == Colour::Orange) {
             setTag("clyde");
             spriteSheetRow = 3;
+        } else {
+            assert(false && "Unknown ghost colour");
         }
 
         animations.createAnimationsFor(getTag());
@@ -54,16 +61,60 @@ namespace spm {
         getSprite().getAnimator().startAnimation("goingLeft");
     }
 
-    std::string Ghost::getClassName() const {
-        return "Ghost";
+    void Ghost::initFSM(const ime::Time &duration, int currLevel) {
+        fsm_ = std::make_unique<GStateController>(this);
+        fsm_->start(duration, currLevel);
     }
 
     void Ghost::setMovementController(ime::GridMover* gridMover) {
         gridMover_ = gridMover;
         gridMover_->setTarget(this);
+
+        // Trigger animation switch when the ghost changes direction
+        gridMover_->onMoveBegin([this](ime::Index) {
+            // Evade/frightened animation is the same in all directions
+            if (fsm_->getState() == State::Evade)
+                return;
+
+            direction_ = gridMover_->getDirection();
+            auto newAnimation = "going" + utils::convertToString(direction_);
+
+            if (fsm_->getState() == State::Heal)
+                newAnimation += "Eaten";
+            else if (isPacmanSuper_)
+                newAnimation += "Flat";
+
+            auto& animator = getSprite().getAnimator();
+            if (animator.getCurrentAnimation()->getName() != newAnimation)
+                animator.startAnimation(newAnimation);
+        });
     }
 
     ime::GridMover* Ghost::getMoveController() const {
         return gridMover_;
     }
+
+    std::string Ghost::getClassName() const {
+        return "Ghost";
+    }
+
+    Ghost::State Ghost::getState() const {
+        return fsm_->getState();
+    }
+
+    void Ghost::update(ime::Time deltaTime) {
+        ime::GameObject::update(deltaTime);
+        fsm_->update(deltaTime);
+    }
+
+    void Ghost::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+        if (event == GameEvent::SuperModeBegin)
+            isPacmanSuper_ = true;
+        else if (event == GameEvent::SuperModeEnd)
+            isPacmanSuper_ = false;
+
+        fsm_->handleEvent(event, args);
+    }
+
+    Ghost::~Ghost() = default;
 }

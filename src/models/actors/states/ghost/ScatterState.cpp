@@ -22,92 +22,90 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "ScatterState.h"
+#include "src/models/actors/states/ghost/ScatterState.h"
+#include "src/models/actors/Ghost.h"
+#include "src/common/Constants.h"
 #include <cassert>
+#include <vector>
+#include <queue>
 
-const auto topLeftPath = std::vector<ime::Index>{{7, 4}, {5, 6}, {3, 4}};
-const auto topRightPath = std::vector<ime::Index>{{5, 22}, {7, 20}, {3, 20}};
-const auto bottomLeftPath = std::vector<ime::Index>{{25, 4}, {23, 6}, {21, 4}};
-const auto bottomRightPath = std::vector<ime::Index>{{23, 22}, {21, 20}, {25, 20}};
+namespace spm {
+    namespace {
+        // Starting point of cyclic corner path
+        const auto TOP_LEFT_CORNER = ime::Index{3, 3};
+        const auto TOP_RIGHT_CORNER = ime::Index{3, 19};
+        const auto BOTTOM_LEFT_CORNER = ime::Index{21, 3};
+        const auto BOTTOM_RIGHT_CORNER = ime::Index{25, 19};
+        const auto UNKNOWN_CORNER = ime::Index{-1, -1};
 
-std::queue<ime::Index> vectorToQueue(const std::vector<ime::Index>& vector) {
-    std::queue<ime::Index> queue;
-    for (const auto& index : vector)
-        queue.push(index);
-    return queue;
-}
+        // Cyclic paths at specific corners
+        const auto TOP_LEFT_CORNER_PATH = std::vector<ime::Index>{{7, 4}, {5, 6}, {3, 4}};
+        const auto TOP_RIGHT_CORNER_PATH = std::vector<ime::Index>{{5, 22}, {7, 20}, {3, 20}};
+        const auto BOTTOM_LEFT_CORNER_PATH = std::vector<ime::Index>{{25, 4}, {23, 6}, {21, 4}};
+        const auto BOTTOM_RIGHT_CORNER_PATH = std::vector<ime::Index>{{23, 22}, {21, 20}, {25, 20}};
 
-namespace pacman {
-    ScatterState::ScatterState(std::shared_ptr<ime::Entity> ghost, ScatterPosition scatterPos) :
-        targetPos_(scatterPos)
-    {
-        assert(ghost && "Cannot construct ghost state with nullptr");
-        assert((ghost->getClassType() == "Ghost") && "Cannot create ghost state with non ghost entity");
-        ghost_ = std::move(ghost);
+        std::queue<ime::Index> vectorToQueue(const std::vector<ime::Index>& vector) {
+            std::queue<ime::Index> queue;
+            for (const auto& index : vector)
+                queue.push(index);
+            return queue;
+        }
     }
 
-    void ScatterState::setGridMover(std::shared_ptr<ime::TargetGridMover> gridMover) {
-        assert(gridMover && "Cannot set nullptr as a grid mover");
-        ghostMover_ = std::move(gridMover);
-        ghostMover_->setTarget(ghost_);
-    }
+    ScatterState::ScatterState() :
+        targetCorner_{UNKNOWN_CORNER},
+        destFoundHandler_{-1}
+    {}
 
     void ScatterState::onEntry() {
-        assert(ghostMover_ && "Cannot initialize ghost state without grid mover");
-        switch (targetPos_) {
-            case ScatterPosition::TopLeftCorner:
-                ghostMover_->setDestination(ime::Index{3, 3});
-                break;
-            case ScatterPosition::TopRightCorner:
-                ghostMover_->setDestination(ime::Index{3, 19});
-                break;
-            case ScatterPosition::BottomLeftCorner:
-                ghostMover_->setDestination(ime::Index{21, 3});
-                break;
-            case ScatterPosition::BottomRightCorner:
-                ghostMover_->setDestination(ime::Index{25, 19});
-                break;
-        }
+        assert(ghost_ && "Cannot enter scatter state without a ghost");
+        assert(ghostMover_ && "Cannot enter scatter state without a ghost grid mover");
 
-        ghostMover_->onDestinationReached([this](ime::Tile tile) {
-            if (ghostPath_.empty()) {
-                switch (targetPos_) {
-                    case ScatterPosition::TopLeftCorner:
-                        ghostPath_ = std::move(vectorToQueue(topLeftPath));
-                        break;
-                    case ScatterPosition::TopRightCorner:
-                        ghostPath_ = std::move(vectorToQueue(topRightPath));
-                        break;
-                    case ScatterPosition::BottomLeftCorner:
-                        ghostPath_ = std::move(vectorToQueue(bottomLeftPath));
-                        break;
-                    case ScatterPosition::BottomRightCorner:
-                        ghostPath_ = std::move(vectorToQueue(bottomRightPath));
-                        break;
-                }
+        auto* ghostMover = dynamic_cast<ime::TargetGridMover*>(ghostMover_);
+        assert(ghostMover && "Scatter mode requires an ime::TargetGridMover as a ghost mover");
+        ghostMover->setMaxLinearSpeed({Constants::GhostScatterSpeed, Constants::GhostScatterSpeed});
+
+        TimedState::onEntry();
+        setTargetPosition();
+
+        // Start cyclic behaviour
+        destFoundHandler_ = ghostMover->onDestinationReached([this, ghostMover](ime::Index) {
+            if (path_.empty()) {
+                if (targetCorner_ == TOP_LEFT_CORNER)
+                    path_ = std::move(vectorToQueue(TOP_LEFT_CORNER_PATH));
+                else if (targetCorner_ == TOP_RIGHT_CORNER)
+                    path_ = std::move(vectorToQueue(TOP_RIGHT_CORNER_PATH));
+                else if (targetCorner_ == BOTTOM_LEFT_CORNER)
+                    path_ = std::move(vectorToQueue(BOTTOM_LEFT_CORNER_PATH));
+                else
+                    path_ = std::move(vectorToQueue(BOTTOM_RIGHT_CORNER_PATH));
             }
-            ghostMover_->setDestination(ghostPath_.front());
-            ghostPath_.pop();
+
+            ghostMover->setDestination(path_.front());
+            path_.pop();
         });
 
-        ghostMover_->startMovement();
+        ghostMover->startMovement();
     }
 
-    void ScatterState::update(ime::Time deltaTime) {
-        TimedState::update(deltaTime);
-        ghostMover_->update(deltaTime);
+    void ScatterState::setTargetPosition() {
+        if (ghost_->getTag() == "blinky")
+            targetCorner_ = TOP_RIGHT_CORNER;
+        else if (ghost_->getTag() == "pinky")
+            targetCorner_ = TOP_LEFT_CORNER;
+        else if (ghost_->getTag() == "inky")
+            targetCorner_ = BOTTOM_RIGHT_CORNER;
+        else if (ghost_->getTag() == "clyde")
+            targetCorner_ = BOTTOM_LEFT_CORNER;
+        else
+            assert(false && "Cannot generate cyclic path: Unknown ghost tag");
+
+        static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(targetCorner_);
     }
 
     void ScatterState::onExit() {
-        ghostMover_->teleportTargetToDestination();
-        ghostMover_->setTarget(nullptr);
-    }
-
-    void ScatterState::onTimeout() {
-        //Make sure ghost is not stuck in between tiles when state is popped
-        ghostMover_->onAdjacentTileReached([this](ime::Tile) {
-            std::dynamic_pointer_cast<Ghost>(ghost_)->popState();
-            callback();
-        });
+        ghostMover_->removeCollisionHandler(destFoundHandler_);
+        static_cast<ime::TargetGridMover*>(ghostMover_)->stopMovement();
+        static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(ime::Index{-1, -1});
     }
 }

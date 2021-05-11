@@ -25,47 +25,27 @@
 #ifndef SUPERPACMAN_SCATTERSTATE_H
 #define SUPERPACMAN_SCATTERSTATE_H
 
-#include <IME/core/physics/TargetGridMover.h>
+#include "src/models/actors/states/ghost/GhostState.h"
 #include <queue>
-#include "../TimedState.h"
-#include "../../Ghost.h"
 
-namespace pacman {
-    /**
-     * @brief Positions ghost targets in scatter mode
-     */
-    enum class ScatterPosition {
-        TopLeftCorner,    //!< Top-left corner cyclic path starting position
-        TopRightCorner,   //!< Top-right corner cyclic path starting position
-        BottomLeftCorner, //!< Bottom-left corner cyclic path starting position
-        BottomRightCorner //!< Bottom-right corner cyclic path starting position
-    };
+namespace spm {
+    class Ghost;
 
     /**
      * @brief Defines the behavior of a ghost in scatter mode
      *
-     * This state is entered from time to time to give the player a
-     * break from the chase
+     * In this state the ghost moves to a specific corner thereafter follows a
+     * cyclic path at the corner. Depending on the duration of the state the
+     * ghost may not cycle a corner as the state might timeout while the ghost
+     * is en route to corner. This state is triggered between pacman chases in
+     * order to give the player a breather
      */
-    class ScatterState final : public TimedState {
+    class ScatterState final : public GhostState {
     public:
         /**
-         * @brief Construct state
-         * @param targetPos Position ghost targets in this state
-         * @param ghost Ghost to scatter
+         * @brief Constructor
          */
-        ScatterState(std::shared_ptr<ime::Entity> ghost, ScatterPosition targetPos);
-
-        /**
-         * @brief Set the ghosts grid mover
-         * @param gridMover The ghosts grid mover
-         *
-         * The grid mover is responsible for controlling the ghost movement
-         * while in this state
-         *
-         * @warning This function must be called before the update function
-         */
-        void setGridMover(std::shared_ptr<ime::TargetGridMover> gridMover);
+        ScatterState();
 
         /**
          * @brief Initialize the state
@@ -81,27 +61,18 @@ namespace pacman {
          * This function will be called by the FSM before a state is entered
          * for the first time
          */
-        void update(ime::Time deltaTime) override;
-
-        /**
-         * @brief Initialize the state
-         *
-         * This function will be called by the FSM before a state is entered
-         * for the first time
-         */
         void onExit() override;
 
     private:
         /**
-         * @brief Pop the state
+         * @brief Sets the position of the corner the ghost must go to
          */
-        void onTimeout() override;
+        void setTargetPosition();
 
     private:
-        std::shared_ptr<ime::Entity> ghost_;     //!< Scattering ghost
-        ScatterPosition targetPos_;        //!< Position ghost must reach before cycling corner
-        std::queue<ime::Index> ghostPath_; //!< Cyclic path ghost follows after reaching target position
-        std::shared_ptr<ime::TargetGridMover> ghostMover_;  //!< Ghost movement controller
+        ime::Index targetCorner_;     //!< The position the ghost must reach first before cycling corner
+        std::queue<ime::Index> path_; //!< Cyclic path ghost follows after reaching target position
+        int destFoundHandler_;        //!< Handler id for a target destination event
     };
 }
 

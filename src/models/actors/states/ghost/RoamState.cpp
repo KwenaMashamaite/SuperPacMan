@@ -22,35 +22,28 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "RoamState.h"
-#include "../../Ghost.h"
+#include "src/models/actors/states/ghost/RoamState.h"
+#include "src/common/Constants.h"
+#include <IME/core/physics/tilemap/RandomGridMover.h>
 #include <cassert>
 
-namespace pacman {
-    RoamState::RoamState(std::shared_ptr<ime::Entity> ghost) {
-        assert(ghost && "Cannot construct ghost state with nullptr");
-        assert((ghost->getClassType() == "Ghost") && "Cannot create ghost state with non ghost entity");
-        ghost_ = std::move(ghost);
-    }
-
-    void RoamState::setGridMover(std::shared_ptr<ime::RandomGridMover> gridMover) {
-        assert(gridMover && "Cannot set nullptr as a grid mover");
-        ghostMover_ = std::move(gridMover);
-        ghostMover_->setTarget(ghost_);
-        //ghostMover_->enableAdvancedMovement(true);
-    }
-
+namespace spm {
     void RoamState::onEntry() {
-        assert(ghostMover_ && "Cannot initialize chase state without a grid mover");
-        ghostMover_->startMovement();
-    }
+        assert(ghost_ && "Cannot enter roam state without a ghost");
+        assert(ghostMover_ && "Cannot enter roam state without a ghost grid mover");
 
-    void RoamState::update(ime::Time deltaTime) {
-        ghostMover_->update(deltaTime);
+#ifndef NDEBUG
+        auto* ghostMover = dynamic_cast<ime::RandomGridMover*>(ghostMover_);
+        assert(ghostMover && "Roam state requires an ime::RandomGridMover as a ghost mover");
+#endif
+
+        TimedState::onEntry();
+        ghostMover_->setMaxLinearSpeed({Constants::GhostRoamSpeed, Constants::GhostRoamSpeed});
+        static_cast<ime::RandomGridMover*>(ghostMover_)->startMovement();
     }
 
     void RoamState::onExit() {
+        static_cast<ime::RandomGridMover*>(ghostMover_)->stopMovement();
         ghostMover_->teleportTargetToDestination();
-        ghostMover_->setTarget(nullptr);
     }
 }

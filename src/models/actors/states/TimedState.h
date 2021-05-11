@@ -25,46 +25,81 @@
 #ifndef SUPERPACMAN_TIMEDSTATE_H
 #define SUPERPACMAN_TIMEDSTATE_H
 
-#include "IActorState.h"
+#include "src/models/actors/states/IActorState.h"
 #include <IME/core/time/Timer.h>
+#include <functional>
 
 namespace spm {
     /**
-     * @brief Abstract base class for actor states that are only active
-     *        for predetermined duration after which onExit is called
+     * @brief Abstract base class for actor states that are active for a
+     *        limited amount of time
      */
     class TimedState : public IActorState {
     public:
+        using Callback = std::function<void()>; //!< State timeout callback
+
         /**
          * @brief Constructor
          * @param timeout The duration of the state
          *
-         * The state count down starts immediately
+         * Note that the state expire timer starts counting when the state is
+         * entered
+         *
+         * @see onEntry
          */
         explicit TimedState(ime::Time timeout);
 
         /**
-         * @brief Get the time left before state timeout
-         * @return The time left before state timeout
+         * @brief Start the state timeout countdown
+         *
+         * @note If this function is overridden further, the implementation
+         * must call this version also because the timer will not start if
+         * its not called and the actor will remain in its current state
+         * forever, which defeats the purpose of this class
+         */
+        void onEntry() override;
+
+        /**
+         * @brief Get the time left before the state expires
+         * @return The time left before state expires
          */
         ime::Time getTimeout() const;
 
         /**
-         * @brief Increment the current timeout
-         * @param value Value to increment by
+         * @brief Increment/decrease the current timeout
+         * @param value Value to increment/decrease by
          *
-         * Note that a negative value decreases the timeout
+         * A positive time value increases the current timeout whilst a
+         * negative time value decreases the timeout
          */
-        void incrementTimeout(ime::Time value);
+        void updateTimeout(ime::Time value);
 
         /**
-         * @brief Update state
-         * @param deltaTime Time passed since state was last updated
+         * @brief Update the state
+         * @param deltaTime Time passed since last update
          */
         void update(ime::Time deltaTime) override;
 
+        /**
+         * @brief Add a timeout event handler
+         * @param callback The handler to be subscribed to the event
+         *
+         * Note that only one a single timeout event handler may be registered,
+         * subsequent handlers overwrite the current one. Pass @a nullptr to
+         * remove the current handler.
+         *
+         * The timeout handler is called after the state is exited i.e After
+         * onExit() is invoked. The difference between the two is that onExit()
+         * is for internal state termination handling whilst onTimeout is for
+         * external state termination logic
+         */
+        void onTimeout(const Callback& callback);
+
     private:
-        ime::Timer timer_;
+        ime::Time timeout_;  //!< Initial state duration
+        ime::Timer timer_;   //!< Keeps track of state duration
+        bool isActive_;      //!< A flag indicating whether or not the state is entered
+        Callback onTimeout_; //!< Function called when the state timer expires
     };
 }
 

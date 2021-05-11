@@ -22,49 +22,26 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_CHASESTATE_H
-#define SUPERPACMAN_CHASESTATE_H
-
-#include "src/models/actors/states/ghost/GhostState.h"
+#ifndef SUPERPACMAN_GAMEEVENTS_H
+#define SUPERPACMAN_GAMEEVENTS_H
 
 namespace spm {
     /**
-     * @brief Defines the behavior of a ghost when it is chasing pacman
+     * @brief Events that take place during gameplay
      */
-    class ChaseState final : public GhostState {
-    public:
-        /**
-         * @brief Construct state
-         * @param pacmanPosition The current position of pacman in the grid
-         */
-        explicit ChaseState(const ime::Index& pacmanPosition);
-
-        /**
-         * @brief Initialize the state
-         *
-         * This function will be called by the FSM when a state is entered
-         * for the first time
-         */
-        void onEntry() override;
-
-        /**
-         * @brief Handle a game event
-         * @param event The event to be handled
-         * @param args Arguments associated with the event
-         */
-        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
-
-        /**
-         * @brief Exit a state
-         *
-         * This function will be called by the FSM before the state is
-         * destroyed
-         */
-        void onExit() override;
-
-    private:
-        ime::Index pacmanPosition_;
+    enum class GameEvent {
+        PowerModeBegin,   //!< Occurs when pacman eats a power pellet
+        PowerModeEnd,     //!< Occurs when power pellet effects wore off
+        SuperModeBegin,   //!< Occurs when pacman eats a Super pellet
+        SuperModeEnd,     //!< Occurs when super pellet effects wore off
+        PacManDied,       //!< Occurs when pacman collides with a ghost and is not in super mode
+        PacManMoved,      //!< Occurs when pacman moves from one tile to another
+        GhostEaten,       //!< Occurs when a ghost is eaten by pacman
+        GhostRespawned,   //!< Occurs when an eaten ghost is revived
+        LevelStarted,     //!< Fired when a level is started for the first time or when it is restarted
+        LevelCompleted,   //!< Occurs when a level is completed (All fruits and pellets eaten)
+        GameCompleted,    //!< Occurs when all 17 levels are completed
     };
 }
 
-#endif
+#endif //SUPERPACMAN_GAMEEVENTS_H

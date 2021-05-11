@@ -22,58 +22,38 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "ChaseState.h"
+#include "src/models/actors/states/ghost/ChaseState.h"
+#include "src/common/Constants.h"
 #include <cassert>
 
-namespace pacman {
-    ChaseState::ChaseState(std::shared_ptr<ime::Entity> ghost) {
-        assert(ghost && "Cannot construct ghost state with nullptr");
-        assert((ghost->getClassType() == "Ghost") && "Cannot create ghost state with non ghost entity");
-        ghost_ = std::move(ghost);
-        targetPosChangeHandler_ = -1;
-    }
-
-    void ChaseState::setGridMover(std::shared_ptr<ime::TargetGridMover> gridMover) {
-        assert(gridMover && "Cannot set nullptr as a grid mover");
-        ghostMover_ = std::move(gridMover);
-        ghostMover_->setTarget(ghost_);
-    }
-
-    void ChaseState::setTarget(std::shared_ptr<ime::Entity> target) {
-        assert(target && "Cannot set nullptr as target");
-        target_ = std::move(target);
-    }
+namespace spm {
+    ChaseState::ChaseState(const ime::Index& pacmanPos) :
+        pacmanPosition_{pacmanPos}
+    {}
 
     void ChaseState::onEntry() {
-        assert(target_ && "Cannot initialize chase state without target to be chased");
-        assert(ghostMover_ && "Cannot initialize chase state without a grid mover");
-        targetPosChangeHandler_ = target_->onEvent("positionChange",
-            ime::Callback<float, float>([this](float x, float y) {
-                auto pacmanTile = ghostMover_->getGrid().getTile(ime::Vector2f{x, y}).getIndex();
-                if (ghostMover_->getDestination() != pacmanTile)
-                    ghostMover_->setDestination(pacmanTile);
-        }));
+        assert(ghost_ && "Cannot enter chase state without a ghost");
+        assert(ghostMover_ && "Cannot enter chase state without a ghost grid mover");
 
-        ghostMover_->setDestination(ghostMover_->getGrid().getTileOccupiedByChild(target_).getIndex());
-        ghostMover_->startMovement();
+#ifndef NDEBUG
+        auto* ghostMover = dynamic_cast<ime::TargetGridMover*>(ghostMover_);
+        assert(ghostMover && "Chase mode requires an ime::TargetGridMover as a ghost mover");
+#endif
+
+        TimedState::onEntry();
+        ghostMover->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
+        static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(pacmanPosition_);
+        static_cast<ime::TargetGridMover*>(ghostMover_)->startMovement();
     }
 
-    void ChaseState::update(ime::Time deltaTime) {
-        TimedState::update(deltaTime);
-        ghostMover_->update(deltaTime);
+    void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+        if (event == GameEvent::PacManMoved) {
+            static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(args.getValue<ime::Index>("pacmanTileIndex"));
+        }
     }
 
     void ChaseState::onExit() {
-        target_->unsubscribe("positionChange", targetPosChangeHandler_);
-        ghostMover_->teleportTargetToDestination();
-        ghostMover_->setTarget(nullptr);
-    }
-
-    void ChaseState::onTimeout() {
-        //Make sure ghost is not stuck in between tiles when state is popped
-        ghostMover_->onAdjacentTileReached([this](ime::Tile) {
-            std::dynamic_pointer_cast<Ghost>(ghost_)->popState();
-            callback();
-        });
+        static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(ime::Index{-1, -1});
+        static_cast<ime::TargetGridMover*>(ghostMover_)->stopMovement();
     }
 }

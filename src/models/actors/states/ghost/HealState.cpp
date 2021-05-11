@@ -22,46 +22,37 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/actors/states/TimedState.h"
+#include "src/models/actors/states/ghost/HealState.h"
+#include "src/common/Constants.h"
+#include <cassert>
 
 namespace spm {
-    TimedState::TimedState(ime::Time timeout) :
-        timeout_{timeout},
-        isActive_{false}
+    HealState::HealState() :
+        destFoundHandler_{-1}
     {}
 
-    void TimedState::onEntry() {
-        if (isActive_)
-            return;
+    void HealState::onEntry() {
+        assert(ghost_ && "Cannot enter heal state without a ghost");
+        assert(ghostMover_ && "Cannot enter heal state without a ghost grid mover");
 
-        timer_.setInterval(timeout_);
-        timer_.setTimeoutCallback([this] {
+        auto* ghostMover = dynamic_cast<ime::TargetGridMover*>(ghostMover_);
+        assert(ghostMover && "heal mode requires an ime::TargetGridMover as a ghost mover");
+
+        // This state is not time based so we don't start the timer (call TimedState::onEnter)
+        // The state will exit itself once it reached the ghost house
+        destFoundHandler_ = ghostMover->onDestinationReached([this](ime::Index) {
             onExit();
-
-            if (onTimeout_)
-                onTimeout_();
         });
 
-        timer_.start();
-        isActive_ = true;
+        ghostMover->setMaxLinearSpeed({Constants::GhostRetreatSpeed, Constants::GhostRetreatSpeed});
+        ghostMover->setDestination(Constants::EatenGhostRespawnTile);
+        ghostMover->startMovement();
     }
 
-    ime::Time TimedState::getTimeout() const {
-        return timer_.getRemainingDuration();
-    }
-
-    void TimedState::updateTimeout(ime::Time value) {
-        if (isActive_)
-            timer_.setInterval(timer_.getRemainingDuration() + value);
-        else
-            timeout_ += value;
-    }
-
-    void TimedState::update(ime::Time deltaTime) {
-        timer_.update(deltaTime);
-    }
-
-    void TimedState::onTimeout(const TimedState::Callback &callback) {
-        onTimeout_ = callback;
+    void HealState::onExit() {
+        ghostMover_->removeCollisionHandler(destFoundHandler_);
+        static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(ime::Index{-1, -1});
+        static_cast<ime::TargetGridMover*>(ghostMover_)->stopMovement();
+        TimedState::onEntry(); // Start timer and immediately call on timeout callback (Expire time set to zero for this state)
     }
 }

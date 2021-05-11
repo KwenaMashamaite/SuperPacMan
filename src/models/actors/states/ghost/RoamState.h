@@ -25,32 +25,14 @@
 #ifndef SUPERPACMAN_ROAMSTATE_H
 #define SUPERPACMAN_ROAMSTATE_H
 
-#include "../IActorState.h"
-#include <IME/core/physics/RandomGridMover.h>
+#include "src/models/actors/states/ghost/GhostState.h"
 
-namespace pacman {
+namespace spm {
     /**
-     * @brief Randomly moves ghost in the grid
+     * @brief Ghost aimlessly moves in the grid
      */
-    class RoamState final : public IState {
+    class RoamState final : public GhostState {
     public:
-        /**
-         * @brief Constructor
-         * @param ghost Ghost to randomly move in the grid
-         */
-        explicit RoamState(std::shared_ptr<ime::Entity> ghost);
-
-        /**
-         * @brief Set the ghosts grid mover
-         * @param gridMover The ghosts grid mover
-         *
-         * The grid mover is responsible for controlling the ghost movement
-         * while in this state
-         *
-         * @warning This function must be called before the update function
-         */
-        void setGridMover(std::shared_ptr<ime::RandomGridMover> gridMover);
-
         /**
          * @brief Initialize the state
          *
@@ -60,22 +42,12 @@ namespace pacman {
         void onEntry() override;
 
         /**
-         * @brief update the state
-         * @param deltaTime Time passed since the state was last updated
-         */
-        void update(ime::Time deltaTime) override;
-
-        /**
          * @brief Exit a state
          *
          * This function will be called by the FSM before the state is
          * destroyed
          */
         void onExit() override;
-
-    private:
-        std::shared_ptr<ime::Entity> ghost_;               //!< Ghost to be randomly moved in the grid
-        std::shared_ptr<ime::RandomGridMover> ghostMover_; //!< Controls the ghost movement in the grid whilst in this state
     };
 }
 

@@ -25,7 +25,9 @@
 #ifndef SUPERPACMAN_IACTORSTATE_H
 #define SUPERPACMAN_IACTORSTATE_H
 
+#include "src/common/Events.h"
 #include <IME/core/time/Time.h>
+#include <IME/common/PropertyContainer.h>
 
 namespace spm {
     /**
@@ -49,9 +51,16 @@ namespace spm {
 
         /**
          * @brief update the state
-         * @param deltaTime Time passed since the state was last updated
+         * @param deltaTime Time passed since last state update
          */
-        virtual void update(ime::Time deltaTime){};
+        virtual void update(ime::Time deltaTime) {};
+
+        /**
+         * @brief Handle a game event
+         * @param event The event to be handled
+         * @param args Arguments associated with the event
+         */
+        virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args) {}
 
         /**
          * @brief Destructor

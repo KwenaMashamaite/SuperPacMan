@@ -25,47 +25,34 @@
 #ifndef SUPERPACMAN_FRIGHTENEDSTATE_H
 #define SUPERPACMAN_FRIGHTENEDSTATE_H
 
-#include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/RandomGridMover.h>
-#include "../TimedState.h"
-#include "../../Ghost.h"
+#include "src/models/actors/states/ghost/GhostState.h"
 
-namespace pacman {
+namespace spm {
     /**
-     * @brief Defines the state of a ghost when it is frightened.
+     * @brief Defines the state of a ghost when it is frightened
      *
-     * This state is entered when Pacman eats a power pellet
+     * When in this state, the ghost moves at half its normal speed,
+     * is vulnerable i.e can be eaten by pacman and moves aimlessly
+     * in the grid
      */
-    class FrightenedState final : public TimedState {
+    class FrightenedState final : public GhostState {
     public:
         /**
-         * @brief Construct state
-         * @param ghost Frightened ghost
+         * @brief Constructor
          */
-        explicit FrightenedState(std::shared_ptr<ime::Entity> ghost);
-
-        /**
-         * @brief Set the ghosts grid mover
-         * @param gridMover The ghosts grid mover
-         *
-         * The grid mover is responsible for controlling the ghost movement
-         * while in this state
-         *
-         * @warning This function must be called before the update function
-         */
-        void setGridMover(std::shared_ptr<ime::RandomGridMover> gridMover);
+        explicit FrightenedState();
 
         /**
          * @brief Initialize the state
          *
-         * This function will be called by the FSM when a state is entered
+         * This function will be called by the FSM when the state is entered
          * for the first time
          */
         void onEntry() override;
 
         /**
          * @brief update the state
-         * @param deltaTime Time passed since the state was last updated
+         * @param deltaTime Time passed since last update
          */
         void update(ime::Time deltaTime) override;
 
@@ -78,16 +65,7 @@ namespace pacman {
         void onExit() override;
 
     private:
-        /**
-         * @brief Pop the state
-         */
-        void onTimeout() override;
-
-    private:
-        std::shared_ptr<ime::Entity> ghost_base;           //!< Pointer to ghost base class
-        std::shared_ptr<Ghost> ghost_;                     //!< Pointer to concrete ghost class (avoid a lot of dynamic casting)
-        std::shared_ptr<ime::RandomGridMover> ghostMover_; //!< Ghost movement controller
-        bool isGhostFlashing_;                             //!< Flags whether or not ghost is flashing
+        bool isGhostFlashing_; //!< Flags whether or not ghost is flashing
     };
 }
 

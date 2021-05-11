@@ -22,34 +22,48 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "StateController.h"
-#include <cassert>
-#include <iostream>
+#ifndef SUPERPACMAN_GHOSTSTATE_H
+#define SUPERPACMAN_GHOSTSTATE_H
 
-namespace pacman {
-    void StateController::pushState(const std::string& name, std::shared_ptr<IState> state) {
-        assert(state && "State cannot be null");
-        states_.push({name, state});
-        state->onEntry();
-    }
+#include "src/models/actors/states/TimedState.h"
+#include "IME/core/physics/tilemap/TargetGridMover.h"
 
-    std::pair<std::string, std::shared_ptr<IState>> StateController::getCurrentState() {
-        return !states_.empty() ? states_.top() : std::pair("", nullptr);
-    }
+namespace spm {
+    class Ghost;
 
-    std::pair<std::string, std::shared_ptr<IState>> StateController::getCurrentState() const {
-        return !states_.empty() ? states_.top() : std::pair("", nullptr);
-    }
+    /**
+     * @brief Intermediate abstract base class for a ghost state
+     *
+     * This class implements functions that are common to all timed ghost
+     * states. Its main purpose is to avoid code duplication
+     */
+    class GhostState : public TimedState {
+    public:
+        /**
+         * @brief Constructor
+         */
+        GhostState();
 
-    void StateController::popState() {
-        if (states_.empty())
-            return;
-        auto stateToPop = states_.top();
-        states_.pop();
-        stateToPop.second->onExit();
-    }
+        /**
+         * @brief Set the ghost to be scattered
+         * @param ghost The ghost to be scattered
+         *
+         * @warning @a ghost must not be a nullptr
+         */
+        void setTarget(Ghost* ghost);
 
-    bool StateController::isEmpty() const {
-        return states_.empty();
-    }
+        /**
+         * @brief Set the ghosts grid mover
+         * @param gridMover The ghosts grid mover
+         *
+         * @warning @a gridMover must not be a nullptr
+         */
+        void setGridMover(ime::GridMover* gridMover);
+
+    protected:
+        Ghost* ghost_;
+        ime::GridMover* ghostMover_; //!< Ghost movement controller
+    };
 }
+
+#endif //SUPERPACMAN_GHOSTSTATE_H

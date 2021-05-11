@@ -29,58 +29,45 @@
 
 namespace spm {
     /**
-     * @brief Stores common date that doesn't change throughout the game
+     * @brief Stores data that doesn't change throughout the game
      */
     struct Constants {
         //Spawn positions in the grid
-        static constexpr auto PacManSpawnTile = ime::Index{13, 11};
+        static constexpr auto PacManSpawnTile = ime::Index{13, 12};
         static constexpr auto BlinkySpawnTile = ime::Index{7, 11};
         static constexpr auto PinkySpawnTile = ime::Index{9, 9};
         static constexpr auto InkySpawnTile = ime::Index{9, 13};
         static constexpr auto ClydeSpawnTile = ime::Index{11, 11};
         static constexpr auto EatenGhostRespawnTile = ime::Index{11, 11};
 
-        //Speed
+        // Speed (pixels/second)
         static constexpr auto PacManNormalSpeed = 120.0f;
         static constexpr auto PacManSuperSpeed = 3.0f * PacManNormalSpeed;
         static constexpr auto GhostScatterSpeed = PacManNormalSpeed + 40.0f;
-        static constexpr auto GhostChaseSpeed = PacManNormalSpeed + 3.0f;
+        static constexpr auto GhostChaseSpeed = PacManNormalSpeed / 2.0f;
         static constexpr auto GhostFrightenedSpeed = GhostChaseSpeed / 2.0f;
+        static constexpr auto GhostRetreatSpeed = 2 * GhostScatterSpeed;
+        static constexpr auto GhostRoamSpeed = PacManNormalSpeed;
 
-        //Points
-        static constexpr auto KeyPoints = 10;
-        static constexpr auto ApplePoints = 10;
-        static constexpr auto PowerPelletPoints = 50;
-        static constexpr auto SuperPelletPoints = 100;
-        static constexpr auto GhostPoints = 200;
-
-        //Modes (All the duration are in seconds)
-        static constexpr auto InitialSuperModeTimeout = 15.0f;
-        static constexpr auto PowerModeDuration = 10.0f;
-
-        //Other
+        // Base durations (seconds)
+        static constexpr auto LEVEL_START_DELAY = 2.0f;      //!< Time player must wait before they can control pacman
+        static constexpr auto SUPER_MODE_DURATION = 15.0f;   //!< The initial duration of super pellet effects on pacman and ghost
+        static constexpr auto POWER_MODE_DURATION = 10.0f;   //!< Initial duration of power pellet effects on ghosts
+        static constexpr auto SCATTER_MODE_DURATION = 15.0f; //!< The initial duration of a ghosts scatter mode
+        static constexpr auto CHASE_MODE_DURATION = 4.0f;   //!< The initial duration of a ghosts chase mode
         static constexpr auto PacManLives = 4;
 
+        /**
+         * @brief Points awarded to the player when pacman eats another actor
+         */
         struct Points {
             static constexpr int FRUIT = 10;
             static constexpr int KEY = 50;
             static constexpr int POWER_PELLET = 50;
             static constexpr int SUPER_PELLET = 100;
             static constexpr int BROKEN_DOOR = 200;
+            static constexpr int GHOST = 200;
         };
-    };
-
-    /**
-     * @brief Events that take place during gameplay
-     */
-    enum class GameEvent {
-        PowerPelletEaten, //!< Occurs when pacman eats a power pellet
-        SuperPelletEaten, //!< Occurs when pacman eats a Super pellet
-        PacManDied,       //!< Occurs when pacman collides with a ghost and is not in super mode
-        GhostEaten,       //!< Occurs when a ghost is eaten by pacman
-        GhostRespawned,   //!< Occurs when an eaten ghost is revived
-        LevelCompleted,   //!< Occurs when a level is completed (All fruits and pellets eaten)
-        GameCompleted,    //!< Occurs when all 17 levels are completed
     };
 }
 

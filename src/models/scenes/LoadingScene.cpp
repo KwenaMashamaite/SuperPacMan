@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/scenes/LoadingScene.h"
-#include "src/models/scenes/IntroScene.h"
+#include "src/models/scenes/MainMenuScene.h"
 #include "src/views/LoadingSceneView.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/ProgressBar.h>
@@ -109,7 +109,7 @@ namespace spm {
                 auto pbrAssetLoading = gui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
 
                 // Resources load very fast (less than a second), so we simulate a delay between each load
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(std::chrono::milliseconds(80));
                 pbrAssetLoading->setText("Loading " + text + "...");
                 pbrAssetLoading->incrementValue();
             });
@@ -141,6 +141,6 @@ namespace spm {
 
     void LoadingScene::onExit() {
         ime::EventDispatcher::instance()->dispatchEvent("assetLoadFinish");
-        engine().pushScene(std::make_unique<IntroScene>());
+        engine().pushScene(std::make_unique<MainMenuScene>());
     }
 }

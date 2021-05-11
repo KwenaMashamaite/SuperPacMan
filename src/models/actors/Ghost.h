@@ -25,19 +25,24 @@
 #ifndef SUPERPACMAN_GHOST_H
 #define SUPERPACMAN_GHOST_H
 
+#include "src/models/actors/states/IActorState.h"
 #include <IME/core/game_object/GameObject.h>
 #include <IME/core/physics/tilemap/GridMover.h>
+#include <memory>
+#include <src/common/Events.h>
 
 namespace spm {
+    class GStateController; //!< Ghost FSM;
+
     /**
      * @brief Ghost actor
      */
     class Ghost : public ime::GameObject {
     public:
-        using Ptr = std::shared_ptr<Ghost>; //!< Shared actor pointer
+        using Ptr = std::unique_ptr<Ghost>; //!< Shared actor pointer
 
         /**
-         * @brief The colour of the ghost (For Cosmetic purposes only)
+         * @brief The colour of the ghost
          */
         enum class Colour {
             Red,     //!< Blinky
@@ -46,6 +51,18 @@ namespace spm {
             Orange,  //!< Clyde
         };
 
+        /**
+         * @brief States a ghost can be in at any given time
+         */
+        enum class State {
+            Unknown = -1,
+            Idle,
+            Scatter,
+            Chase,
+            Evade,
+            Heal,
+            Wonder,
+        };
 
         /**
          * @brief Constructor
@@ -55,10 +72,11 @@ namespace spm {
         explicit Ghost(ime::Scene& scene, Colour colour);
 
         /**
-         * @brief Get the name of this class
-         * @return The name of this class
+         * @brief Initialize the ghosts Finite State Machine
+         * @param duration The duration of the initial state of the ghost
+         * @param currLevel The current level of the game
          */
-        std::string getClassName() const override;
+        void initFSM(const ime::Time& duration, int currLevel);
 
         /**
          * @brief Set the movement controller of the ghost
@@ -70,10 +88,48 @@ namespace spm {
          * @brief Get the ghosts movement controller
          * @return The ghosts movement controller
          */
-        ime::GridMover*getMoveController() const;
+        ime::GridMover* getMoveController() const;
+
+        /**
+         * @brief Get the name of this class
+         * @return The name of this class
+         */
+        std::string getClassName() const override;
+
+        /**
+         * @brief Get the current state of the ghost
+         * @return The current state of the ghost
+         *
+         * @warning Calling this function before the ghosts FSM is initialized
+         * is undefined behavior
+         *
+         * @see initFSM
+         */
+        State getState() const;
+
+        /**
+         * @brief Update the ghost
+         * @param deltaTime Time passed since last update
+         */
+        void update(ime::Time deltaTime) override;
+
+        /**
+         * @brief Handle a game event
+         * @param event The event to be handled
+         * @param args Arguments associated with the event
+         */
+        virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args);
+
+        /**
+         * @brief Destructor
+         */
+        ~Ghost() override;
 
     private:
-        ime::GridMover* gridMover_; //!< Controls the movement of the ghost in the grid
+        ime::GridMover* gridMover_;              //!< Controls the movement of the ghost in the grid
+        std::unique_ptr<GStateController> fsm_;  //!< Ghost actor finite state machine
+        ime::Vector2i direction_;                //!< The direction of the ghost
+        bool isPacmanSuper_;                     //!< A flag indicating whether or not pacman is in super mode
     };
 }
 

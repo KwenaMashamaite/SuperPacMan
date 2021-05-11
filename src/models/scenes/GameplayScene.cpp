@@ -46,8 +46,8 @@ namespace spm {
 
         // Init physics world
         createWorld({0.0f, 0.0f});
-        physics().enableDebugDraw(true);
-        physics().getDebugDrawerFilter().drawAABB = true;
+        //physics().enableDebugDraw(true);
+        //physics().getDebugDrawerFilter().drawAABB = true;
 
         createGrid();
         createActors();
@@ -116,10 +116,11 @@ namespace spm {
         gridMovers().addObject(std::move(pacmanGridMover));
 
         // 2. Create movement controllers for all ghost
-        gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* actor) {
-            actor->getRigidBody()->setLinearVelocity({Constants::GhostScatterSpeed, Constants::GhostScatterSpeed});
-            auto ghostMover = std::make_unique<ime::RandomGridMover>(tilemap(), actor);
-            ghostMover->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
+        gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
+            ghost->getRigidBody()->setLinearVelocity({Constants::GhostScatterSpeed, Constants::GhostScatterSpeed});
+            auto ghostMover = std::make_unique<ime::TargetGridMover>(tilemap(), ghost);
+            static_cast<Ghost*>(ghost)->setMovementController(ghostMover.get());
+            static_cast<Ghost*>(ghost)->initFSM(ime::seconds(Constants::LEVEL_START_DELAY), currentLevel_);
             gridMovers().addObject(std::move(ghostMover), "GhostMovers");
         });
     }
@@ -159,15 +160,13 @@ namespace spm {
             auto pellet = static_cast<Pellet*>(pelletBase);
             pellet->setActive(false);
             if (pellet->getPelletType() == Pellet::Type::Power) {
-                gameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
-                    ghost->getSprite().getAnimator().startAnimation("frightened");
-                });
-
+                emit(GameEvent::PowerModeBegin);
                 updateScore(Constants::Points::POWER_PELLET);
                 audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
             } else {
+                emit(GameEvent::SuperModeBegin);
                 updateScore(Constants::Points::SUPER_PELLET);
-                static_cast<PacMan*>(pacman)->setState(PacMan::State::Super, ime::seconds(Constants::InitialSuperModeTimeout / currentLevel_));
+                static_cast<PacMan*>(pacman)->setState(PacMan::State::Super, ime::seconds(Constants::SUPER_MODE_DURATION / currentLevel_));
                 audio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
             }
         };
@@ -232,6 +231,11 @@ namespace spm {
             pacmanGridMover->resetTargetTile();
             pacmanGridMover->requestDirectionChange(pacman->getDirection());
         });
+
+        // 7.
+        pacmanGridMover->onAdjacentTileReached([this](ime::Index index) {
+            emit(GameEvent::PacManMoved);
+        });
     }
 
     void GameplayScene::intiGameEvents() {
@@ -292,7 +296,7 @@ namespace spm {
         sprites().findByTag("ready")->setVisible(true);
         gameObjects().findByTag("pacman")->getSprite().setVisible(false);
 
-        timer().setTimeout(ime::seconds(2), [this] {
+        timer().setTimeout(ime::seconds(Constants::LEVEL_START_DELAY), [this] {
             sprites().findByTag("ready")->setVisible(false);
             gameObjects().findByTag("pacman")->getSprite().setVisible(true);
             gameObjects().findByTag<PacMan>("pacman")->setState(PacMan::State::Normal);
@@ -329,6 +333,26 @@ namespace spm {
                 tilemap().addChild(ghost, Constants::InkySpawnTile);
             else
                 tilemap().addChild(ghost, Constants::ClydeSpawnTile);
+        });
+    }
+
+    void GameplayScene::emit(GameEvent event) {
+        ime::PropertyContainer args;
+        switch (event) {
+            case GameEvent::PacManMoved:
+                args.addProperty({"pacmanTileIndex", tilemap().getTileOccupiedByChild(gameObjects().findByTag("pacman")).getIndex()});
+                break;
+            case GameEvent::LevelStarted:
+            case GameEvent::LevelCompleted:
+            case GameEvent::GameCompleted:
+                args.addProperty({"level", currentLevel_});
+                break;
+            default:
+                break;
+        }
+
+        gameObjects().forEachInGroup("Ghost", [event, &args](ime::GameObject* ghost) {
+            static_cast<Ghost*>(ghost)->handleEvent(event, args);
         });
     }
 
