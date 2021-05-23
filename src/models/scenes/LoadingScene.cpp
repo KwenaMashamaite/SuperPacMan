@@ -29,7 +29,7 @@
 #include <IME/ui/widgets/ProgressBar.h>
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/Panel.h>
-#include <IME/core/resources/ResourceManager.h>
+#include <IME/core/resources/ResourceLoader.h>
 #include <thread>
 #include <chrono>
 
@@ -105,7 +105,7 @@ namespace spm {
                     break;
             }
 
-            ime::ResourceManager::getInstance()->loadFromFile(rType, assets, [this](const std::string& text) {
+            ime::ResourceLoader::loadFromFile(rType, assets, [this](const std::string& text) {
                 auto pbrAssetLoading = gui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
 
                 // Resources load very fast (less than a second), so we simulate a delay between each load

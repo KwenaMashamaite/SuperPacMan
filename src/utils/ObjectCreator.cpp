@@ -41,24 +41,24 @@ namespace spm {
             return door;
         }
 
-        void attachRigidBody(const ime::GameObject::Ptr& actor, ime::World& physics, ime::Body::Type bodyType) {
+        void attachRigidBody(const ime::GameObject::Ptr& actor, ime::PhysicsWorld& physics, ime::RigidBody::Type bodyType) {
             ime::Vector2f colliderSize = {actor->getSprite().getGlobalBounds().width / 2.0f,
                                           actor->getSprite().getGlobalBounds().height / 2.0f};
 
-            auto physicsBody = physics.createBody(bodyType);
+            auto physicsRigidBody = physics.createBody(bodyType);
             auto collider = ime::BoxCollider::create({colliderSize.x, colliderSize.y});
-            physicsBody->attachCollider(std::move(collider));
-            actor->attachRigidBody(std::move(physicsBody));
+            physicsRigidBody->attachCollider(std::move(collider));
+            actor->attachRigidBody(std::move(physicsRigidBody));
         }
     }
 
-    void ObjectCreator::createObjects(ime::World& world, Grid &grid) {
+    void ObjectCreator::createObjects(ime::PhysicsWorld& world, Grid &grid) {
         grid.forEachCell([&world, &grid, keyId = 0](const ime::Tile& tile) mutable {
             ime::GameObject::Ptr actor;
-            ime::Body::Type rigidBodyType = ime::Body::Type::Static;
+            ime::RigidBody::Type rigidRigidBodyType = ime::RigidBody::Type::Static;
 
             if (tile.getId() == 'X') {
-                rigidBodyType = ime::Body::Type::Kinematic;
+                rigidRigidBodyType = ime::RigidBody::Type::Kinematic;
                 actor = std::make_unique<PacMan>(grid.getScene());
             } else if (tile.getId() == 'K')
                 actor = std::make_unique<spm::Key>(grid.getScene(), keyId++);
@@ -73,7 +73,7 @@ namespace spm {
             else if (tile.getId() == '#' || tile.getId() == '|')
                 actor = std::make_unique<Wall>(grid.getScene());
             else {
-                rigidBodyType = ime::Body::Type::Kinematic;
+                rigidRigidBodyType = ime::RigidBody::Type::Kinematic;
                 if (tile.getId() == 'B')
                     actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Red);
                 else if (tile.getId() == 'P')
@@ -86,7 +86,7 @@ namespace spm {
                     return;
             }
 
-            attachRigidBody(actor, world, rigidBodyType);
+            attachRigidBody(actor, world, rigidRigidBodyType);
             grid.addActor(std::move(actor), tile.getIndex());
         });
     }

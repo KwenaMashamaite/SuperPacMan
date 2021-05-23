@@ -50,9 +50,8 @@ namespace spm {
     }
 
     void HealState::onExit() {
-        ghostMover_->removeCollisionHandler(destFoundHandler_);
-        static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(ime::Index{-1, -1});
-        static_cast<ime::TargetGridMover*>(ghostMover_)->stopMovement();
+        ghostMover_->unsubscribe(destFoundHandler_);
+        static_cast<ime::TargetGridMover*>(ghostMover_)->clearPath();
         TimedState::onEntry(); // Start timer and immediately call on timeout callback (Expire time set to zero for this state)
     }
 }

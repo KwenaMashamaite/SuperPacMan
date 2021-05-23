@@ -70,9 +70,9 @@ namespace spm {
         auto panel = ime::ui::Panel::create();
         panel->getRenderer()->setBackgroundColour(ime::Colour::Black);
         panel->getRenderer()->setOpacity(0.5);
-        engine_.getGui().addWidget(panel, "pnl");
+        engine_.getGui().addWidget(std::move(panel), "pnl");
 
-        auto messageBox = ime::ui::MessageBox::create("Exit game");
+        auto* messageBox = engine_.getGui().addWidget<ime::ui::MessageBox>(ime::ui::MessageBox::create("Exit game"),"msgBoxQuitGame");
         messageBox->getRenderer()->setBorderBelowTitleBar(2.0f);
         messageBox->getRenderer()->setShowTextOnTitleButtons(true);
         messageBox->getRenderer()->setShowTextOnTitleButtons(true);
@@ -85,7 +85,6 @@ namespace spm {
         messageBox->getRenderer()->setFocusedBorderColour(ime::Colour::Blue);
         messageBox->getRenderer()->setBorders({1, 1, 1, 1});
         messageBox->setDraggable(false);
-        engine_.getGui().addWidget(messageBox, "msgBoxQuitGame");
 
         messageBox->on("buttonPress", ime::Callback<std::string>([this, messageBox](const std::string& button) {
             if (button == "Quit")

@@ -30,47 +30,44 @@
 
 namespace spm {
     void LoadingSceneView::init(ime::ui::GuiContainer& gui) {
-        auto pnlContainer = ime::ui::Panel::create();
+        using namespace ime::ui;
+        auto pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
-        gui.addWidget(pnlContainer, "pnlContainer");
 
-        auto lblGameTitle = ime::ui::Label::create("Super  Pac-Man");
+        auto lblGameTitle = pnlContainer->addWidget<Label>(Label::create("Super  Pac-Man"), "lblGameTitle");
         lblGameTitle->setTextSize(45.0f);
         lblGameTitle->scale(0, 1.5f);
         lblGameTitle->getRenderer()->setFont("pacfont.ttf");
         lblGameTitle->getRenderer()->setTextColour({255, 0, 0, 100});
         lblGameTitle->setOrigin(0.5f, 0.0f);
         lblGameTitle->setPosition("50%", "35%");
-        pnlContainer->addWidget(lblGameTitle, "lblGameTitle");
 
-        auto picMascot = ime::ui::Picture::create("pacman_mascot.png");
+        auto picMascot = Picture::create("pacman_mascot.png");
         picMascot->setOrigin(0.5f, 1.0f);
         picMascot->setSize("40%", "35%");
         picMascot->setPosition("50%", ime::bindBottom(lblGameTitle));
-        pnlContainer->addWidget(picMascot, "picMascot");
+        pnlContainer->addWidget(std::move(picMascot), "picMascot");
 
-        auto picLEngineLogo = ime::ui::Picture::create("IME_logo.png");
+        auto picLEngineLogo = pnlContainer->addWidget(Picture::create("IME_logo.png"), "picEngineLogo");
         picLEngineLogo->setOrigin(0.5f, 0.0f);
         picLEngineLogo->setPosition("50%", "70%");
-        pnlContainer->addWidget(picLEngineLogo, "picEngineLogo");
 
-        auto lblPoweredBy = ime::ui::Label::create("Powered by");
+        auto lblPoweredBy = Label::create("Powered by");
         lblPoweredBy->getRenderer()->setTextStyle(ime::TextStyle::Italic);
         lblPoweredBy->setOrigin(0.5f, 1.0f);
         lblPoweredBy->setPosition("50%", ime::bindTop(picLEngineLogo));
-        pnlContainer->addWidget(lblPoweredBy, "lblPoweredBy");
+        pnlContainer->addWidget(std::move(lblPoweredBy), "lblPoweredBy");
 
-        auto pbrAssetLoading = ime::ui::ProgressBar::create("loading fonts...");
+        auto pbrAssetLoading = pnlContainer->addWidget<ProgressBar>(ProgressBar::create("loading fonts..."), "pbrAssetLoading");;
         pbrAssetLoading->getRenderer()->setBorderColour({0, 230, 64, 135});
         pbrAssetLoading->getRenderer()->setFillColour(ime::Colour("#4d05e8"));
         pbrAssetLoading->setOrigin(0.5f, 0.0f);
         pbrAssetLoading->setSize("80%", std::to_string(pbrAssetLoading->getSize().y));
         pbrAssetLoading->setPosition("50%", "90%");
-        pnlContainer->addWidget(pbrAssetLoading, "pbrAssetLoading");
 
-        auto lblLoading = ime::ui::Label::create("Loading resources, please wait...");
+        auto lblLoading = Label::create("Loading resources, please wait...");
         lblLoading->setOrigin(0.5f, 1.0f);
         lblLoading->setPosition("50%", ime::bindTop(pbrAssetLoading));
-        pnlContainer->addWidget(lblLoading, "lblLoading");
+        pnlContainer->addWidget(std::move(lblLoading), "lblLoading");
     }
 }

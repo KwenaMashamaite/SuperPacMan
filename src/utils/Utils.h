@@ -26,7 +26,7 @@
 #define SUPERPACMAN_Utils_H
 
 #include <IME/core/tilemap/TileMap.h>
-#include <IME/core/physics/tilemap/GridMover.h>
+#include <IME/core/physics/grid/GridMover.h>
 #include <unordered_map>
 #include <vector>
 #include <memory>

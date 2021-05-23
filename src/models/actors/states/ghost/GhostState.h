@@ -26,7 +26,7 @@
 #define SUPERPACMAN_GHOSTSTATE_H
 
 #include "src/models/actors/states/TimedState.h"
-#include "IME/core/physics/tilemap/TargetGridMover.h"
+#include "IME/core/physics/grid/TargetGridMover.h"
 
 namespace spm {
     class Ghost;

@@ -26,8 +26,9 @@
 
 namespace spm {
     Wall::Wall(ime::Scene& scene) :
-        ime::GameObject(scene, ime::GameObject::Type::Obstacle)
+        ime::GameObject(scene)
     {
+        setAsObstacle(true);
         getSprite().setTextureRect({0, 0, 16, 16});
     }
 

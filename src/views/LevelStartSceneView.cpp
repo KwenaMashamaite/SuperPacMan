@@ -41,21 +41,20 @@ namespace spm {
         commonView_.setScore(score);
         commonView_.setHighScore(highScore);
 
-        auto pnlContainer = gui_.getWidget<ime::ui::Panel>("pnlContainer");
+        using namespace ime::ui;
+        auto pnlContainer = gui_.getWidget<Panel>("pnlContainer");
 
-        auto lblLevel = ime::ui::Label::create("STAGE  " + std::to_string(level));
+        auto* lblLevel = pnlContainer->addWidget<Label>(Label::create("STAGE  " + std::to_string(level)), "lblLevel");
         lblLevel->getRenderer()->setTextColour(ime::Colour::White);
         lblLevel->setOrigin(0.5f, 0.5f);
         lblLevel->setPosition("50%", "50%");
-        pnlContainer->addWidget(lblLevel, "lblLevel");
 
         auto frameSize = ime::Vector2u{16, 16};
         auto startPos = ime::Vector2u{level * frameSize.x + (level - frameSize.x), 142}; //Top-left position of the fruit texture on the spritesheet
-        auto picFruit = ime::ui::Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y});
+        auto picFruit = pnlContainer->addWidget<Picture>(Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y}), "picFruit");
+        picFruit->scale(0.5f, 0.5f);
         picFruit->setPosition(lblLevel->getPosition().x - lblLevel->getSize().x / 2.0f,
                               lblLevel->getPosition().y + lblLevel->getSize().y * 2);
-        pnlContainer->addWidget(picFruit, "picFruit");
-        picFruit->scale(0.5f, 0.5f);
 
         auto lblPoints = ime::ui::Label::create(std::to_string(level * 10) + " PTS");
         lblPoints->getRenderer()->setTextColour(ime::Colour::White);

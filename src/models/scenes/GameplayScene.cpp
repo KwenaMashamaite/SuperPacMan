@@ -28,9 +28,10 @@
 #include "src/utils/Utils.h"
 #include "src/models/actors/Actors.h"
 #include "src/common/Constants.h"
+#include "src/models/scenes/MainMenuScene.h"
 #include <IME/core/engine/Engine.h>
-#include <IME/core/physics/tilemap/KeyboardGridMover.h>
-#include <IME/core/physics/tilemap/RandomGridMover.h>
+#include <IME/core/physics/grid/KeyboardGridMover.h>
+#include <IME/core/physics/grid/RandomGridMover.h>
 
 namespace spm {
     GameplayScene::GameplayScene() :
@@ -45,9 +46,12 @@ namespace spm {
         view_.setScore(cache().getValue<int>("score"));
 
         // Init physics world
-        createWorld({0.0f, 0.0f});
-        //physics().enableDebugDraw(true);
-        //physics().getDebugDrawerFilter().drawAABB = true;
+        createPhysWorld({0.0f, 0.0f});
+
+        // Yoy can enable debug draw to observe what is actually happening,
+        // However it slows down performance
+        //physWorld().setDebugDrawEnable(true);
+        physWorld().getDebugDrawerFilter().drawAABB = true;
 
         createGrid();
         createActors();
@@ -86,7 +90,7 @@ namespace spm {
     }
 
     void GameplayScene::createActors() {
-        ObjectCreator::createObjects(physics(), *grid_);
+        ObjectCreator::createObjects(physWorld(), *grid_);
 
         grid_->forEachActor([this](ime::GameObject* actor) {
             if (actor->getClassName() == "Door")
@@ -119,6 +123,7 @@ namespace spm {
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
             ghost->getRigidBody()->setLinearVelocity({Constants::GhostScatterSpeed, Constants::GhostScatterSpeed});
             auto ghostMover = std::make_unique<ime::TargetGridMover>(tilemap(), ghost);
+            ghostMover->setPathViewEnable(true);
             static_cast<Ghost*>(ghost)->setMovementController(ghostMover.get());
             static_cast<Ghost*>(ghost)->initFSM(ime::seconds(Constants::LEVEL_START_DELAY), currentLevel_);
             gridMovers().addObject(std::move(ghostMover), "GhostMovers");
@@ -128,21 +133,21 @@ namespace spm {
     void GameplayScene::initGridMovers() {
         // Automatically keep pacman moving in his current direction
         auto pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
-        pacmanGridMover->onAdjacentTileReached([this, pacmanGridMover](ime::Index) {
+        pacmanGridMover->onAdjacentMoveEnd([this, pacmanGridMover](ime::Index) {
             pacmanGridMover->requestDirectionChange(gameObjects().findByTag<PacMan>("pacman")->getDirection());
         });
     }
 
     void GameplayScene::initCollisionResponses() {
         // 1. Pacman and fruit collision handler
-        auto onFruitCollision = [this](ime::GameObject* pacman, ime::GameObject* fruit) {
+        auto onFruitCollision = [this](ime::GameObject* fruit) {
             fruit->setActive(false);
             updateScore(Constants::Points::FRUIT * currentLevel_);
             audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
         };
 
         // 2. Pacman and key collision handler
-        auto onKeyCollision = [this](ime::GameObject* pacman, ime::GameObject* key) {
+        auto onKeyCollision = [this](ime::GameObject* key) {
             // Unlock a door whose locker id is the same as the id of the key that pacman collided with
             gameObjects().forEachInGroup("Door",[key](ime::GameObject* door) {
                 if (utils::unlockDoor(static_cast<Door*>(door), static_cast<Key*>(key))) {
@@ -171,46 +176,91 @@ namespace spm {
             }
         };
 
-        // Subscribe pacman collectable collision handlers
-        auto pacmanGridMover = gridMovers().findByTag<ime::KeyboardGridMover>("pacmanGridMover");
-        pacmanGridMover->onCollectableCollision([=](ime::GameObject* pacman, ime::GameObject* collectable) {
-            if (collectable->getClassName() == "Fruit")
-                onFruitCollision(pacman, collectable);
-            else if (collectable->getClassName() == "Pellet")
-                onPelletCollision(pacman, collectable);
-            else if (collectable->getClassName() == "Key")
-                onKeyCollision(pacman, collectable);
-        });
-
         // 4. Pacman and door collision handler
-        pacmanGridMover->onObstacleCollision([this, pacmanGridMover](ime::GameObject* pacmanBase, ime::GameObject* obstacle) {
+        auto onDoorCollision = [this](ime::GameObject* pacmanBase, ime::GameObject* obstacle) {
             if (obstacle->getClassName() == "Door") {
                 auto pacman = static_cast<PacMan*>(pacmanBase);
                 if (pacman->getState() == PacMan::State::Super) {
                     static_cast<Door*>(obstacle)->burstOpen();
-                    pacmanGridMover->requestDirectionChange(pacman->getDirection());
+                    pacman->getMoveController()->requestDirectionChange(pacman->getDirection());
                     updateScore(Constants::Points::BROKEN_DOOR);
                     audio().play(ime::audio::Type::Sfx, "doorBroken.wav");
                 }
             }
-        });
+        };
 
         // 5. Pacman ghost collision handler
         auto onGhostCollision = [this](ime::GameObject* pacman, ime::GameObject* ghost) {
-            ghost->setActive(false);
+            auto pacmanState = static_cast<PacMan*>(pacman)->getState();
+            auto ghostState = static_cast<Ghost*>(ghost)->getState();
+
+            if (ghostState == Ghost::State::Evade) { // Pacman ate power pill
+                audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
+
+                // Momentarily stop all actor movements
+                gridMovers().forEach([](ime::GridMover* gridMover) {
+                    gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::All);
+                });
+
+                // Restart movement
+                timer().setTimeout(ime::seconds(1), [this, ghost] {
+                    gridMovers().forEach([](ime::GridMover* gridMover) {
+                        if (gridMover->getTarget()->getClassName() == "PacMan") {
+                            gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
+                            gridMover->requestDirectionChange(static_cast<PacMan*>(gridMover->getTarget())->getDirection());
+                        } else
+                            gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::None);
+                    });
+
+                    static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
+                });
+            } else if (pacmanState != PacMan::State::Super) {
+                audio().stopAll();
+
+                // Hide all ghosts
+                gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
+                    gameObject->getSprite().setVisible(false);
+                });
+
+                // Stop all movements
+                gridMovers().forEach([](ime::GridMover* gridMover) {
+                    gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::All);
+                });
+
+                auto pMan = static_cast<PacMan*>(pacman);
+                pMan->getSprite().getAnimator().startAnimation("dying");
+                audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
+
+                auto deathAnimDuration = pMan->getSprite().getAnimator().getActiveAnimation()->getDuration();
+                timer().setTimeout(deathAnimDuration + ime::seconds(1), [this] {
+                    auto pacman = gameObjects().findByTag<PacMan>("pacman");
+                    pacman->setLivesCount(pacman->getLivesCount() - 1);
+                    cache().setValue("lives", pacman->getLivesCount());
+                    if (pacman->getLivesCount() <= 0) { // Triggers a game over sequence
+                        engine().popScene();
+                        engine().pushScene(std::make_unique<MainMenuScene>());
+                        //@todo - Replace above code with game over scene
+                    } else {
+                        // Triggers a level restart after it pops itself
+                        engine().pushScene(std::make_unique<LevelStartScene>());
+                    }
+                });
+            }
         };
 
-        pacmanGridMover->onEnemyCollision([=](ime::GameObject* pacman, ime::GameObject* ghost) {
-            onGhostCollision(pacman, ghost);
-        });
-
-        // A grid mover only detects collision when it is moving the actor, therefore if pacman is idle
-        // and and a ghost collides with him it won't register, so we add the ghost collision handler
-        // to both pacmans grid mover and the ghosts grid mover
-        gridMovers().forEachInGroup("GhostMovers", [=] (ime::GridMover* ghostMover){
-            ghostMover->onPlayerCollision([=](ime::GameObject* ghost, ime::GameObject* pacman) {
-                onGhostCollision(pacman, ghost);
-            });
+        // Subscribe collision handlers to pacmans grid mover
+        auto pacmanGridMover = gridMovers().findByTag<ime::KeyboardGridMover>("pacmanGridMover");
+        pacmanGridMover->onGameObjectCollision( [=](ime::GameObject* pacman, ime::GameObject* other) {
+            if (other->getClassName() == "Fruit")
+                onFruitCollision(other);
+            else if (other->getClassName() == "Pellet")
+                onPelletCollision(pacman, other);
+            else if (other->getClassName() == "Key")
+                onKeyCollision(other);
+            else if (other->getClassName() == "Door")
+                onDoorCollision(pacman, other);
+            else if (other->getClassName() == "Ghost")
+                onGhostCollision(pacman, other);
         });
 
         // 6. Pacman grid collision handler
@@ -232,47 +282,41 @@ namespace spm {
             pacmanGridMover->requestDirectionChange(pacman->getDirection());
         });
 
-        // 7.
-        pacmanGridMover->onAdjacentTileReached([this](ime::Index index) {
+        // A grid mover only detects collision when it is moving the actor, therefore if pacman is idle
+        // and and a ghost collides with him it won't register in pacmans grid mover, so we add the ghost
+        // collision handler to both pacmans grid mover and the ghosts grid mover
+        gridMovers().forEachInGroup("GhostMovers", [=] (ime::GridMover* ghostMover){
+            ghostMover->onGameObjectCollision([=](ime::GameObject* ghost, ime::GameObject* other) {
+                if (other->getClassName() == "PacMan")
+                    onGhostCollision(other, ghost); // Note argument order
+            });
+        });
+
+        // 7. Notify interested parties that pacman has moved to a different tile
+        pacmanGridMover->onAdjacentMoveEnd([this](ime::Index index) {
             emit(GameEvent::PacManMoved);
         });
     }
 
     void GameplayScene::intiGameEvents() {
-        // Restart level each time pacman dies
-        gameObjects().findByTag("pacman")->onPropertyChange("active", [this](const ime::Property& property) {
-            if (!property.getValue<bool>()) {
-                auto pacman = gameObjects().findByTag<PacMan>("pacman");
-                pacman->setLivesCount(pacman->getLivesCount() - 1);
-                if (pacman->getLivesCount() >= 1) {
-                    cache().setValue("lives", pacman->getLivesCount());
-                    engine().pushScene(std::make_unique<LevelStartScene>()); // This will trigger a scene pause
-                } else {
-                    //@TODO - Push game over scene
-                    engine().popScene();
-                }
-            }
-        });
-
         eventEmitter().on("levelComplete", ime::Callback<>([this] {
             engine().onFrameEnd(nullptr);
             gameObjects().getGroup("Ghost").removeAll();
             gridMovers().removeAll();
-            gridMovers().removeAllGroups();
 
             gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(0);
             gameObjects().findByTag("pacman")->getRigidBody()->setLinearVelocity({0.0f, 0.0f});
 
             // Momentarily freeze the game before changing to new level
             timer().setTimeout(ime::milliseconds(500), [this] {
-                audio().stopAllAudio();
+                audio().stopAll();
                 gameObjects().removeByTag("pacman");
-                grid_->playFlashAnimation(currentLevel_);
                 cache().setValue("level", currentLevel_ + 1);
                 audio().play(ime::audio::Type::Sfx, "levelComplete.ogg");
+                auto gridAnimDuration = grid_->playFlashAnimation(currentLevel_);
 
-                // Start new level after shortly after the grid stops flashing (flashes for 2 seconds)
-                timer().setTimeout(ime::seconds(3.0), [this] {
+                // Start new level after shortly after the grid stops flashing
+                timer().setTimeout(gridAnimDuration + ime::seconds(1), [this] {
                     engine().popScene();
                     engine().pushScene(std::make_unique<GameplayScene>());
                     engine().pushScene(std::make_unique<LevelStartScene>());
@@ -309,7 +353,8 @@ namespace spm {
                 }
             });
 
-            audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg", true);
+            auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
+            soundEffect->setLoop(true);
         });
     }
 

@@ -24,7 +24,7 @@
 
 #include "src/models/actors/states/ghost/RoamState.h"
 #include "src/common/Constants.h"
-#include <IME/core/physics/tilemap/RandomGridMover.h>
+#include <IME/core/physics/grid/RandomGridMover.h>
 #include <cassert>
 
 namespace spm {

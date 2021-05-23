@@ -27,7 +27,7 @@
 
 namespace spm {
     Pellet::Pellet(ime::Scene& scene, Type type) :
-        ime::GameObject(scene, ime::GameObject::Type::Collectable),
+        ime::GameObject(scene),
         type_{type}
     {
         auto animations = PelletAnimations();

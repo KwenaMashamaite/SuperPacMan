@@ -104,8 +104,7 @@ namespace spm {
     }
 
     void ScatterState::onExit() {
-        ghostMover_->removeCollisionHandler(destFoundHandler_);
-        static_cast<ime::TargetGridMover*>(ghostMover_)->stopMovement();
-        static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(ime::Index{-1, -1});
+        ghostMover_->unsubscribe(destFoundHandler_);
+        static_cast<ime::TargetGridMover*>(ghostMover_)->clearPath();
     }
 }

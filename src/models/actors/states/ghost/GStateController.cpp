@@ -131,15 +131,13 @@ namespace spm {
 
                 break;
             case Ghost::State::Evade:
+                states_.pop();
                 if (enmNewState == Ghost::State::Heal) {
-                    states_.pop();
                     newState = std::make_unique<HealState>();
                     stateDuration = ime::seconds(Constants::SCATTER_MODE_DURATION / currLevel_);
                     nextState = Ghost::State::Scatter;
-                } else {
-                    states_.pop();
+                } else
                     return;
-                }
 
                 break;
             default:

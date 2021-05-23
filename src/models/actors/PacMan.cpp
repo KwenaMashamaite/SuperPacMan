@@ -30,8 +30,8 @@
 
 namespace spm {
     PacMan::PacMan(ime::Scene& scene) :
-        ime::GameObject(scene, ime::GameObject::Type::Player),
-        livesCount_{1},
+        ime::GameObject(scene),
+        livesCount_{Constants::PacManLives},
         gridMover_{nullptr},
         isFlashing_{false}
     {
@@ -43,12 +43,9 @@ namespace spm {
         for (const auto& animation : animations.getAll())
             getSprite().getAnimator().addAnimation(animation);
 
-        getSprite().getAnimator().on(ime::Animator::Event::AnimationComplete, "dying", [this] {
-            setActive(false);
-        });
-
         getTransform().scale(2.0f, 2.0f);
         setDirection(ime::Left);
+        getSprite().getAnimator().getActiveAnimation()->showTargetOnStart(false);
         state_ = State::Idle;
     }
 
@@ -83,7 +80,7 @@ namespace spm {
 
         if (state_ != State::Super)
             animator.startAnimation("going" + strDir);
-        else if (animator.getCurrentAnimation()->getName().find("Flashing") != std::string::npos)
+        else if (animator.getActiveAnimation()->getName().find("Flashing") != std::string::npos)
             animator.startAnimation("going" + strDir + "Flashing");
         else
             animator.startAnimation("going" + strDir + "Super");
@@ -162,7 +159,7 @@ namespace spm {
         superStateTimer_.update(deltaTime);
 
         if (state_ == State::Super) { // Check if we should play flashing animation or not
-            if (getSprite().getAnimator().getCurrentAnimation()->getName().find("Flashing") == std::string::npos
+            if (getSprite().getAnimator().getActiveAnimation()->getName().find("Flashing") == std::string::npos
                 && (superStateTimer_.getRemainingDuration() > ime::Time::Zero && superStateTimer_.getRemainingDuration() <= ime::seconds(2)))
             {
                 getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_) + "Flashing");

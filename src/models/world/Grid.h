@@ -119,13 +119,14 @@ namespace spm {
         /**
          * @brief Play a flashing grid animation
          * @param level The current game level
+         * @return The duration of the animation
          *
          * This function will toggle the grid colour between its current
          * colour and a white colour for predetermined number of seconds
          * Note that the animation will only play for @a level greater
          * that 0
          */
-        void playFlashAnimation(int level);
+        ime::Time playFlashAnimation(int level);
 
         /**
          * @brief Execute a callback when the grid animation finishes

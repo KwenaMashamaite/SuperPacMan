@@ -26,7 +26,7 @@
 
 namespace spm {
     Key::Key(ime::Scene& scene, int id) :
-        ime::GameObject(scene, ime::GameObject::Type::Collectable),
+        ime::GameObject(scene),
         id_(id)
     {
         getSprite().setTexture("spritesheet.png");

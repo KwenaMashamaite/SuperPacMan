@@ -27,7 +27,7 @@
 
 #include "src/models/actors/states/IActorState.h"
 #include <IME/core/game_object/GameObject.h>
-#include <IME/core/physics/tilemap/GridMover.h>
+#include <IME/core/physics/grid/GridMover.h>
 #include <IME/core/time/Timer.h>
 #include <optional>
 

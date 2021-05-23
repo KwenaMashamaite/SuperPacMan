@@ -30,7 +30,7 @@
 
 namespace spm {
     Ghost::Ghost(ime::Scene& scene, Colour colour) :
-        ime::GameObject(scene, ime::GameObject::Type::Enemy),
+        ime::GameObject(scene),
         gridMover_{nullptr},
         isPacmanSuper_{false}
     {
@@ -71,7 +71,7 @@ namespace spm {
         gridMover_->setTarget(this);
 
         // Trigger animation switch when the ghost changes direction
-        gridMover_->onMoveBegin([this](ime::Index) {
+        gridMover_->onAdjacentMoveBegin([this](ime::Index) {
             // Evade/frightened animation is the same in all directions
             if (fsm_->getState() == State::Evade)
                 return;
@@ -85,7 +85,7 @@ namespace spm {
                 newAnimation += "Flat";
 
             auto& animator = getSprite().getAnimator();
-            if (animator.getCurrentAnimation()->getName() != newAnimation)
+            if (animator.getActiveAnimation()->getName() != newAnimation)
                 animator.startAnimation(newAnimation);
         });
     }

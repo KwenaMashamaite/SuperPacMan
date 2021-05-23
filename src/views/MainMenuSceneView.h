@@ -96,6 +96,12 @@ namespace spm {
          */
         void createHighScoresView();
 
+        /**
+         * @brief Create a button that returns to the main subview when clicked
+         * @return Back button widget
+         */
+        ime::ui::Widget::Ptr createBackBtn();
+
     private:
         ime::ui::GuiContainer& gui_;   //!< Container for all main menu widgets
         SubView subView_;              //!< View that is currently rendered

@@ -25,7 +25,7 @@
 #include "src/models/actors/states/ghost/FrightenedState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
-#include <IME/core/physics/tilemap/RandomGridMover.h>
+#include <IME/core/physics/grid/RandomGridMover.h>
 #include <cassert>
 
 namespace spm {
@@ -52,7 +52,7 @@ namespace spm {
         TimedState::update(deltaTime);
 
         // Check whether or not state is about to expire, if so let player know with a flashing animation
-        if (ghost_->getSprite().getAnimator().getCurrentAnimation()->getName() != "flash"
+        if (ghost_->getSprite().getAnimator().getActiveAnimation()->getName() != "flash"
             && (getTimeout() >= ime::Time::Zero && getTimeout() <= ime::seconds(2)))
         {
             ghost_->getSprite().getAnimator().startAnimation("flash");

@@ -27,7 +27,7 @@
 
 namespace spm {
     Fruit::Fruit(ime::Scene& scene) :
-        ime::GameObject(scene, ime::GameObject::Type::Collectable)
+        ime::GameObject(scene)
     {
         auto animation = FruitAnimation();
         getSprite().getAnimator().addAnimation(animation.getAnimation());

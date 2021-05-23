@@ -35,15 +35,13 @@ namespace spm {
         assert(ghost_ && "Cannot enter chase state without a ghost");
         assert(ghostMover_ && "Cannot enter chase state without a ghost grid mover");
 
-#ifndef NDEBUG
         auto* ghostMover = dynamic_cast<ime::TargetGridMover*>(ghostMover_);
         assert(ghostMover && "Chase mode requires an ime::TargetGridMover as a ghost mover");
-#endif
 
         TimedState::onEntry();
         ghostMover->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
-        static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(pacmanPosition_);
-        static_cast<ime::TargetGridMover*>(ghostMover_)->startMovement();
+        ghostMover->setDestination(pacmanPosition_);
+        ghostMover->startMovement();
     }
 
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
@@ -53,7 +51,6 @@ namespace spm {
     }
 
     void ChaseState::onExit() {
-        static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(ime::Index{-1, -1});
-        static_cast<ime::TargetGridMover*>(ghostMover_)->stopMovement();
+        static_cast<ime::TargetGridMover*>(ghostMover_)->clearPath();
     }
 }

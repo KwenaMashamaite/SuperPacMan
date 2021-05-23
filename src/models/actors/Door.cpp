@@ -26,11 +26,12 @@
 
 namespace spm {
     Door::Door(ime::Scene& scene) :
-        ime::GameObject(scene, ime::GameObject::Type::Obstacle),
+        ime::GameObject(scene),
         orientation_(Orientation::Unknown),
         spriteSheet_{"spritesheet.png", {16, 16}, {1, 1}, {368, 17, 86, 18}},
         isBroken_{false}
     {
+        setAsObstacle(true);
         spriteSheet_.assignAlias({0, 0}, "unlocked_door");
         spriteSheet_.assignAlias({0, 1}, "locked_door_horizontal");
         spriteSheet_.assignAlias({0, 2}, "broken_door_horizontal");

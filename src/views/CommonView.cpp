@@ -27,8 +27,10 @@
 #include <IME/ui/widgets/Picture.h>
 #include <IME/ui/widgets/Panel.h>
 
+using namespace ime::ui;
+
 namespace spm {
-    CommonView::CommonView(ime::ui::GuiContainer &gui) :
+    CommonView::CommonView(GuiContainer &gui) :
         gui_{gui}
     {
         gui_.setFont("namco.ttf");
@@ -39,60 +41,57 @@ namespace spm {
         createSprites(level, lives);
 
         timer_ = ime::Timer::create(ime::milliseconds(200), [this] {
-            gui_.getWidget<ime::ui::Label>("lblOneUp")->toggleVisibility();
+            gui_.getWidget("lblOneUp")->toggleVisibility();
         }, -1);
         timer_.start();
     }
 
     void CommonView::setScore(int score) {
-        gui_.getWidget<ime::ui::Label>("lblScoreValue")
+        gui_.getWidget<Label>("lblScoreValue")
             ->setText(score == 0 ? "00" : std::to_string(score));
     }
 
     void CommonView::setHighScore(int highScore) {
-        gui_.getWidget<ime::ui::Label>("lblHighScoreValue")
+        gui_.getWidget<Label>("lblHighScoreValue")
             ->setText(highScore == 0 ? "00" : std::to_string(highScore));
     }
 
     void CommonView::createWidgets() {
-        auto pnlContainer = ime::ui::Panel::create();
+        auto* pnlContainer = gui_.addWidget<Panel>(Panel::create(), "pnlContainer");;
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
-        gui_.addWidget(pnlContainer, "pnlContainer");
 
-        auto lblOneUp = ime::ui::Label::create("1UP");
+        auto* lblOneUp = pnlContainer->addWidget<Label>(Label::create("1UP"), "lblOneUp");
         lblOneUp->setPosition("8.3%", "0");
         lblOneUp->getRenderer()->setTextColour(ime::Colour::Red);
-        pnlContainer->addWidget(lblOneUp, "lblOneUp");
 
-        auto lblScoreValue = ime::ui::Label::create("00");
+        auto lblScoreValue = Label::create("00");
         lblScoreValue->getRenderer()->setTextColour(ime::Colour::White);
         lblScoreValue->setPosition("4%", ime::bindBottom(lblOneUp));
         pnlContainer->addWidget(std::move(lblScoreValue), "lblScoreValue");
 
-        auto lblHighScore = ime::ui::Label::create("HIGH SCORE");
+        auto* lblHighScore = pnlContainer->addWidget<Label>(Label::create("HIGH SCORE"), "lblHighScore");
         lblHighScore->getRenderer()->setTextColour(ime::Colour::Red);
         lblHighScore->setPosition("(&.w - w) / 2", "0");
-        pnlContainer->addWidget(lblHighScore, "lblHighScore");
 
-        auto lblHighScoreValue = ime::ui::Label::create("00");
+        auto lblHighScoreValue = Label::create("00");
         lblHighScoreValue->getRenderer()->setTextColour(ime::Colour::White);
         lblHighScoreValue->setPosition("(&.w - w) / 2", ime::bindBottom(lblHighScore));
         pnlContainer->addWidget(std::move(lblHighScoreValue), "lblHighScoreValue");
 
-        auto lblCredit = ime::ui::Label::create("CREDIT 0");
+        auto lblCredit = Label::create("CREDIT 0");
         lblCredit->getRenderer()->setTextColour(ime::Colour::White);
         lblCredit->setPosition("8.3%", "&.h - h");
         pnlContainer->addWidget(std::move(lblCredit), "lblCredit");
     }
 
     void CommonView::createSprites(unsigned int level, unsigned int lives) {
-        auto pnlContainer = gui_.getWidget<ime::ui::Panel>("pnlContainer");
+        auto* pnlContainer = gui_.getWidget<Panel>("pnlContainer");
 
         // Depict the current game level as fruit images
         auto frameSize = ime::Vector2u{16, 16};
         auto startPos = ime::Vector2u{1, 142}; //Top-left position of the first frame on the spritesheet
         for (auto i = 0u; i < level; ++i) {
-            auto picFruit = ime::ui::Picture::create("spritesheet.png", {startPos.x + (i * (frameSize.x + 1)), startPos.y, frameSize.x, frameSize.y});
+            auto picFruit = Picture::create("spritesheet.png", {startPos.x + (i * (frameSize.x + 1)), startPos.y, frameSize.x, frameSize.y});
             picFruit->setOrigin(1.0f, 1.0f);
             picFruit->scale(0.4f, 0.4f);
             if (i == 0)
@@ -110,17 +109,16 @@ namespace spm {
             pnlContainer->getWidget("lblCredit")->setVisible(false);
 
             startPos = {216, 1};
-            auto picLife = ime::ui::Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y});
+            auto* picLife = pnlContainer->addWidget(Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y}), "picLife0");
             picLife->setOrigin(0.0f, 1.0f);
             picLife->scale(0.2f, 0.2f);
             picLife->setPosition(0, pnlContainer->getSize().y);
-            pnlContainer->addWidget(picLife, "picLife0");
 
             for (auto i = 1u; i < lives; ++i) {
                 auto picLifeCopy = picLife->clone();
                 auto picPrev = pnlContainer->getWidget("picLife" + std::to_string(i - 1));
                 picLifeCopy->setPosition(ime::bindRight(picPrev).append("+0.5%"), std::to_string(picPrev->getPosition().y));
-                pnlContainer->addWidget(picLifeCopy, "picLife" + std::to_string(i));
+                pnlContainer->addWidget(std::move(picLifeCopy), "picLife" + std::to_string(i));
             }
         }
     }

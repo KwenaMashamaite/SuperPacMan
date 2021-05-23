@@ -29,17 +29,19 @@
 
 namespace spm {
     void StartUpSceneView::init(ime::ui::GuiContainer& gui) {
-        auto pnlContainer = ime::ui::Panel::create();
-        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
-        gui.addWidget(pnlContainer, "pnlContainer");
+        using namespace ime::ui;
 
-        auto picPacmanLogo = ime::ui::Picture::create("pacman_logo.png");
+        auto* pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
+        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+
+        auto picPacmanLogo = Picture::create("pacman_logo.png");
         picPacmanLogo->setOrigin(0.5f, 0.0f);
         picPacmanLogo->setSize("62%", "17%");
         picPacmanLogo->setPosition("50%", "10%");
-        pnlContainer->addWidget(picPacmanLogo, "picPacmanLogo");
+        pnlContainer->addWidget(std::move(picPacmanLogo), "picPacmanLogo");
 
-        auto lblDisclaimer = ime::ui::Label::create(
+        auto* lblDisclaimer = pnlContainer->addWidget<Label>(Label::create(), "lblDisclaimer");
+        lblDisclaimer->setText(
             "This game is a demo for my game engine, Infinite Motion Engine "
             "which can be found here - www.github.com/KwenaMashamaite/IME \n\n"
             "I do not own nor do I claim the idea for this game. The game is a "
@@ -54,7 +56,6 @@ namespace spm {
         lblDisclaimer->getRenderer()->setBorders({1, 1, 1, 1});
         lblDisclaimer->setOrigin(0.5f, 0.0f);
         lblDisclaimer->setPosition("50%", "45%");
-        pnlContainer->addWidget(lblDisclaimer, "lblDisclaimer");
 
         auto lblDisclaimerHeading = ime::ui::Label::create("DISCLAIMER");
         lblDisclaimerHeading->setTextSize(18);
@@ -62,13 +63,12 @@ namespace spm {
         lblDisclaimerHeading->getRenderer()->setTextStyle(ime::TextStyle::Bold);
         lblDisclaimerHeading->setOrigin(0.5f, 1.0f);
         lblDisclaimerHeading->setPosition("50%", ime::bindTop(lblDisclaimer).append("-1%"));
-        pnlContainer->addWidget(lblDisclaimerHeading, "dlbDisclaimerHeading");
+        pnlContainer->addWidget(std::move(lblDisclaimerHeading), "dlbDisclaimerHeading");
 
-        auto lblCopyright = ime::ui::Label::create();
-        lblCopyright->setText("Copyright \xa9 2021 Kwena Mashamaite");
+        auto lblCopyright = Label::create("Copyright \xa9 2021 Kwena Mashamaite");
         lblCopyright->getRenderer()->setTextColour({255, 250, 250});
         lblCopyright->setOrigin(0.5f, 1.0f);
         lblCopyright->setPosition("50%", "100%");
-        pnlContainer->addWidget(lblCopyright, "lblCopyright");
+        pnlContainer->addWidget(std::move(lblCopyright), "lblCopyright");
     }
 }

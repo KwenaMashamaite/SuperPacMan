@@ -140,7 +140,7 @@ namespace spm {
         });
     }
 
-    void Grid::playFlashAnimation(int level) {
+    ime::Time Grid::playFlashAnimation(int level) {
         auto colour = std::string();
         if (level >= 1 && level <= 4)
             colour = "Blue";
@@ -154,6 +154,7 @@ namespace spm {
             colour = "Green";
 
         background_.getAnimator().startAnimation("flash" + colour);
+        return background_.getAnimator().getActiveAnimation()->getDuration();
     }
 
     void Grid::onAnimationFinish(ime::Callback<> callback) {

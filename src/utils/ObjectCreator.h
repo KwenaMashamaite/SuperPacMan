@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_OBJECTCREATOR_H
 #define SUPERPACMAN_OBJECTCREATOR_H
 
-#include <IME/core/physics/World.h>
+#include <IME/core/physics/PhysicsWorld.h>
 #include "src/models/world/Grid.h"
 
 namespace spm {
@@ -40,7 +40,7 @@ namespace spm {
          * @brief Create objects in the grid
          * @param grid The grid to create objects in
          */
-        static void createObjects(ime::World& world, Grid& grid);
+        static void createObjects(ime::PhysicsWorld& world, Grid& grid);
     };
 }
 
