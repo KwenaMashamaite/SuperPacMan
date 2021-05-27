@@ -67,7 +67,12 @@ namespace spm {
 
         switch (event) {
             case GameEvent::PowerModeBegin:
+                std::cout << "power begin" << "\n";
                 switchState(Ghost::State::Evade);
+                break;
+            case GameEvent::PowerModeEnd:
+                std::cout << "power eeeend" << "\n";
+                states_.pop(); // Evade mode expired return to scatter or chase state
                 break;
             case GameEvent::GhostEaten:
                 switchState(Ghost::State::Heal);
@@ -110,6 +115,10 @@ namespace spm {
                     newState = std::make_unique<ChaseState>(pacmanTile_);
                     stateDuration = ime::seconds(Constants::SCATTER_MODE_DURATION / currLevel_);
                     nextState = Ghost::State::Scatter;
+                } else if (enmNewState == Ghost::State::Evade) {
+                    newState = std::make_unique<FrightenedState>();
+                    stateDuration = ime::seconds(Constants::CHASE_MODE_DURATION + currLevel_);
+                    nextState = Ghost::State::Chase;
                 } else
                     return;
 
@@ -122,7 +131,6 @@ namespace spm {
                     stateDuration = ime::seconds(Constants::CHASE_MODE_DURATION + currLevel_);
                     nextState = Ghost::State::Chase;
                 } else if (enmNewState == Ghost::State::Evade) {
-                    states_.pop();
                     newState = std::make_unique<FrightenedState>();
                     stateDuration = ime::seconds(Constants::CHASE_MODE_DURATION + currLevel_);
                     nextState = Ghost::State::Chase;
@@ -131,13 +139,18 @@ namespace spm {
 
                 break;
             case Ghost::State::Evade:
-                states_.pop();
-                if (enmNewState == Ghost::State::Heal) {
+                // Pacman ate another power pellet while ghost is blue
+                if (enmNewState == Ghost::State::Evade) {
+                    states_.top()->updateTimeout(ime::seconds(Constants::CHASE_MODE_DURATION + currLevel_));
+                    return;
+                } else if (enmNewState == Ghost::State::Heal) {
+                    states_.pop();
                     newState = std::make_unique<HealState>();
                     stateDuration = ime::seconds(Constants::SCATTER_MODE_DURATION / currLevel_);
                     nextState = Ghost::State::Scatter;
-                } else
+                } else {
                     return;
+                }
 
                 break;
             default:

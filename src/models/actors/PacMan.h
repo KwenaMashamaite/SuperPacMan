@@ -90,7 +90,7 @@ namespace spm {
          * @param state The new state of pacman
          * @param timeout The duration of the state
          *
-         * @ timeout is only considered for State::Super
+         * @a timeout is only considered for spm::PacMan::State::Super
          */
         void setState(State state, std::optional<ime::Time> timeout = std::nullopt);
 

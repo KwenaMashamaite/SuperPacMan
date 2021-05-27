@@ -109,7 +109,7 @@ namespace spm {
                 auto pbrAssetLoading = gui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
 
                 // Resources load very fast (less than a second), so we simulate a delay between each load
-                std::this_thread::sleep_for(std::chrono::milliseconds(80));
+                std::this_thread::sleep_for(std::chrono::milliseconds(60));
                 pbrAssetLoading->setText("Loading " + text + "...");
                 pbrAssetLoading->incrementValue();
             });
@@ -135,7 +135,7 @@ namespace spm {
         });
 
         // Delay so that we can see the progress bar completing
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
         loadingFinished_ = true;
     }
 

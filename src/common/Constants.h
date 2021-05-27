@@ -42,7 +42,7 @@ namespace spm {
 
         // Speed (pixels/second)
         static constexpr auto PacManNormalSpeed = 120.0f;
-        static constexpr auto PacManSuperSpeed = 3.0f * PacManNormalSpeed;
+        static constexpr auto PacManSuperSpeed = 1.5f * PacManNormalSpeed;
         static constexpr auto GhostScatterSpeed = PacManNormalSpeed + 40.0f;
         static constexpr auto GhostChaseSpeed = PacManNormalSpeed / 2.0f;
         static constexpr auto GhostFrightenedSpeed = GhostChaseSpeed / 2.0f;

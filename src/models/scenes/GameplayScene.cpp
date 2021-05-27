@@ -31,6 +31,7 @@
 #include "src/models/scenes/MainMenuScene.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/core/physics/grid/KeyboardGridMover.h>
+#include <IME/core/physics/grid/path/DFS.h>
 #include <IME/core/physics/grid/RandomGridMover.h>
 
 namespace spm {
@@ -165,14 +166,20 @@ namespace spm {
             auto pellet = static_cast<Pellet*>(pelletBase);
             pellet->setActive(false);
             if (pellet->getPelletType() == Pellet::Type::Power) {
-                emit(GameEvent::PowerModeBegin);
                 updateScore(Constants::Points::POWER_PELLET);
                 audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
+
+                emit(GameEvent::PowerModeBegin);
+                auto powerModeDuration = ime::seconds(Constants::SCATTER_MODE_DURATION / currentLevel_);
+                configureTimer(powerModeTimer_, powerModeDuration, GameEvent::PowerModeEnd);
             } else {
-                emit(GameEvent::SuperModeBegin);
+                auto superModeDuration = ime::seconds(Constants::SUPER_MODE_DURATION / currentLevel_);
                 updateScore(Constants::Points::SUPER_PELLET);
-                static_cast<PacMan*>(pacman)->setState(PacMan::State::Super, ime::seconds(Constants::SUPER_MODE_DURATION / currentLevel_));
+                static_cast<PacMan*>(pacman)->setState(PacMan::State::Super, superModeDuration);
                 audio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
+
+                emit(GameEvent::SuperModeBegin);
+                configureTimer(superModeTimer_, superModeDuration, GameEvent::SuperModeEnd);
             }
         };
 
@@ -214,7 +221,7 @@ namespace spm {
 
                     static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
                 });
-            } else if (pacmanState != PacMan::State::Super) {
+            } else if (pacmanState != PacMan::State::Super && ghostState != Ghost::State::Heal) {
                 audio().stopAll();
 
                 // Hide all ghosts
@@ -401,6 +408,18 @@ namespace spm {
         });
     }
 
+    void GameplayScene::configureTimer(ime::Timer &timer, ime::Time duration, GameEvent event) {
+        if (timer.getStatus() == ime::Timer::Status::Running)
+            timer.setInterval(timer.getRemainingDuration() + duration);
+        else {
+            timer.setInterval(duration);
+            timer.setTimeoutCallback([this, event] {
+                emit(event);
+            });
+            timer.start();
+        }
+    }
+
     void GameplayScene::onResume() {
         resetActors();
         startCountDown();
@@ -409,5 +428,7 @@ namespace spm {
     void GameplayScene::update(ime::Time deltaTime) {
         view_.update(deltaTime);
         grid_->update(deltaTime);
+        superModeTimer_.update(deltaTime);
+        powerModeTimer_.update(deltaTime);
     }
 }

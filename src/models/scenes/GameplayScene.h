@@ -124,10 +124,24 @@ namespace spm {
          */
         void emit(GameEvent event);
 
+        /**
+         * @brief Emit a game event after the timer expires
+         * @param timer The timer to configure
+         * @param duration How long the timer runs before it expires
+         * @param event The event to be emitted
+         *
+         * This function will start the timer if its not running or increase
+         * its expiry time if its already running. When the timer expires it
+         * will emit @a event
+         */
+        void configureTimer(ime::Timer& timer, ime::Time duration, GameEvent event);
+
     private:
         int currentLevel_;           //!< Current game level
         CommonView view_;            //!< Scene view without the playing grid
         std::unique_ptr<Grid> grid_; //!< Playing grid
+        ime::Timer superModeTimer_;  //!< Pacman super mode duration counter
+        ime::Timer powerModeTimer_;  //!< Pacman power mode duration counter
     };
 }
 

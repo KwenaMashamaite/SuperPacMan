@@ -37,15 +37,15 @@ namespace spm {
         assert(ghost_ && "Cannot enter frightened state without a ghost");
         assert(ghostMover_ && "Cannot enter frightened state without a ghost grid mover");
 
-#ifndef NDEBUG
+/*#ifndef NDEBUG
         auto* ghostMover = dynamic_cast<ime::RandomGridMover*>(ghostMover_);
         assert(ghostMover && "Frightened state requires an ime::RandomGridMover as a ghost mover");
-#endif
+#endif*/
 
         TimedState::onEntry();
         ghostMover_->setMaxLinearSpeed({Constants::GhostFrightenedSpeed, Constants::GhostFrightenedSpeed});
         ghost_->getSprite().getAnimator().startAnimation("frightened");
-        static_cast<ime::RandomGridMover*>(ghostMover_)->startMovement();
+        //static_cast<ime::RandomGridMover*>(ghostMover_)->startMovement();
     }
 
     void FrightenedState::update(ime::Time deltaTime) {
@@ -64,7 +64,7 @@ namespace spm {
     }
 
     void FrightenedState::onExit() {
-        static_cast<ime::RandomGridMover*>(ghostMover_)->stopMovement();
-        ghostMover_->teleportTargetToDestination();
+        //static_cast<ime::RandomGridMover*>(ghostMover_)->stopMovement();
+        //ghostMover_->teleportTargetToDestination();
     }
 }

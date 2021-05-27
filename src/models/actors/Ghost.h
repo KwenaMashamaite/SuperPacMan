@@ -127,7 +127,7 @@ namespace spm {
 
     private:
         ime::GridMover* gridMover_;              //!< Controls the movement of the ghost in the grid
-        std::unique_ptr<GStateController> fsm_;  //!< Ghost actor finite state machine
+        std::unique_ptr<GStateController> fsm_;  //!< Ghosts finite state machine
         ime::Vector2i direction_;                //!< The direction of the ghost
         bool isPacmanSuper_;                     //!< A flag indicating whether or not pacman is in super mode
     };
