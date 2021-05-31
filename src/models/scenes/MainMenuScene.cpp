@@ -25,7 +25,10 @@
 #include "src/models/scenes/MainMenuScene.h"
 #include "src/models/scenes/GameplayScene.h"
 #include "src/models/scenes/LevelStartScene.h"
+#include "src/models/scoreboard/Scoreboard.h"
+#include <IME/ui/widgets/VerticalLayout.h>
 #include <IME/core/engine/Engine.h>
+#include <IME/ui/widgets/Label.h>
 
 namespace spm {
     MainMenuScene::MainMenuScene() :
@@ -35,6 +38,28 @@ namespace spm {
     void MainMenuScene::onEnter() {
         view_.init();
 
+        auto scoreboard = Scoreboard("assets/textFiles/highscores.txt");
+        scoreboard.load();
+
+        const int NUM_SCORES_TO_DISPLAY = 10;
+        assert(scoreboard.getSize() >= NUM_SCORES_TO_DISPLAY && "Scoreboard must have at least 10 entries");
+
+        auto namesContainer = gui().getWidget<ime::ui::VerticalLayout>("vlNames");
+        auto scoreContainer = gui().getWidget<ime::ui::VerticalLayout>("vlScores");
+        auto levelContainer = gui().getWidget<ime::ui::VerticalLayout>("vlLevels");
+
+        // Replace placeholder text with actual scoreboard data
+        scoreboard.forEachScore([&, count = 1] (const Score& score) mutable {
+            if (count > NUM_SCORES_TO_DISPLAY)
+                return;
+
+            namesContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(score.getOwner());
+            scoreContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.getValue()));
+            levelContainer->getWidget<ime::ui::Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.getLevel()));
+            count++;
+        });
+
+        // Init event handlers
         gui().getWidget("btnPlay")->on("click", ime::Callback<>([this] {
             engine().popScene();
         }));

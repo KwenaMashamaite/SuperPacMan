@@ -192,13 +192,13 @@ namespace spm {
         auto picBackground = gui_.getWidget<Panel>("pnlCredits")->getWidget("picBckgrnd")->clone();
         pnlParentContainer->addWidget(std::move(picBackground), "picBckgrnd");
 
-        // Add widgets
+        // Container for all widgets
         auto* vlSubParentContainer = pnlParentContainer->addWidget<VerticalLayout>(VerticalLayout::create("80%", "50%"), "hlSecondaryContainer");
         vlSubParentContainer->setPosition("50%", "50%");
         vlSubParentContainer->setOrigin(0.5f, 0.5f);
         vlSubParentContainer->getRenderer()->setSpaceBetweenWidgets(25);
 
-        // Heading
+        // High Scores Heading
         auto lblHighScores = Label::create("HIGH SCORES");
         lblHighScores->setTextSize(18.0f);
         lblHighScores->getRenderer()->setTextColour(ime::Colour("#00ff7f"));
@@ -207,70 +207,64 @@ namespace spm {
         vlSubParentContainer->addWidget(std::move(lblHighScores), "lblHighScoresHeading");
         vlSubParentContainer->setRatio(std::size_t{0}, 0.1f);
 
+        // Container for columns (Rank, Name, Score and Level)
         auto hlScoresContainer = HorizontalLayout::create("80%", "50%");
         hlScoresContainer->setPosition("50%", "50%");
 
+        // Helper function
+        const int NUM_ENTRIES = 10;
+        auto createList = [](const std::string& heading, ime::Colour headingColour, const std::string& placeholder) {
+            auto vlColumn = VerticalLayout::create();
+            vlColumn->getRenderer()->setSpaceBetweenWidgets(5);
+
+            // Create column heading
+            auto* lblHeading = vlColumn->addWidget<Label>(Label::create(heading), "lblHeading");;
+            lblHeading->setHorizontalAlignment(Label::HorizontalAlignment::Center);
+            lblHeading->getRenderer()->setTextColour(headingColour);
+            lblHeading->getRenderer()->setTextStyle(ime::TextStyle::Bold);
+
+            // Create placeholder text
+            for (auto i = 1u; i <= NUM_ENTRIES; i++) {
+                auto lblEntry = Label::create(std::to_string(i));
+                lblEntry->setHorizontalAlignment(Label::HorizontalAlignment::Center);
+                lblEntry->setText(placeholder);
+                lblEntry->getRenderer()->setTextColour(ime::Colour::White);
+                vlColumn->addWidget(std::move(lblEntry), "lblEntry" + std::to_string(i));
+            }
+
+            return vlColumn;
+        };
+
         // 1. Rank
-        auto vlRank = VerticalLayout::create();
-        vlRank->getRenderer()->setSpaceBetweenWidgets(5);
-
-        auto* lblRankHeading = vlRank->addWidget<Label>(Label::create("RANK"), "lblHeading");;
-        lblRankHeading->setHorizontalAlignment(Label::HorizontalAlignment::Center);
-        lblRankHeading->getRenderer()->setTextColour(ime::Colour::Green);
-        lblRankHeading->getRenderer()->setTextStyle(ime::TextStyle::Bold);
-
-        for (auto i = 1u; i <= 10; i++) {
-            auto lblRank = Label::create(std::to_string(i));
-            lblRank->setHorizontalAlignment(Label::HorizontalAlignment::Center);
+        auto vlRank = createList("RANK", ime::Colour::Green, "1ST");
+        for (int count = 1; count <= NUM_ENTRIES; count++) {
             auto postFix = "";
-            if (i == 1)
+            if (count == 1)
                 postFix = "ST";
-            else if (i == 2)
+            else if (count == 2)
                 postFix = "ND";
-            else if (i == 3)
+            else if (count == 3)
                 postFix = "RD";
             else
                 postFix = "TH";
 
-            lblRank->setText(std::to_string(i) + postFix);
-            lblRank->getRenderer()->setTextColour(ime::Colour::White);
-            vlRank->addWidget(std::move(lblRank), "lblRank" + std::to_string(i));
+            vlRank->getWidget<Label>("lblEntry" + std::to_string(count))->setText(std::to_string(count) + postFix);
         }
 
-        // 2. Names
-        auto vlNames = vlRank->copy();
-        vlNames->forEach([](Widget* widget) {
-            static_cast<Label*>(widget)->setText("AAA");
-        });
+        hlScoresContainer->addWidget(std::move(vlRank), "vlRanks");
 
-        auto* lblNamesHeading = vlNames->getWidget<Label>("lblHeading");
-        lblNamesHeading->setText("NAME");
-        lblNamesHeading->getRenderer()->setTextColour(ime::Colour::Yellow);
+        // 2. Names
+        auto vlNames = createList("NAME", ime::Colour::Yellow, "AAA");
         hlScoresContainer->addWidget(std::move(vlNames), "vlNames");
 
         // 3. Scores
-        auto vlScores = vlRank->copy();
-        vlScores->forEach([](Widget* widget) {
-            static_cast<Label*>(widget)->setText("00");
-        });
-
-        auto* lblScoresHeading = vlScores->getWidget<Label>("lblHeading");
-        lblScoresHeading->setText("NAME");
-        lblScoresHeading->getRenderer()->setTextColour(ime::Colour::Violet);
+        auto vlScores = createList("SCORE", ime::Colour::Violet, "00");
         hlScoresContainer->addWidget(std::move(vlScores), "vlScores");
 
         // 4. Levels
-        auto vlLevels = vlRank->copy();
-        vlLevels->forEach([](Widget* widget) {
-            static_cast<Label*>(widget)->setText("00");
-        });
-
-        auto* lblLevelsHeading = vlLevels->getWidget<Label>("lblHeading");
-        lblLevelsHeading->setText("LEVEL");
-        lblLevelsHeading->getRenderer()->setTextColour(ime::Colour("#9f5afd"));
+        auto vlLevels = createList("LEVEL", ime::Colour("#9f5afd"), "0");
         hlScoresContainer->addWidget(std::move(vlLevels), "vlLevels");
 
-        hlScoresContainer->addWidget(std::move(vlRank), "vlRanks");
         vlSubParentContainer->addWidget(std::move(hlScoresContainer), "hlScoresContainer");
 
         // Return button
