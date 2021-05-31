@@ -1,5 +1,10 @@
-Brandon 147000
-Kyle 27000
-Megan 1512
-Paul 3470
-Syney 2950
+Brandon 150000 17
+Kyle 100000 15
+Megan 50000 13
+Paul 25000 12
+Sydney 15000 10
+Kate 10000 8
+Jake 7500 7
+Micheal 5000 3
+Tommy 2500 1
+John 2000 1

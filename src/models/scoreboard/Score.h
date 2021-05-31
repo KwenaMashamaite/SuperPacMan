@@ -53,8 +53,11 @@ namespace spm {
          * @param value New value of the score
          *
          * This function will overwrite the previous the score value. To adjust
-         * the score value by an offset, @see adjustScore(int). The default value
-         * of the score is
+         * the score value by an offset.
+         *
+         * By default, the score is 0
+         *
+         * @see adjustScore
          */
         void setValue(int value);
 
@@ -65,16 +68,30 @@ namespace spm {
         int getValue() const;
 
         /**
-         * @brief Set the name of the person the score belongs to
-         * @param name Name of the person
+         * @brief Set the level the score was obtained on
+         * @param level The level the score was obtained on
          *
-         * The score is not associated with any owner (empty string) by default
+         * By default the level is 0
+         */
+        void setLevel(unsigned int level);
+
+        /**
+         * @brief Get the level the score was obtained on
+         * @return The level the score was obtained on
+         */
+        unsigned int getLevel() const;
+
+        /**
+         * @brief Set the name of the player the score belongs to
+         * @param name The name of the player
+         *
+         * By default, this function returns an empty string
          */
         void setOwner(const std::string& name);
 
         /**
-         * @brief Get the name of the person the score belongs to
-         * @return The name of the person the score belongs to
+         * @brief Get the name of the player the score belongs to
+         * @return The name of the player the score belongs to
          */
         const std::string& getOwner() const;
 
@@ -84,6 +101,8 @@ namespace spm {
          *
          * A negative offset decreases the score value while a positive offset
          * increases offset the score
+         *
+         * @see setScore
          */
         void adjustValue(int offset);
 
@@ -108,8 +127,9 @@ namespace spm {
         bool operator!=(const Score& rhs) const;
 
     private:
-        int value_;         //!< Points
-        std::string owner_; //!< Name of the player the score belongs to
+        int value_;          //!< Points obtained by player
+        unsigned int level_; //!< The highest level reached by player
+        std::string owner_;  //!< Name of the player the score belongs to
     };
 
     /**

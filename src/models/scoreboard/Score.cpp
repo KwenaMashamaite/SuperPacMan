@@ -25,7 +25,9 @@
 #include "Score.h"
 
 namespace spm {
-    Score::Score() : value_(0)
+    Score::Score() :
+        value_{0},
+        level_{0}
     {}
 
     void Score::setValue(int value) {
@@ -34,6 +36,14 @@ namespace spm {
 
     int Score::getValue() const {
         return value_;
+    }
+
+    void Score::setLevel(unsigned int level) {
+        level_ = level;
+    }
+
+    unsigned int Score::getLevel() const {
+        return level_;
     }
 
     void Score::setOwner(const std::string &name) {

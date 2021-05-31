@@ -88,13 +88,14 @@ namespace spm {
         /**
          * @brief Write scores to a file on the disk
          * @param name Name of the player the current score belongs to
+         * @param level The level the player is on when score is saved
          *
          * This function will write the current top scores to the file
          * provided during instantiation. The file is updated only if
          * the current score is greater than the lowest high score from
          * the last file read
          */
-        void updateHighScoreFile(const std::string& name);
+        void updateHighScoreFile(const std::string& name, unsigned int level);
 
         /**
          * @brief Execute a function for each score in the scoreboard
