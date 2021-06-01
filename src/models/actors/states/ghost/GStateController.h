@@ -49,8 +49,7 @@ namespace spm {
          *                 switch is triggered
          * @param curLevel The current level of the game
          *
-         * The FSM always starts in the Ghost::Idle state. Note that this
-         * function only executes once, subsequent calls are ignored
+         * The FSM always starts in the Ghost::Idle state
          */
         void start(const ime::Time& duration, int curLevel);
 

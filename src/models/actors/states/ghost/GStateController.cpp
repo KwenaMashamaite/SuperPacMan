@@ -44,11 +44,9 @@ namespace spm {
     }
 
     void GStateController::start(const ime::Time& duration, int curLevel) {
-        if (!isStarted_) {
-            switchState(Ghost::State::Idle);
-            isStarted_ = true;
-            currLevel_ = curLevel;
-        }
+        switchState(Ghost::State::Idle);
+        isStarted_ = true;
+        currLevel_ = curLevel;
     }
 
     Ghost::State GStateController::getState() const {
@@ -67,11 +65,9 @@ namespace spm {
 
         switch (event) {
             case GameEvent::PowerModeBegin:
-                std::cout << "power begin" << "\n";
                 switchState(Ghost::State::Evade);
                 break;
             case GameEvent::PowerModeEnd:
-                std::cout << "power eeeend" << "\n";
                 states_.pop(); // Evade mode expired return to scatter or chase state
                 break;
             case GameEvent::GhostEaten:

@@ -49,12 +49,12 @@ namespace spm {
         state_ = State::Idle;
     }
 
-    void PacMan::setLivesCount(unsigned int numOfLives) {
+    void PacMan::setLivesCount(int numOfLives) {
         livesCount_ = numOfLives;
         emitChange(ime::Property{"livesCount", livesCount_});
     }
 
-    unsigned int PacMan::getLivesCount() const {
+    int PacMan::getLivesCount() const {
         return livesCount_;
     }
 

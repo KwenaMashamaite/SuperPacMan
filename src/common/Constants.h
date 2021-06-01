@@ -34,11 +34,11 @@ namespace spm {
     struct Constants {
         //Spawn positions in the grid
         static constexpr auto PacManSpawnTile = ime::Index{13, 12};
-        static constexpr auto BlinkySpawnTile = ime::Index{7, 11};
-        static constexpr auto PinkySpawnTile = ime::Index{9, 9};
-        static constexpr auto InkySpawnTile = ime::Index{9, 13};
-        static constexpr auto ClydeSpawnTile = ime::Index{11, 11};
-        static constexpr auto EatenGhostRespawnTile = ime::Index{11, 11};
+        static constexpr auto BlinkySpawnTile = ime::Index{7, 12};
+        static constexpr auto PinkySpawnTile = ime::Index{9, 10};
+        static constexpr auto InkySpawnTile = ime::Index{9, 14};
+        static constexpr auto ClydeSpawnTile = ime::Index{11, 12};
+        static constexpr auto EatenGhostRespawnTile = ime::Index{11, 12};
 
         // Speed (pixels/second)
         static constexpr auto PacManNormalSpeed = 120.0f;

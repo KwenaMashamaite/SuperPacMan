@@ -59,13 +59,13 @@ namespace spm {
          * @brief Set the number of lives
          * @param numOfLives New number of lives
          */
-        void setLivesCount(unsigned int numOfLives);
+        void setLivesCount(int numOfLives);
 
         /**
          * @brief Get number of lives remaining
          * @return The number of lives remaining
          */
-        unsigned int getLivesCount() const;
+        int getLivesCount() const;
 
         /**
          * @brief Get the name of this class
@@ -128,7 +128,7 @@ namespace spm {
         void switchAnimation(ime::Direction dir);
 
     private:
-        unsigned int livesCount_;    //!< The actors current number of lives
+        int livesCount_;             //!< The actors current number of lives
         ime::GridMover* gridMover_;  //!< Controls the movement of pacman in the grid
         ime::Vector2i direction_;    //!< Pacmans current direction
         State state_;                //!< Pacmans current state

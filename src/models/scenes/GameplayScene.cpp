@@ -199,6 +199,10 @@ namespace spm {
 
         // 5. Pacman ghost collision handler
         auto onGhostCollision = [this](ime::GameObject* pacman, ime::GameObject* ghost) {
+            // Prevent pacman from being killed while his death animation is playing
+            if (pacman->getSprite().getAnimator().getActiveAnimation()->getName() == "dying")
+                return;
+
             auto pacmanState = static_cast<PacMan*>(pacman)->getState();
             auto ghostState = static_cast<Ghost*>(ghost)->getState();
 
@@ -249,7 +253,7 @@ namespace spm {
                         engine().pushScene(std::make_unique<MainMenuScene>());
                         //@todo - Replace above code with game over scene
                     } else {
-                        // Triggers a level restart after it pops itself
+                        // A level restart is triggered after the LevelStartScene is popped
                         engine().pushScene(std::make_unique<LevelStartScene>());
                     }
                 });
@@ -395,26 +399,31 @@ namespace spm {
     }
 
     void GameplayScene::resetActors() {
-        gridMovers().forEach([](ime::GridMover* gridMover) {
-            gridMover->teleportTargetToDestination();
-        });
-
+        // Reset pacmans position in the grid
         auto pacman = gameObjects().findByTag("pacman");
         tilemap().removeChild(pacman);
         tilemap().addChild(pacman, Constants::PacManSpawnTile);
         static_cast<PacMan*>(pacman)->setState(PacMan::State::Idle);
+        static_cast<PacMan*>(pacman)->setDirection(ime::Left);
 
+        // Reset ghost positions in the grid
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
             tilemap().removeChild(ghost);
             if (ghost->getTag() == "blinky")
                 tilemap().addChild(ghost, Constants::BlinkySpawnTile);
             else if (ghost->getTag() == "pinky")
-                tilemap().addChild(ghost, Constants::PacManSpawnTile);
+                tilemap().addChild(ghost, Constants::PinkySpawnTile);
             else if (ghost->getTag() == "inky")
                 tilemap().addChild(ghost, Constants::InkySpawnTile);
             else
                 tilemap().addChild(ghost, Constants::ClydeSpawnTile);
         });
+
+        // Overwrite current grid movers
+        gridMovers().removeAll();
+        createGridMovers();
+        initGridMovers();
+        initCollisionResponses();
     }
 
     void GameplayScene::emit(GameEvent event) {
@@ -543,11 +552,13 @@ namespace spm {
     }
 
     void GameplayScene::onPause() {
+        audio().pauseAll();
         engine().onFrameEnd(nullptr);
         engine().onWindowClose(nullptr);
     }
 
     void GameplayScene::onResume() {
+        audio().playAll();
         initEngineEvents();
         resetActors();
         startCountDown();
