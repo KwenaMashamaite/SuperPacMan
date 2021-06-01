@@ -62,19 +62,7 @@ namespace spm {
         initGridMovers();
         initCollisionResponses();
         intiGameEvents();
-
-        engine().onFrameEnd([this] {
-            // Remove inactive objects from the scene at the end of each frame
-            gameObjects().removeIf([](const ime::GameObject* actor) {
-                return !actor->isActive() && actor->getClassName() != "Pacman";
-            });
-
-            // Check for level completion
-            if (gameObjects().getGroup("Pellet").getCount() == 0 && gameObjects().getGroup("Fruit").getCount() == 0) {
-                eventEmitter().emit("levelComplete");
-            }
-        });
-
+        initEngineEvents();
         startCountDown();
     }
 
@@ -83,12 +71,6 @@ namespace spm {
         view_.setHighScore(cache().getValue<int>("highScore"));
         view_.setScore(cache().getValue<int>("score"));
         createPauseMenu();
-
-        // Pause game and display pause menu when user requests to close game window
-        engine().onWindowClose([this]{
-            if (!engine().isPaused())
-                setPause(true);
-        });
     }
 
     void GameplayScene::createGrid() {
@@ -359,6 +341,26 @@ namespace spm {
         }));
     }
 
+    void GameplayScene::initEngineEvents() {
+        engine().onFrameEnd([this] {
+            // Remove inactive objects from the scene at the end of each frame
+            gameObjects().removeIf([](const ime::GameObject* actor) {
+                return !actor->isActive() && actor->getClassName() != "Pacman";
+            });
+
+            // Check for level completion
+            if (gameObjects().getGroup("Pellet").getCount() == 0 && gameObjects().getGroup("Fruit").getCount() == 0) {
+                eventEmitter().emit("levelComplete");
+            }
+        });
+
+        // Pause game and display pause menu when user requests to close game window
+        engine().onWindowClose([this]{
+            if (!engine().isPaused())
+                setPause(true);
+        });
+    }
+
     void GameplayScene::updateScore(int points) {
         auto newScore = cache().getValue<int>("score") + points;
         cache().setValue("score", newScore);
@@ -521,8 +523,6 @@ namespace spm {
 
         // 2. Restart button click handler
         vlBtnContainer->getWidget("btnRestart")->on("click", ime::Callback<>([this] {
-            engine().onFrameEnd(nullptr);
-            engine().onWindowClose(nullptr);
             engine().popScene();
             engine().pushScene(std::make_unique<GameplayScene>());
             engine().pushScene(std::make_unique<LevelStartScene>());
@@ -530,8 +530,6 @@ namespace spm {
 
         // 3. Main menu button click handler
         vlBtnContainer->getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
-            engine().onFrameEnd(nullptr);
-            engine().onWindowClose(nullptr);
             engine().popScene();
             engine().pushScene(std::make_unique<MainMenuScene>());
         }));
@@ -544,7 +542,13 @@ namespace spm {
         pnlInnerContainer->addWidget(std::move(vlBtnContainer), "vlPauseMenu");
     }
 
+    void GameplayScene::onPause() {
+        engine().onFrameEnd(nullptr);
+        engine().onWindowClose(nullptr);
+    }
+
     void GameplayScene::onResume() {
+        initEngineEvents();
         resetActors();
         startCountDown();
     }
@@ -554,5 +558,11 @@ namespace spm {
         grid_->update(deltaTime);
         superModeTimer_.update(deltaTime);
         powerModeTimer_.update(deltaTime);
+    }
+
+    void GameplayScene::onExit() {
+        engine().setPause(false);
+        engine().onFrameEnd(nullptr);
+        engine().onWindowClose(nullptr);
     }
 }

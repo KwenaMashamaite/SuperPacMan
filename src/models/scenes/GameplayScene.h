@@ -50,6 +50,14 @@ namespace spm {
         void onEnter() override;
 
         /**
+         * @brief
+         *
+         * This function is called by the game engine when the game transitions
+         * to another scene without destroying the current active scene
+         */
+        void onPause() override;
+
+        /**
          * @brief Restart level after pacman dies
          *
          * This function is called by the game engine when the game returns
@@ -67,6 +75,15 @@ namespace spm {
          * passed to it is frame rate dependent
          */
         void update(ime::Time deltaTime) override;
+
+        /**
+         * @brief Restore engine defaults
+         *
+         * This function is called by the game engine before the scene
+         * is destroyed. It's used to perform cleanup and notify interested
+         * parties that assets loaded successfully
+         */
+        void onExit() override;
 
     private:
         /**
@@ -106,6 +123,11 @@ namespace spm {
          * @brief Initialize game events
          */
         void intiGameEvents();
+
+        /**
+         * @brief Initialize third party engine events
+         */
+        void initEngineEvents();
 
         /**
          * @brief Update cache and view score values
