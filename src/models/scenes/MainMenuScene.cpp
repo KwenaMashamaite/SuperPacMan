@@ -36,6 +36,8 @@ namespace spm {
     {}
 
     void MainMenuScene::onEnter() {
+        engine().onWindowClose(nullptr); // Let window be closed with exit button only
+
         view_.init();
 
         auto scoreboard = Scoreboard("assets/textFiles/highscores.txt");
@@ -62,6 +64,8 @@ namespace spm {
         // Init event handlers
         gui().getWidget("btnPlay")->on("click", ime::Callback<>([this] {
             engine().popScene();
+            engine().pushScene(std::make_unique<GameplayScene>());
+            engine().pushScene(std::make_unique<LevelStartScene>());
         }));
 
         gui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {
@@ -71,10 +75,5 @@ namespace spm {
         gui().getWidget("btnApply")->on("click", ime::Callback<>([this] {
             //@TODO Save new settings
         }));
-    }
-
-    void MainMenuScene::onExit() {
-        engine().pushScene(std::make_unique<GameplayScene>());
-        engine().pushScene(std::make_unique<LevelStartScene>());
     }
 }

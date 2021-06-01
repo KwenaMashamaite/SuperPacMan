@@ -70,6 +70,11 @@ namespace spm {
 
     private:
         /**
+         * @brief Initialize the gui
+         */
+        void initGui();
+
+        /**
          * @brief Create the gameplay grid
          */
         void createGrid();
@@ -135,6 +140,17 @@ namespace spm {
          * will emit @a event
          */
         void configureTimer(ime::Timer& timer, ime::Time duration, GameEvent event);
+
+        /**
+         * @brief Pause or unpause the game
+         * @param pause True to pause game or false to unpause the game
+         */
+        void setPause(bool pause);
+
+        /**
+         * @brief Create the menu displayed when user pauses game
+         */
+        void createPauseMenu();
 
     private:
         int currentLevel_;           //!< Current game level

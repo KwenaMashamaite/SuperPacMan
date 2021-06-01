@@ -25,9 +25,6 @@
 #include "src/models/game/Game.h"
 #include "src/models/scoreboard/Scoreboard.h"
 #include "src/models/scenes/StartUpScene.h"
-#include <IME/core/event/EventDispatcher.h>
-#include <IME/ui/widgets/Panel.h>
-#include <IME/ui/widgets/MessageBox.h>
 
 namespace spm {
     Game::Game() :
@@ -46,68 +43,9 @@ namespace spm {
         engine_.getPersistentData().addProperty({"score", 0});
         engine_.getPersistentData().addProperty({"lives", 4});
         engine_.pushScene(std::make_unique<StartUpScene>());
-
-        // This event is emitted by the LoadingScene after all assets have been loaded.
-        // While the game is in the LoadingScene, it cannot be exited, so after loading
-        // assets, re-enable the quit functionality
-        ime::EventDispatcher::instance()->onEvent("assetLoadFinish", ime::Callback<>([this] {
-            engine_.getInputManager().onKeyUp([this] (ime::Key key) {
-                if (key == ime::Key::Escape)
-                    openQuitPrompt();
-            });
-
-            engine_.onWindowClose([this] {
-                openQuitPrompt();
-            });
-        }));
     }
 
     void Game::start() {
         engine_.run();
-    }
-
-    void Game::openQuitPrompt() {
-        auto panel = ime::ui::Panel::create();
-        panel->getRenderer()->setBackgroundColour(ime::Colour::Black);
-        panel->getRenderer()->setOpacity(0.5);
-        engine_.getGui().addWidget(std::move(panel), "pnl");
-
-        auto* messageBox = engine_.getGui().addWidget<ime::ui::MessageBox>(ime::ui::MessageBox::create("Exit game"),"msgBoxQuitGame");
-        messageBox->getRenderer()->setBorderBelowTitleBar(2.0f);
-        messageBox->getRenderer()->setShowTextOnTitleButtons(true);
-        messageBox->getRenderer()->setShowTextOnTitleButtons(true);
-        messageBox->getRenderer()->setDistanceToSide(10.0f);
-        messageBox->setText("Are you sure you want to quit ?");
-        messageBox->addButton("Quit");
-        messageBox->addButton("Cancel");
-        messageBox->setPosition("50%", "50%");
-        messageBox->setOrigin(0.5f, 0.5f);
-        messageBox->getRenderer()->setFocusedBorderColour(ime::Colour::Blue);
-        messageBox->getRenderer()->setBorders({1, 1, 1, 1});
-        messageBox->setDraggable(false);
-
-        messageBox->on("buttonPress", ime::Callback<std::string>([this, messageBox](const std::string& button) {
-            if (button == "Quit")
-                engine_.quit();
-            else {
-                messageBox->close();
-                engine_.getGui().removeWidget("pnl");
-                engine_.getGui().removeWidget("msgBoxQuitGame");
-                engine_.setPause(false);
-            }
-        }));
-
-        messageBox->on("escapeKeyPress", ime::Callback<>([this, messageBox] {
-            messageBox->close();
-            engine_.setPause(false);
-            engine_.getGui().removeWidget("pnl");
-            engine_.getGui().removeWidget("msgBoxQuitGame");
-        }));
-
-        engine_.setPause(true);
-    }
-
-    void Game::closeQuitPPromp() {
-
     }
 }

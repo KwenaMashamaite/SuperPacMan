@@ -49,17 +49,6 @@ namespace spm {
         void start();
 
     private:
-        /**
-         * @brief Prompt user if they want to quit game or not
-         */
-        void openQuitPrompt();
-
-        /**
-         * @return Remove the user prompt
-         */
-        void closeQuitPPromp();
-
-    private:
         ime::Engine engine_; //!< Runs the main game loop
     };
 }

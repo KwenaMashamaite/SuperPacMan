@@ -52,11 +52,6 @@ namespace spm {
          */
         void onEnter() override;
 
-        /**
-         * @brief Transition the game to the next scene
-         */
-        void onExit() override;
-
     private:
         MainMenuSceneView view_;
     };
