@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_SCOREBOARD_H
 #define SUPERPACMAN_SCOREBOARD_H
 
-#include "Score.h"
+#include "src/models/scoreboard/Score.h"
 #include <vector>
 #include <string>
 #include <functional>
@@ -54,30 +54,19 @@ namespace spm {
         void load();
 
         /**
-         * @brief Add points to the current score
-         * @param points Points to add
+         * @brief Add a score to the scoreboard
+         * @param score Score to be added
          *
-         * This function adds to the current score. Negative points
-         * subtracts from the current score
+         * The scoreboard is updated after the score is added. In addition,
+         * note that the scoreboard sorts entries in descending order
          */
-        void addPoints(int points);
-
-        /**
-         * @brief Get the current score
-         * @return Current score
-         */
-        int getCurrentScore() const;
+        void addScore(const Score &score);
 
         /**
          * @brief Get the highest score
          * @return Highest score
          */
         const Score& getTopScore() const;
-
-        /**
-         * @brief Reset the current score to zero
-         */
-        void resetCurrentScore();
 
         /**
          * @brief Get the number of top scores in the scoreboard
@@ -95,7 +84,7 @@ namespace spm {
          * the current score is greater than the lowest high score from
          * the last file read
          */
-        void updateHighScoreFile(const std::string& name, unsigned int level);
+        void updateHighScoreFile();
 
         /**
          * @brief Execute a function for each score in the scoreboard
@@ -105,7 +94,6 @@ namespace spm {
 
     private:
         std::vector<Score> highScores_; //!< High scores read from dis
-        Score currentScore_;            //!< Stores current score
         std::string highScoresFile_;    //!< High scores file to be read/written
     };
 }
