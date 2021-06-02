@@ -47,8 +47,8 @@ namespace spm {
     void GameplayScene::onEnter() {
         currentLevel_ = cache().getValue<int>("level");
         createPhysWorld({0.0f, 0.0f}); // Since we using grid based physics only, no gravity is needed
-        initGui();
         createGrid();
+        initGui();
         createActors();
         createGridMovers();
         initGridMovers();
@@ -62,6 +62,18 @@ namespace spm {
         view_.init(cache().getValue<int>("level"), cache().getValue<int>("lives"));
         view_.setHighScore(cache().getValue<int>("highScore"));
         view_.setScore(cache().getValue<int>("score"));
+
+        // Create get ready text
+        auto lblGetReady = ime::ui::Label::create("Get Ready!");
+        lblGetReady->setTextSize(15.0f);
+        lblGetReady->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Center);
+        lblGetReady->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
+        lblGetReady->getRenderer()->setTextColour(ime::Colour::Red);
+        lblGetReady->getRenderer()->setTextStyle(ime::TextStyle::Bold);
+        lblGetReady->setOrigin(0.5f, 0.5f);
+        lblGetReady->setPosition(tilemap().getTile(Constants::PacManSpawnTile).getWorldCentre());
+        gui().addWidget(std::move(lblGetReady), "lblReady");
+
         createPauseMenu();
     }
 
@@ -88,14 +100,6 @@ namespace spm {
             else if (actor->getClassName() == "Fruit") // Set fruit texture based on current level
                 actor->setTag(utils::getFruitName(currentLevel_));
         });
-
-        auto readySprite = std::make_unique<ime::Sprite>();
-        readySprite->setTag("ready");
-        readySprite->setTexture("ready.png");
-        readySprite->scale(0.8f, 0.6f);
-        readySprite->setPosition(tilemap().getTile(ime::Index{13, 9}).getPosition());
-        renderLayers().create("overlay");
-        sprites().add(std::move(readySprite), 0, "overlay");
     }
 
     void GameplayScene::createGridMovers() {
@@ -369,25 +373,27 @@ namespace spm {
     }
 
     void GameplayScene::startCountDown() {
-        sprites().findByTag("ready")->setVisible(true);
+        gui().getWidget<ime::ui::Label>("lblReady")->setText("Get Ready!");
+        gui().getWidget("lblReady")->setVisible(true);
         gameObjects().findByTag("pacman")->getSprite().setVisible(false);
-
-        timer().setTimeout(ime::seconds(Constants::LEVEL_START_DELAY), [this] {
-            sprites().findByTag("ready")->setVisible(false);
-            gameObjects().findByTag("pacman")->getSprite().setVisible(true);
-            gameObjects().findByTag<PacMan>("pacman")->setState(PacMan::State::Normal);
-            gridMovers().findByTag("pacmanGridMover")->requestDirectionChange(ime::Left);
-            gridMovers().forEachInGroup("ghostMovers", [](ime::GridMover* gridMover) {
-                if (auto mover = dynamic_cast<ime::TargetGridMover*>(gridMover); mover) {
-                    mover->startMovement();
-                } else if (auto moveer = dynamic_cast<ime::RandomGridMover*>(gridMover); moveer) {
-                    moveer->startMovement();
-                }
-            });
-
-            auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
-            soundEffect->setLoop(true);
+        gameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
+            ghost->getSprite().setVisible(true);
         });
+
+        timer().setInterval(ime::milliseconds(500), [this, counter = 3]() mutable {
+            if (counter == 0) {
+                gui().getWidget("lblReady")->setVisible(false);
+                gameObjects().findByTag("pacman")->getSprite().setVisible(true);
+                gameObjects().findByTag<PacMan>("pacman")->setState(PacMan::State::Normal);
+                gridMovers().findByTag("pacmanGridMover")->requestDirectionChange(ime::Left);
+
+                auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
+                soundEffect->setLoop(true);
+            } else {
+                gui().getWidget<ime::ui::Label>("lblReady")->setText(std::to_string(counter));
+                counter--;
+            }
+        }, 3);
     }
 
     void GameplayScene::resetActors() {

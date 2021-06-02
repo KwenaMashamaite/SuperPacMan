@@ -120,8 +120,7 @@ namespace spm {
 
         loadFromFile(ime::ResourceType::Texture,  {
             "icon.png", "pacman_logo.png", "spritesheet.png",
-            "main_menu_background.jpg", "credits_menu_background.jpg",
-            "ready.png"
+            "main_menu_background.jpg", "credits_menu_background.jpg"
         });
 
         loadFromFile(ime::ResourceType::SoundBuffer, {
