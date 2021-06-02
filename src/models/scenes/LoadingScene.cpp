@@ -37,7 +37,7 @@ namespace spm {
     namespace {
         //Warning!! This number must be updated each time a new resource is added to the
         // Number of assets to be loaded
-        const auto numOfResources = 19;
+        const auto numOfResources = 21;
     }
 
     LoadingScene::LoadingScene() :
@@ -113,7 +113,8 @@ namespace spm {
         };
 
         loadFromFile(ime::ResourceType::Font, {
-            "namco.ttf", "AtariClassicExtrasmooth-LxZy.ttf"});
+            "ChaletLondonNineteenSixty.ttf", "AtariClassicExtrasmooth-LxZy.ttf",
+            "namco.ttf", "pacfont.ttf", "DejaVuSans.ttf"});
 
         loadFromFile(ime::ResourceType::Texture,  {
             "icon.png", "pacman_logo.png", "spritesheet.png",
