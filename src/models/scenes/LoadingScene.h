@@ -27,7 +27,6 @@
 
 #include <IME/core/scene/Scene.h>
 #include <atomic>
-#include <mutex>
 
 namespace spm {
     /**
@@ -74,7 +73,6 @@ namespace spm {
 
     private:
         std::atomic_bool loadingFinished_; //!< A flag indicating whether or not all assets have been loaded from the disk
-        std::mutex mtx_;                   //!< Synchronization between the main and the asset loading thread
     };
 }
 

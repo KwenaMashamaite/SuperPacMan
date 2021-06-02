@@ -56,7 +56,6 @@ namespace spm {
 
         // Update progress bar text and loading text to indicate assets loaded successfully
         pbrAssetLoading->on("full", ime::Callback<>([this, pbrAssetLoading] {
-            mtx_.unlock();
             gui().getWidget<ime::ui::Label>("lblLoading")
                 ->setText("Resources loaded successfully");
 
@@ -84,8 +83,6 @@ namespace spm {
 
     void LoadingScene::loadGameAssets() {
         auto loadFromFile = [this](ime::ResourceType rType, std::initializer_list<std::string> assets) {
-            std::scoped_lock<std::mutex> lock(mtx_);
-
             auto lblLoading = gui().getWidget<ime::ui::Label>("lblLoading");
             switch (rType) {
                 case ime::ResourceType::Texture:
