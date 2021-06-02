@@ -46,16 +46,8 @@ namespace spm {
 
     void GameplayScene::onEnter() {
         currentLevel_ = cache().getValue<int>("level");
+        createPhysWorld({0.0f, 0.0f}); // Since we using grid based physics only, no gravity is needed
         initGui();
-
-        // Init physics world
-        createPhysWorld({0.0f, 0.0f});
-
-        // Yoy can enable debug draw to observe what is actually happening,
-        // However it slows down performance
-        //physWorld().setDebugDrawEnable(true);
-        physWorld().getDebugDrawerFilter().drawAABB = true;
-
         createGrid();
         createActors();
         createGridMovers();

@@ -40,16 +40,6 @@ namespace spm {
 
             return door;
         }
-
-        void attachRigidBody(const ime::GameObject::Ptr& actor, ime::PhysicsWorld& physics, ime::RigidBody::Type bodyType) {
-            ime::Vector2f colliderSize = {actor->getSprite().getGlobalBounds().width / 2.0f,
-                                          actor->getSprite().getGlobalBounds().height / 2.0f};
-
-            auto physicsRigidBody = physics.createBody(bodyType);
-            auto collider = ime::BoxCollider::create({colliderSize.x, colliderSize.y});
-            physicsRigidBody->attachCollider(std::move(collider));
-            actor->attachRigidBody(std::move(physicsRigidBody));
-        }
     }
 
     void ObjectCreator::createObjects(ime::PhysicsWorld& world, Grid &grid) {
@@ -86,7 +76,7 @@ namespace spm {
                     return;
             }
 
-            attachRigidBody(actor, world, rigidRigidBodyType);
+            actor->attachRigidBody(world.createBody(rigidRigidBodyType));
             grid.addActor(std::move(actor), tile.getIndex());
         });
     }
