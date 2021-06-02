@@ -31,12 +31,12 @@
 #include "src/models/scenes/MainMenuScene.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/core/physics/grid/KeyboardGridMover.h>
-#include <IME/core/physics/grid/path/DFS.h>
-#include <IME/core/physics/grid/RandomGridMover.h>
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/VerticalLayout.h>
+#include <IME/ui/widgets/HorizontalLayout.h>
 #include <IME/ui/widgets/Panel.h>
 #include <IME/ui/widgets/Button.h>
+#include <IME/ui/widgets/ToggleButton.h>
 
 namespace spm {
     GameplayScene::GameplayScene() :
@@ -46,6 +46,8 @@ namespace spm {
 
     void GameplayScene::onEnter() {
         currentLevel_ = cache().getValue<int>("level");
+        audio().setMasterVolume(cache().getValue<float>("masterVolume"));
+
         createPhysWorld({0.0f, 0.0f}); // Since we using grid based physics only, no gravity is needed
         createGrid();
         initGui();
@@ -520,6 +522,37 @@ namespace spm {
             btn->getRenderer()->setFocusedBorderColour(ime::Colour::Transparent);
             vlBtnContainer->addWidget(std::move(btn), btnData.second);
         }
+
+        // Create button to toggle the mute state of the audio player
+        auto hlContainer = HorizontalLayout::create("90%", "18");
+        hlContainer->setOrigin(0.5f, 1.0f);
+        hlContainer->setPosition("50%", "95%");
+
+        auto lblAudio = hlContainer->addWidget<Label>(Label::create("Audio"), "lblAudio");
+        lblAudio->getRenderer()->setTextColour(ime::Colour::White);
+        lblAudio->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
+        lblAudio->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
+
+        auto btnOption = hlContainer->addWidget<ToggleButton>(ToggleButton::create("off"), "btnAudioToggle");
+        btnOption->setChecked(cache().getValue<float>("masterVolume") > 0.0f);
+        btnOption->setText(btnOption->isChecked() ? "on" : "off");
+        btnOption->getRenderer()->setTextStyle(ime::TextStyle::Italic);
+        btnOption->getRenderer()->setRoundedBorderRadius(15.0f);
+        btnOption->getRenderer()->setFont("DejaVuSans.ttf");
+        hlContainer->setRatio(std::size_t{1}, 0.3);
+        pnlInnerContainer->addWidget(std::move(hlContainer), "hlAudioOption");
+
+        btnOption->on("toggle", ime::Callback<bool>([this, btnOption](bool checked) {
+            if (checked) {
+                audio().setMasterVolume(100.0f);
+                cache().setValue("masterVolume", 100.0f);
+                btnOption->setText("on");
+            } else {
+                audio().setMasterVolume(0.0f);
+                cache().setValue("masterVolume", 0.0f);
+                btnOption->setText("off");
+            }
+        }));
 
         //------------ Init pause menu buttons click event handlers ------------//
 

@@ -39,7 +39,8 @@ namespace spm {
 
         auto sceneDuration = ime::seconds(2);
         if (level == 1) {
-            audio().play(ime::audio::Type::Sfx, "beginning.wav");;
+            audio().setMasterVolume(cache().getValue<float>("masterVolume"));
+            audio().play(ime::audio::Type::Sfx, "beginning.wav");
             sceneDuration = ime::seconds(4.2);
         }
 

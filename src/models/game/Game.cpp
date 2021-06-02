@@ -42,6 +42,7 @@ namespace spm {
         engine_.getPersistentData().addProperty({"level", 1});
         engine_.getPersistentData().addProperty({"score", 0});
         engine_.getPersistentData().addProperty({"lives", 4});
+        engine_.getPersistentData().addProperty({"masterVolume", 100.0f});
         engine_.pushScene(std::make_unique<StartUpScene>());
     }
 
