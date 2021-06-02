@@ -213,7 +213,7 @@ namespace spm {
 
         // Helper function
         const int NUM_ENTRIES = 10;
-        auto createList = [](const std::string& heading, ime::Colour headingColour, const std::string& placeholder) {
+        auto createList = [NUM_ENTRIES](const std::string& heading, ime::Colour headingColour, const std::string& placeholder) {
             auto vlColumn = VerticalLayout::create();
             vlColumn->getRenderer()->setSpaceBetweenWidgets(5);
 

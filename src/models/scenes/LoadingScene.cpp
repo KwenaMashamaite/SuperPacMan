@@ -139,7 +139,6 @@ namespace spm {
     }
 
     void LoadingScene::onExit() {
-        ime::EventDispatcher::instance()->dispatchEvent("assetLoadFinish");
         engine().pushScene(std::make_unique<MainMenuScene>());
     }
 }

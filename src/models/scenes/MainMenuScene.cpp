@@ -29,6 +29,7 @@
 #include <IME/ui/widgets/VerticalLayout.h>
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
+#include <cassert>
 
 namespace spm {
     MainMenuScene::MainMenuScene() :
