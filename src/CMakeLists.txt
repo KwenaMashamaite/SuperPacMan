@@ -41,11 +41,14 @@ set(SRC_FILES
     models/scenes/GameOverScene.cpp
     views/GameOverSceneView.cpp)
 
+# Resource script files
+set(RES_FILES ${PROJECT_SOURCE_DIR}/icon.rc)
+
 # Set executables output folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 # Create executable project source files
-add_executable(SuperPacMan ${SRC_FILES})
+add_executable(SuperPacMan ${SRC_FILES} ${RES_FILES})
 
 # Find third party dependency
 set(IME_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME/lib/cmake/IME")
