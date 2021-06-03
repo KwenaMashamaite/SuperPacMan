@@ -22,32 +22,39 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/game/Game.h"
-#include "src/models/scoreboard/Scoreboard.h"
-#include "src/models/scenes/StartUpScene.h"
+#ifndef SUPERPACMAN_GAMEOVERSCENE_H
+#define SUPERPACMAN_GAMEOVERSCENE_H
+
+#include "src/views/GameOverSceneView.h"
+#include <IME/core/scene/Scene.h>
 
 namespace spm {
-    Game::Game() :
-        engine_{"Super Pac-Man", "assets/textFiles/settings.txt"}
-    {}
+    /**
+     * @brief Game over state of the game
+     *
+     * In this state the player is presented with the opportunity to enter
+     * a name to be associated with their score and an option to retry the
+     * level or exit the game
+     */
+    class GameOverScene : public ime::Scene {
+    public:
+        /**
+         * @brief Enter the scene
+         *
+         * This function is called by the game engine when the scene
+         * is entered for the first time
+         */
+        void onEnter() override;
 
-    void Game::initialize() {
-        engine_.initialize();
+    private:
+        /**
+         * @brief Initialize menu events
+         */
+        void initEvents();
 
-        //Data that should be accessible in all states
-        auto scoreboard = Scoreboard("assets/textFiles/highscores.txt");
-        scoreboard.load();
-
-        engine_.getPersistentData().addProperty({"highScore", scoreboard.getTopScore().getValue()});
-        engine_.getPersistentData().addProperty({"level", 1});
-        engine_.getPersistentData().addProperty({"score", 0});
-        engine_.getPersistentData().addProperty({"lives", 4});
-        engine_.getPersistentData().addProperty({"masterVolume", 100.0f});
-        engine_.getPersistentData().addProperty({"playerWon", false});
-        engine_.pushScene(std::make_unique<StartUpScene>());
-    }
-
-    void Game::start() {
-        engine_.run();
-    }
+    private:
+        GameOverSceneView view_;
+    };
 }
+
+#endif //SUPERPACMAN_GAMEOVERSCENE_H

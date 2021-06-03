@@ -28,6 +28,7 @@
 #include "src/utils/Utils.h"
 #include "src/models/actors/Actors.h"
 #include "src/common/Constants.h"
+#include "src/models/scenes/GameOverScene.h"
 #include "src/models/scenes/MainMenuScene.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/core/physics/grid/KeyboardGridMover.h>
@@ -246,10 +247,10 @@ namespace spm {
                     auto pacman = gameObjects().findByTag<PacMan>("pacman");
                     pacman->setLivesCount(pacman->getLivesCount() - 1);
                     cache().setValue("lives", pacman->getLivesCount());
+
                     if (pacman->getLivesCount() <= 0) { // Triggers a game over sequence
                         engine().popScene();
-                        engine().pushScene(std::make_unique<MainMenuScene>());
-                        //@todo - Replace above code with game over scene
+                        engine().pushScene(std::make_unique<GameOverScene>());
                     } else {
                         // A level restart is triggered after the LevelStartScene is popped
                         engine().pushScene(std::make_unique<LevelStartScene>());

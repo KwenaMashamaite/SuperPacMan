@@ -22,32 +22,39 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/models/game/Game.h"
-#include "src/models/scoreboard/Scoreboard.h"
-#include "src/models/scenes/StartUpScene.h"
+#ifndef SUPERPACMAN_GAMEOVERSCENEVIEW_H
+#define SUPERPACMAN_GAMEOVERSCENEVIEW_H
+
+#include <IME/ui/GuiContainer.h>
 
 namespace spm {
-    Game::Game() :
-        engine_{"Super Pac-Man", "assets/textFiles/settings.txt"}
-    {}
+    /**
+     * @brief View displayed to user when game transitions to GameOverScene
+     */
+    class GameOverSceneView {
+    public:
+        /**
+         * @brief Initialize the view
+         * @param gui Container for all ui widgets in the view
+         * @param wonGame True if player won the game, or false if player lost
+         */
+        void init(ime::ui::GuiContainer& gui, bool wonGame);
 
-    void Game::initialize() {
-        engine_.initialize();
+    private:
+        /**
+         * @brief Create menu displayed before user saves their data
+         * @param gui Container for gui widgets
+         * @param wonGame True if player won the game or false if player lost
+         */
+        void createPreSaveMenu(ime::ui::GuiContainer& gui, bool wonGame);
 
-        //Data that should be accessible in all states
-        auto scoreboard = Scoreboard("assets/textFiles/highscores.txt");
-        scoreboard.load();
-
-        engine_.getPersistentData().addProperty({"highScore", scoreboard.getTopScore().getValue()});
-        engine_.getPersistentData().addProperty({"level", 1});
-        engine_.getPersistentData().addProperty({"score", 0});
-        engine_.getPersistentData().addProperty({"lives", 4});
-        engine_.getPersistentData().addProperty({"masterVolume", 100.0f});
-        engine_.getPersistentData().addProperty({"playerWon", false});
-        engine_.pushScene(std::make_unique<StartUpScene>());
-    }
-
-    void Game::start() {
-        engine_.run();
-    }
+        /**
+         * @brief Create menu displayed after user saves their data
+         * @param gui Container for gui widgets
+         * @param wonGame True if player won the game or false if player lost
+         */
+        void createPostSaveMenu(ime::ui::GuiContainer& gui, bool wonGame);
+    };
 }
+
+#endif //SUPERPACMAN_GAMEOVERSCENEVIEW_H

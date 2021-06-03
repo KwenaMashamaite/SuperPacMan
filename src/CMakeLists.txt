@@ -37,7 +37,9 @@ set(SRC_FILES
     views/LevelStartSceneView.cpp
     views/LoadingSceneView.cpp
     views/MainMenuSceneView.cpp
-    views/StartUpSceneView.cpp)
+    views/StartUpSceneView.cpp
+    models/scenes/GameOverScene.cpp
+    views/GameOverSceneView.cpp)
 
 # Set executables output folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
