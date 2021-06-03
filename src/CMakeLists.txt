@@ -42,7 +42,9 @@ set(SRC_FILES
     views/GameOverSceneView.cpp)
 
 # Resource script files
-set(RES_FILES ${PROJECT_SOURCE_DIR}/icon.rc)
+set(RES_FILES
+    ${PROJECT_SOURCE_DIR}/icon.rc
+    ${PROJECT_SOURCE_DIR}/version.rc)
 
 # Set executables output folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
