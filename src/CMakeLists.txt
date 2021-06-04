@@ -39,7 +39,9 @@ set(SRC_FILES
     views/MainMenuSceneView.cpp
     views/StartUpSceneView.cpp
     models/scenes/GameOverScene.cpp
-    views/GameOverSceneView.cpp)
+    views/GameOverSceneView.cpp
+    models/scenes/GamePauseScene.cpp
+    views/GamePauseSceneView.cpp)
 
 # Resource script files
 set(RES_FILES

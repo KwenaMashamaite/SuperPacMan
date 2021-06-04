@@ -164,18 +164,13 @@ namespace spm {
         void configureTimer(ime::Timer& timer, ime::Time duration, GameEvent event);
 
         /**
-         * @brief Pause or unpause the game
-         * @param pause True to pause game or false to unpause the game
+         * @brief Transition game to pause menu
          */
-        void setPause(bool pause);
-
-        /**
-         * @brief Create the menu displayed when user pauses game
-         */
-        void createPauseMenu();
+        void pauseGame();
 
     private:
         int currentLevel_;           //!< Current game level
+        bool isPaused_;              //!< A flag indicating whether or not the game is paused
         CommonView view_;            //!< Scene view without the playing grid
         std::unique_ptr<Grid> grid_; //!< Playing grid
         ime::Timer superModeTimer_;  //!< Pacman super mode duration counter

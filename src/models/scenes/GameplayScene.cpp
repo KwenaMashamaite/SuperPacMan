@@ -29,19 +29,16 @@
 #include "src/models/actors/Actors.h"
 #include "src/common/Constants.h"
 #include "src/models/scenes/GameOverScene.h"
-#include "src/models/scenes/MainMenuScene.h"
+#include "src/models/scenes/GamePauseScene.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/core/physics/grid/KeyboardGridMover.h>
 #include <IME/ui/widgets/Label.h>
-#include <IME/ui/widgets/VerticalLayout.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
-#include <IME/ui/widgets/Panel.h>
-#include <IME/ui/widgets/Button.h>
-#include <IME/ui/widgets/ToggleButton.h>
 
 namespace spm {
     GameplayScene::GameplayScene() :
         currentLevel_{-1},
+        isPaused_{false},
         view_{gui()}
     {}
 
@@ -76,8 +73,6 @@ namespace spm {
         lblGetReady->setOrigin(0.5f, 0.5f);
         lblGetReady->setPosition(tilemap().getTile(Constants::PacManSpawnTile).getWorldCentre());
         gui().addWidget(std::move(lblGetReady), "lblReady");
-
-        createPauseMenu();
     }
 
     void GameplayScene::createGrid() {
@@ -312,10 +307,8 @@ namespace spm {
     void GameplayScene::intiGameEvents() {
         // Display pause menu when P or Esc is pressed
         input().onKeyUp([this](ime::Key key) {
-            if ((key == ime::Key::P || key == ime::Key::Escape) && !engine().isPaused())
-                setPause(true);
-            else if (key == ime::Key::Escape && engine().isPaused())
-                setPause(false);
+            if ((key == ime::Key::P || key == ime::Key::Escape))
+                pauseGame();
         });
 
         eventEmitter().on("levelComplete", ime::Callback<>([this] {
@@ -359,8 +352,7 @@ namespace spm {
 
         // Pause game and display pause menu when user requests to close game window
         engine().onWindowClose([this]{
-            if (!engine().isPaused())
-                setPause(true);
+            pauseGame();
         });
     }
 
@@ -459,128 +451,12 @@ namespace spm {
         }
     }
 
-    void GameplayScene::setPause(bool pause) {
-        if (pause) {
-            engine().setPause(true);
-            audio().pauseAll();
-            gui().getWidget("pnlPauseMenu")->setVisible(true);
-        } else {
-            engine().setPause(false);
-            audio().playAll();
-            gui().getWidget("pnlPauseMenu")->setVisible(false);
-        }
-    }
-
-    void GameplayScene::createPauseMenu() {
-        using namespace ime::ui;
-
-        // Container for all pause menu widgets
-        auto* pnlContainer = gui().addWidget<Panel>(Panel::create(), "pnlPauseMenu");
-        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour("#2828284d"));
-        pnlContainer->setVisible(false);
-
-        // Container for pause menu buttons container
-        auto* pnlInnerContainer = pnlContainer->addWidget<Panel>(Panel::create("40%", "40%"), "pnlSubContainer");
-        pnlInnerContainer->getRenderer()->setBackgroundColour(ime::Colour::Black);
-        pnlInnerContainer->getRenderer()->setBorders({1.5f, 1.5f, 1.5f, 1.5f});
-        pnlInnerContainer->getRenderer()->setBorderColour(ime::Colour("#212121"));
-        pnlInnerContainer->setOrigin(0.5f, 0.5f);
-        pnlInnerContainer->setPosition("50%", "50%");
-
-        // Pause menu heading
-        auto lblHeading = Label::create("PAUSED");
-        lblHeading->getRenderer()->setTextStyle(ime::TextStyle::Bold);
-        lblHeading->setHorizontalAlignment(Label::HorizontalAlignment::Center);
-        lblHeading->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
-        lblHeading->getRenderer()->setTextColour(ime::Colour::Red);
-        lblHeading->setOrigin(0.5f, 0.0f);
-        lblHeading->setPosition("50%", "4%");
-        lblHeading->setTextSize(20.0f);
-        pnlInnerContainer->addWidget(std::move(lblHeading), "lblHeading");
-
-        // Create pause menu buttons
-        auto btnList = {std::pair{"Resume", "btnResume"},
-                        std::pair{"Restart Level", "btnRestart"},
-                        std::pair{"Exit to Main Menu", "btnMainMenu"},
-                        std::pair{"Exit Game", "btnExit"}};
-
-        // Container for pause menu buttons
-        auto vlBtnContainer = VerticalLayout::create("90%", "45%");
-        vlBtnContainer->setOrigin(0.5f, 0.5f);
-        vlBtnContainer->setPosition("50%", "50%");
-        vlBtnContainer->getRenderer()->setSpaceBetweenWidgets(7.0f);
-
-        for (const auto& btnData : btnList) {
-            auto btn = Button::create(btnData.first);
-            btn->getRenderer()->setFont("DejaVuSans.ttf");
-            btn->setTextSize(14.0f);
-            btn->getRenderer()->setRoundedBorderRadius(18);
-            btn->getRenderer()->setHoverTextStyle(ime::TextStyle::Italic);
-            btn->getRenderer()->setBackgroundColour(ime::Colour("#4d4dff"));
-            btn->getRenderer()->setBackgroundHoverColour(ime::Colour("#32CD32"));
-            btn->getRenderer()->setTextColour(ime::Colour::White);
-            btn->getRenderer()->setTextHoverColour(ime::Colour::Black);
-            btn->getRenderer()->setFocusedBorderColour(ime::Colour::Transparent);
-            vlBtnContainer->addWidget(std::move(btn), btnData.second);
-        }
-
-        // Create button to toggle the mute state of the audio player
-        auto hlContainer = HorizontalLayout::create("90%", "18");
-        hlContainer->setOrigin(0.5f, 1.0f);
-        hlContainer->setPosition("50%", "95%");
-
-        auto lblAudio = hlContainer->addWidget<Label>(Label::create("Audio"), "lblAudio");
-        lblAudio->getRenderer()->setTextColour(ime::Colour::White);
-        lblAudio->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
-        lblAudio->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
-
-        auto btnOption = hlContainer->addWidget<ToggleButton>(ToggleButton::create("off"), "btnAudioToggle");
-        btnOption->setChecked(cache().getValue<float>("masterVolume") > 0.0f);
-        btnOption->setText(btnOption->isChecked() ? "on" : "off");
-        btnOption->getRenderer()->setTextStyle(ime::TextStyle::Italic);
-        btnOption->getRenderer()->setRoundedBorderRadius(15.0f);
-        btnOption->getRenderer()->setFont("DejaVuSans.ttf");
-        hlContainer->setRatio(std::size_t{1}, 0.3);
-        pnlInnerContainer->addWidget(std::move(hlContainer), "hlAudioOption");
-
-        btnOption->on("toggle", ime::Callback<bool>([this, btnOption](bool checked) {
-            if (checked) {
-                audio().setMasterVolume(100.0f);
-                cache().setValue("masterVolume", 100.0f);
-                btnOption->setText("on");
-            } else {
-                audio().setMasterVolume(0.0f);
-                cache().setValue("masterVolume", 0.0f);
-                btnOption->setText("off");
-            }
-        }));
-
-        //------------ Init pause menu buttons click event handlers ------------//
-
-        // 1. Resume button click handler
-        vlBtnContainer->getWidget("btnResume")->on("click", ime::Callback<>([this] {
-            setPause(false);
-        }));
-
-        // 2. Restart button click handler
-        vlBtnContainer->getWidget("btnRestart")->on("click", ime::Callback<>([this] {
-            engine().popScene();
-            engine().pushScene(std::make_unique<GameplayScene>());
-            engine().pushScene(std::make_unique<LevelStartScene>());
-        }));
-
-        // 3. Main menu button click handler
-        vlBtnContainer->getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
-            engine().popScene();
-            engine().pushScene(std::make_unique<MainMenuScene>());
-        }));
-
-        // 4. Exit button click handler
-        vlBtnContainer->getWidget("btnExit")->on("click", ime::Callback<>([this] {
-            engine().quit();
-        }));
-
-        pnlInnerContainer->addWidget(std::move(vlBtnContainer), "vlPauseMenu");
+    void GameplayScene::pauseGame() {
+        isPaused_ = true;
+        setVisibleOnPause(true);
+        setTimescale(0.0f);
+        audio().pauseAll();
+        engine().pushScene(std::make_unique<GamePauseScene>());
     }
 
     void GameplayScene::onPause() {
@@ -590,10 +466,19 @@ namespace spm {
     }
 
     void GameplayScene::onResume() {
-        audio().playAll();
         initEngineEvents();
-        resetActors();
-        startCountDown();
+
+        if (isPaused_) { // Returning from pause menu
+            isPaused_ = false;
+            setTimescale(1.0f);
+            setVisibleOnPause(false); // Only visible when GamePauseScene is active, hidden for others
+            audio().setMasterVolume(cache().getValue<float>("masterVolume"));
+            audio().playAll();
+        } else { // Returning from level info display scene
+            resetActors();
+            startCountDown();
+            audio().playAll();
+        }
     }
 
     void GameplayScene::update(ime::Time deltaTime) {
@@ -604,7 +489,6 @@ namespace spm {
     }
 
     void GameplayScene::onExit() {
-        engine().setPause(false);
         engine().onFrameEnd(nullptr);
         engine().onWindowClose(nullptr);
     }
