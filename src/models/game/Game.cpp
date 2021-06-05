@@ -35,10 +35,11 @@ namespace spm {
         engine_.initialize();
 
         //Data that should be accessible in all states
-        auto scoreboard = Scoreboard("assets/textFiles/highscores.txt");
-        scoreboard.load();
+        auto scoreboard = std::make_shared<Scoreboard>("assets/textFiles/highscores.txt");
+        scoreboard->load();
 
-        engine_.getPersistentData().addProperty({"highScore", scoreboard.getTopScore().getValue()});
+        engine_.getPersistentData().addProperty({"scoreboard", scoreboard});
+        engine_.getPersistentData().addProperty({"highScore", scoreboard->getTopScore().getValue()});
         engine_.getPersistentData().addProperty({"level", 1});
         engine_.getPersistentData().addProperty({"score", 0});
         engine_.getPersistentData().addProperty({"lives", 4});

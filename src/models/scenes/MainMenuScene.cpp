@@ -41,18 +41,17 @@ namespace spm {
 
         view_.init();
 
-        auto scoreboard = Scoreboard("assets/textFiles/highscores.txt");
-        scoreboard.load();
+        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("scoreboard");
 
         const int NUM_SCORES_TO_DISPLAY = 10;
-        assert(scoreboard.getSize() >= NUM_SCORES_TO_DISPLAY && "Scoreboard must have at least 10 entries");
+        assert(scoreboard->getSize() >= NUM_SCORES_TO_DISPLAY && "Scoreboard must have at least 10 entries");
 
         auto namesContainer = gui().getWidget<ime::ui::VerticalLayout>("vlNames");
         auto scoreContainer = gui().getWidget<ime::ui::VerticalLayout>("vlScores");
         auto levelContainer = gui().getWidget<ime::ui::VerticalLayout>("vlLevels");
 
         // Replace placeholder text with actual scoreboard data
-        scoreboard.forEachScore([&, count = 1] (const Score& score) mutable {
+        scoreboard->forEachScore([&, count = 1] (const Score& score) mutable {
             if (count > NUM_SCORES_TO_DISPLAY)
                 return;
 

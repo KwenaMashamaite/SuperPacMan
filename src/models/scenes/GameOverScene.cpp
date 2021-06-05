@@ -73,10 +73,9 @@ namespace spm {
             score.setLevel(playerLevel);
             score.setOwner(name);
 
-            auto scoreboard = Scoreboard("assets/textFiles/highscores.txt");
-            scoreboard.load();
-            scoreboard.addScore(score);
-            scoreboard.updateHighScoreFile();
+            auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("scoreboard");
+            scoreboard->addScore(score);
+            scoreboard->updateHighScoreFile();
         }));
 
         // If the player completes the game, the retry button is not available
