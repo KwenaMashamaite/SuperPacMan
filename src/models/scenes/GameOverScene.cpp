@@ -29,56 +29,40 @@
 #include "src/models/scenes/MainMenuScene.h"
 #include "src/common/Constants.h"
 #include <IME/core/engine/Engine.h>
-#include <IME/ui/widgets/EditBox.h>
 #include <IME/ui/widgets/Label.h>
-#include <IME/ui/widgets/Button.h>
-#include <IME/utility/Utils.h>
 
 using namespace ime::ui;
 
 namespace spm {
     void GameOverScene::onEnter() {
-        engine().onWindowClose(nullptr);
+        updateLeaderboard();
 
+        // Initialize scene gui
         view_.init(gui(), cache().getValue<bool>("playerWon"));
-
-        // Replace placeholder text with actual text
         gui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(cache().getValue<int>("highScore")));
         gui().getWidget<Label>("lblScoreVal")->setText(std::to_string(cache().getValue<int>("score")));
+        gui().getWidget<Label>("lblLevelVal")->setText(std::to_string(cache().getValue<int>("level")));
+        gui().getWidget<Label>("lblPlayerNameVal")->setText(cache().getValue<std::string>("playerName"));
 
-        initEvents();
+        initButtonEvents();
     }
 
-    void GameOverScene::initEvents() {
-        // Update scoreboard file on disk when player clicks "save" button
-        gui().getWidget<Button>("btnSave")->on("click", ime::Callback<>([this] {
-            auto name = gui().getWidget<EditBox>("txtName")->getText();
+    void GameOverScene::updateLeaderboard() {
+        auto playerScore = cache().getValue<int>("score");
+        auto playerLevel = cache().getValue<int>("level");
 
-            if (name.empty()) { // Create random name
-                const auto MAX_NUM_CHARACTERS = 10;
-                for (auto i = 0; i < MAX_NUM_CHARACTERS; i++) {
-                    name += static_cast<char>(ime::utility::generateRandomNum(97, 122));
-                }
+        auto score = Score();
+        score.setValue(playerScore);
+        score.setLevel(playerLevel);
+        score.setOwner(cache().getValue<std::string>("playerName"));
 
-                // Capitalize first letter
-                name[0] = static_cast<char>(toupper(name[0]));
-            }
+        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("scoreboard");
+        scoreboard->addScore(score);
+        scoreboard->updateHighScoreFile();
+    }
 
-            // Add player score to leaderboard
-            auto playerScore = cache().getValue<int>("score");
-            auto playerLevel = cache().getValue<int>("level");
-
-            auto score = Score();
-            score.setValue(playerScore);
-            score.setLevel(playerLevel);
-            score.setOwner(name);
-
-            auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("scoreboard");
-            scoreboard->addScore(score);
-            scoreboard->updateHighScoreFile();
-        }));
-
-        // If the player completes the game, the retry button is not available
+    void GameOverScene::initButtonEvents() {
+        // If the player completed the game, the retry button is not available
         if (!cache().getValue<bool>("playerWon")) {
             // Replenish pacmans lives and restart level when "Restart Level" button is clicked
             gui().getWidget("btnRetryLevel")->on("click", ime::Callback<>([this] {

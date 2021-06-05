@@ -32,9 +32,10 @@ namespace spm {
     /**
      * @brief Game over state of the game
      *
-     * In this state the player is presented with the opportunity to enter
-     * a name to be associated with their score and an option to retry the
-     * level or exit the game
+     * In this state the player is presented with the opportunity to retry
+     * the level if they died, or exit to the games main menu or quit the game.
+     * In addition, the player is presented with their score, the level they
+     * managed to reach and the games highest score
      */
     class GameOverScene : public ime::Scene {
     public:
@@ -48,9 +49,14 @@ namespace spm {
 
     private:
         /**
-         * @brief Initialize menu events
+         * @brief Update in game and on disk leaderboard
          */
-        void initEvents();
+        void updateLeaderboard();
+
+        /**
+         * @brief Initialize scene view button events
+         */
+        void initButtonEvents();
 
     private:
         GameOverSceneView view_;

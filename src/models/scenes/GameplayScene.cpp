@@ -32,6 +32,7 @@
 #include "src/models/scenes/GamePauseScene.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/core/physics/grid/KeyboardGridMover.h>
+#include <IME/core/physics/grid/TargetGridMover.h>
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
 
