@@ -168,9 +168,15 @@ namespace spm {
          */
         void pauseGame();
 
+        /**
+         * @brief Restart the current game level without resetting state
+         */
+        void resetLevel();
+
     private:
         int currentLevel_;           //!< Current game level
         bool isPaused_;              //!< A flag indicating whether or not the game is paused
+        bool showLevelInfoOnReset_;  //!< A flag indicating whether or not the level start scene is displayed or not
         CommonView view_;            //!< Scene view without the playing grid
         std::unique_ptr<Grid> grid_; //!< Playing grid
         ime::Timer superModeTimer_;  //!< Pacman super mode duration counter

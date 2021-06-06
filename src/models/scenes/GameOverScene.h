@@ -54,6 +54,11 @@ namespace spm {
         void updateLeaderboard();
 
         /**
+         * @brief Initialize the scene gui
+         */
+        void initGui();
+
+        /**
          * @brief Initialize scene view button events
          */
         void initButtonEvents();

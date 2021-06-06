@@ -36,14 +36,7 @@ using namespace ime::ui;
 namespace spm {
     void GameOverScene::onEnter() {
         updateLeaderboard();
-
-        // Initialize scene gui
-        view_.init(gui(), cache().getValue<bool>("playerWon"));
-        gui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(cache().getValue<int>("highScore")));
-        gui().getWidget<Label>("lblScoreVal")->setText(std::to_string(cache().getValue<int>("score")));
-        gui().getWidget<Label>("lblLevelVal")->setText(std::to_string(cache().getValue<int>("level")));
-        gui().getWidget<Label>("lblPlayerNameVal")->setText(cache().getValue<std::string>("playerName"));
-
+        initGui();
         initButtonEvents();
     }
 
@@ -61,13 +54,22 @@ namespace spm {
         scoreboard->updateHighScoreFile();
     }
 
+    void GameOverScene::initGui() {
+        view_.init(gui(), cache().getValue<bool>("playerWon"));
+        gui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(cache().getValue<int>("highScore")));
+        gui().getWidget<Label>("lblScoreVal")->setText(std::to_string(cache().getValue<int>("score")));
+        gui().getWidget<Label>("lblLevelVal")->setText(std::to_string(cache().getValue<int>("level")));
+        gui().getWidget<Label>("lblPlayerNameVal")->setText(cache().getValue<std::string>("playerName"));
+    }
+
     void GameOverScene::initButtonEvents() {
         // If the player completed the game, the retry button is not available
         if (!cache().getValue<bool>("playerWon")) {
             // Replenish pacmans lives and restart level when "Restart Level" button is clicked
             gui().getWidget("btnRetryLevel")->on("click", ime::Callback<>([this] {
                 cache().setValue("lives", Constants::PacManLives);
-                engine().popScene();
+                engine().removeAllScenesExceptActive();
+                engine().popScene(); // Destroy this scene
                 engine().pushScene(std::make_unique<GameplayScene>());
                 engine().pushScene(std::make_unique<LevelStartScene>());
             }));
@@ -79,7 +81,8 @@ namespace spm {
             cache().setValue("score", 0);
             cache().setValue("lives", Constants::PacManLives);
 
-            engine().popScene();
+            engine().removeAllScenesExceptActive();
+            engine().popScene(); // Destroy this scene
             engine().pushScene(std::make_unique<MainMenuScene>());
         }));
 

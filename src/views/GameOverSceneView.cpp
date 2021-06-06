@@ -40,28 +40,30 @@ namespace spm {
 
     void GameOverSceneView::createPreSaveMenu(GuiContainer &gui, bool wonGame) {
         auto pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
-        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Black);
+        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+
+        // Container for widgets placed at the centre of the view
+        auto pnlCentreContainer = pnlContainer->addWidget<Panel>(Panel::create("93%", "86%"), "pnlCentreContainer");
+        pnlCentreContainer->getRenderer()->setBackgroundColour(ime::Colour("#4000ffbe"));
+        pnlCentreContainer->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
+        pnlCentreContainer->getRenderer()->setBorderColour(ime::Colour("#808080"));
+        pnlCentreContainer->setOrigin(0.5f, 0.5f);
+        pnlCentreContainer->setPosition("50%", "50%");
 
         // Top heading
-        auto lblHeading = Label::create("GAME OVER");
+        auto* lblHeading = pnlCentreContainer->addWidget<Label>(Label::create(), "lblHeading1");
+        lblHeading->setText("GAME OVER");
         lblHeading->getRenderer()->setFont("pacfont.ttf");
         lblHeading->getRenderer()->setTextStyle(ime::TextStyle::Bold);
         lblHeading->getRenderer()->setTextColour(ime::Colour::Red);
         lblHeading->setTextSize(50.0f);
         lblHeading->setOrigin(0.5f, 0.0f);
-        lblHeading->setPosition("50%", "10%");
-        pnlContainer->addWidget(std::move(lblHeading), "lblHeading1");
-
-        // Container for widgets placed at the centre of the view
-        auto pnlCentreContainer = pnlContainer->addWidget<Panel>(Panel::create("92%", "45%"), "pnlCentreContainer");
-        pnlCentreContainer->getRenderer()->setBackgroundColour(ime::Colour("#27293d40"));
-        pnlCentreContainer->setOrigin(0.5f, 0.5f);
-        pnlCentreContainer->setPosition("50%", "50%");
+        lblHeading->setPosition("50%", "1%");
 
         // Container for widgets user interacts with
-        auto vlInnerCentreContainer = pnlCentreContainer->addWidget<VerticalLayout>(VerticalLayout::create("80%", "40%"), "pnlInnerCentreContainer");
+        auto vlInnerCentreContainer = pnlCentreContainer->addWidget<VerticalLayout>(VerticalLayout::create("80%", "30%"), "pnlInnerCentreContainer");
         vlInnerCentreContainer->setOrigin(0.5f, 0.0f);
-        vlInnerCentreContainer->setPosition("50%", "5%");
+        vlInnerCentreContainer->setPosition("50%", ime::bindBottom(lblHeading).append("+15%"));
 
         // Heading
         auto lblHeading2 = Label::create(wonGame ? "Congratulations, game completed!!" : "You died!!");
@@ -78,7 +80,7 @@ namespace spm {
         lblHighScore->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
         lblHighScore->getRenderer()->setTextStyle(ime::TextStyle::Bold);
         lblHighScore->getRenderer()->setTextColour(ime::Colour::White);
-        lblHighScore->getRenderer()->setBackgroundColour(ime::Colour("#ffffff08"));
+        lblHighScore->getRenderer()->setBackgroundColour(ime::Colour("#0a0a0acc"));
 
         auto lblName = lblHighScore->copy();
         lblName->setText("PLAYER");
@@ -164,14 +166,14 @@ namespace spm {
         if (!wonGame)
             vlContainer->addWidget(std::move(btnRetryLevel), "btnRetryLevel");
         else // Reduce vertical size of container to accommodate only two buttons instead of three
-            vlContainer->setHeight("68%");
+            vlContainer->setHeight("65%");
 
 
         vlContainer->addWidget(std::move(btnExitMainMenu), "btnExitMainMenu");
         vlContainer->addWidget(std::move(btnExitGame), "btnExitGame");
 
         // Container for action buttons
-        auto pnlButtonsContainer = Panel::create("80%", "28%");
+        auto pnlButtonsContainer = Panel::create("80%", "18%");
         pnlButtonsContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
         pnlButtonsContainer->setOrigin(0.5f, 0.0f);
 

@@ -40,6 +40,7 @@ namespace spm {
     GameplayScene::GameplayScene() :
         currentLevel_{-1},
         isPaused_{false},
+        showLevelInfoOnReset_{true},
         view_{gui()}
     {}
 
@@ -245,11 +246,32 @@ namespace spm {
                     cache().setValue("lives", pacman->getLivesCount());
 
                     if (pacman->getLivesCount() <= 0) { // Triggers a game over sequence
-                        engine().popScene();
+                        // We want the gameplay scene to continue running as the background
+                        // of the game over menu, so when Pacman dies, instead of transition
+                        // to the LevelStartScene, we want the gameplay to reset immediately
+                        // because the transition to LevelStartScene, will be pushed on top of
+                        // the GameOverScene (because it will be the active scene) instead of
+                        // the GamePlay scene.
+                        showLevelInfoOnReset_ = false;
+
+                        // When pacmans number of lives reaches zero, the game transitions to GameOverScene,
+                        // however, since we will be already in the GameOverScene, we don't want that the
+                        // transition to happen, so we give pacman many lives so that the player never does.
+                        // A 50 000 lives seems reasonable enough. I don't think the player will stay on the
+                        // game over menu that long
+                        gameObjects().findByTag<PacMan>("pacman")->setLivesCount(50000);
+                        resetLevel();
+
+                        // Instead of destroying the scene like normal, we simply push the GameOverScene,
+                        // which will case the GameplayScene to pause, however instead of hiding it, we
+                        // show it and enable full simulation
+                        setOnPauseAction(ime::Scene::Show | ime::Scene::UpdateTime);
                         engine().pushScene(std::make_unique<GameOverScene>());
                     } else {
-                        // A level restart is triggered after the LevelStartScene is popped
-                        engine().pushScene(std::make_unique<LevelStartScene>());
+                        if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene
+                            engine().pushScene(std::make_unique<LevelStartScene>());
+                        else
+                            resetLevel();
                     }
                 });
             }
@@ -454,10 +476,15 @@ namespace spm {
 
     void GameplayScene::pauseGame() {
         isPaused_ = true;
-        setVisibleOnPause(true);
-        setTimescale(0.0f);
+        setOnPauseAction(ime::Scene::OnPauseAction::Show);
         audio().pauseAll();
         engine().pushScene(std::make_unique<GamePauseScene>());
+    }
+
+    void GameplayScene::resetLevel() {
+        resetActors();
+        startCountDown();
+        audio().playAll();
     }
 
     void GameplayScene::onPause() {
@@ -471,14 +498,11 @@ namespace spm {
 
         if (isPaused_) { // Returning from pause menu
             isPaused_ = false;
-            setTimescale(1.0f);
-            setVisibleOnPause(false); // Only visible when GamePauseScene is active, hidden for others
+            setOnPauseAction(ime::Scene::OnPauseAction::Default);
             audio().setMasterVolume(cache().getValue<float>("masterVolume"));
             audio().playAll();
         } else { // Returning from level info display scene
-            resetActors();
-            startCountDown();
-            audio().playAll();
+            resetLevel();
         }
     }
 
