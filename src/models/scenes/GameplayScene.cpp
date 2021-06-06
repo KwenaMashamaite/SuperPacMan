@@ -266,6 +266,7 @@ namespace spm {
                         // which will case the GameplayScene to pause, however instead of hiding it, we
                         // show it and enable full simulation
                         setOnPauseAction(ime::Scene::Show | ime::Scene::UpdateTime);
+                        audio().setMute(true);
                         engine().pushScene(std::make_unique<GameOverScene>());
                     } else {
                         if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene
