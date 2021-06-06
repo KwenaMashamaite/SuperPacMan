@@ -240,7 +240,7 @@ namespace spm {
                 audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
 
                 auto deathAnimDuration = pMan->getSprite().getAnimator().getActiveAnimation()->getDuration();
-                timer().setTimeout(deathAnimDuration + ime::seconds(1), [this] {
+                timer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this] {
                     auto pacman = gameObjects().findByTag<PacMan>("pacman");
                     pacman->setLivesCount(pacman->getLivesCount() - 1);
                     cache().setValue("lives", pacman->getLivesCount());
