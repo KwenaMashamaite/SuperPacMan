@@ -25,6 +25,7 @@
 #include "src/models/game/Game.h"
 #include "src/models/scoreboard/Scoreboard.h"
 #include "src/models/scenes/StartUpScene.h"
+#include "src/common/Constants.h"
 
 namespace spm {
     Game::Game() :
@@ -42,7 +43,7 @@ namespace spm {
         engine_.getPersistentData().addProperty({"highScore", scoreboard->getTopScore().getValue()});
         engine_.getPersistentData().addProperty({"level", 1});
         engine_.getPersistentData().addProperty({"score", 0});
-        engine_.getPersistentData().addProperty({"lives", 4});
+        engine_.getPersistentData().addProperty({"lives", Constants::PacManLives});
         engine_.getPersistentData().addProperty({"masterVolume", 100.0f});
         engine_.getPersistentData().addProperty({"playerWon", false});
         engine_.getPersistentData().addProperty({"playerName", std::string("player1")});

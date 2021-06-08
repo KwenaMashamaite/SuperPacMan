@@ -37,7 +37,7 @@ namespace spm {
 
         // Exit the scene with an effect after a couple of seconds
         timer().setTimeout(ime::seconds(13), [this, pnlContainer] {
-            pnlContainer->hideWithEffect(ime::ShowAnimationType::SlideFromBottom, ime::seconds(2));
+            pnlContainer->hideWithEffect(ime::ShowAnimationType::Fade, ime::seconds(2));
             pnlContainer->on("animationFinish", ime::Callback<>([this] {
                 engine().popScene();
             }));

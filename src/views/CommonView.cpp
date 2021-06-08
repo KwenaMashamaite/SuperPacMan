@@ -123,6 +123,10 @@ namespace spm {
         }
     }
 
+    void CommonView::updateLives(unsigned int pacmanLives) {
+        gui_.getWidget("picLife" + std::to_string(pacmanLives))->setVisible(false);
+    }
+
     void CommonView::update(ime::Time deltaTime) {
         timer_.update(deltaTime);
     }

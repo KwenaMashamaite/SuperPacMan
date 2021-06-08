@@ -34,23 +34,9 @@ namespace spm {
         auto pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
 
-        auto lblGameTitle = pnlContainer->addWidget<Label>(Label::create("Super  Pac-Man"), "lblGameTitle");
-        lblGameTitle->setTextSize(45.0f);
-        lblGameTitle->scale(0, 1.5f);
-        lblGameTitle->getRenderer()->setFont("pacfont.ttf");
-        lblGameTitle->getRenderer()->setTextColour({255, 0, 0, 100});
-        lblGameTitle->setOrigin(0.5f, 0.0f);
-        lblGameTitle->setPosition("50%", "35%");
-
-        auto picMascot = Picture::create("pacman_mascot.png");
-        picMascot->setOrigin(0.5f, 1.0f);
-        picMascot->setSize("40%", "35%");
-        picMascot->setPosition("50%", ime::bindBottom(lblGameTitle));
-        pnlContainer->addWidget(std::move(picMascot), "picMascot");
-
         auto picLEngineLogo = pnlContainer->addWidget(Picture::create("IME_logo.png"), "picEngineLogo");
         picLEngineLogo->setOrigin(0.5f, 0.0f);
-        picLEngineLogo->setPosition("50%", "70%");
+        picLEngineLogo->setPosition("50%", "50%");
 
         auto lblPoweredBy = Label::create("Powered by");
         lblPoweredBy->getRenderer()->setTextStyle(ime::TextStyle::Italic);

@@ -71,7 +71,7 @@ namespace spm {
         });
 
         auto pnlContainer = gui().getWidget<ime::ui::Panel>("pnlContainer");
-        pnlContainer->showWithEffect(ime::ShowAnimationType::SlideFromBottom, ime::seconds(1.5));
+        pnlContainer->showWithEffect(ime::ShowAnimationType::Fade, ime::seconds(0.5));
 
         // Initiate asset loading thread after view animation finishes
         pnlContainer->on("animationFinish", ime::Callback<>([this] {
@@ -106,7 +106,7 @@ namespace spm {
                 auto pbrAssetLoading = gui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
 
                 // Resources load very fast (less than a second), so we simulate a delay between each load
-                std::this_thread::sleep_for(std::chrono::milliseconds(60));
+                std::this_thread::sleep_for(std::chrono::milliseconds(80));
                 pbrAssetLoading->setText("Loading " + text + "...");
                 pbrAssetLoading->incrementValue();
             });

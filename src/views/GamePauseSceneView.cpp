@@ -40,7 +40,7 @@ namespace spm {
 
         // Container for pause menu buttons container
         auto* pnlInnerContainer = pnlContainer->addWidget<Panel>(Panel::create("40%", "40%"), "pnlSubContainer");
-        pnlInnerContainer->getRenderer()->setBackgroundColour(ime::Colour::Black);
+        pnlInnerContainer->getRenderer()->setBackgroundColour(ime::Colour("#121212"));
         pnlInnerContainer->getRenderer()->setBorders({1.5f, 1.5f, 1.5f, 1.5f});
         pnlInnerContainer->getRenderer()->setBorderColour(ime::Colour("#212121"));
         pnlInnerContainer->setOrigin(0.5f, 0.5f);

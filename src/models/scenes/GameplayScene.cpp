@@ -204,14 +204,22 @@ namespace spm {
 
             if (ghostState == Ghost::State::Evade) { // Pacman ate power pill
                 audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
+                updateScore(Constants::Points::GHOST);
 
                 // Momentarily stop all actor movements
                 gridMovers().forEach([](ime::GridMover* gridMover) {
                     gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::All);
                 });
 
-                // Restart movement
+                // Momentarily stop pacman and ghost animations
+                gameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
+                    ghost->getSprite().getAnimator().setTimescale(0.0f);
+                });
+                gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(0.0f);
+
+                // Resume gameplay after a small delay
                 timer().setTimeout(ime::seconds(1), [this, ghost] {
+                    // Resume pacman and ghost movement
                     gridMovers().forEach([](ime::GridMover* gridMover) {
                         if (gridMover->getTarget()->getClassName() == "PacMan") {
                             gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
@@ -220,6 +228,13 @@ namespace spm {
                             gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::None);
                     });
 
+                    // Resume pacman and ghost animations
+                    gameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
+                        ghost->getSprite().getAnimator().setTimescale(1.0f);
+                    });
+                    gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(1.0f);
+
+                    // Let ghost know it has been eaten
                     static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
                 });
             } else if (pacmanState != PacMan::State::Super && ghostState != Ghost::State::Heal) {
@@ -245,6 +260,9 @@ namespace spm {
                     pacman->setLivesCount(pacman->getLivesCount() - 1);
                     cache().setValue("lives", pacman->getLivesCount());
 
+                    //if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene
+                        view_.updateLives(pacman->getLivesCount());
+
                     if (pacman->getLivesCount() <= 0) { // Triggers a game over sequence
                         // We want the gameplay scene to continue running as the background
                         // of the game over menu, so when Pacman dies, instead of transition
@@ -267,6 +285,7 @@ namespace spm {
                         // show it and enable full simulation
                         setOnPauseAction(ime::Scene::Show | ime::Scene::UpdateTime);
                         audio().setMute(true);
+                        gui().setOpacity(0.0f);
                         engine().pushScene(std::make_unique<GameOverScene>());
                     } else {
                         if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene

@@ -82,6 +82,12 @@ namespace spm {
          */
         void update(ime::Time deltaTime);
 
+        /**
+         * @brief Update the number of lives shown for pacman
+         * @param pacmanLives The current number of pacman lives
+         */
+        void updateLives(unsigned int pacmanLives);
+
     private:
         /**
          * @brief Create view widgets

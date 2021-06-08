@@ -43,10 +43,8 @@ namespace spm {
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
 
         // Container for widgets placed at the centre of the view
-        auto pnlCentreContainer = pnlContainer->addWidget<Panel>(Panel::create("93%", "86%"), "pnlCentreContainer");
-        pnlCentreContainer->getRenderer()->setBackgroundColour(ime::Colour("#4000ffbe"));
-        pnlCentreContainer->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
-        pnlCentreContainer->getRenderer()->setBorderColour(ime::Colour("#808080"));
+        auto pnlCentreContainer = pnlContainer->addWidget<Panel>(Panel::create("100%", "100%"), "pnlCentreContainer");
+        pnlCentreContainer->getRenderer()->setBackgroundColour(ime::Colour("#121212cc"));
         pnlCentreContainer->setOrigin(0.5f, 0.5f);
         pnlCentreContainer->setPosition("50%", "50%");
 
@@ -61,7 +59,7 @@ namespace spm {
         lblHeading->setPosition("50%", "1%");
 
         // Container for widgets user interacts with
-        auto vlInnerCentreContainer = pnlCentreContainer->addWidget<VerticalLayout>(VerticalLayout::create("80%", "30%"), "pnlInnerCentreContainer");
+        auto vlInnerCentreContainer = pnlCentreContainer->addWidget<VerticalLayout>(VerticalLayout::create("80%", "28%"), "pnlInnerCentreContainer");
         vlInnerCentreContainer->setOrigin(0.5f, 0.0f);
         vlInnerCentreContainer->setPosition("50%", ime::bindBottom(lblHeading).append("+15%"));
 
@@ -80,15 +78,20 @@ namespace spm {
         lblHighScore->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
         lblHighScore->getRenderer()->setTextStyle(ime::TextStyle::Bold);
         lblHighScore->getRenderer()->setTextColour(ime::Colour::White);
-        lblHighScore->getRenderer()->setBackgroundColour(ime::Colour("#0a0a0acc"));
+        lblHighScore->getRenderer()->setBorders({0.0, 1.0f, 0.0f, 1.0f});
+        lblHighScore->getRenderer()->setBorderColour(ime::Colour::White);
+        lblHighScore->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
 
         auto lblName = lblHighScore->copy();
         lblName->setText("PLAYER");
+        lblName->getRenderer()->setBorders({0.0, 1.3f, 0.0f, 1.3f});
+        lblName->getRenderer()->setBorderColour(ime::Colour("#ffffff14"));
+        lblName->getRenderer()->setBackgroundColour(ime::Colour("#11141B66"));
 
-        auto lblLevel = lblHighScore->copy();
+        auto lblLevel = lblName->copy();
         lblLevel->setText("LEVEL");
 
-        auto lblScore = lblHighScore->copy();
+        auto lblScore = lblName->copy();
         lblScore->setText("SCORE ");
 
         // Create info labels
@@ -96,13 +99,14 @@ namespace spm {
         lblHighScoreVal->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Right);
         lblHighScoreVal->setText("00");
 
-        auto lblNameVal = lblHighScoreVal->copy();
+        auto lblNameVal = lblName->copy();
+        lblNameVal->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Right);
         lblNameVal->setText("Player 1");
 
-        auto lblLevelVal = lblHighScoreVal->copy();
+        auto lblLevelVal = lblNameVal->copy();
         lblLevelVal->setText("0");
 
-        auto lblScoreVal = lblHighScoreVal->copy();
+        auto lblScoreVal = lblNameVal->copy();
         lblScoreVal->setText("00");
 
         // Add labels
@@ -139,7 +143,7 @@ namespace spm {
     }
 
     void GameOverSceneView::createNavButtons(ime::ui::GuiContainer& gui, bool wonGame) {
-        auto vlContainer = VerticalLayout::create("100%", "100%");
+        auto vlContainer = VerticalLayout::create("100%", "90%");
         vlContainer->setOrigin(0.5f, 0.5f);
         vlContainer->setPosition("50%", "50%");
         vlContainer->getRenderer()->setSpaceBetweenWidgets(7.0f);
@@ -166,7 +170,7 @@ namespace spm {
         if (!wonGame)
             vlContainer->addWidget(std::move(btnRetryLevel), "btnRetryLevel");
         else // Reduce vertical size of container to accommodate only two buttons instead of three
-            vlContainer->setHeight("65%");
+            vlContainer->setHeight("60%");
 
 
         vlContainer->addWidget(std::move(btnExitMainMenu), "btnExitMainMenu");
