@@ -141,6 +141,12 @@ namespace spm {
         void onAnimationFinish(ime::Callback<> callback);
 
         /**
+         * @brief Check if the grid flash animation is playing or not
+         * @return True if animation is currently playing, otherwise false
+         */
+        bool isAnimationPlaying();
+
+        /**
          * @brief Update the grid
          * @param deltaTime Time passed since ;ast scene update
          */

@@ -495,6 +495,10 @@ namespace spm {
     }
 
     void GameplayScene::pauseGame() {
+        // Prevent game from being paused when level is completed or pacman is dying
+        if (grid_->isAnimationPlaying() || gameObjects().findByTag("pacman")->getSprite().getAnimator().getActiveAnimation()->getName() == "dying")
+            return;
+
         isPaused_ = true;
         setOnPauseAction(ime::Scene::OnPauseAction::Show);
         audio().pauseAll();

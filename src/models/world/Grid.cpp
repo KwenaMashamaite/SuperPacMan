@@ -161,6 +161,10 @@ namespace spm {
         onAnimFinish_ = std::move(callback);
     }
 
+    bool Grid::isAnimationPlaying() {
+        return background_.getAnimator().isAnimationPlaying();
+    }
+
     void Grid::update(ime::Time deltaTime) {
         background_.updateAnimation(deltaTime);
     }
