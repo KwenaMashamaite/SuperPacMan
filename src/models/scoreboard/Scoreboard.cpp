@@ -36,7 +36,7 @@ namespace spm {
         ime::utility::DiskFileReader().readFileInto(highScoresFile_, highScores);
         auto line = std::string();
         while (std::getline(highScores, line)) {
-            auto posOfSpaceBetweenNameAndScore = line.find_first_of(' ');
+            auto posOfSpaceBetweenNameAndScore = line.find_first_of(':');
             auto scoreAndLevel = line.substr(posOfSpaceBetweenNameAndScore + 1);
             auto posOfSpaceBetweenScoreAndLevel = scoreAndLevel.find_first_of(' ');
             auto score = Score();
@@ -62,9 +62,9 @@ namespace spm {
 
     void Scoreboard::updateHighScoreFile() {
         auto newHighscoreList = std::stringstream();
-        newHighscoreList << highScores_.front().getOwner() + " " + std::to_string(highScores_.front().getValue()) + " " + std::to_string(highScores_.front().getLevel());
+        newHighscoreList << highScores_.front().getOwner() + ":" + std::to_string(highScores_.front().getValue()) + " " + std::to_string(highScores_.front().getLevel());
         std::for_each(++highScores_.begin(), highScores_.end(),[&](auto& score) {
-            newHighscoreList << "\n" + score.getOwner() + " " + std::to_string(score.getValue()) + " " + std::to_string(score.getLevel());
+            newHighscoreList << "\n" + score.getOwner() + ":" + std::to_string(score.getValue()) + " " + std::to_string(score.getLevel());
         });
 
         ime::utility::DiskFileReader().writeToFile(newHighscoreList, highScoresFile_);

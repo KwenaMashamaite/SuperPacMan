@@ -46,7 +46,7 @@ namespace spm {
         engine_.getPersistentData().addProperty({"lives", Constants::PacManLives});
         engine_.getPersistentData().addProperty({"masterVolume", 100.0f});
         engine_.getPersistentData().addProperty({"playerWon", false});
-        engine_.getPersistentData().addProperty({"playerName", std::string("player1")});
+        engine_.getPersistentData().addProperty({"playerName", std::string("player 1")});
         engine_.pushScene(std::make_unique<StartUpScene>());
     }
 
