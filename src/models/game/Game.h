@@ -49,7 +49,8 @@ namespace spm {
         void start();
 
     private:
-        ime::Engine engine_; //!< Runs the main game loop
+        std::string settingsFilename_; //!< The name of the file with the engine settings
+        ime::Engine engine_;           //!< Runs the main game loop
     };
 }
 

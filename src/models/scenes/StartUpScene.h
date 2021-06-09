@@ -52,6 +52,24 @@ namespace spm {
          * @brief Transition the game to the next scene
          */
         void onExit() override;
+
+    private:
+        /**
+         * @brief Start menu pop countdown
+         */
+        void startCountdown();
+
+        /**
+         * @brief Ask player for their name
+         */
+        void promptName();
+
+        /**
+         * @brief Make the scene skippable when enter key is pressed
+         *
+         * By default, the scene is no skippable
+         */
+        void enableSceneSkip();
     };
 }
 

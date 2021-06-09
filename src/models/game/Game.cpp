@@ -29,16 +29,18 @@
 
 namespace spm {
     Game::Game() :
-        engine_{"Super Pac-Man", "assets/textFiles/settings.txt"}
+        settingsFilename_("assets/textFiles/settings.txt"),
+        engine_{"Super Pac-Man", settingsFilename_}
     {}
 
     void Game::initialize() {
         engine_.initialize();
 
-        //Data that should be accessible in all states
+        // Initialize data that should be accessible in all states
         auto scoreboard = std::make_shared<Scoreboard>("assets/textFiles/highscores.txt");
         scoreboard->load();
 
+        engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settingsFilename_});
         engine_.getPersistentData().addProperty({"scoreboard", scoreboard});
         engine_.getPersistentData().addProperty({"highScore", scoreboard->getTopScore().getValue()});
         engine_.getPersistentData().addProperty({"level", 1});
@@ -46,7 +48,11 @@ namespace spm {
         engine_.getPersistentData().addProperty({"lives", Constants::PacManLives});
         engine_.getPersistentData().addProperty({"masterVolume", 100.0f});
         engine_.getPersistentData().addProperty({"playerWon", false});
-        engine_.getPersistentData().addProperty({"playerName", std::string("player 1")});
+
+        // If not found, player will be prompted for name in StartUpScene
+        if (engine_.getConfigs().hasPref("PLAYER_NAME"))
+            engine_.getPersistentData().addProperty({"PLAYER_NAME",engine_.getConfigs().getPref("PLAYER_NAME").getValue<std::string>()});
+
         engine_.pushScene(std::make_unique<StartUpScene>());
     }
 

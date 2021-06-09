@@ -40,7 +40,14 @@ namespace spm {
          * @brief Initialize the view
          * @param gui Container for all UI controls in the view
          */
-        static void init(ime::ui::GuiContainer& gui);
+        void init(ime::ui::GuiContainer& gui);
+
+    private:
+        /**
+         * @brief Create name prompt sub view
+         * @param gui The container for sub menu widgets
+         */
+        void createNamePrompt(ime::ui::GuiContainer& gui);
     };
 }
 

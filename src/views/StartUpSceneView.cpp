@@ -26,14 +26,18 @@
 #include <IME/ui/widgets/Picture.h>
 #include <IME/ui/widgets/Panel.h>
 #include <IME/ui/widgets/Label.h>
+#include <IME/ui/widgets/VerticalLayout.h>
+#include <IME/ui/widgets/EditBox.h>
+#include <IME/ui/widgets/Button.h>
+
+using namespace ime::ui;
 
 namespace spm {
     void StartUpSceneView::init(ime::ui::GuiContainer& gui) {
-        using namespace ime::ui;
-
         auto* pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
 
+        // Create game logo
         auto picPacmanLogo = Picture::create("pacman_logo.png");
         picPacmanLogo->setOrigin(0.5f, 0.0f);
         picPacmanLogo->setSize("62%", "17%");
@@ -70,5 +74,66 @@ namespace spm {
         lblCopyright->setOrigin(0.5f, 1.0f);
         lblCopyright->setPosition("50%", "100%");
         pnlContainer->addWidget(std::move(lblCopyright), "lblCopyright");
+
+        createNamePrompt(gui);
+    }
+
+    void StartUpSceneView::createNamePrompt(ime::ui::GuiContainer &gui) {
+        // Name prompt panel
+        auto pnlParentContainer = Panel::create();
+        pnlParentContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        pnlParentContainer->setVisible(false);
+
+        auto pnlSecondaryContainer = Panel::create("80%", "40%");
+        pnlSecondaryContainer->getRenderer()->setBackgroundColour(ime::Colour("#27293d33"));
+        pnlSecondaryContainer->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
+        pnlSecondaryContainer->getRenderer()->setBorderColour(ime::Colour(128, 128, 128, 128));
+        pnlSecondaryContainer->setOrigin(0.5f, 0.5f);
+        pnlSecondaryContainer->setPosition("50%", "50%");
+        auto vlCentreContainer = VerticalLayout::create();
+
+        // Create name prompt heading
+        auto* lblHeading = pnlSecondaryContainer->addWidget<Label>(Label::create(), "lblNameHeading");
+        lblHeading->setText("ENTER YOUR NAME");
+        lblHeading->getRenderer()->setTextColour(ime::Colour::White);
+        lblHeading->setTextSize(18);
+        lblHeading->setOrigin(0.5f, 0.0f);
+        lblHeading->setPosition("50%", "10%");
+
+        // Create input field for entering name
+        auto* txtName = pnlSecondaryContainer->addWidget<EditBox>(EditBox::create(), "txtName");
+        txtName->setDefaultText("Enter your name");
+        txtName->setMaximumCharacters(15);
+        txtName->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
+        txtName->getRenderer()->setTextStyle(ime::TextStyle::Bold);
+        txtName->setMouseCursor(ime::CursorType::Text);
+        txtName->getRenderer()->setBackgroundColour(ime::Colour::White);
+        txtName->getRenderer()->setBackgroundHoverColour(ime::Colour::White);
+        txtName->getRenderer()->setBorders({2.0f, 2.0f, 2.0f, 2.0f});
+        txtName->getRenderer()->setBorderColour(ime::Colour("#5427d880"));
+        txtName->getRenderer()->setFocusedBorderColour(ime::Colour("#4000ff"));
+        txtName->getRenderer()->setBorderHoverColour(ime::Colour("#450af5"));
+        txtName->setTextSize(24);
+        txtName->setSize("70%","25%");
+        txtName->setOrigin(0.5f, 0.5f);
+        txtName->setPosition("50%", "50%");
+
+        // Create button to save the player name
+        auto btnContinue = Button::create("Continue");
+        btnContinue->setWidth("80%");
+        btnContinue->setOrigin(0.5f, 1.0f);
+        btnContinue->setPosition("50%", "95%");
+        btnContinue->getRenderer()->setRoundedBorderRadius(10.0f);
+        btnContinue->getRenderer()->setBackgroundColour(ime::Colour("#4d4dff"));
+        btnContinue->getRenderer()->setBorderColour(ime::Colour::Transparent);
+        btnContinue->getRenderer()->setBackgroundHoverColour({36, 92, 8});
+        btnContinue->getRenderer()->setTextHoverColour(ime::Colour::White);
+        btnContinue->getRenderer()->setTextColour(ime::Colour::White);
+        btnContinue->getRenderer()->setDisabledBackgroundColour(ime::Colour("#5a5a5ae6"));
+        btnContinue->setEnabled(false);
+        pnlSecondaryContainer->addWidget(std::move(btnContinue), "btnContinue");
+
+        pnlParentContainer->addWidget(std::move(pnlSecondaryContainer), "pnlSecondaryNameContainer");
+        gui.addWidget(std::move(pnlParentContainer), "pnlNamePrompt");
     }
 }

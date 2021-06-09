@@ -47,7 +47,7 @@ namespace spm {
         auto score = Score();
         score.setValue(playerScore);
         score.setLevel(playerLevel);
-        score.setOwner(cache().getValue<std::string>("playerName"));
+        score.setOwner(cache().getValue<std::string>("PLAYER_NAME"));
 
         auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("scoreboard");
         scoreboard->addScore(score);
@@ -59,7 +59,7 @@ namespace spm {
         gui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(cache().getValue<int>("highScore")));
         gui().getWidget<Label>("lblScoreVal")->setText(std::to_string(cache().getValue<int>("score")));
         gui().getWidget<Label>("lblLevelVal")->setText(std::to_string(cache().getValue<int>("level")));
-        gui().getWidget<Label>("lblPlayerNameVal")->setText(cache().getValue<std::string>("playerName"));
+        gui().getWidget<Label>("lblPlayerNameVal")->setText(cache().getValue<std::string>("PLAYER_NAME"));
     }
 
     void GameOverScene::initButtonEvents() {

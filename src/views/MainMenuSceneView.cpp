@@ -153,7 +153,7 @@ namespace spm {
         auto* pnlChildContainer = pnlParentContainer->addWidget<Panel>(Panel::create("97%", "97%"), "pnlChild");
         pnlChildContainer->setOrigin(0.5f, 0.5f);
         pnlChildContainer->setPosition("50%", "50%");
-        pnlChildContainer->getRenderer()->setBackgroundColour(ime::Colour("#121212"));
+        pnlChildContainer->getRenderer()->setBackgroundColour(ime::Colour(0, 0, 0, 180));
 
         // Menu Heading
         auto* lblHeader = pnlChildContainer->addWidget<Label>(Label::create("OPTIONS"), "lblHeader");
@@ -170,20 +170,16 @@ namespace spm {
         // Create button to return to main menu from options menu
         auto btnBack = pnlChildContainer->addWidget(createBackBtn(), "btnBack");
         btnBack->setSize(70, 20);
-        btnBack->setPosition("1%", ime::bindHeight(tbsOptions).append("+5%"));
+        btnBack->setPosition("1%", ime::bindHeight(tbsOptions).append("+2.5%"));
         btnBack->on("click", ime::Callback<>([this] {
             setSubView(SubView::MainMenu);
         }));
 
         // Create panel for control settings widgets
         auto pnlControlsSettings = Panel::create();
-        pnlControlsSettings->getRenderer()->setBackgroundColour({128, 128, 128, 60});
+        pnlControlsSettings->getRenderer()->setBackgroundColour({28, 28, 28, 100});
         pnlControlsSettings->getRenderer()->setBorders({1, 1, 1, 1});
         pnlControlsSettings->getRenderer()->setBorderColour(ime::Colour::Black);
-
-        // Create panel for audio settings
-        auto pnlAudioSettings = pnlControlsSettings->copy();
-        //tbsOptions->addPanel(std::move(pnlAudioSettings), "Audio");
 
         //
         auto vlLabels = VerticalLayout::create();
@@ -212,6 +208,7 @@ namespace spm {
         auto vlButtons = VerticalLayout::create();
         auto btnControl = Label::create("A");
         btnControl->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Right);
+        btnControl->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
         btnControl->getRenderer()->setBorders({0.0f, 1.0f, 0.0f, 1.0f});
         btnControl->getRenderer()->setBackgroundColour(ime::Colour("#121212cc"));
         btnControl->getRenderer()->setTextColour(ime::Colour::White);
