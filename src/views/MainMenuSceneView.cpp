@@ -140,46 +140,119 @@ namespace spm {
     }
 
     void MainMenuSceneView::createOptionsMenuView() {
+        // Create container for all widgets in the sub menu
         auto* pnlParentContainer = gui_.addWidget<Panel>(Panel::create(), "pnlOptions");
         pnlParentContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        pnlParentContainer->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
 
+        // Create sub menu background
         auto picBackground = gui_.getWidget<Panel>("pnlMain")->getWidget("picBckgrnd")->clone();
         pnlParentContainer->addWidget(std::move(picBackground), "picBckgrnd");
 
+        //
         auto* pnlChildContainer = pnlParentContainer->addWidget<Panel>(Panel::create("97%", "97%"), "pnlChild");
         pnlChildContainer->setOrigin(0.5f, 0.5f);
         pnlChildContainer->setPosition("50%", "50%");
-        pnlChildContainer->getRenderer()->setBackgroundColour({0, 0, 0, 240});
+        pnlChildContainer->getRenderer()->setBackgroundColour(ime::Colour("#121212"));
 
+        // Menu Heading
         auto* lblHeader = pnlChildContainer->addWidget<Label>(Label::create("OPTIONS"), "lblHeader");
         lblHeader->setTextSize(18);
         lblHeader->getRenderer()->setTextStyle(ime::TextStyle::Bold);
         lblHeader->setPosition("(&.w - w) / 2", "1%");
         lblHeader->getRenderer()->setTextColour({106, 90, 205});
 
+        // Create container for all options widgets in the menu
         auto tbsOptions = pnlChildContainer->addWidget<TabsContainer>(TabsContainer::create("99%", "90%"), "tbsOptions");
         tbsOptions->setTabsHeight(20);
         tbsOptions->setPosition("1%", ime::bindBottom(lblHeader).append("+2%"));
 
-        auto btnBack = pnlChildContainer->addWidget(Button::create("BACK"), "btnBack");
+        // Create button to return to main menu from options menu
+        auto btnBack = pnlChildContainer->addWidget(createBackBtn(), "btnBack");
         btnBack->setSize(70, 20);
         btnBack->setPosition("1%", ime::bindHeight(tbsOptions).append("+5%"));
         btnBack->on("click", ime::Callback<>([this] {
             setSubView(SubView::MainMenu);
         }));
 
-        auto btnApply = Button::create("APPLY");
-        btnApply->setSize(70, 20);
-        btnApply->setPosition(ime::bindRight(btnBack).append("+1%"), ime::bindHeight(tbsOptions).append("+5%"));
-        pnlChildContainer->addWidget(std::move(btnApply), "btnApply");
+        // Create panel for control settings widgets
+        auto pnlControlsSettings = Panel::create();
+        pnlControlsSettings->getRenderer()->setBackgroundColour({128, 128, 128, 60});
+        pnlControlsSettings->getRenderer()->setBorders({1, 1, 1, 1});
+        pnlControlsSettings->getRenderer()->setBorderColour(ime::Colour::Black);
 
-        auto pnlAudioSettings = Panel::create();
-        pnlAudioSettings->getRenderer()->setBackgroundColour({128, 128, 128, 60});
-        pnlAudioSettings->getRenderer()->setBorders({1, 1, 1, 1});
-        pnlAudioSettings->getRenderer()->setBorderColour(ime::Colour::Black);
+        // Create panel for audio settings
+        auto pnlAudioSettings = pnlControlsSettings->copy();
+        //tbsOptions->addPanel(std::move(pnlAudioSettings), "Audio");
 
-        auto pnlControlsSettings = pnlAudioSettings->copy();
-        tbsOptions->addPanel(std::move(pnlAudioSettings), "Audio");
+        //
+        auto vlLabels = VerticalLayout::create();
+        auto lblText = Label::create("Move left");
+        lblText->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
+        lblText->getRenderer()->setBackgroundColour(ime::Colour("#121212cc"));
+        lblText->getRenderer()->setTextColour(ime::Colour("#ffffffe6"));
+        lblText->getRenderer()->setBorders({0.0f, 1.0f, 0.0f, 1.0f});
+
+        const auto SPACE_BETWEEN_WIDGETS = 0.10f;
+        vlLabels->addWidget(lblText->copy(), "lblMoveLeft");
+        vlLabels->addSpace(SPACE_BETWEEN_WIDGETS);
+
+        lblText->setText("Move right");
+        vlLabels->addWidget(lblText->copy(), "lblMoveRight");
+        vlLabels->addSpace(SPACE_BETWEEN_WIDGETS);
+
+        lblText->setText("Move up");
+        vlLabels->addWidget(lblText->copy(), "lblMoveUp");
+        vlLabels->addSpace(SPACE_BETWEEN_WIDGETS);
+
+        lblText->setText("Move down");
+        vlLabels->addWidget(lblText->copy(), "lblMoveDown");
+
+        //
+        auto vlButtons = VerticalLayout::create();
+        auto btnControl = Label::create("A");
+        btnControl->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Right);
+        btnControl->getRenderer()->setBorders({0.0f, 1.0f, 0.0f, 1.0f});
+        btnControl->getRenderer()->setBackgroundColour(ime::Colour("#121212cc"));
+        btnControl->getRenderer()->setTextColour(ime::Colour::White);
+
+        vlButtons->addWidget(btnControl->copy(), "btnMoveLeft");
+        vlButtons->addSpace(SPACE_BETWEEN_WIDGETS);
+
+        btnControl->setText("D");
+        vlButtons->addWidget(btnControl->copy(), "btnMoveRight");
+        vlButtons->addSpace(SPACE_BETWEEN_WIDGETS);
+
+        btnControl->setText("W");
+        vlButtons->addWidget(btnControl->copy(), "btnMoveUp");
+        vlButtons->addSpace(SPACE_BETWEEN_WIDGETS);
+
+        btnControl->setText("D");
+        vlButtons->addWidget(btnControl->copy(), "btnMoveDown");
+
+        //
+        auto hlControlsContainer = HorizontalLayout::create();
+        hlControlsContainer->addWidget(std::move(vlLabels), "vlLabels");
+        hlControlsContainer->addWidget(std::move(vlButtons), "vlButtons");
+
+        // Player controls heading
+        auto lblPlayerControlHeading = Label::create("PLAYER MOVEMENTS");
+        lblPlayerControlHeading->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
+        lblPlayerControlHeading->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Bottom);
+        lblPlayerControlHeading->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Left);
+        lblPlayerControlHeading->getRenderer()->setTextColour(ime::Colour::White);
+
+        // Player controls widgets container
+        auto vlPlayerControls = VerticalLayout::create("95%", "40%");
+        vlPlayerControls->setOrigin(0.5f, 0.0f);
+        vlPlayerControls->setPosition("50%", "5%");
+
+        vlPlayerControls->addWidget(std::move(lblPlayerControlHeading), "lblPlayerMovementHeading");
+        vlPlayerControls->addSpace(0.1f);
+        vlPlayerControls->setRatio(std::size_t{0}, 0.20f);
+        vlPlayerControls->addWidget(std::move(hlControlsContainer), "hlControls");
+        pnlControlsSettings->addWidget(std::move(vlPlayerControls), "playerControls");
+
         tbsOptions->addPanel(std::move(pnlControlsSettings), "Controls");
     }
 
@@ -279,7 +352,9 @@ namespace spm {
         vlSubParentContainer->addWidget(std::move(pnlCon), "pnlCon");
 
         // Return button
-        pnlParentContainer->addWidget(createBackBtn(), "btnReturn");
+        auto btnBack = createBackBtn();
+        btnBack->setPosition("5%", "2%");
+        pnlParentContainer->addWidget(std::move(btnBack), "btnReturn");
     }
 
     void MainMenuSceneView::setSubView(SubView view) {

@@ -71,9 +71,5 @@ namespace spm {
         gui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {
             engine().quit();
         }));
-
-        gui().getWidget("btnApply")->on("click", ime::Callback<>([this] {
-            //@TODO Save new settings
-        }));
     }
 }
