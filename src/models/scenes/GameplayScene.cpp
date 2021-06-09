@@ -260,7 +260,7 @@ namespace spm {
                     pacman->setLivesCount(pacman->getLivesCount() - 1);
                     cache().setValue("lives", pacman->getLivesCount());
 
-                    //if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene
+                    if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene
                         view_.updateLives(pacman->getLivesCount());
 
                     if (pacman->getLivesCount() <= 0) { // Triggers a game over sequence
