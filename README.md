@@ -8,9 +8,35 @@ that was created in 1982 as a spin-off from the popular Pac-Man game.
 This project is a Super Pac-Man clone using the [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME), 
 a 2D game engine that I developed.
 
+## Screenshots
+
+1. Startup Scene
+   
+![](docs/screenshots/startup_scene.png)
+
+2. Main Menu Scene
+
+![](docs/screenshots/main-menu_scene.png)
+
+3. Gameplay Scene
+
+![](docs/screenshots/gameplay.png)
+
+4. Pause Menu Scene
+
+![](docs/screenshots/game_pause_scene.png)
+
+4. Game Over Scene
+
+![](docs/screenshots/game_over_scene.png)
+
+5. Live Demonstration (Recorded at 20 FPS)
+
+![](docs/screenshots/gameplay.gif)
+
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.0-beta.2) 
+1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.0-beta.3) 
    the latest game version
 2. Extract the zip archive
 3. Run _SuperPacMan.exe_
@@ -18,4 +44,4 @@ a 2D game engine that I developed.
 
 ## Platform
 
-This game is developed for the Windows platform. It was tested on windows 10, version 20H2.
+This game is developed for the Windows platform. It was tested on Windows 10, version 20H2.
