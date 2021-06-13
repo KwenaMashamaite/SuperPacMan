@@ -41,7 +41,7 @@ namespace spm {
 
         view_.init();
 
-        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("scoreboard");
+        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
 
         const int NUM_SCORES_TO_DISPLAY = 10;
         assert(scoreboard->getSize() >= NUM_SCORES_TO_DISPLAY && "Scoreboard must have at least 10 entries");

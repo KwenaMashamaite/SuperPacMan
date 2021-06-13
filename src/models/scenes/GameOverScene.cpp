@@ -41,33 +41,33 @@ namespace spm {
     }
 
     void GameOverScene::updateLeaderboard() {
-        auto playerScore = cache().getValue<int>("score");
-        auto playerLevel = cache().getValue<int>("level");
+        auto playerScore = cache().getValue<int>("CURRENT_SCORE");
+        auto playerLevel = cache().getValue<int>("CURRENT_LEVEL");
 
         auto score = Score();
         score.setValue(playerScore);
         score.setLevel(playerLevel);
         score.setOwner(cache().getValue<std::string>("PLAYER_NAME"));
 
-        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("scoreboard");
+        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
         scoreboard->addScore(score);
         scoreboard->updateHighScoreFile();
     }
 
     void GameOverScene::initGui() {
-        view_.init(gui(), cache().getValue<bool>("playerWon"));
-        gui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(cache().getValue<int>("highScore")));
-        gui().getWidget<Label>("lblScoreVal")->setText(std::to_string(cache().getValue<int>("score")));
-        gui().getWidget<Label>("lblLevelVal")->setText(std::to_string(cache().getValue<int>("level")));
+        view_.init(gui(), cache().getValue<bool>("PLAYER_WON_GAME"));
+        gui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(cache().getValue<int>("HIGH_SCORE")));
+        gui().getWidget<Label>("lblScoreVal")->setText(std::to_string(cache().getValue<int>("CURRENT_SCORE")));
+        gui().getWidget<Label>("lblLevelVal")->setText(std::to_string(cache().getValue<int>("CURRENT_LEVEL")));
         gui().getWidget<Label>("lblPlayerNameVal")->setText(cache().getValue<std::string>("PLAYER_NAME"));
     }
 
     void GameOverScene::initButtonEvents() {
         // If the player completed the game, the retry button is not available
-        if (!cache().getValue<bool>("playerWon")) {
+        if (!cache().getValue<bool>("PLAYER_WON_GAME")) {
             // Replenish pacmans lives and restart level when "Restart Level" button is clicked
             gui().getWidget("btnRetryLevel")->on("click", ime::Callback<>([this] {
-                cache().setValue("lives", Constants::PacManLives);
+                cache().setValue("PLAYER_LIVES", Constants::PacManLives);
                 engine().removeAllScenesExceptActive();
                 engine().popScene(); // Destroy this scene
                 engine().pushScene(std::make_unique<GameplayScene>());
@@ -77,9 +77,9 @@ namespace spm {
 
         // Exit to the games main menu when "Exit to Main Menu" is clicked
         gui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
-            cache().setValue("level", 1);
-            cache().setValue("score", 0);
-            cache().setValue("lives", Constants::PacManLives);
+            cache().setValue("CURRENT_LEVEL", 1);
+            cache().setValue("CURRENT_SCORE", 0);
+            cache().setValue("PLAYER_LIVES", Constants::PacManLives);
 
             engine().removeAllScenesExceptActive();
             engine().popScene(); // Destroy this scene

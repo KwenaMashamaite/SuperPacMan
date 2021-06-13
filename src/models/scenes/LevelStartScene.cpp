@@ -31,15 +31,15 @@ namespace spm {
     {}
 
     void LevelStartScene::onEnter() {
-        auto level = cache().getValue<int>("level");
-        auto lives = cache().getValue<int>("lives");
-        auto score = cache().getValue<int>("score");
-        auto highScore = cache().getValue<int>("highScore");
+        auto level = cache().getValue<int>("CURRENT_LEVEL");
+        auto lives = cache().getValue<int>("PLAYER_LIVES");
+        auto score = cache().getValue<int>("CURRENT_SCORE");
+        auto highScore = cache().getValue<int>("HIGH_SCORE");
         view_.init(level, lives, score, highScore);
 
         auto sceneDuration = ime::seconds(2);
         if (level == 1) {
-            audio().setMasterVolume(cache().getValue<float>("masterVolume"));
+            audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
             audio().play(ime::audio::Type::Sfx, "beginning.wav");
             sceneDuration = ime::seconds(4.2);
         }

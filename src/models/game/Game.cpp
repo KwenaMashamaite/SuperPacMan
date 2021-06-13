@@ -45,13 +45,13 @@ namespace spm {
         scoreboard->load();
 
         engine_.getPersistentData().addProperty({"SETTINGS_FILENAME", settingsFilename_});
-        engine_.getPersistentData().addProperty({"scoreboard", scoreboard});
-        engine_.getPersistentData().addProperty({"highScore", scoreboard->getTopScore().getValue()});
-        engine_.getPersistentData().addProperty({"level", 1});
-        engine_.getPersistentData().addProperty({"score", 0});
-        engine_.getPersistentData().addProperty({"lives", Constants::PacManLives});
-        engine_.getPersistentData().addProperty({"masterVolume", 100.0f});
-        engine_.getPersistentData().addProperty({"playerWon", false});
+        engine_.getPersistentData().addProperty({"SCOREBOARD", scoreboard});
+        engine_.getPersistentData().addProperty({"HIGH_SCORE", scoreboard->getTopScore().getValue()});
+        engine_.getPersistentData().addProperty({"CURRENT_LEVEL", 1});
+        engine_.getPersistentData().addProperty({"CURRENT_SCORE", 0});
+        engine_.getPersistentData().addProperty({"PLAYER_LIVES", Constants::PacManLives});
+        engine_.getPersistentData().addProperty({"MASTER_VOLUME", 100.0f});
+        engine_.getPersistentData().addProperty({"PLAYER_WON_GAME", false});
 
         // If not found, player will be prompted for name in StartUpScene
         if (engine_.getConfigs().hasPref("PLAYER_NAME"))

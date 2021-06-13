@@ -62,15 +62,15 @@ namespace spm {
 
         // 5. Audio toggle button click handler
         auto btnOption = gui().getWidget<ime::ui::ToggleButton>("btnAudioToggle");
-        btnOption->setChecked(cache().getValue<float>("masterVolume") > 0.0f);
+        btnOption->setChecked(cache().getValue<float>("MASTER_VOLUME") > 0.0f);
         btnOption->setText(btnOption->isChecked() ? "on" : "off");
 
         gui().getWidget("btnAudioToggle")->on("toggle", ime::Callback<bool>([this, btnOption](bool checked) {
             if (checked) {
-                cache().setValue("masterVolume", 100.0f);
+                cache().setValue("MASTER_VOLUME", 100.0f);
                 btnOption->setText("on");
             } else {
-                cache().setValue("masterVolume", 0.0f);
+                cache().setValue("MASTER_VOLUME", 0.0f);
                 btnOption->setText("off");
             }
         }));

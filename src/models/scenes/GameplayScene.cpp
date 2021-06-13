@@ -45,8 +45,8 @@ namespace spm {
     {}
 
     void GameplayScene::onEnter() {
-        currentLevel_ = cache().getValue<int>("level");
-        audio().setMasterVolume(cache().getValue<float>("masterVolume"));
+        currentLevel_ = cache().getValue<int>("CURRENT_LEVEL");
+        audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
 
         createPhysWorld({0.0f, 0.0f}); // Since we using grid based physics only, no gravity is needed
         createGrid();
@@ -61,9 +61,9 @@ namespace spm {
     }
 
     void GameplayScene::initGui() {
-        view_.init(cache().getValue<int>("level"), cache().getValue<int>("lives"));
-        view_.setHighScore(cache().getValue<int>("highScore"));
-        view_.setScore(cache().getValue<int>("score"));
+        view_.init(cache().getValue<int>("CURRENT_LEVEL"), cache().getValue<int>("PLAYER_LIVES"));
+        view_.setHighScore(cache().getValue<int>("HIGH_SCORE"));
+        view_.setScore(cache().getValue<int>("CURRENT_SCORE"));
 
         // Create get ready text
         auto lblGetReady = ime::ui::Label::create("Get Ready!");
@@ -258,7 +258,7 @@ namespace spm {
                 timer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this] {
                     auto pacman = gameObjects().findByTag<PacMan>("pacman");
                     pacman->setLivesCount(pacman->getLivesCount() - 1);
-                    cache().setValue("lives", pacman->getLivesCount());
+                    cache().setValue("PLAYER_LIVES", pacman->getLivesCount());
 
                     if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene
                         view_.updateLives(pacman->getLivesCount());
@@ -366,7 +366,7 @@ namespace spm {
             timer().setTimeout(ime::milliseconds(500), [this] {
                 audio().stopAll();
                 gameObjects().removeByTag("pacman");
-                cache().setValue("level", currentLevel_ + 1);
+                cache().setValue("CURRENT_LEVEL", currentLevel_ + 1);
                 audio().play(ime::audio::Type::Sfx, "levelComplete.ogg");
                 auto gridAnimDuration = grid_->playFlashAnimation(currentLevel_);
 
@@ -400,12 +400,12 @@ namespace spm {
     }
 
     void GameplayScene::updateScore(int points) {
-        auto newScore = cache().getValue<int>("score") + points;
-        cache().setValue("score", newScore);
+        auto newScore = cache().getValue<int>("CURRENT_SCORE") + points;
+        cache().setValue("CURRENT_SCORE", newScore);
         view_.setScore(newScore);
 
-        if (newScore > cache().getValue<int>("highScore")) {
-            cache().setValue("highScore", newScore);
+        if (newScore > cache().getValue<int>("HIGH_SCORE")) {
+            cache().setValue("HIGH_SCORE", newScore);
             view_.setHighScore(newScore);
         }
     }
@@ -471,7 +471,7 @@ namespace spm {
             case GameEvent::LevelStarted:
             case GameEvent::LevelCompleted:
             case GameEvent::GameCompleted:
-                args.addProperty({"level", currentLevel_});
+                args.addProperty({"CURRENT_LEVEL", currentLevel_});
                 break;
             default:
                 break;
@@ -523,7 +523,7 @@ namespace spm {
         if (isPaused_) { // Returning from pause menu
             isPaused_ = false;
             setOnPauseAction(ime::Scene::OnPauseAction::Default);
-            audio().setMasterVolume(cache().getValue<float>("masterVolume"));
+            audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
             audio().playAll();
         } else { // Returning from level info display scene
             resetLevel();
