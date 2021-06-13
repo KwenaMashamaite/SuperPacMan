@@ -22,32 +22,18 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/animations/GridAnimation.h"
+#include "FruitAnimation.h"
 
 namespace spm {
-    GridAnimation::GridAnimation() :
-        spritesheet_{"spritesheet.png", {224, 244}, {1, 1}, {0, 237, 901, 491}}
+    FruitAnimation::FruitAnimation() :
+        spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {0, 141, 290, 18}}
     {
-        createFlashAnimation("Blue", {0, 2});
-        createFlashAnimation("Orange", {1, 0});
-        createFlashAnimation("Purple", {1, 1});
-        createFlashAnimation("Pink", {1, 2});
-        createFlashAnimation("Green", {1, 3});
+        animation_ = ime::Animation::create("fruitSlide", spritesheet_, ime::seconds(1));
+        animation_->addFrames({0, 0}, 17);
+        animation_->setRepeatCount(-1);
     }
 
-    const std::vector<ime::Animation::Ptr> & GridAnimation::getAll() {
-        return animations_;
-    }
-
-    void GridAnimation::createFlashAnimation(const std::string& gridColour, ime::Index gridFrame) {
-        auto animation = ime::Animation::create("flash" + gridColour, spritesheet_, ime::seconds(2.0f));
-        const int MAX_NUM_OF_FRAMES = 10;
-        for (auto i = 0; i <= MAX_NUM_OF_FRAMES; ++i) {
-            animation->addFrame(gridFrame);
-
-            if (i != MAX_NUM_OF_FRAMES) // Make the animation finish on the current level grid colour and not on the white grid
-                animation->addFrame({0, 3}); // White grid
-        }
-        animations_.push_back(std::move(animation));
+    std::shared_ptr<ime::Animation> FruitAnimation::getAnimation() {
+        return animation_;
     }
 }

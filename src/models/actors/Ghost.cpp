@@ -25,7 +25,7 @@
 #include "src/models/actors/Ghost.h"
 #include "src/utils/Utils.h"
 #include "src/models/actors/states/ghost/GStateController.h"
-#include "src/views/animations/GhostAnimations.h"
+#include "src/animations/GhostAnimations.h"
 #include <cassert>
 
 namespace spm {

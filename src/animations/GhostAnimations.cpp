@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/animations/GhostAnimations.h"
+#include "GhostAnimations.h"
 
 namespace spm {
     GhostAnimations::GhostAnimations() :

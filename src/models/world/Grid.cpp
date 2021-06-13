@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/world/Grid.h"
-#include "src/views/animations/GridAnimation.h"
+#include "src/animations/GridAnimation.h"
 #include <cassert>
 
 namespace spm {

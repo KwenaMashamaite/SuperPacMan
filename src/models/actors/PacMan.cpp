@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/PacMan.h"
-#include "src/views/animations/PacManAnimations.h"
+#include "src/animations/PacManAnimations.h"
 #include "src/utils/Utils.h"
 #include "src/common/Constants.h"
 #include <cassert>

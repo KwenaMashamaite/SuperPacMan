@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/animations/PacManAnimations.h"
+#include "PacManAnimations.h"
 
 namespace spm {
     PacManAnimations::PacManAnimations() :

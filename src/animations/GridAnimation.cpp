@@ -22,28 +22,32 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/animations/PelletAnimations.h"
+#include "GridAnimation.h"
 
 namespace spm {
-    PelletAnimations::PelletAnimations() :
-        spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {249, 17, 120, 18}}
-    {}
-
-    void PelletAnimations::createAnimationFor(const std::string& tag) {
-        auto blinkAnimation = ime::Animation::create("blink", spritesheet_, ime::milliseconds(300));
-        blinkAnimation->setRepeatCount(-1);
-        if (tag == "powerPellet")
-            blinkAnimation->addFrames({0, 0}, 2);
-        else if (tag == "superPellet") {
-            blinkAnimation->setDuration(ime::seconds(1));
-            blinkAnimation->addFrames({0, 1}, 6);
-        } else
-            return;
-
-        animations_.push_back(std::move(blinkAnimation));
+    GridAnimation::GridAnimation() :
+        spritesheet_{"spritesheet.png", {224, 244}, {1, 1}, {0, 237, 901, 491}}
+    {
+        createFlashAnimation("Blue", {0, 2});
+        createFlashAnimation("Orange", {1, 0});
+        createFlashAnimation("Purple", {1, 1});
+        createFlashAnimation("Pink", {1, 2});
+        createFlashAnimation("Green", {1, 3});
     }
 
-    const std::vector<ime::Animation::Ptr> & PelletAnimations::getAll() const {
+    const std::vector<ime::Animation::Ptr> & GridAnimation::getAll() {
         return animations_;
+    }
+
+    void GridAnimation::createFlashAnimation(const std::string& gridColour, ime::Index gridFrame) {
+        auto animation = ime::Animation::create("flash" + gridColour, spritesheet_, ime::seconds(2.0f));
+        const int MAX_NUM_OF_FRAMES = 10;
+        for (auto i = 0; i <= MAX_NUM_OF_FRAMES; ++i) {
+            animation->addFrame(gridFrame);
+
+            if (i != MAX_NUM_OF_FRAMES) // Make the animation finish on the current level grid colour and not on the white grid
+                animation->addFrame({0, 3}); // White grid
+        }
+        animations_.push_back(std::move(animation));
     }
 }

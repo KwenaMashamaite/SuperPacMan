@@ -28,11 +28,11 @@ set(SRC_FILES
     models/world/Grid.cpp
     utils/ObjectCreator.cpp
     utils/Utils.cpp
-    views/animations/FruitAnimation.cpp
-    views/animations/GhostAnimations.cpp
-    views/animations/PacManAnimations.cpp
-    views/animations/PelletAnimations.cpp
-    views/animations/GridAnimation.cpp
+    animations/FruitAnimation.cpp
+    animations/GhostAnimations.cpp
+    animations/PacManAnimations.cpp
+    animations/PelletAnimations.cpp
+    animations/GridAnimation.cpp
     views/CommonView.cpp
     views/LevelStartSceneView.cpp
     views/LoadingSceneView.cpp

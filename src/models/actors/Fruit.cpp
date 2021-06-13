@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/Fruit.h"
-#include "src/views/animations/FruitAnimation.h"
+#include "src/animations/FruitAnimation.h"
 
 namespace spm {
     Fruit::Fruit(ime::Scene& scene) :

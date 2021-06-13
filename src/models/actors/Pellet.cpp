@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/Pellet.h"
-#include "src/views/animations/PelletAnimations.h"
+#include "src/animations/PelletAnimations.h"
 
 namespace spm {
     Pellet::Pellet(ime::Scene& scene, Type type) :

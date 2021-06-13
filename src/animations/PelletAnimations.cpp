@@ -22,18 +22,28 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/animations/FruitAnimation.h"
+#include "PelletAnimations.h"
 
 namespace spm {
-    FruitAnimation::FruitAnimation() :
-        spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {0, 141, 290, 18}}
-    {
-        animation_ = ime::Animation::create("fruitSlide", spritesheet_, ime::seconds(1));
-        animation_->addFrames({0, 0}, 17);
-        animation_->setRepeatCount(-1);
+    PelletAnimations::PelletAnimations() :
+        spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {249, 17, 120, 18}}
+    {}
+
+    void PelletAnimations::createAnimationFor(const std::string& tag) {
+        auto blinkAnimation = ime::Animation::create("blink", spritesheet_, ime::milliseconds(300));
+        blinkAnimation->setRepeatCount(-1);
+        if (tag == "powerPellet")
+            blinkAnimation->addFrames({0, 0}, 2);
+        else if (tag == "superPellet") {
+            blinkAnimation->setDuration(ime::seconds(1));
+            blinkAnimation->addFrames({0, 1}, 6);
+        } else
+            return;
+
+        animations_.push_back(std::move(blinkAnimation));
     }
 
-    std::shared_ptr<ime::Animation> FruitAnimation::getAnimation() {
-        return animation_;
+    const std::vector<ime::Animation::Ptr> & PelletAnimations::getAll() const {
+        return animations_;
     }
 }
