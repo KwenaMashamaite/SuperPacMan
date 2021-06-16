@@ -30,9 +30,9 @@
 #include "src/common/Constants.h"
 #include "src/models/scenes/GameOverScene.h"
 #include "src/models/scenes/GamePauseScene.h"
+#include "src/models/actors/controllers/GhostGridMover.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/core/physics/grid/KeyboardGridMover.h>
-#include <IME/core/physics/grid/TargetGridMover.h>
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
 
@@ -116,7 +116,7 @@ namespace spm {
         // 2. Create movement controllers for all ghost
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
             ghost->getRigidBody()->setLinearVelocity({Constants::GhostScatterSpeed, Constants::GhostScatterSpeed});
-            auto ghostMover = std::make_unique<ime::TargetGridMover>(tilemap(), ghost);
+            auto ghostMover = std::make_unique<GhostGridMover>(tilemap(), ghost);
 
 #ifndef NDEBUG
             ghostMover->setPathViewEnable(true);

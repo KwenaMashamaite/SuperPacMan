@@ -9,6 +9,8 @@ set(SRC_FILES
     models/actors/states/ghost/RoamState.cpp
     models/actors/states/ghost/GIdleState.cpp
     models/actors/states/ghost/GStateController.cpp
+    models/actors/controllers/GhostGridMover.cpp
+    models/actors/controllers/GhostGridMover.h
     models/actors/Door.cpp
     models/actors/DoorLocker.cpp
     models/actors/Fruit.cpp

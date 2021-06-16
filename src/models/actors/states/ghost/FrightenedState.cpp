@@ -25,7 +25,7 @@
 #include "src/models/actors/states/ghost/FrightenedState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
-#include <IME/core/physics/grid/RandomGridMover.h>
+#include "src/models/actors/controllers/GhostGridMover.h"
 #include <cassert>
 
 namespace spm {
@@ -37,15 +37,13 @@ namespace spm {
         assert(ghost_ && "Cannot enter frightened state without a ghost");
         assert(ghostMover_ && "Cannot enter frightened state without a ghost grid mover");
 
-/*#ifndef NDEBUG
-        auto* ghostMover = dynamic_cast<ime::RandomGridMover*>(ghostMover_);
-        assert(ghostMover && "Frightened state requires an ime::RandomGridMover as a ghost mover");
-#endif*/
+        auto* ghostMover = dynamic_cast<GhostGridMover*>(ghostMover_);
+        assert(ghostMover && "Frightened state requires an spm::GhostGridMover as a movement controller");
 
         TimedState::onEntry();
         ghostMover_->setMaxLinearSpeed({Constants::GhostFrightenedSpeed, Constants::GhostFrightenedSpeed});
         ghost_->getSprite().getAnimator().startAnimation("frightened");
-        //static_cast<ime::RandomGridMover*>(ghostMover_)->startMovement();
+        ghostMover->setRandomMoveEnable(true);
     }
 
     void FrightenedState::update(ime::Time deltaTime) {
@@ -64,7 +62,7 @@ namespace spm {
     }
 
     void FrightenedState::onExit() {
-        //static_cast<ime::RandomGridMover*>(ghostMover_)->stopMovement();
-        //ghostMover_->teleportTargetToDestination();
+        static_cast<GhostGridMover*>(ghostMover_)->setRandomMoveEnable(false);
+        static_cast<GhostGridMover*>(ghostMover_)->clearPath();
     }
 }
