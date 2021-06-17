@@ -39,8 +39,11 @@ namespace spm {
     public:
         /**
          * @brief Constructor
+         * @param fsm The ghosts Finite State Machine
+         * @param target The ghost whose behaviour is to be defined by this state
+         * @param gridMover The ghost's grid mover
          */
-        explicit FrightenedState();
+        FrightenedState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover);
 
         /**
          * @brief Initialize the state
@@ -51,10 +54,11 @@ namespace spm {
         void onEntry() override;
 
         /**
-         * @brief update the state
-         * @param deltaTime Time passed since last update
+         * @brief Handle a game event
+         * @param event The event to be handled
+         * @param args Arguments associated with the event
          */
-        void update(ime::Time deltaTime) override;
+        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
 
         /**
          * @brief Exit a state
@@ -63,9 +67,6 @@ namespace spm {
          * destroyed
          */
         void onExit() override;
-
-    private:
-        bool isGhostFlashing_; //!< Flags whether or not ghost is flashing
     };
 }
 

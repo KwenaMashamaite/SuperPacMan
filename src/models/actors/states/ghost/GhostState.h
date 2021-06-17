@@ -25,8 +25,10 @@
 #ifndef SUPERPACMAN_GHOSTSTATE_H
 #define SUPERPACMAN_GHOSTSTATE_H
 
-#include "src/models/actors/states/TimedState.h"
-#include "IME/core/physics/grid/TargetGridMover.h"
+#include "src/models/actors/states/IActorState.h"
+#include "src/models/actors/states/ActorStateFSM.h"
+#include "src/models/actors/controllers/GhostGridMover.h"
+#include <IME/core/time/Timer.h>
 
 namespace spm {
     class Ghost;
@@ -34,19 +36,20 @@ namespace spm {
     /**
      * @brief Intermediate abstract base class for a ghost state
      *
-     * This class implements functions that are common to all timed ghost
-     * states. Its main purpose is to avoid code duplication
+     * This class implements functions that are common to all ghost states.
+     * Its main purpose is to avoid code duplication across states
      */
-    class GhostState : public TimedState {
+    class GhostState : public IActorState {
     public:
         /**
          * @brief Constructor
+         * @param fsm The ghost's finite state machine
          */
-        GhostState();
+        explicit GhostState(ActorStateFSM* fsm);
 
         /**
-         * @brief Set the ghost to be scattered
-         * @param ghost The ghost to be scattered
+         * @brief Set the ghost for this state
+         * @param ghost The ghost the ghost for the state
          *
          * @warning @a ghost must not be a nullptr
          */
@@ -60,9 +63,61 @@ namespace spm {
          */
         void setGridMover(ime::GridMover* gridMover);
 
+        /**
+         * @brief Update the state
+         * @param deltaTime Time passed since last update
+         */
+        void update(ime::Time deltaTime) override;
+
+        /**
+         * @brief Handle an event
+         * @param event The event to be handled
+         * @param args Event arguments
+         */
+        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override {}
+
+        /**
+         * @brief Pause the state
+         */
+        void onPause() override {}
+
+        /**
+         * @brief Resume the state
+         */
+        void onResume() override {}
+
+        /**
+         * @brief Exit the state
+         */
+        void onExit() override {}
+
     protected:
-        Ghost* ghost_;
-        ime::GridMover* ghostMover_; //!< Ghost movement controller
+        /**
+         * @brief Initialize the state timer
+         * @param timeout The time to wait before popping the state
+         *
+         * Note that this function is intended for timed states that control
+         * their own timeout. In addition, when the countdown expires, the state
+         * is popped from the FSM
+         */
+        void initTimer(ime::Time timeout);
+
+        /**
+         * @brief Increment/decrease the current timeout
+         * @param value Value to increment/decrease by
+         *
+         * A positive time value increases the current timeout whilst a
+         * negative time value decreases the timeout
+         */
+        void updateTimeout(ime::Time value);
+
+    protected:
+        ActorStateFSM* fsm_;         //!< Ghost state controller
+        Ghost* ghost_;               //!< Ghost whose behavior is to be defined by the state
+        GhostGridMover* ghostMover_; //!< Ghost movement controller
+
+    private:
+        ime::Timer timer_;           //!< Controls a timed states timeout
     };
 }
 

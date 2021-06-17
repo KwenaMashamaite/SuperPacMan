@@ -23,27 +23,38 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/states/ghost/RoamState.h"
+#include "src/models/actors/states/ghost/FrightenedState.h"
+#include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
-#include <IME/core/physics/grid/RandomGridMover.h>
 #include <cassert>
 
 namespace spm {
+    RoamState::RoamState(ActorStateFSM *fsm, Ghost* target, GhostGridMover* gridMover) :
+        GhostState(fsm)
+    {
+        setTarget(target);
+        setGridMover(gridMover);
+    }
+
     void RoamState::onEntry() {
         assert(ghost_ && "Cannot enter roam state without a ghost");
         assert(ghostMover_ && "Cannot enter roam state without a ghost grid mover");
 
-#ifndef NDEBUG
-        auto* ghostMover = dynamic_cast<ime::RandomGridMover*>(ghostMover_);
-        assert(ghostMover && "Roam state requires an ime::RandomGridMover as a ghost mover");
-#endif
-
-        TimedState::onEntry();
+        ghost_->setState(static_cast<int>(Ghost::State::Wonder));
+        ghostMover_->setRandomMoveEnable(true);
         ghostMover_->setMaxLinearSpeed({Constants::GhostRoamSpeed, Constants::GhostRoamSpeed});
-        static_cast<ime::RandomGridMover*>(ghostMover_)->startMovement();
+        ghostMover_->startMovement();
+    }
+
+    void RoamState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+        if (event == GameEvent::SuperModeEnd)
+            fsm_->pop();
+        else if (event == GameEvent::PowerModeBegin)
+            fsm_->popAndPush(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
     }
 
     void RoamState::onExit() {
-        static_cast<ime::RandomGridMover*>(ghostMover_)->stopMovement();
-        ghostMover_->teleportTargetToDestination();
+        ghostMover_->setRandomMoveEnable(false);
+        ghostMover_->clearPath();
     }
 }

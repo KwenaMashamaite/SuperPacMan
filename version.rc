@@ -17,13 +17,13 @@ BEGIN
         BEGIN
             VALUE "Comments", "For educational purposes only"
             VALUE "CompanyName", ""
-            VALUE "FileDescription", "Namco's 1982 Super PacMan Clone"
+            VALUE "FileDescription", "Super PacMan Clone"
             VALUE "FileVersion", "1, 0, 0, 0"
             VALUE "InternalName", "Super PacMan Clone"
             VALUE "LegalCopyright", "Copyright (c) 2021, Kwena Mashamaite"
             VALUE "LegalTrademarks1", "Trademark (R) 2021, Bandai Namco"
             VALUE "OriginalFilename", "SuperPacMan.exe"
-            VALUE "ProductName", "SuperPacMan"
+            VALUE "ProductName", "Super PacMan Clone"
             VALUE "ProductVersion", "1, 0, 0, 0"
         END
     END

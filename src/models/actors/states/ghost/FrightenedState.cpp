@@ -23,46 +23,38 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/states/ghost/FrightenedState.h"
+#include "src/models/actors/states/ghost/HealState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
-#include "src/models/actors/controllers/GhostGridMover.h"
 #include <cassert>
 
 namespace spm {
-    FrightenedState::FrightenedState() :
-        isGhostFlashing_{false}
-    {}
+    FrightenedState::FrightenedState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover) :
+        GhostState(fsm)
+    {
+        setTarget(target);
+        setGridMover(gridMover);
+    }
 
     void FrightenedState::onEntry() {
         assert(ghost_ && "Cannot enter frightened state without a ghost");
         assert(ghostMover_ && "Cannot enter frightened state without a ghost grid mover");
 
-        auto* ghostMover = dynamic_cast<GhostGridMover*>(ghostMover_);
-        assert(ghostMover && "Frightened state requires an spm::GhostGridMover as a movement controller");
-
-        TimedState::onEntry();
+        ghost_->setState(static_cast<int>(Ghost::State::Evade));
         ghostMover_->setMaxLinearSpeed({Constants::GhostFrightenedSpeed, Constants::GhostFrightenedSpeed});
+        ghostMover_->setRandomMoveEnable(true);
         ghost_->getSprite().getAnimator().startAnimation("frightened");
-        ghostMover->setRandomMoveEnable(true);
     }
 
-    void FrightenedState::update(ime::Time deltaTime) {
-        TimedState::update(deltaTime);
-
-        // Check whether or not state is about to expire, if so let player know with a flashing animation
-        if (ghost_->getSprite().getAnimator().getActiveAnimation()->getName() != "flash"
-            && (getTimeout() >= ime::Time::Zero && getTimeout() <= ime::seconds(2)))
-        {
-            ghost_->getSprite().getAnimator().startAnimation("flash");
-            isGhostFlashing_ = true;
-        } else if (isGhostFlashing_ && getTimeout() > ime::seconds(2)) {
-            ghost_->getSprite().getAnimator().startAnimation("frightened");
-            isGhostFlashing_ = false;
-        }
+    void FrightenedState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+        if (event == GameEvent::PowerModeEnd)
+            fsm_->pop();
+        else if (event == GameEvent::GhostEaten)
+            fsm_->popAndPush(std::make_unique<HealState>(fsm_, ghost_, ghostMover_));
     }
 
     void FrightenedState::onExit() {
-        static_cast<GhostGridMover*>(ghostMover_)->setRandomMoveEnable(false);
-        static_cast<GhostGridMover*>(ghostMover_)->clearPath();
+        ghostMover_->setRandomMoveEnable(false);
+        ghostMover_->clearPath();
     }
 }

@@ -38,8 +38,11 @@ namespace spm {
     public:
         /**
          * @brief Constructor
+         * @param fsm The ghosts Finite State Machine
+         * @param target The ghost whose behaviour is to be defined by this state
+         * @param gridMover The ghost's grid mover
          */
-        HealState();
+        HealState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover);
 
         /**
          * @brief Initialize the state

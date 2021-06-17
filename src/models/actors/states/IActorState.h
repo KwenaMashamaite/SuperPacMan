@@ -43,24 +43,34 @@ namespace spm {
         virtual void onEntry() = 0;
 
         /**
+         * @brief Pause the state
+         */
+        virtual void onPause() = 0;
+
+        /**
+         * @brief Resume the state
+         */
+        virtual void onResume() = 0;
+
+        /**
          * @brief Exit a state
          *
          * This function is called when the state is exited
          */
-        virtual void onExit() {};
+        virtual void onExit() = 0;
 
         /**
          * @brief update the state
          * @param deltaTime Time passed since last state update
          */
-        virtual void update(ime::Time deltaTime) {};
+        virtual void update(ime::Time deltaTime) = 0;
 
         /**
          * @brief Handle a game event
          * @param event The event to be handled
          * @param args Arguments associated with the event
          */
-        virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args) {}
+        virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args) = 0;
 
         /**
          * @brief Destructor

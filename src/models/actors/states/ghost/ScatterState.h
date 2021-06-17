@@ -44,8 +44,10 @@ namespace spm {
     public:
         /**
          * @brief Constructor
+         * @param fsm The ghost's finite state machine
+         * @param level Current game level
          */
-        ScatterState();
+        ScatterState(ActorStateFSM* fsm, int level);
 
         /**
          * @brief Initialize the state
@@ -54,6 +56,23 @@ namespace spm {
          * for the first time
          */
         void onEntry() override;
+
+        /**
+         * @brief Handle a game event
+         * @param event The event to be handled
+         * @param args Arguments associated with the event
+         */
+        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
+
+        /**
+         * @brief Pause the state
+         */
+        void onPause() override;
+
+        /**
+         * @brief Resume the state
+         */
+        void onResume() override;
 
         /**
          * @brief Initialize the state
@@ -69,10 +88,16 @@ namespace spm {
          */
         void setTargetPosition();
 
+        /**
+         * @brief Initialize on destination reached handler
+         */
+        void initEvents();
+
     private:
         ime::Index targetCorner_;     //!< The position the ghost must reach first before cycling corner
         std::queue<ime::Index> path_; //!< Cyclic path ghost follows after reaching target position
         int destFoundHandler_;        //!< Handler id for a target destination event
+        const int currentLevel_;      //!< Current game level
     };
 }
 

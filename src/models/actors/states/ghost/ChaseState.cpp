@@ -23,34 +23,57 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/states/ghost/ChaseState.h"
+#include "src/models/actors/states/ghost/ScatterState.h"
+#include "src/models/actors/states/ghost/RoamState.h"
+#include "src/models/actors/states/ghost/FrightenedState.h"
+#include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
 #include <cassert>
 
 namespace spm {
-    ChaseState::ChaseState(const ime::Index& pacmanPos) :
-        pacmanPosition_{pacmanPos}
+    ChaseState::ChaseState(ActorStateFSM* fsm, int level) :
+        GhostState(fsm),
+        currentLevel_{level}
     {}
 
     void ChaseState::onEntry() {
         assert(ghost_ && "Cannot enter chase state without a ghost");
         assert(ghostMover_ && "Cannot enter chase state without a ghost grid mover");
 
-        auto* ghostMover = dynamic_cast<ime::TargetGridMover*>(ghostMover_);
-        assert(ghostMover && "Chase mode requires an ime::TargetGridMover as a ghost mover");
-
-        TimedState::onEntry();
-        ghostMover->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
-        ghostMover->setDestination(pacmanPosition_);
-        ghostMover->startMovement();
+        ghost_->setState(static_cast<int>(Ghost::State::Chase));
+        ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
+        ghostMover_->setDestination(ghost_->getUserData().getValue<ime::Index>("pacmanTileIndex"));
+        ghostMover_->startMovement();
+        initTimer(ime::seconds(Constants::CHASE_MODE_DURATION + currentLevel_));
     }
 
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
-        if (event == GameEvent::PacManMoved) {
-            static_cast<ime::TargetGridMover*>(ghostMover_)->setDestination(args.getValue<ime::Index>("pacmanTileIndex"));
-        }
+        if (event == GameEvent::PacManMoved)
+            ghostMover_->setDestination(args.getValue<ime::Index>("pacmanTileIndex"));
+        else if (event == GameEvent::SuperModeBegin)
+            fsm_->push(std::make_unique<RoamState>(fsm_, ghost_, ghostMover_));
+        else if (event == GameEvent::PowerModeBegin)
+            fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
+    }
+
+    void ChaseState::onPause() {
+        ghostMover_->clearPath();
+    }
+
+    void ChaseState::onResume() {
+        ghost_->setState(static_cast<int>(Ghost::State::Chase));
+        ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
+        ghostMover_->setDestination(ghost_->getUserData().getValue<ime::Index>("pacmanTileIndex"));
     }
 
     void ChaseState::onExit() {
-        static_cast<ime::TargetGridMover*>(ghostMover_)->clearPath();
+        ghostMover_->clearPath();
+
+        // OnExit is only called when transitioning to ScatterState, for others
+        // this state is paused, so there is no need to perform a check
+        auto nextState = std::make_unique<ScatterState>(fsm_, currentLevel_);
+        nextState->setTarget(ghost_);
+        nextState->setGridMover(ghost_->getMoveController());
+        fsm_->push(std::move(nextState));
     }
 }

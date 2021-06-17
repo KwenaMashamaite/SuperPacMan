@@ -35,9 +35,10 @@ namespace spm {
     public:
         /**
          * @brief Construct state
-         * @param pacmanPosition The current position of pacman in the grid
+         * @param fsm The ghost's Finite State Machine
+         * @param level Current game level
          */
-        explicit ChaseState(const ime::Index& pacmanPosition);
+        ChaseState(ActorStateFSM* fsm, int level);
 
         /**
          * @brief Initialize the state
@@ -55,6 +56,16 @@ namespace spm {
         void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
 
         /**
+         * @brief Pause the state
+         */
+        void onPause() override;
+
+        /**
+         * @brief Resume the state
+         */
+        void onResume() override;
+
+        /**
          * @brief Exit a state
          *
          * This function will be called by the FSM before the state is
@@ -63,7 +74,7 @@ namespace spm {
         void onExit() override;
 
     private:
-        ime::Index pacmanPosition_;
+        int currentLevel_; //!< The current game level
     };
 }
 

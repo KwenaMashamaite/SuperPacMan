@@ -1,6 +1,5 @@
 set(SRC_FILES
     main.cpp
-    models/actors/states/TimedState.cpp
     models/actors/states/ghost/GhostState.cpp
     models/actors/states/ghost/ScatterState.cpp
     models/actors/states/ghost/ChaseState.cpp
@@ -8,9 +7,9 @@ set(SRC_FILES
     models/actors/states/ghost/HealState.cpp
     models/actors/states/ghost/RoamState.cpp
     models/actors/states/ghost/GIdleState.cpp
-    models/actors/states/ghost/GStateController.cpp
+    models/actors/states/ActorStateFSM.cpp
+    models/actors/states/ActorStateFSM.h
     models/actors/controllers/GhostGridMover.cpp
-    models/actors/controllers/GhostGridMover.h
     models/actors/Door.cpp
     models/actors/DoorLocker.cpp
     models/actors/Fruit.cpp

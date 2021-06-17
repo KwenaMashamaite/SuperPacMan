@@ -23,35 +23,34 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/states/ghost/HealState.h"
+#include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
 #include <cassert>
 
 namespace spm {
-    HealState::HealState() :
+    HealState::HealState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover) :
+        GhostState(fsm),
         destFoundHandler_{-1}
-    {}
+    {
+        setTarget(target);
+        setGridMover(gridMover);
+    }
 
     void HealState::onEntry() {
         assert(ghost_ && "Cannot enter heal state without a ghost");
         assert(ghostMover_ && "Cannot enter heal state without a ghost grid mover");
 
-        auto* ghostMover = dynamic_cast<ime::TargetGridMover*>(ghostMover_);
-        assert(ghostMover && "heal mode requires an ime::TargetGridMover as a ghost mover");
+        ghost_->setState(static_cast<int>(Ghost::State::Heal));
+        ghostMover_->setMaxLinearSpeed({Constants::GhostRetreatSpeed, Constants::GhostRetreatSpeed});
+        ghostMover_->setDestination(Constants::EatenGhostRespawnTile);
+        ghostMover_->startMovement();
 
-        // This state is not time based so we don't start the timer (call TimedState::onEnter)
-        // The state will exit itself once it reached the ghost house
-        destFoundHandler_ = ghostMover->onDestinationReached([this](ime::Index) {
-            onExit();
+        destFoundHandler_ = ghostMover_->onDestinationReached([this](ime::Index) {
+            fsm_->pop();
         });
-
-        ghostMover->setMaxLinearSpeed({Constants::GhostRetreatSpeed, Constants::GhostRetreatSpeed});
-        ghostMover->setDestination(Constants::EatenGhostRespawnTile);
-        ghostMover->startMovement();
     }
 
     void HealState::onExit() {
         ghostMover_->unsubscribe(destFoundHandler_);
-        static_cast<ime::TargetGridMover*>(ghostMover_)->clearPath();
-        TimedState::onEntry(); // Start timer and immediately call on timeout callback (Expire time set to zero for this state)
     }
 }

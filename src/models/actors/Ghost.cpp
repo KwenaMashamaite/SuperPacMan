@@ -24,8 +24,10 @@
 
 #include "src/models/actors/Ghost.h"
 #include "src/utils/Utils.h"
-#include "src/models/actors/states/ghost/GStateController.h"
 #include "src/animations/GhostAnimations.h"
+#include "src/models/actors/states/ghost/GIdleState.h"
+#include "src/common/Constants.h"
+#include <memory>
 #include <cassert>
 
 namespace spm {
@@ -52,6 +54,7 @@ namespace spm {
             assert(false && "Unknown ghost colour");
         }
 
+        // Init default animation
         animations.createAnimationsFor(getTag());
         getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{spriteSheetRow, 0});
         for (const auto& animation : animations.getAll())
@@ -59,11 +62,24 @@ namespace spm {
 
         getSprite().scale(2.0f, 2.0f);
         getSprite().getAnimator().startAnimation("goingLeft");
+
+        // @todo - Put this somewhere else, don't know where, here temporarily
+        // For now we will make the ghost track pacmans position since some
+        // states require this information. Storing it in a state will get lost
+        // when the state is popped. However, when stored in a Ghost it will only
+        // be lost when the ghost is destroyed and this only happens when a level
+        // is completed or restarted. In both cases pacman resets his position to
+        // his spawn index, so they will always be in sync
+        getUserData().addProperty(ime::Property{"pacmanTileIndex", Constants::PacManSpawnTile});
     }
 
-    void Ghost::initFSM(const ime::Time &duration, int currLevel) {
-        fsm_ = std::make_unique<GStateController>(this);
-        fsm_->start(duration, currLevel);
+    void Ghost::initFSM() {
+        fsm_.clear();
+
+        auto initialState = std::make_unique<GIdleState>(&fsm_);
+        initialState->setTarget(this);
+        fsm_.push(std::move(initialState));
+        fsm_.start();
     }
 
     void Ghost::setMovementController(ime::GridMover* gridMover) {
@@ -73,13 +89,13 @@ namespace spm {
         // Trigger animation switch when the ghost changes direction
         gridMover_->onAdjacentMoveBegin([this](ime::Index) {
             // Evade/frightened animation is the same in all directions
-            if (fsm_->getState() == State::Evade)
+            if (getState() == State::Evade)
                 return;
 
             direction_ = gridMover_->getDirection();
             auto newAnimation = "going" + utils::convertToString(direction_);
 
-            if (fsm_->getState() == State::Heal)
+            if (getState() == State::Heal)
                 newAnimation += "Eaten";
             else if (isPacmanSuper_)
                 newAnimation += "Flat";
@@ -99,21 +115,27 @@ namespace spm {
     }
 
     Ghost::State Ghost::getState() const {
-        return fsm_->getState();
+        return static_cast<Ghost::State>(ime::GameObject::getState());
     }
 
     void Ghost::update(ime::Time deltaTime) {
+        assert(fsm_.top() && "A ghost FSM must have at least one state before it is updated");
+
         ime::GameObject::update(deltaTime);
-        fsm_->update(deltaTime);
+        fsm_.top()->update(deltaTime);
     }
 
     void Ghost::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+        assert(fsm_.top() && "A ghost FSM must have at least one state before handling an event");
+
         if (event == GameEvent::SuperModeBegin)
             isPacmanSuper_ = true;
         else if (event == GameEvent::SuperModeEnd)
             isPacmanSuper_ = false;
+        else if (event == GameEvent::PacManMoved)
+            getUserData().setValue("pacmanTileIndex", args.getValue<ime::Index>("pacmanTileIndex"));
 
-        fsm_->handleEvent(event, args);
+        fsm_.top()->handleEvent(event, args);
     }
 
     Ghost::~Ghost() = default;

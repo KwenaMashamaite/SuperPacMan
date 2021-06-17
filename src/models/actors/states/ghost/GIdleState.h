@@ -37,14 +37,22 @@ namespace spm {
     class GIdleState final : public GhostState {
     public:
         /**
+         * @brief Constructor
+         * @param fsm The ghost finite state machine
+         */
+        explicit GIdleState(ActorStateFSM* fsm);
+
+        /**
          * @brief Initialize the state
          */
         void onEntry() override;
 
         /**
-         * @brief Exit the state
+         * @brief Handle a game event
+         * @param event The event to be handled
+         * @param args Event arguments
          */
-        void onExit() override;
+        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
     };
 }
 

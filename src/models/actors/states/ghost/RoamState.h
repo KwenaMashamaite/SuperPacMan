@@ -34,12 +34,27 @@ namespace spm {
     class RoamState final : public GhostState {
     public:
         /**
+         * @brief Constructor
+         * @param fsm The ghosts Finite State Machine
+         * @param target The ghost whose behaviour is to be defined by this state
+         * @param gridMover The ghost's grid mover
+         */
+        RoamState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover);
+
+        /**
          * @brief Initialize the state
          *
          * This function will be called by the FSM when a state is entered
          * for the first time
          */
         void onEntry() override;
+
+        /**
+         * @brief Handle a game event
+         * @param event The event to be handled
+         * @param args Arguments associated with the event
+         */
+        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
 
         /**
          * @brief Exit a state

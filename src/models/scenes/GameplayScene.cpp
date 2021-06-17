@@ -123,7 +123,7 @@ namespace spm {
 #endif
 
             static_cast<Ghost*>(ghost)->setMovementController(ghostMover.get());
-            static_cast<Ghost*>(ghost)->initFSM(ime::seconds(Constants::LEVEL_START_DELAY), currentLevel_);
+            static_cast<Ghost*>(ghost)->initFSM();
             gridMovers().addObject(std::move(ghostMover), "GhostMovers");
         });
     }
@@ -208,7 +208,7 @@ namespace spm {
 
                 // Momentarily stop all actor movements
                 gridMovers().forEach([](ime::GridMover* gridMover) {
-                    gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::All);
+                    gridMover->setMovementFreeze(true);
                 });
 
                 // Momentarily stop pacman and ghost animations
@@ -221,11 +221,7 @@ namespace spm {
                 timer().setTimeout(ime::seconds(1), [this, ghost] {
                     // Resume pacman and ghost movement
                     gridMovers().forEach([](ime::GridMover* gridMover) {
-                        if (gridMover->getTarget()->getClassName() == "PacMan") {
-                            gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
-                            gridMover->requestDirectionChange(static_cast<PacMan*>(gridMover->getTarget())->getDirection());
-                        } else
-                            gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::None);
+                        gridMover->setMovementFreeze(false);
                     });
 
                     // Resume pacman and ghost animations
@@ -427,6 +423,7 @@ namespace spm {
 
                 auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
                 soundEffect->setLoop(true);
+                emit(GameEvent::LevelStarted);
             } else {
                 gui().getWidget<ime::ui::Label>("lblReady")->setText(std::to_string(counter));
                 counter--;
@@ -471,7 +468,7 @@ namespace spm {
             case GameEvent::LevelStarted:
             case GameEvent::LevelCompleted:
             case GameEvent::GameCompleted:
-                args.addProperty({"CURRENT_LEVEL", currentLevel_});
+                args.addProperty({"level", currentLevel_});
                 break;
             default:
                 break;
@@ -535,6 +532,28 @@ namespace spm {
         grid_->update(deltaTime);
         superModeTimer_.update(deltaTime);
         powerModeTimer_.update(deltaTime);
+
+        // Flash ghost when it is blue and power mode is about to expire.
+        // Ideally, this implementation should be in spm::FrightenedState
+        // class, however, the class has no knowledge of how long the power
+        // mode timer has been running. It only knows when the timer starts
+        // counting down and when it expires
+        if (powerModeTimer_.getStatus() == ime::Timer::Status::Running) {
+            gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
+                if (static_cast<Ghost*>(ghost)->getState() == Ghost::State::Evade) {
+                    // Check whether or not state is about to expire, if so let player know with a flashing animation
+                    if ((ghost->getSprite().getAnimator().getActiveAnimation()->getName() != "flash") &&
+                        (powerModeTimer_.getRemainingDuration() <= ime::seconds(1)))
+                    {
+                        ghost->getSprite().getAnimator().startAnimation("flash");
+                    } else if ((ghost->getSprite().getAnimator().getActiveAnimation()->getName() == "flash") &&
+                              (powerModeTimer_.getRemainingDuration() > ime::seconds(1)))
+                    {
+                        ghost->getSprite().getAnimator().startAnimation("frightened");
+                    }
+                }
+            });
+        }
     }
 
     void GameplayScene::onExit() {

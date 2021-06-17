@@ -25,15 +25,13 @@
 #ifndef SUPERPACMAN_GHOST_H
 #define SUPERPACMAN_GHOST_H
 
-#include "src/models/actors/states/IActorState.h"
+#include "src/models/actors/states/ActorStateFSM.h"
 #include <IME/core/game_object/GameObject.h>
 #include <IME/core/physics/grid/GridMover.h>
 #include <memory>
 #include <src/common/Events.h>
 
 namespace spm {
-    class GStateController; //!< Ghost FSM;
-
     /**
      * @brief Ghost actor
      */
@@ -69,14 +67,15 @@ namespace spm {
          * @param scene The scene that the actor is in
          * @param colour The colour of the ghost
          */
-        explicit Ghost(ime::Scene& scene, Colour colour);
+        Ghost(ime::Scene& scene, Colour colour);
 
         /**
          * @brief Initialize the ghosts Finite State Machine
-         * @param duration The duration of the initial state of the ghost
-         * @param currLevel The current level of the game
+         *
+         * @note This function will replace all states present in the FSM with
+         * th default ghost state
          */
-        void initFSM(const ime::Time& duration, int currLevel);
+        void initFSM();
 
         /**
          * @brief Set the movement controller of the ghost
@@ -126,10 +125,10 @@ namespace spm {
         ~Ghost() override;
 
     private:
-        ime::GridMover* gridMover_;              //!< Controls the movement of the ghost in the grid
-        std::unique_ptr<GStateController> fsm_;  //!< Ghosts finite state machine
-        ime::Vector2i direction_;                //!< The direction of the ghost
-        bool isPacmanSuper_;                     //!< A flag indicating whether or not pacman is in super mode
+        ime::GridMover* gridMover_;  //!< Controls the movement of the ghost in the grid
+        ActorStateFSM fsm_;          //!< Ghosts finite state machine
+        ime::Vector2i direction_;    //!< The direction of the ghost
+        bool isPacmanSuper_;         //!< A flag indicating whether or not pacman is in super mode
     };
 }
 
