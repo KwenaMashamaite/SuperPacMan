@@ -16,7 +16,7 @@ a 2D game engine that I developed.
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.0-beta.3) 
+1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.0-beta.4) 
    the latest game version
 2. Extract the zip archive
 3. Run _SuperPacMan.exe_
