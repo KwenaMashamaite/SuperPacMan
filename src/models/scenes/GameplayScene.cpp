@@ -39,6 +39,7 @@
 namespace spm {
     GameplayScene::GameplayScene() :
         currentLevel_{-1},
+        pointsMultiplier_{1},
         isPaused_{false},
         showLevelInfoOnReset_{true},
         view_{gui()}
@@ -204,12 +205,28 @@ namespace spm {
 
             if (ghostState == Ghost::State::Evade) { // Pacman ate power pill
                 audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
-                updateScore(Constants::Points::GHOST);
+                updateScore(Constants::Points::GHOST * pointsMultiplier_);
 
                 // Replace pacman and ghost with score value
                 pacman->getSprite().setVisible(false);
                 ghost->getSprite().setTexture("spritesheet.png");
-                ghost->getSprite().setTextureRect(ime::UIntRect{307, 142, 16, 16});
+
+                if (pointsMultiplier_ == 1)
+                    ghost->getSprite().setTextureRect(ime::UIntRect{307, 142, 16, 16});
+                else if (pointsMultiplier_ == 2)
+                    ghost->getSprite().setTextureRect(ime::UIntRect{324, 142, 16, 16});
+                else if (pointsMultiplier_ == 4)
+                    ghost->getSprite().setTextureRect(ime::UIntRect{341, 142, 16, 16});
+                else
+                    ghost->getSprite().setTextureRect(ime::UIntRect{358, 142, 16, 16});
+
+                // Player cannot eat ghosts more than 4 times in one power mode session,
+                // so we reset the multiplier in case player eats another power pill whilst
+                // there is an active power mode session
+                if (pointsMultiplier_ == 8)
+                    pointsMultiplier_ = 1; // Also resets to 1 when power mode timer expires
+                else
+                    pointsMultiplier_ *= 2;
 
                 // Momentarily stop all actor movements
                 gridMovers().forEach([](ime::GridMover* gridMover) {
@@ -484,6 +501,9 @@ namespace spm {
             case GameEvent::LevelCompleted:
             case GameEvent::GameCompleted:
                 args.addProperty({"level", currentLevel_});
+                break;
+            case GameEvent::PowerModeEnd:
+                pointsMultiplier_ = 1;
                 break;
             default:
                 break;

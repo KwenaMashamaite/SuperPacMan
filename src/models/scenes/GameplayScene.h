@@ -175,6 +175,7 @@ namespace spm {
 
     private:
         int currentLevel_;           //!< Current game level
+        int pointsMultiplier_;       //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)
         bool isPaused_;              //!< A flag indicating whether or not the game is paused
         bool showLevelInfoOnReset_;  //!< A flag indicating whether or not the level start scene is displayed or not
         CommonView view_;            //!< Scene view without the playing grid
