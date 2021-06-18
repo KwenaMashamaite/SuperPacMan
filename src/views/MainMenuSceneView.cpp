@@ -224,7 +224,7 @@ namespace spm {
         vlButtons->addWidget(btnControl->copy(), "btnMoveUp");
         vlButtons->addSpace(SPACE_BETWEEN_WIDGETS);
 
-        btnControl->setText("D");
+        btnControl->setText("S");
         vlButtons->addWidget(btnControl->copy(), "btnMoveDown");
 
         //

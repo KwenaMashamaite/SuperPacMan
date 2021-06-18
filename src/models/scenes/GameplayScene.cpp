@@ -108,7 +108,7 @@ namespace spm {
         auto pacmanGridMover = std::make_unique<ime::KeyboardGridMover>(tilemap());
         pacmanGridMover->setTag("pacmanGridMover");
         pacmanGridMover->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
-        pacmanGridMover->setKeys(ime::Key::Left, ime::Key::Right, ime::Key::Up, ime::Key::Down);
+        pacmanGridMover->setKeys(ime::Key::A, ime::Key::D, ime::Key::W, ime::Key::S);
 
         auto pacman = gameObjects().findByTag<PacMan>("pacman");
         pacman->setMoveController(pacmanGridMover.get());
