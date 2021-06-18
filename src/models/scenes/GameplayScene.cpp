@@ -206,6 +206,11 @@ namespace spm {
                 audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
                 updateScore(Constants::Points::GHOST);
 
+                // Replace pacman and ghost with score value
+                pacman->getSprite().setVisible(false);
+                ghost->getSprite().setTexture("spritesheet.png");
+                ghost->getSprite().setTextureRect(ime::UIntRect{307, 142, 16, 16});
+
                 // Momentarily stop all actor movements
                 gridMovers().forEach([](ime::GridMover* gridMover) {
                     gridMover->setMovementFreeze(true);
@@ -218,7 +223,8 @@ namespace spm {
                 gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(0.0f);
 
                 // Resume gameplay after a small delay
-                timer().setTimeout(ime::seconds(1), [this, ghost] {
+                timer().setTimeout(ime::seconds(1), [this, ghost, pacman] {
+
                     // Resume pacman and ghost movement
                     gridMovers().forEach([](ime::GridMover* gridMover) {
                         gridMover->setMovementFreeze(false);
@@ -232,6 +238,8 @@ namespace spm {
 
                     // Let ghost know it has been eaten
                     static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
+
+                    pacman->getSprite().setVisible(true);
                 });
             } else if (pacmanState != PacMan::State::Super && ghostState != Ghost::State::Heal) {
                 audio().stopAll();
