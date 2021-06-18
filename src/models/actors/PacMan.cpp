@@ -32,8 +32,7 @@ namespace spm {
     PacMan::PacMan(ime::Scene& scene) :
         ime::GameObject(scene),
         livesCount_{Constants::PacManLives},
-        gridMover_{nullptr},
-        isFlashing_{false}
+        gridMover_{nullptr}
     {
         setTag("pacman");
 
@@ -88,15 +87,8 @@ namespace spm {
         resetSpriteOrigin();
     }
 
-    void PacMan::setState(PacMan::State state, std::optional<ime::Time> timeout) {
-        if (state != State::Super && superStateTimer_.getStatus() == ime::Timer::Status::Running) {
-            superStateTimer_.stop();
-        }
-
+    void PacMan::setState(PacMan::State state) {
         if (state_ != state) {
-            if (state == State::Super && !timeout.has_value())
-                return;
-
             assert(gridMover_ && "Cannot set state without a grid mover");
 
             state_ = state;
@@ -119,20 +111,22 @@ namespace spm {
                 case State::Super:
                     gridMover_->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
                     gridMover_->setMaxLinearSpeed({Constants::PacManSuperSpeed, Constants::PacManSuperSpeed});
-                    superStateTimer_.setInterval(timeout.value());
-                    superStateTimer_.setTimeoutCallback([this] {
-                        setState(State::Normal);
-                    });
-
-                    superStateTimer_.start();
                     break;
                 case State::Dying:
                     gridMover_->setMovementRestriction(ime::GridMover::MoveRestriction::All);
                     getSprite().getAnimator().startAnimation("dying");
                     break;
+                default:
+                    assert(false && "Unknown PacMan state");
             }
-        } else if (state_ == State::Super)
-            superStateTimer_.setInterval(superStateTimer_.getRemainingDuration() + timeout.value());
+        }
+    }
+
+    void PacMan::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+        if (event == GameEvent::SuperModeBegin)
+            setState(State::Super);
+        else if (event == GameEvent::SuperModeEnd || event == GameEvent::LevelStarted)
+            setState(State::Normal);
     }
 
     PacMan::State PacMan::getState() const {
@@ -152,22 +146,5 @@ namespace spm {
 
     std::string PacMan::getClassName() const {
         return "PacMan";
-    }
-
-    void PacMan::update(ime::Time deltaTime) {
-        GameObject::update(deltaTime);
-        superStateTimer_.update(deltaTime);
-
-        if (state_ == State::Super) { // Check if we should play flashing animation or not
-            if (getSprite().getAnimator().getActiveAnimation()->getName().find("Flashing") == std::string::npos
-                && (superStateTimer_.getRemainingDuration() > ime::Time::Zero && superStateTimer_.getRemainingDuration() <= ime::seconds(2)))
-            {
-                getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_) + "Flashing");
-                isFlashing_ = true;
-            } else if (isFlashing_ && superStateTimer_.getRemainingDuration() > ime::seconds(2)) {
-                getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_) + "Super");
-                isFlashing_ = false;
-            }
-        }
     }
 }

@@ -171,12 +171,11 @@ namespace spm {
                 auto powerModeDuration = ime::seconds(Constants::SCATTER_MODE_DURATION / currentLevel_);
                 configureTimer(powerModeTimer_, powerModeDuration, GameEvent::PowerModeEnd);
             } else {
-                auto superModeDuration = ime::seconds(Constants::SUPER_MODE_DURATION / currentLevel_);
                 updateScore(Constants::Points::SUPER_PELLET);
-                static_cast<PacMan*>(pacman)->setState(PacMan::State::Super, superModeDuration);
                 audio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
 
                 emit(GameEvent::SuperModeBegin);
+                auto superModeDuration = ime::seconds(Constants::SUPER_MODE_DURATION / currentLevel_);
                 configureTimer(superModeTimer_, superModeDuration, GameEvent::SuperModeEnd);
             }
         };
@@ -450,12 +449,11 @@ namespace spm {
             if (counter == 0) {
                 gui().getWidget("lblReady")->setVisible(false);
                 gameObjects().findByTag("pacman")->getSprite().setVisible(true);
-                gameObjects().findByTag<PacMan>("pacman")->setState(PacMan::State::Normal);
-                gridMovers().findByTag("pacmanGridMover")->requestDirectionChange(ime::Left);
 
                 auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
                 soundEffect->setLoop(true);
                 emit(GameEvent::LevelStarted);
+                gridMovers().findByTag("pacmanGridMover")->requestDirectionChange(ime::Left);
             } else {
                 gui().getWidget<ime::ui::Label>("lblReady")->setText(std::to_string(counter));
                 counter--;
@@ -509,6 +507,7 @@ namespace spm {
                 break;
         }
 
+        gameObjects().findByTag<PacMan>("pacman")->handleEvent(event, args);
         gameObjects().forEachInGroup("Ghost", [event, &args](ime::GameObject* ghost) {
             static_cast<Ghost*>(ghost)->handleEvent(event, args);
         });
@@ -568,26 +567,46 @@ namespace spm {
         superModeTimer_.update(deltaTime);
         powerModeTimer_.update(deltaTime);
 
-        // Flash ghost when it is blue and power mode is about to expire.
-        // Ideally, this implementation should be in spm::FrightenedState
-        // class, however, the class has no knowledge of how long the power
-        // mode timer has been running. It only knows when the timer starts
-        // counting down and when it expires
+        auto flashAnimCutoffTime = ime::seconds(2);
+
+        /// @brief Flash ghost when it is blue and power mode is about to expire.
+        /// Ideally, this implementation should be in spm::FrightenedState
+        /// class, however, the class has no knowledge of how long the power
+        /// mode timer has been running. It only knows when the timer starts
+        /// counting down and when it expires
         if (powerModeTimer_.getStatus() == ime::Timer::Status::Running) {
-            gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
+            gameObjects().forEachInGroup("Ghost", [this, flashAnimCutoffTime](ime::GameObject* ghost) {
                 if (static_cast<Ghost*>(ghost)->getState() == Ghost::State::Evade) {
                     // Check whether or not state is about to expire, if so let player know with a flashing animation
                     if ((ghost->getSprite().getAnimator().getActiveAnimation()->getName() != "flash") &&
-                        (powerModeTimer_.getRemainingDuration() <= ime::seconds(1)))
+                        (powerModeTimer_.getRemainingDuration() <= flashAnimCutoffTime))
                     {
                         ghost->getSprite().getAnimator().startAnimation("flash");
                     } else if ((ghost->getSprite().getAnimator().getActiveAnimation()->getName() == "flash") &&
-                              (powerModeTimer_.getRemainingDuration() > ime::seconds(1)))
+                              (powerModeTimer_.getRemainingDuration() > flashAnimCutoffTime))
                     {
                         ghost->getSprite().getAnimator().startAnimation("frightened");
                     }
                 }
             });
+        }
+
+        /// @brief Flash pacman when in super state and super mode is about to expire.
+        /// Ideally this implementation should be in spm::PacMan::update(ime::Time),
+        /// However, the PacMan class has no knowledge of how long the super
+        /// mode timer has been running. It only knows when the timer starts
+        /// counting down and when it expires
+        if (superModeTimer_.getStatus() == ime::Timer::Status::Running) {
+            auto pacman = gameObjects().findByTag<PacMan>("pacman");
+            if ((pacman->getSprite().getAnimator().getActiveAnimation()->getName().find("Flashing") == std::string::npos) &&
+                (superModeTimer_.getRemainingDuration() <= flashAnimCutoffTime))
+            {
+                pacman->getSprite().getAnimator().startAnimation("going" + utils::convertToString(pacman->getDirection()) + "Flashing");
+            } else if ((pacman->getSprite().getAnimator().getActiveAnimation()->getName().find("Flashing") != std::string::npos) &&
+                        (superModeTimer_.getRemainingDuration() > flashAnimCutoffTime))
+            {
+                pacman->getSprite().getAnimator().startAnimation("going" + utils::convertToString(pacman->getDirection()) + "Super");
+            }
         }
     }
 

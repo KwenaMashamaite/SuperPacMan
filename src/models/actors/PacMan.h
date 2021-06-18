@@ -28,8 +28,6 @@
 #include "src/models/actors/states/IActorState.h"
 #include <IME/core/game_object/GameObject.h>
 #include <IME/core/physics/grid/GridMover.h>
-#include <IME/core/time/Timer.h>
-#include <optional>
 
 namespace spm {
     /**
@@ -80,19 +78,17 @@ namespace spm {
         void setMoveController(ime::GridMover* gridMover);
 
         /**
-         * @brief Update actor
-         * @param deltaTime Time passes since last update
-         */
-        void update(ime::Time deltaTime) override;
-
-        /**
          * @brief Change the state of Pacman
          * @param state The new state of pacman
-         * @param timeout The duration of the state
-         *
-         * @a timeout is only considered for spm::PacMan::State::Super
          */
-        void setState(State state, std::optional<ime::Time> timeout = std::nullopt);
+        void setState(State state);
+
+        /**
+         * @brief Handle a game event
+         * @param event The event to be handled
+         * @param args Arguments associated with the event
+         */
+        virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args);
 
         /**
          * @brief Get current state
@@ -132,8 +128,6 @@ namespace spm {
         ime::GridMover* gridMover_;  //!< Controls the movement of pacman in the grid
         ime::Vector2i direction_;    //!< Pacmans current direction
         State state_;                //!< Pacmans current state
-        ime::Timer superStateTimer_; //!< Super state timeout counter
-        bool isFlashing_;            //!< A flag indicating whether or not pacman is flashing
     };
 }
 
