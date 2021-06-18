@@ -170,6 +170,10 @@ namespace spm {
                 emit(GameEvent::PowerModeBegin);
                 auto powerModeDuration = ime::seconds(Constants::SCATTER_MODE_DURATION / currentLevel_);
                 configureTimer(powerModeTimer_, powerModeDuration, GameEvent::PowerModeEnd);
+
+                // Extend super mode duration by power mode duration (Power pill effects must always timeout before super mode effects)
+                if (superModeTimer_.getStatus() == ime::Timer::Status::Running)
+                    configureTimer(superModeTimer_, powerModeDuration, GameEvent::SuperModeEnd);
             } else {
                 updateScore(Constants::Points::SUPER_PELLET);
                 audio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
