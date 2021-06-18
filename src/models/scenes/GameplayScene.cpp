@@ -376,9 +376,16 @@ namespace spm {
 
                 // Start new level after shortly after the grid stops flashing
                 timer().setTimeout(gridAnimDuration + ime::seconds(1), [this] {
-                    engine().popScene();
-                    engine().pushScene(std::make_unique<GameplayScene>());
-                    engine().pushScene(std::make_unique<LevelStartScene>());
+                    // End the game (All 16 distinct level fruits shown, original game reuses them and keeps going)
+                    if (currentLevel_ + 1 >= 17) {
+                        cache().setValue("PLAYER_WON_GAME", true);
+                        engine().popScene();
+                        engine().pushScene(std::make_unique<GameOverScene>());
+                    } else {
+                        engine().popScene();
+                        engine().pushScene(std::make_unique<GameplayScene>());
+                        engine().pushScene(std::make_unique<LevelStartScene>());
+                    }
                 });
             });
         }));

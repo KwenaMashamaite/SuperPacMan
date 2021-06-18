@@ -78,7 +78,7 @@ namespace spm::utils {
             "melon", "coffee", "mushroom", "bell", "clover", "galaxian", "gift"
         };
 
-        if (level < fruitName.size())
+        if (level <= fruitName.size())
             return fruitName.at(level - 1);
 
         assert(false && (std::string("Level \"") + std::to_string(level) + "\" is unsupported").c_str());
