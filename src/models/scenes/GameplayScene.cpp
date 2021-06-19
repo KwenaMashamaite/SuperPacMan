@@ -264,7 +264,6 @@ namespace spm {
                 tilemap().addChild(other, {prevTile.getIndex().row, 0});
 
             gridMover->resetTargetTile();
-            gridMover->requestDirectionChange(actorDirection);
         };
 
         // Subscribe collision handlers to pacmans grid mover
@@ -341,6 +340,9 @@ namespace spm {
         // 2. Advances the game to the next level when the current level is completed
         eventEmitter().on("levelComplete", ime::Callback<>([this] {
             engine().onFrameEnd(nullptr);
+            superModeTimer_.stop();
+            powerModeTimer_.stop();
+
             // Remove all game objects except pacman, doors and uneaten keys from the grid
             gameObjects().getGroup("Ghost").removeAll();
             gridMovers().removeAll();

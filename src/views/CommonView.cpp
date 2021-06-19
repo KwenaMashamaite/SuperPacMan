@@ -124,7 +124,7 @@ namespace spm {
     }
 
     void CommonView::updateLives(unsigned int pacmanLives) {
-        gui_.getWidget("picLife" + std::to_string(pacmanLives))->setVisible(false);
+        gui_.removeWidget("picLife" + std::to_string(pacmanLives));
     }
 
     void CommonView::update(ime::Time deltaTime) {

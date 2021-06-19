@@ -62,27 +62,25 @@ namespace spm {
         void push(std::unique_ptr<IActorState> state);
 
         /**
-         * @brief Pop current state and push another one
-         * @param state The state to be pushed
+         * @brief Remove the current active state and optionally push a new one
+         * @param state State to be pushed
          *
-         * Unlike individual pop and push operations, this function does not
-         * call on IActorState::onResume when popping a state and does not
-         * call IActorState::onPause when pushing the new state. However,
-         * IActorState::onExit is still called
-         *
-         * @warning Don't use this function if onExit() pushes a state
-         */
-        void popAndPush(std::unique_ptr<IActorState> state);
-
-        /**
-         * @brief Remove the current active state from the FSM
+         * The @a state argument is optional and must only be provided if you
+         * intend to pop the current state and immediately push another one.
+         * When popping and pushing individually (calling pop() and immediately
+         * after calling push()), the previous scene (if any) will be resumed
+         * after the pop operation and then paused again after the push operation.
+         * The @a state argument intends to prevent this momentary resume and
+         * pause action. The @a state will be pushed and entered without resuming
+         * and pausing the previous state
          *
          * @warning If the active state calls this function, any attempt
-         * to access it afterwards is undefined behavior
+         * to access it afterwards is undefined behavior. In addition,
+         * this function must not be called in spm::IActorState::onExit
          *
          * @see push
          */
-        void pop();
+        void pop(std::unique_ptr<IActorState> state = nullptr);
 
         /**
          * @brief Get the current active state
@@ -104,6 +102,7 @@ namespace spm {
     private:
         std::stack<std::unique_ptr<IActorState>> states_; //!< States container
         bool isStarted_;                                  //!< A flag indicating whether or not the FSM has been started
+        bool isExitingState_;                             //!< A flag indicating whether or not the FSM is currently popping a state
     };
 }
 

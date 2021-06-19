@@ -28,7 +28,8 @@
 
 namespace spm {
     GIdleState::GIdleState(ActorStateFSM* fsm) :
-        GhostState(fsm)
+        GhostState(fsm),
+        level_{1}
     {}
 
     void GIdleState::onEntry() {
@@ -38,14 +39,17 @@ namespace spm {
 
     void GIdleState::handleEvent(GameEvent event, const ime::PropertyContainer& args) {
         if (event == GameEvent::LevelStarted) {
-            ghost_->getMoveController()->setMovementRestriction(ime::GridMover::MoveRestriction::None);
-
+            level_ = args.getValue<int>("level");
             fsm_->pop();
-
-            auto nextState = std::make_unique<ScatterState>(fsm_, args.getValue<int>("level"));
-            nextState->setTarget(ghost_);
-            nextState->setGridMover(ghost_->getMoveController());
-            fsm_->push(std::move(nextState));
         }
+    }
+
+    void GIdleState::onExit() {
+        ghost_->getMoveController()->setMovementRestriction(ime::GridMover::MoveRestriction::None);
+
+        auto nextState = std::make_unique<ScatterState>(fsm_, level_);
+        nextState->setTarget(ghost_);
+        nextState->setGridMover(ghost_->getMoveController());
+        fsm_->push(std::move(nextState));
     }
 }

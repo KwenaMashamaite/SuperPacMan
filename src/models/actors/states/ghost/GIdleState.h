@@ -53,6 +53,17 @@ namespace spm {
          * @param args Event arguments
          */
         void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
+
+        /**
+         * @brief Exit a state
+         *
+         * This function will be called by the FSM before the state is
+         * destroyed
+         */
+        void onExit() override;
+
+    private:
+        int level_; //!< Current game level
     };
 }
 

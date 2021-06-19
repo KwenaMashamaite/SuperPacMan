@@ -50,7 +50,7 @@ namespace spm {
         if (event == GameEvent::SuperModeEnd)
             fsm_->pop();
         else if (event == GameEvent::PowerModeBegin)
-            fsm_->popAndPush(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
+            fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
     }
 
     void RoamState::onExit() {

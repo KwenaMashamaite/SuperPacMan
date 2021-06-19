@@ -50,7 +50,7 @@ namespace spm {
         if (event == GameEvent::PowerModeEnd)
             fsm_->pop();
         else if (event == GameEvent::GhostEaten)
-            fsm_->popAndPush(std::make_unique<HealState>(fsm_, ghost_, ghostMover_));
+            fsm_->pop(std::make_unique<HealState>(fsm_, ghost_, ghostMover_));
     }
 
     void FrightenedState::onExit() {
