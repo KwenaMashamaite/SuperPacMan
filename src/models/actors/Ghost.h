@@ -53,13 +53,13 @@ namespace spm {
          * @brief States a ghost can be in at any given time
          */
         enum class State {
-            Unknown = -1,
-            Idle,
-            Scatter,
-            Chase,
-            Evade,
-            Heal,
-            Wonder,
+            Unknown = -1, //!< Unknown Ghost state
+            Idle,         //!< The ghost remains stationary in at is current position (cannot be eaten by PacMan)
+            Scatter,      //!< The ghost cycles a grid corner (cannot be eaten by Pacman)
+            Chase,        //!< The ghost chases pacman (cannot be eaten by PacMan)
+            Evade,        //!< The ghost runs away from pacman (can be eaten by PacMan)
+            Heal,         //!< The ghost retreats back to the ghost house (cannot be eaten by PacMan nor can it kill Pacman)
+            Wonder,       //!< The ghost moves randomly in the grid (cannot be eaten by PacMan)
         };
 
         /**
@@ -73,7 +73,7 @@ namespace spm {
          * @brief Initialize the ghosts Finite State Machine
          *
          * @note This function will replace all states present in the FSM with
-         * th default ghost state
+         * the default ghost state
          */
         void initFSM();
 

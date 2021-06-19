@@ -41,10 +41,10 @@ namespace spm {
          * @brief The state pacman can be in
          */
         enum class State {
-            Idle,   //!< Pacman ignores all requests to move him
-            Normal, //!< Pacman is normal size and can move around the maze
-            Super,  //!< Pacman is super sized and can move around the maze at an increased speed
-            Dying   //!< Pacman is dying and cannot be moved
+            Idle,   //!< Pacman ignores all requests to move him (can be eaten by a Ghost)
+            Normal, //!< Pacman is normal size and can move around the maze (can be eaten by a Ghost)
+            Super,  //!< Pacman is super sized and can move around the maze at an increased speed (cannot be eaten by a Ghost)
+            Dying   //!< Pacman is dying and cannot be moved (cannot be eaten by a ghost)
         };
 
         /**

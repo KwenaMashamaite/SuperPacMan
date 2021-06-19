@@ -66,6 +66,7 @@ namespace spm {
 
         animation->addFrames(index, 3);
         animation->setRepeatCount(-1);
+        animation->showTargetOnStart(false);
         animations_.push_back(std::move(animation));
     }
 }

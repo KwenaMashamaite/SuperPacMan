@@ -136,12 +136,16 @@ namespace spm {
         void updateScore(int points);
 
         /**
-         * @brief
+         * @brief Start the level start countdown
+         *
+         * This function replaces the "Get Ready!!" text with a countdown
+         * from 3 to 1. When the countdown reaches 0, the function emits a
+         * spm::GameEvent::LevelStarted event and the gameplay begins
          */
         void startCountDown();
 
         /**
-         * @brief Reset pacman and the ghosts to thier respective spawm tiles
+         * @brief Reset pacman and the ghosts to their respective spawm tiles
          */
         void resetActors();
 
@@ -173,15 +177,108 @@ namespace spm {
          */
         void resetLevel();
 
+        /**
+         * @brief Flash the gameplay grid and advance to the next level
+         *
+         * This function flashes the gameplay grid for a couple of seconds
+         * and transitions to the next level. If the player has played all
+         * the game levels. The game transitions to a GameOverScene with
+         * a success condition
+         */
+        void startLevelCompleteSequence();
+
+        /**
+         * @brief Make pacman flash
+         *
+         * Note that Pacman only flashes when in super state. The flash is a
+         * visual cue to the player that super mode is about expire.
+         *
+         * @attention Ideally this implementation should be in @a spm::PacMan::update,
+         * However, the @a PacMan class has no knowledge of how long the super
+         * mode timer has been running. It only knows when the timer starts
+         * counting down and when it expires
+         */
+        void flashPacman();
+
+        /**
+         * @brief Make ghosts flash
+         *
+         * Note that a ghost only flashes when in Frightened/Evade state. The
+         * flash is a visual cue to the player that power mode is about to
+         * expire
+         *
+         * @attention Ideally, this implementation should be in @a spm::FrightenedState
+         * class, however, the class has no knowledge of how long the power
+         * mode timer has been running. It only knows when the timer starts
+         * counting down and when it expires
+         */
+        void flashGhosts();
+
+        /**
+         * @brief Update the game world
+         *
+         * This function is called when pacman is killed by a ghost but
+         * before his death animation starts playing
+         */
+        void onPrePacManDeathAnim();
+
+        /**
+         * @brief Update the game world
+         *
+         * This function is called when pacman is killed by a ghost but
+         * after his death animation finishes playing
+         */
+        void onPostPacManDeathAnim();
+
+        /**
+         * @brief Convert pacman and an eaten ghost into a single score texture
+         * @param pacman Pacman
+         * @param ghost Eaten ghost
+         *
+         * This function is called when pacman collides with a blue ghost,
+         * after the collision, the ghost and pacman textures are momentarily
+         * combined into a single score texture which corresponds to the number
+         * of points the player earned for eating the ghost
+         */
+        void replaceWithScoreTexture(ime::GameObject* pacman, ime::GameObject* ghost) const;
+
+        /**
+         * @brief Freeze or unfreeze pacman and the ghosts
+         * @param freeze True to freeze or false to unfreeze
+         *
+         * When @a freeze is set to @a true, the actors movement and
+         * animation will be frozen in time and when it is set to @a
+         * false, actor movement and animations will resume as before
+         */
+        void setMovingActorFreeze(bool freeze);
+
+        /**
+         * @brief Update the ghost point multiplier
+         *
+         * The multiplier increases by a factor of 2 every time the player
+         * eats a ghost. However, since the player cannot eat more than four
+         * ghosts in a single power mode session, the multiplier is capped to
+         * 8. After the player eats the 4th ghost, the multiplier resets
+         * to 1 (default). It also resets to 1 when power mode expires
+         */
+        void updatePointsMultiplier();
+
+        /**
+         * @brief End the gameplay
+         *
+         * This function is called when the player loses all lives
+         */
+        void endGameplay();
+
     private:
         int currentLevel_;           //!< Current game level
         int pointsMultiplier_;       //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)
         bool isPaused_;              //!< A flag indicating whether or not the game is paused
         bool showLevelInfoOnReset_;  //!< A flag indicating whether or not the level start scene is displayed or not
-        CommonView view_;            //!< Scene view without the playing grid
-        std::unique_ptr<Grid> grid_; //!< Playing grid
-        ime::Timer superModeTimer_;  //!< Pacman super mode duration counter
-        ime::Timer powerModeTimer_;  //!< Pacman power mode duration counter
+        CommonView view_;            //!< Scene view without the gameplay grid
+        std::unique_ptr<Grid> grid_; //!< Gameplay grid view
+        ime::Timer superModeTimer_;  //!< Super mode duration counter
+        ime::Timer powerModeTimer_;  //!< Power mode duration counter
     };
 }
 

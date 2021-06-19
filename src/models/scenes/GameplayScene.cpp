@@ -37,6 +37,7 @@
 #include <IME/ui/widgets/HorizontalLayout.h>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     GameplayScene::GameplayScene() :
         currentLevel_{-1},
         pointsMultiplier_{1},
@@ -45,6 +46,7 @@ namespace spm {
         view_{gui()}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::onEnter() {
         currentLevel_ = cache().getValue<int>("CURRENT_LEVEL");
         audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
@@ -61,12 +63,14 @@ namespace spm {
         startCountDown();
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::initGui() {
+        // Update view placeholder text with current level data
         view_.init(cache().getValue<int>("CURRENT_LEVEL"), cache().getValue<int>("PLAYER_LIVES"));
         view_.setHighScore(cache().getValue<int>("HIGH_SCORE"));
         view_.setScore(cache().getValue<int>("CURRENT_SCORE"));
 
-        // Create get ready text
+        // Create get ready text (Displayed before level start countdown)
         auto lblGetReady = ime::ui::Label::create("Get Ready!");
         lblGetReady->setTextSize(15.0f);
         lblGetReady->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Center);
@@ -78,6 +82,7 @@ namespace spm {
         gui().addWidget(std::move(lblGetReady), "lblReady");
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::createGrid() {
         createTilemap(20, 20);
         grid_ = std::make_unique<Grid>(tilemap(), *this, gameObjects());
@@ -92,6 +97,7 @@ namespace spm {
 #endif
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::createActors() {
         ObjectCreator::createObjects(physWorld(), *grid_);
 
@@ -103,6 +109,7 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::createGridMovers() {
         // 1. Movement controller for pacman
         auto pacmanGridMover = std::make_unique<ime::KeyboardGridMover>(tilemap());
@@ -129,6 +136,7 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::initGridMovers() {
         // Automatically keep pacman moving in his current direction
         auto pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
@@ -137,6 +145,7 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::initCollisionResponses() {
         // 1. Pacman and fruit collision handler
         auto onFruitCollision = [this](ime::GameObject* fruit) {
@@ -167,20 +176,21 @@ namespace spm {
                 updateScore(Constants::Points::POWER_PELLET);
                 audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
 
-                emit(GameEvent::PowerModeBegin);
                 auto powerModeDuration = ime::seconds(Constants::SCATTER_MODE_DURATION / currentLevel_);
                 configureTimer(powerModeTimer_, powerModeDuration, GameEvent::PowerModeEnd);
 
                 // Extend super mode duration by power mode duration (Power pill effects must always timeout before super mode effects)
                 if (superModeTimer_.getStatus() == ime::Timer::Status::Running)
                     configureTimer(superModeTimer_, powerModeDuration, GameEvent::SuperModeEnd);
+
+                emit(GameEvent::PowerModeBegin);
             } else {
                 updateScore(Constants::Points::SUPER_PELLET);
                 audio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
 
-                emit(GameEvent::SuperModeBegin);
                 auto superModeDuration = ime::seconds(Constants::SUPER_MODE_DURATION / currentLevel_);
                 configureTimer(superModeTimer_, superModeDuration, GameEvent::SuperModeEnd);
+                emit(GameEvent::SuperModeBegin);
             }
         };
 
@@ -209,114 +219,26 @@ namespace spm {
             if (ghostState == Ghost::State::Evade) { // Pacman ate power pill
                 audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
                 updateScore(Constants::Points::GHOST * pointsMultiplier_);
+                replaceWithScoreTexture(pacman, ghost);
+                updatePointsMultiplier();
+                setMovingActorFreeze(true);
 
-                // Replace pacman and ghost with score value
-                pacman->getSprite().setVisible(false);
-                ghost->getSprite().setTexture("spritesheet.png");
-
-                if (pointsMultiplier_ == 1)
-                    ghost->getSprite().setTextureRect(ime::UIntRect{307, 142, 16, 16});
-                else if (pointsMultiplier_ == 2)
-                    ghost->getSprite().setTextureRect(ime::UIntRect{324, 142, 16, 16});
-                else if (pointsMultiplier_ == 4)
-                    ghost->getSprite().setTextureRect(ime::UIntRect{341, 142, 16, 16});
-                else
-                    ghost->getSprite().setTextureRect(ime::UIntRect{358, 142, 16, 16});
-
-                // Player cannot eat ghosts more than 4 times in one power mode session,
-                // so we reset the multiplier in case player eats another power pill whilst
-                // there is an active power mode session
-                if (pointsMultiplier_ == 8)
-                    pointsMultiplier_ = 1; // Also resets to 1 when power mode timer expires
-                else
-                    pointsMultiplier_ *= 2;
-
-                // Momentarily stop all actor movements
-                gridMovers().forEach([](ime::GridMover* gridMover) {
-                    gridMover->setMovementFreeze(true);
-                });
-
-                // Momentarily stop pacman and ghost animations
-                gameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
-                    ghost->getSprite().getAnimator().setTimescale(0.0f);
-                });
-                gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(0.0f);
-
-                // Resume gameplay after a small delay
+                // Unfreeze moving actors after a delay
                 timer().setTimeout(ime::seconds(1), [this, ghost, pacman] {
-
-                    // Resume pacman and ghost movement
-                    gridMovers().forEach([](ime::GridMover* gridMover) {
-                        gridMover->setMovementFreeze(false);
-                    });
-
-                    // Resume pacman and ghost animations
-                    gameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
-                        ghost->getSprite().getAnimator().setTimescale(1.0f);
-                    });
-                    gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(1.0f);
+                    setMovingActorFreeze(false);
 
                     // Let ghost know it has been eaten
                     static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
-
                     pacman->getSprite().setVisible(true);
                 });
-            } else if (pacmanState != PacMan::State::Super && ghostState != Ghost::State::Heal) {
-                audio().stopAll();
-
-                // Hide all ghosts
-                gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
-                    gameObject->getSprite().setVisible(false);
-                });
-
-                // Stop all movements
-                gridMovers().forEach([](ime::GridMover* gridMover) {
-                    gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::All);
-                });
-
-                auto pMan = static_cast<PacMan*>(pacman);
-                pMan->getSprite().getAnimator().startAnimation("dying");
+            } else if (pacmanState != PacMan::State::Super && ghostState != Ghost::State::Heal) { // Vulnerable pacman
+                onPrePacManDeathAnim();
+                pacman->getSprite().getAnimator().startAnimation("dying");
                 audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
 
-                auto deathAnimDuration = pMan->getSprite().getAnimator().getActiveAnimation()->getDuration();
+                auto deathAnimDuration = pacman->getSprite().getAnimator().getActiveAnimation()->getDuration();
                 timer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this] {
-                    auto pacman = gameObjects().findByTag<PacMan>("pacman");
-                    pacman->setLivesCount(pacman->getLivesCount() - 1);
-                    cache().setValue("PLAYER_LIVES", pacman->getLivesCount());
-
-                    if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene
-                        view_.updateLives(pacman->getLivesCount());
-
-                    if (pacman->getLivesCount() <= 0) { // Triggers a game over sequence
-                        // We want the gameplay scene to continue running as the background
-                        // of the game over menu, so when Pacman dies, instead of transition
-                        // to the LevelStartScene, we want the gameplay to reset immediately
-                        // because the transition to LevelStartScene, will be pushed on top of
-                        // the GameOverScene (because it will be the active scene) instead of
-                        // the GamePlay scene.
-                        showLevelInfoOnReset_ = false;
-
-                        // When pacmans number of lives reaches zero, the game transitions to GameOverScene,
-                        // however, since we will be already in the GameOverScene, we don't want that the
-                        // transition to happen, so we give pacman many lives so that the player never does.
-                        // A 50 000 lives seems reasonable enough. I don't think the player will stay on the
-                        // game over menu that long
-                        gameObjects().findByTag<PacMan>("pacman")->setLivesCount(50000);
-                        resetLevel();
-
-                        // Instead of destroying the scene like normal, we simply push the GameOverScene,
-                        // which will case the GameplayScene to pause, however instead of hiding it, we
-                        // show it and enable full simulation
-                        setOnPauseAction(ime::Scene::Show | ime::Scene::UpdateTime);
-                        audio().setMute(true);
-                        gui().setOpacity(0.0f);
-                        engine().pushScene(std::make_unique<GameOverScene>());
-                    } else {
-                        if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene
-                            engine().pushScene(std::make_unique<LevelStartScene>());
-                        else
-                            resetLevel();
-                    }
+                    onPostPacManDeathAnim();
                 });
             }
         };
@@ -371,46 +293,63 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::updatePointsMultiplier() {
+        if (pointsMultiplier_ == 8)
+            pointsMultiplier_ = 1; // Also resets to 1 when power mode timer expires
+        else
+            pointsMultiplier_ *= 2;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::endGameplay() {
+        if (!showLevelInfoOnReset_) { // GameplayScene acting as GameOverScene background
+            resetLevel();
+            return;
+        }
+
+        // We want the GameplayScene to continue running as the background
+        // of the GameOverScene, so when pacman dies, instead of transition
+        // to the LevelStartScene before resetting the level as usual, we
+        // bypass the LevelStartScene
+        showLevelInfoOnReset_ = false;
+
+        // Set GameplayScene as an active background scene
+        setOnPauseAction(ime::Scene::Show | ime::Scene::UpdateTime);
+
+        resetLevel();
+        audio().setMute(true);
+        gui().setOpacity(0.0f);
+        engine().pushScene(std::make_unique<GameOverScene>());
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::intiGameEvents() {
-        // Display pause menu when P or Esc is pressed
+        // 1. Display pause menu when P or Esc is pressed
         input().onKeyUp([this](ime::Key key) {
             if ((key == ime::Key::P || key == ime::Key::Escape))
                 pauseGame();
         });
 
+        // 2. Advances the game to the next level when the current level is completed
         eventEmitter().on("levelComplete", ime::Callback<>([this] {
             engine().onFrameEnd(nullptr);
+            // Remove all game objects except pacman, doors and uneaten keys from the grid
             gameObjects().getGroup("Ghost").removeAll();
             gridMovers().removeAll();
 
+            // Momentarily freeze pacman before flashing the grid
             gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(0);
             gameObjects().findByTag("pacman")->getRigidBody()->setLinearVelocity({0.0f, 0.0f});
 
-            // Momentarily freeze the game before changing to new level
+            // Flashes the gameplay grid after a small delay and starts a new level
             timer().setTimeout(ime::milliseconds(500), [this] {
-                audio().stopAll();
-                gameObjects().removeByTag("pacman");
-                cache().setValue("CURRENT_LEVEL", currentLevel_ + 1);
-                audio().play(ime::audio::Type::Sfx, "levelComplete.ogg");
-                auto gridAnimDuration = grid_->playFlashAnimation(currentLevel_);
-
-                // Start new level after shortly after the grid stops flashing
-                timer().setTimeout(gridAnimDuration + ime::seconds(1), [this] {
-                    // End the game (All 16 distinct level fruits shown, original game reuses them and keeps going)
-                    if (currentLevel_ + 1 >= 17) {
-                        cache().setValue("PLAYER_WON_GAME", true);
-                        engine().popScene();
-                        engine().pushScene(std::make_unique<GameOverScene>());
-                    } else {
-                        engine().popScene();
-                        engine().pushScene(std::make_unique<GameplayScene>());
-                        engine().pushScene(std::make_unique<LevelStartScene>());
-                    }
-                });
+                startLevelCompleteSequence();
             });
         }));
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::initEngineEvents() {
         engine().onFrameEnd([this] {
             // Remove inactive objects from the scene at the end of each frame
@@ -419,7 +358,9 @@ namespace spm {
             });
 
             // Check for level completion
-            if (gameObjects().getGroup("Pellet").getCount() == 0 && gameObjects().getGroup("Fruit").getCount() == 0) {
+            if ((gameObjects().getGroup("Pellet").getCount() == 0) &&
+                (gameObjects().getGroup("Fruit").getCount() == 0))
+            {
                 eventEmitter().emit("levelComplete");
             }
         });
@@ -430,6 +371,7 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::updateScore(int points) {
         auto newScore = cache().getValue<int>("CURRENT_SCORE") + points;
         cache().setValue("CURRENT_SCORE", newScore);
@@ -441,6 +383,7 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::startCountDown() {
         gui().getWidget<ime::ui::Label>("lblReady")->setText("Get Ready!");
         gui().getWidget("lblReady")->setVisible(true);
@@ -465,6 +408,7 @@ namespace spm {
         }, 3);
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::resetActors() {
         // Reset pacmans position in the grid
         auto pacman = gameObjects().findByTag("pacman");
@@ -493,6 +437,7 @@ namespace spm {
         initCollisionResponses();
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::emit(GameEvent event) {
         ime::PropertyContainer args;
         switch (event) {
@@ -517,6 +462,7 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::configureTimer(ime::Timer &timer, ime::Time duration, GameEvent event) {
         if (timer.getStatus() == ime::Timer::Status::Running)
             timer.setInterval(timer.getRemainingDuration() + duration);
@@ -529,6 +475,7 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::pauseGame() {
         // Prevent game from being paused when level is completed or pacman is dying
         if (grid_->isAnimationPlaying() || gameObjects().findByTag("pacman")->getSprite().getAnimator().getActiveAnimation()->getName() == "dying")
@@ -540,18 +487,43 @@ namespace spm {
         engine().pushScene(std::make_unique<GamePauseScene>());
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::resetLevel() {
         resetActors();
         startCountDown();
         audio().playAll();
     }
 
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::startLevelCompleteSequence() {
+        audio().stopAll();
+        gameObjects().removeByTag("pacman");
+        cache().setValue("CURRENT_LEVEL", currentLevel_ + 1);
+        audio().play(ime::audio::Type::Sfx, "levelComplete.ogg");
+        ime::Time gridAnimDuration = grid_->playFlashAnimation(currentLevel_);
+
+        // Starts a new level shortly after the grid stops flashing
+        timer().setTimeout(gridAnimDuration + ime::seconds(1), [this] {
+            if (currentLevel_ + 1 >= 17) { // End the game after level 16 (All district level fruits shown)
+                cache().setValue("PLAYER_WON_GAME", true);
+                engine().popScene();
+                engine().pushScene(std::make_unique<GameOverScene>());
+            } else { // Advance to next level
+                engine().popScene();
+                engine().pushScene(std::make_unique<GameplayScene>());
+                engine().pushScene(std::make_unique<LevelStartScene>());
+            }
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::onPause() {
         audio().pauseAll();
         engine().onFrameEnd(nullptr);
         engine().onWindowClose(nullptr);
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::onResume() {
         initEngineEvents();
 
@@ -565,41 +537,10 @@ namespace spm {
         }
     }
 
-    void GameplayScene::update(ime::Time deltaTime) {
-        view_.update(deltaTime);
-        grid_->update(deltaTime);
-        superModeTimer_.update(deltaTime);
-        powerModeTimer_.update(deltaTime);
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::flashPacman() {
+        auto static flashAnimCutoffTime = ime::seconds(2);
 
-        auto flashAnimCutoffTime = ime::seconds(2);
-
-        /// @brief Flash ghost when it is blue and power mode is about to expire.
-        /// Ideally, this implementation should be in spm::FrightenedState
-        /// class, however, the class has no knowledge of how long the power
-        /// mode timer has been running. It only knows when the timer starts
-        /// counting down and when it expires
-        if (powerModeTimer_.getStatus() == ime::Timer::Status::Running) {
-            gameObjects().forEachInGroup("Ghost", [this, flashAnimCutoffTime](ime::GameObject* ghost) {
-                if (static_cast<Ghost*>(ghost)->getState() == Ghost::State::Evade) {
-                    // Check whether or not state is about to expire, if so let player know with a flashing animation
-                    if ((ghost->getSprite().getAnimator().getActiveAnimation()->getName() != "flash") &&
-                        (powerModeTimer_.getRemainingDuration() <= flashAnimCutoffTime))
-                    {
-                        ghost->getSprite().getAnimator().startAnimation("flash");
-                    } else if ((ghost->getSprite().getAnimator().getActiveAnimation()->getName() == "flash") &&
-                              (powerModeTimer_.getRemainingDuration() > flashAnimCutoffTime))
-                    {
-                        ghost->getSprite().getAnimator().startAnimation("frightened");
-                    }
-                }
-            });
-        }
-
-        /// @brief Flash pacman when in super state and super mode is about to expire.
-        /// Ideally this implementation should be in spm::PacMan::update(ime::Time),
-        /// However, the PacMan class has no knowledge of how long the super
-        /// mode timer has been running. It only knows when the timer starts
-        /// counting down and when it expires
         if (superModeTimer_.getStatus() == ime::Timer::Status::Running) {
             auto pacman = gameObjects().findByTag<PacMan>("pacman");
             if ((pacman->getSprite().getAnimator().getActiveAnimation()->getName().find("Flashing") == std::string::npos) &&
@@ -607,15 +548,106 @@ namespace spm {
             {
                 pacman->getSprite().getAnimator().startAnimation("going" + utils::convertToString(pacman->getDirection()) + "Flashing");
             } else if ((pacman->getSprite().getAnimator().getActiveAnimation()->getName().find("Flashing") != std::string::npos) &&
-                        (superModeTimer_.getRemainingDuration() > flashAnimCutoffTime))
+                       (superModeTimer_.getRemainingDuration() > flashAnimCutoffTime))
             {
                 pacman->getSprite().getAnimator().startAnimation("going" + utils::convertToString(pacman->getDirection()) + "Super");
             }
         }
     }
 
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::flashGhosts() {
+        auto static flashAnimCutoffTime = ime::seconds(2);
+
+        if (powerModeTimer_.getStatus() == ime::Timer::Status::Running) {
+            gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
+                if (static_cast<Ghost*>(ghost)->getState() == Ghost::State::Evade) {
+                    // Check whether or not state is about to expire, if so let player know with a flashing animation
+                    if ((ghost->getSprite().getAnimator().getActiveAnimation()->getName() != "flash") &&
+                        (powerModeTimer_.getRemainingDuration() <= flashAnimCutoffTime))
+                    {
+                        ghost->getSprite().getAnimator().startAnimation("flash");
+                    } else if ((ghost->getSprite().getAnimator().getActiveAnimation()->getName() == "flash") &&
+                               (powerModeTimer_.getRemainingDuration() > flashAnimCutoffTime))
+                    {
+                        ghost->getSprite().getAnimator().startAnimation("frightened");
+                    }
+                }
+            });
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::onPrePacManDeathAnim() {
+        audio().stopAll();
+
+        auto pacman = gameObjects().findByTag<PacMan>("pacman");
+        pacman->setLivesCount(pacman->getLivesCount() - 1);
+        cache().setValue("PLAYER_LIVES", pacman->getLivesCount());
+
+        if (showLevelInfoOnReset_) // Game in Gameplay scene and not in GameOverScene
+            view_.updateLives(pacman->getLivesCount());
+
+        gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
+            gameObject->getSprite().setVisible(false);
+        });
+
+        gridMovers().forEach([](ime::GridMover* gridMover) {
+            gridMover->setMovementRestriction(ime::GridMover::MoveRestriction::All);
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::onPostPacManDeathAnim() {
+        if (gameObjects().findByTag<PacMan>("pacman")->getLivesCount() <= 0)
+            endGameplay();
+        else
+            engine().pushScene(std::make_unique<LevelStartScene>());
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::update(ime::Time deltaTime) {
+        view_.update(deltaTime);
+        grid_->update(deltaTime);
+        superModeTimer_.update(deltaTime);
+        powerModeTimer_.update(deltaTime);
+        flashPacman();
+        flashGhosts();
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::setMovingActorFreeze(bool freeze) {
+        // Freeze movement
+        gridMovers().forEach([freeze](ime::GridMover* gridMover) {
+            gridMover->setMovementFreeze(freeze);
+        });
+
+        // Freeze animations
+        gameObjects().forEachInGroup("Ghost", [freeze](ime::GameObject* ghost) {
+            ghost->getSprite().getAnimator().setTimescale(freeze ? 0.0f : 1.0f);
+        });
+        gameObjects().findByTag("pacman")->getSprite().getAnimator().setTimescale(freeze ? 0.0f : 1.0f);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::replaceWithScoreTexture(ime::GameObject *pacman, ime::GameObject *ghost) const {
+        pacman->getSprite().setVisible(false);
+        ghost->getSprite().setTexture("spritesheet.png");
+
+        if (pointsMultiplier_ == 1)
+            ghost->getSprite().setTextureRect(ime::UIntRect{307, 142, 16, 16});
+        else if (pointsMultiplier_ == 2)
+            ghost->getSprite().setTextureRect(ime::UIntRect{324, 142, 16, 16});
+        else if (pointsMultiplier_ == 4)
+            ghost->getSprite().setTextureRect(ime::UIntRect{341, 142, 16, 16});
+        else
+            ghost->getSprite().setTextureRect(ime::UIntRect{358, 142, 16, 16});
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::onExit() {
         engine().onFrameEnd(nullptr);
         engine().onWindowClose(nullptr);
     }
-}
+
+} // namespace spm

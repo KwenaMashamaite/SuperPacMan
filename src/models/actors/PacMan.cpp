@@ -44,7 +44,6 @@ namespace spm {
 
         getTransform().scale(2.0f, 2.0f);
         setDirection(ime::Left);
-        getSprite().getAnimator().getActiveAnimation()->showTargetOnStart(false);
         state_ = State::Idle;
     }
 
