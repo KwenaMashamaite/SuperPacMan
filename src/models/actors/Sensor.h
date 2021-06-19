@@ -22,20 +22,33 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_ALLENTITIES_H
-#define SUPERPACMAN_ALLENTITIES_H
+#ifndef SUPERPACMAN_SENSOR_H
+#define SUPERPACMAN_SENSOR_H
 
-/*-----------------------------------------------------------------------------
-* Includes all the game actors
------------------------------------------------------------------------------*/
+#include <IME/core/game_object/GameObject.h>
 
-#include "src/models/actors/Door.h"
-#include "src/models/actors/Wall.h"
-#include "src/models/actors/Key.h"
-#include "src/models/actors/PacMan.h"
-#include "src/models/actors/Ghost.h"
-#include "src/models/actors/Pellet.h"
-#include "src/models/actors/Fruit.h"
-#include "src/models/actors/Sensor.h"
+namespace spm {
+    /**
+     * @brief Sensor
+     *
+     * This class is used as a trigger for certain actions when another actor
+     * enters it. For example, it is used to detect when PacMan or a Ghost
+     * reaches the end of the tunnel
+     */
+    class Sensor : public ime::GameObject {
+    public:
+        /**
+         * @brief Constrictor
+         * @param scene The scene the object belongs to
+         */
+        explicit Sensor(ime::Scene& scene);
 
-#endif
+        /**
+         * @brief Get the class type
+         * @return Name of the concrete class the pellet belongs to
+         */
+        std::string getClassName() const override;
+    };
+}
+
+#endif //SUPERPACMAN_SENSOR_H

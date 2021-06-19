@@ -107,6 +107,12 @@ namespace spm {
         State getState() const;
 
         /**
+         * @brief Get the current direction
+         * @return The current direction
+         */
+        ime::Vector2i getDirection() const;
+
+        /**
          * @brief Update the ghost
          * @param deltaTime Time passed since last update
          */

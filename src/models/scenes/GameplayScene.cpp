@@ -243,6 +243,30 @@ namespace spm {
             }
         };
 
+        // 6. Tunnel sensor collision handler
+        auto onTunnelSensorCollision = [this](ime::GridMover* gridMover, ime::GameObject* other) {
+            ime::Direction actorDirection = ime::Unknown;
+            if (other->getClassName() == "PacMan")
+                actorDirection = static_cast<PacMan*>(other)->getDirection();
+            else if (other->getClassName() == "Ghost")
+                actorDirection = static_cast<Ghost*>(other)->getDirection();
+            else
+                return;
+
+            if (actorDirection != ime::Left && actorDirection != ime::Right)
+                return;
+
+            auto prevTile = tilemap().getTileOccupiedByChild(other);
+            tilemap().removeChild(other);
+            if (actorDirection == ime::Left) {
+                tilemap().addChild(other,ime::Index{prevTile.getIndex().row, static_cast<int>(tilemap().getSizeInTiles().x - 1)});
+            } else if (actorDirection == ime::Right)
+                tilemap().addChild(other, {prevTile.getIndex().row, 0});
+
+            gridMover->resetTargetTile();
+            gridMover->requestDirectionChange(actorDirection);
+        };
+
         // Subscribe collision handlers to pacmans grid mover
         auto pacmanGridMover = gridMovers().findByTag<ime::KeyboardGridMover>("pacmanGridMover");
         pacmanGridMover->onGameObjectCollision( [=](ime::GameObject* pacman, ime::GameObject* other) {
@@ -256,34 +280,17 @@ namespace spm {
                 onDoorCollision(pacman, other);
             else if (other->getClassName() == "Ghost")
                 onGhostCollision(pacman, other);
+            else if (other->getClassName() == "Sensor")
+                onTunnelSensorCollision(pacmanGridMover, pacman);
         });
 
-        // 6. Pacman grid collision handler
-        pacmanGridMover->onGridBorderCollision([this, pacmanGridMover] {
-            // Teleport pacman to other side when he attempts to exit the maze
-            auto pacman = gameObjects().findByTag<PacMan>("pacman");
-            if (pacman->getDirection() != ime::Left && pacman->getDirection() != ime::Right)
-                return;
-
-            auto prevTile = tilemap().getTileOccupiedByChild(pacmanGridMover->getTarget());
-            tilemap().removeChild(pacmanGridMover->getTarget());
-            if (pacman->getDirection() == ime::Left) {
-                tilemap().addChild(pacmanGridMover->getTarget(),
-                   {prevTile.getIndex().row, static_cast<int>(tilemap().getSizeInTiles().x - 1)});
-            } else if (pacman->getDirection() == ime::Right)
-                tilemap().addChild(pacmanGridMover->getTarget(), {prevTile.getIndex().row, 0});
-
-            pacmanGridMover->resetTargetTile();
-            pacmanGridMover->requestDirectionChange(pacman->getDirection());
-        });
-
-        // A grid mover only detects collision when it is moving the actor, therefore if pacman is idle
-        // and and a ghost collides with him it won't register in pacmans grid mover, so we add the ghost
-        // collision handler to both pacmans grid mover and the ghosts grid mover
+        // Subscribe collision handlers to ghost grid mover
         gridMovers().forEachInGroup("GhostMovers", [=] (ime::GridMover* ghostMover){
             ghostMover->onGameObjectCollision([=](ime::GameObject* ghost, ime::GameObject* other) {
                 if (other->getClassName() == "PacMan")
                     onGhostCollision(other, ghost); // Note argument order
+                else if (other->getClassName() == "Sensor")
+                    onTunnelSensorCollision(ghostMover, ghost);
             });
         });
 

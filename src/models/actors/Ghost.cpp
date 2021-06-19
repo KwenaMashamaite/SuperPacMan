@@ -118,6 +118,10 @@ namespace spm {
         return static_cast<Ghost::State>(ime::GameObject::getState());
     }
 
+    ime::Vector2i Ghost::getDirection() const {
+        return direction_;
+    }
+
     void Ghost::update(ime::Time deltaTime) {
         assert(fsm_.top() && "A ghost FSM must have at least one state before it is updated");
 

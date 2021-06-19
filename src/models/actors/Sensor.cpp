@@ -22,20 +22,14 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_ALLENTITIES_H
-#define SUPERPACMAN_ALLENTITIES_H
-
-/*-----------------------------------------------------------------------------
-* Includes all the game actors
------------------------------------------------------------------------------*/
-
-#include "src/models/actors/Door.h"
-#include "src/models/actors/Wall.h"
-#include "src/models/actors/Key.h"
-#include "src/models/actors/PacMan.h"
-#include "src/models/actors/Ghost.h"
-#include "src/models/actors/Pellet.h"
-#include "src/models/actors/Fruit.h"
 #include "src/models/actors/Sensor.h"
 
-#endif
+namespace spm {
+    Sensor::Sensor(ime::Scene &scene) :
+        ime::GameObject(scene)
+    {}
+
+    std::string Sensor::getClassName() const {
+        return "Sensor";
+    }
+}

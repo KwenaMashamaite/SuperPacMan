@@ -17,6 +17,7 @@ set(SRC_FILES
     models/actors/Key.cpp
     models/actors/PacMan.cpp
     models/actors/Pellet.cpp
+    models/actors/Sensor.cpp
     models/actors/Wall.cpp
     models/game/Game.cpp
     models/scenes/GameplayScene.cpp

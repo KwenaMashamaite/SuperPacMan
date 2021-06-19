@@ -52,6 +52,7 @@ namespace spm {
         grid_.renderLayers().create("Pellets");
         grid_.renderLayers().create("Ghosts");
         grid_.renderLayers().create("PacMans");
+        grid_.renderLayers().create("Sensors");
 
         // Create the grid background - Instead of creating the visual grid ourself
         // we will use a pre-made one from an image file and render our game objects on
@@ -113,7 +114,7 @@ namespace spm {
 
     void Grid::addActor(ime::GameObject::Ptr object, ime::Index index) {
         assert(object && "Object must not be a nullptr");
-        auto renderLayer = object->getClassName() + "s";
+        std::string renderLayer = object->getClassName() + "s";
 
         grid_.addChild(object.get(), index);
         auto group = object->getClassName();

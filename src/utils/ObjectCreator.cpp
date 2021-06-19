@@ -50,8 +50,10 @@ namespace spm {
             if (tile.getId() == 'X') {
                 rigidRigidBodyType = ime::RigidBody::Type::Kinematic;
                 actor = std::make_unique<PacMan>(grid.getScene());
-            } else if (tile.getId() == 'K')
-                actor = std::make_unique<spm::Key>(grid.getScene(), keyId++);
+            } else if (tile.getId() == 'T')
+                actor = std::make_unique<Sensor>(grid.getScene());
+            else if (tile.getId() == 'K')
+                actor = std::make_unique<Key>(grid.getScene(), keyId++);
             else if (tile.getId() == 'F')
                 actor = std::make_unique<Fruit>(grid.getScene());
             else if (tile.getId() == 'E')
