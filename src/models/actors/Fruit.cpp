@@ -32,6 +32,7 @@ namespace spm {
         auto animation = FruitAnimation();
         getSprite().getAnimator().addAnimation(animation.getAnimation());
         getSprite() = animation.getAnimation()->getSpriteSheet().getSprite(ime::Index{0, 0});
+        resetSpriteOrigin(); // Set sprite origin as the centre
         getSprite().scale(2.0f, 2.0f);
 
         // When the tag of the object is set to any of the following, its sprite

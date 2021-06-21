@@ -45,11 +45,10 @@ namespace spm {
     void ObjectCreator::createObjects(ime::PhysicsWorld& world, Grid &grid) {
         grid.forEachCell([&world, &grid, keyId = 0](const ime::Tile& tile) mutable {
             ime::GameObject::Ptr actor;
-            ime::RigidBody::Type rigidRigidBodyType = ime::RigidBody::Type::Static;
 
             if (tile.getId() == 'X') {
-                rigidRigidBodyType = ime::RigidBody::Type::Kinematic;
                 actor = std::make_unique<PacMan>(grid.getScene());
+                actor->attachRigidBody(world.createBody(ime::RigidBody::Type::Kinematic));
             } else if (tile.getId() == 'T')
                 actor = std::make_unique<Sensor>(grid.getScene());
             else if (tile.getId() == 'K')
@@ -65,7 +64,6 @@ namespace spm {
             else if (tile.getId() == '#' || tile.getId() == '|')
                 actor = std::make_unique<Wall>(grid.getScene());
             else {
-                rigidRigidBodyType = ime::RigidBody::Type::Kinematic;
                 if (tile.getId() == 'B')
                     actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Red);
                 else if (tile.getId() == 'P')
@@ -76,9 +74,10 @@ namespace spm {
                     actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Orange);
                 else
                     return;
+
+                actor->attachRigidBody(world.createBody(ime::RigidBody::Type::Kinematic));
             }
 
-            actor->attachRigidBody(world.createBody(rigidRigidBodyType));
             grid.addActor(std::move(actor), tile.getIndex());
         });
     }

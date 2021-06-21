@@ -31,6 +31,7 @@ namespace spm {
     {
         getSprite().setTexture("spritesheet.png");
         getSprite().setTextureRect({290, 142, 16, 16});
+        resetSpriteOrigin(); // Set sprite origin as the centre
         getTransform().scale(2.0f, 2.0f);
     }
 

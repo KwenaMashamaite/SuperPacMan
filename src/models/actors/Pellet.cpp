@@ -38,6 +38,7 @@ namespace spm {
 
         getSprite().getAnimator().startAnimation("blink");
         getSprite().scale(2.0f, 2.0f);
+        resetSpriteOrigin(); // Set sprite origin as the centre
     }
 
     std::string Pellet::getClassName() const {
