@@ -23,32 +23,73 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/controllers/GhostGridMover.h"
-#include <IME/utility/Utils.h>
+#include "src/models/actors/Ghost.h"
+#include <cassert>
+#include <algorithm>
+#include <random>
 
 namespace spm {
     GhostGridMover::GhostGridMover(ime::TileMap& tileMap, ime::GameObject* ghost) :
         ime::TargetGridMover(tileMap, ghost),
-        destinationReachedId_{-1}
+        destinationReachedId_{-1},
+        reverseDirection_{false}
     {}
 
     void GhostGridMover::generateRandomDestination() {
-        static auto generateRandomRow = ime::utility::createRandomNumGenerator(0, getGrid().getSizeInTiles().y);
-        static auto generateRandomColm = ime::utility::createRandomNumGenerator(0, getGrid().getSizeInTiles().x);
+        ime::Direction reverseGhostDir = static_cast<Ghost*>(getTarget())->getDirection() * -1;
+        assert(reverseGhostDir != ime::Unknown && "A ghost must have a valid direction before initiating random movement");
 
-        ime::Index newDestination;
+        // Ghost only allowed to move non-diagonally
+        for (const auto& dir : {ime::Left, ime::Right, ime::Down, ime::Up}) {
+            // Prevent ghost from going backwards
+            if (!reverseDirection_ && dir == reverseGhostDir)
+                continue;
+
+            directionAttempts_.emplace_back(dir);
+        }
+
+        // Randomize the directions so that the direction the ghost chooses
+        // to go is not predictable
+        auto static randomEngine = std::default_random_engine{std::random_device{}()};
+        std::shuffle(directionAttempts_.begin(), directionAttempts_.end(), randomEngine);
+
+        // Find path
+        ime::Index newDestination {-1, -1};
+
         do {
-            newDestination = ime::Index{generateRandomRow(), generateRandomColm()};
+            // Tried all possible non-reverse directions with no luck (ghost in stuck in a dead-end)
+            // Attempt to reverse direction and go backwards. This an exception to the no reverse
+            // direction rule. Without the exception, the game will be stuck in an infinite loop
+            if (directionAttempts_.empty()) {
+                newDestination.row = getTargetTileIndex().row + reverseGhostDir.y;
+                newDestination.colm = getTargetTileIndex().colm + reverseGhostDir.x;
+
+                // Since this is the last attempt, it should succeed or fail. If it
+                // succeeds the ghost will reverse direction and move backwards and
+                // if it fails then the ghost is blocked in all directions.
+                setDestination(newDestination);
+
+                return;
+            }
+
+            auto dir = directionAttempts_.back();
+            directionAttempts_.pop_back(); // Prevent the same direction from being evaluated again
+
+            newDestination.row = getTargetTileIndex().row + dir.y;
+            newDestination.colm = getTargetTileIndex().colm + dir.x;
         } while(!isDestinationReachable(newDestination));
 
+        // Update the ghosts path
         setDestination(newDestination);
+
+        // Clear current attempt directions
+        directionAttempts_.clear();
     }
 
     void GhostGridMover::setRandomMoveEnable(bool enable) {
+        // Random movement already enabled
         if (destinationReachedId_ != -1 && enable)
             return;
-
-        unsubscribe(destinationReachedId_);
-        destinationReachedId_ = -1;
 
         if (enable) {
             generateRandomDestination(); // Generate initial random position
@@ -57,6 +98,13 @@ namespace spm {
             destinationReachedId_ = onDestinationReached([this](ime::Index) {
                 generateRandomDestination();
             });
+        } else {
+            unsubscribe(destinationReachedId_);
+            destinationReachedId_ = -1;
         }
+    }
+
+    void GhostGridMover::setReverseDirEnable(bool reverse) {
+        reverseDirection_ = reverse;
     }
 }

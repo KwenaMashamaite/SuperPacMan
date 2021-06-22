@@ -26,6 +26,7 @@
 #define SUPERPACMAN_GHOSTGRIDMOVER_H
 
 #include <IME/core/physics/grid/TargetGridMover.h>
+#include <vector>
 
 namespace spm {
     class Ghost;
@@ -48,6 +49,25 @@ namespace spm {
          */
         void setRandomMoveEnable(bool enable);
 
+        /**
+         * @brief Enable or disable direction reversing
+         * @param reverse True to enable or false to disable
+         *
+         * When enabled, the ghost cannot go back to its previous tile.
+         * In other words the ghost can only move in three directions if
+         * diagonal movement is disabled or seven directions if diagonal
+         * movement is enabled
+         *
+         * Note that this function only has an effect when the ghost is
+         * moved randomly in the grid. In addition, the ghost will reverse
+         * directions if it is stuck in a dead-end
+         *
+         * By default, reversing direction is disabled
+         *
+         * @see setRandomMoveEnable
+         */
+        void setReverseDirEnable(bool reverse);
+
     private:
         /**
          * @brief Generate a random destination for the target
@@ -55,7 +75,9 @@ namespace spm {
         void generateRandomDestination();
 
     private:
-        int destinationReachedId_;
+        int destinationReachedId_;                      //!< Destination reached event handler id
+        bool reverseDirection_;                         //!< A flag indicating whether or not the ghost can reverse directions
+        std::vector<ime::Direction> directionAttempts_; //!< Stores directions to be attempted by randomly moving ghost
     };
 }
 
