@@ -41,7 +41,10 @@ namespace spm {
         assert(ghostMover_ && "Cannot enter heal state without a ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Heal));
-        ghostMover_->setMaxLinearSpeed({Constants::GhostRetreatSpeed, Constants::GhostRetreatSpeed});
+
+        if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane"))
+            ghostMover_->setMaxLinearSpeed({Constants::GhostRetreatSpeed, Constants::GhostRetreatSpeed});
+
         ghostMover_->setDestination(Constants::EatenGhostRespawnTile);
         ghostMover_->startMovement();
 

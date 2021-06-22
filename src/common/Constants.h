@@ -48,6 +48,7 @@ namespace spm {
         static constexpr auto GhostFrightenedSpeed = GhostChaseSpeed / 2.0f;
         static constexpr auto GhostRetreatSpeed = 2 * GhostScatterSpeed;
         static constexpr auto GhostRoamSpeed = PacManNormalSpeed;
+        static constexpr auto SlowLaneSpeed = GhostChaseSpeed / 1.8f;
 
         // Base durations (seconds)
         static constexpr auto LEVEL_START_DELAY = 3.0f;      //!< Time player must wait before they can control pacman

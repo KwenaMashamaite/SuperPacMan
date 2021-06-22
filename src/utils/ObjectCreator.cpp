@@ -49,9 +49,15 @@ namespace spm {
             if (tile.getId() == 'X') {
                 actor = std::make_unique<PacMan>(grid.getScene());
                 actor->attachRigidBody(world.createBody(ime::RigidBody::Type::Kinematic));
-            } else if (tile.getId() == 'T')
+            } else if (tile.getId() == 'T' || tile.getId() == 'H') { // Sensors
                 actor = std::make_unique<Sensor>(grid.getScene());
-            else if (tile.getId() == 'K')
+
+                if (tile.getId() == 'H') {
+                    actor->setTag("slowLaneSensor");
+                    actor->setCollisionGroup("slowLaneSensor");
+                }
+
+            } else if (tile.getId() == 'K')
                 actor = std::make_unique<Key>(grid.getScene(), keyId++);
             else if (tile.getId() == 'F')
                 actor = std::make_unique<Fruit>(grid.getScene());
@@ -61,9 +67,13 @@ namespace spm {
                 actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Super);
             else if (tile.getId() == 'D')
                 actor = createDoor(tile, grid.getScene());
-            else if (tile.getId() == '#' || tile.getId() == '|')
+            else if (tile.getId() == '#' || tile.getId() == '|' || tile.getId() == 'N') {// Walls
                 actor = std::make_unique<Wall>(grid.getScene());
-            else {
+
+                // Hidden wall that Only pacman can pass through
+                if (tile.getId() == 'N')
+                    actor->setCollisionGroup("hiddenWall");
+            } else {
                 if (tile.getId() == 'B')
                     actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Red);
                 else if (tile.getId() == 'P')

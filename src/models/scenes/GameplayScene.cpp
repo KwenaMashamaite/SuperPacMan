@@ -106,6 +106,8 @@ namespace spm {
                 utils::lockDoor(static_cast<Door*>(actor));
             else if (actor->getClassName() == "Fruit") // Set fruit texture based on current level
                 actor->setTag(utils::getFruitName(currentLevel_));
+            else if (actor->getClassName() == "Ghost") // Used to detect if ghost is entering or leaving the slow lane
+                actor->getUserData().addProperty({"is_in_slow_lane", false});
         });
     }
 
@@ -142,6 +144,11 @@ namespace spm {
         auto pacmanGridMover = gridMovers().findByTag("pacmanGridMover");
         pacmanGridMover->onAdjacentMoveEnd([this, pacmanGridMover](ime::Index) {
             pacmanGridMover->requestDirectionChange(gameObjects().findByTag<PacMan>("pacman")->getDirection());
+        });
+
+        // Notify interested parties that pacman has moved to a different tile
+        pacmanGridMover->onAdjacentMoveEnd([this](ime::Index index) {
+            emit(GameEvent::PacManMoved);
         });
     }
 
@@ -266,6 +273,38 @@ namespace spm {
             gridMover->resetTargetTile();
         };
 
+        // 7. Slow lane sensor trigger handler
+        auto onSlowLaneSensorTrigger = [](ime::GridMover* ghostGridMover, ime::GameObject* ghost) {
+            if (ghost->getUserData().getValue<bool>("is_in_slow_lane")) {
+                ghost->getUserData().setValue("is_in_slow_lane", false);
+
+                // Speed of an eaten ghost does not change in the slow lane
+                if (static_cast<Ghost*>(ghost)->getState() == Ghost::State::Heal)
+                    return;
+
+                // Ghost is leaving slow lane, return to normal speed
+                float speed;
+                switch (static_cast<Ghost*>(ghost)->getState()) {
+                    case Ghost::State::Scatter: speed = Constants::GhostScatterSpeed;    break;
+                    case Ghost::State::Chase:   speed = Constants::GhostChaseSpeed;      break;
+                    case Ghost::State::Evade:   speed = Constants::GhostFrightenedSpeed; break;
+                    case Ghost::State::Heal:    speed = Constants::GhostRetreatSpeed;    break;
+                    case Ghost::State::Wonder:  speed = Constants::GhostRoamSpeed;       break;
+                    default: return;
+                }
+
+                ghostGridMover->setMaxLinearSpeed(ime::Vector2f{speed, speed});
+            } else {
+                ghost->getUserData().setValue("is_in_slow_lane", true);
+
+                // Speed of an eaten ghost does not change in the slow lane
+                if (static_cast<Ghost*>(ghost)->getState() == Ghost::State::Heal)
+                    return;
+
+                ghostGridMover->setMaxLinearSpeed(ime::Vector2f{Constants::SlowLaneSpeed, Constants::SlowLaneSpeed});
+            }
+        };
+
         // Subscribe collision handlers to pacmans grid mover
         auto pacmanGridMover = gridMovers().findByTag<ime::KeyboardGridMover>("pacmanGridMover");
         pacmanGridMover->onGameObjectCollision( [=](ime::GameObject* pacman, ime::GameObject* other) {
@@ -288,14 +327,13 @@ namespace spm {
             ghostMover->onGameObjectCollision([=](ime::GameObject* ghost, ime::GameObject* other) {
                 if (other->getClassName() == "PacMan")
                     onGhostCollision(other, ghost); // Note argument order
-                else if (other->getClassName() == "Sensor")
-                    onTunnelSensorCollision(ghostMover, ghost);
+                else if (other->getClassName() == "Sensor") {
+                    if (other->getTag() == "slowLaneSensor")
+                        onSlowLaneSensorTrigger(ghostMover, ghost);
+                    else
+                        onTunnelSensorCollision(ghostMover, ghost);
+                }
             });
-        });
-
-        // 7. Notify interested parties that pacman has moved to a different tile
-        pacmanGridMover->onAdjacentMoveEnd([this](ime::Index index) {
-            emit(GameEvent::PacManMoved);
         });
     }
 

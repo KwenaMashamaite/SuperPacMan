@@ -41,7 +41,10 @@ namespace spm {
         assert(ghostMover_ && "Cannot enter frightened state without a ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Evade));
-        ghostMover_->setMaxLinearSpeed({Constants::GhostFrightenedSpeed, Constants::GhostFrightenedSpeed});
+
+        if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane"))
+            ghostMover_->setMaxLinearSpeed({Constants::GhostFrightenedSpeed, Constants::GhostFrightenedSpeed});
+
         ghostMover_->setRandomMoveEnable(true);
         ghost_->getSprite().getAnimator().startAnimation("frightened");
     }

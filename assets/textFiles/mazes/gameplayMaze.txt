@@ -7,6 +7,7 @@
 # The tile id's are as follows:
 #   | = solid wall block
 #   # = solid wall block
+#   N = Special hidden wall that only pacman can pass through
 #   . = Empty tile
 #   B = Blinky spawn position
 #   P = Pinky spawn position
@@ -20,6 +21,7 @@
 #   E = Power Pellet
 #   S = Super Pellet
 #   T = Tunnel exit sensor
+#   H = Speeding sensor (For ghosts when they enter the slow lane - pathway under ghost house)
 ###########################################
 
 .........................
@@ -32,11 +34,11 @@
 ||....K.....B.....K....||
 ||.|D##|.|##.##|.|##D|.||
 ||.|F.F|.|P...I|.|F.F|.||
-||.|D|.|.|.....|.|.|D|.||
+||.|D|.|.|.NNN.|.|.|D|.||
 ||K..|F|.|..C..|.|F|..K||
 ||#|.|.|.|#####|.|.|.##||
-TDFD.DFD....X....DFD.DFDT
-||#|.|#|.|#|.|#|.|#|.##||
+TDFD.DFD.H..X..H.DFD.DFDT
+||#|.|#|.|#|N|#|.|#|.##||
 ||K.....K|.|.|.|K.....K||
 ||.|D|.|D|#|.|#|D|.|D|.||
 ||.|F|.|S.FD.DF.S|.|F|.||

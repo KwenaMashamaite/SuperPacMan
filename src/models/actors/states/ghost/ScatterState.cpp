@@ -61,7 +61,10 @@ namespace spm {
         ghost_->setState(static_cast<int>(Ghost::State::Scatter));
         setTargetPosition();
         ghostMover_->startMovement();
-        ghostMover_->setMaxLinearSpeed({Constants::GhostScatterSpeed, Constants::GhostScatterSpeed});
+
+        if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane"))
+            ghostMover_->setMaxLinearSpeed({Constants::GhostScatterSpeed, Constants::GhostScatterSpeed});
+
         initEvents();
         initTimer(ime::seconds(Constants::SCATTER_MODE_DURATION / currentLevel_));
     }

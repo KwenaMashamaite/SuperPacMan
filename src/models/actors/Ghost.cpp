@@ -88,11 +88,13 @@ namespace spm {
 
         // Trigger animation switch when the ghost changes direction
         gridMover_->onAdjacentMoveBegin([this](ime::Index) {
+            // Update animation
+            direction_ = gridMover_->getDirection();
+
             // Evade/frightened animation is the same in all directions
             if (getState() == State::Evade)
                 return;
 
-            direction_ = gridMover_->getDirection();
             auto newAnimation = "going" + utils::convertToString(direction_);
 
             if (getState() == State::Heal)

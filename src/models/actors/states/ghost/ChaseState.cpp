@@ -41,7 +41,10 @@ namespace spm {
         assert(ghostMover_ && "Cannot enter chase state without a ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
-        ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
+
+        if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane"))
+            ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
+
         ghostMover_->setDestination(ghost_->getUserData().getValue<ime::Index>("pacmanTileIndex"));
         ghostMover_->startMovement();
         initTimer(ime::seconds(Constants::CHASE_MODE_DURATION + currentLevel_));

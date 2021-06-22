@@ -42,7 +42,10 @@ namespace spm {
 
         ghost_->setState(static_cast<int>(Ghost::State::Wonder));
         ghostMover_->setRandomMoveEnable(true);
-        ghostMover_->setMaxLinearSpeed({Constants::GhostRoamSpeed, Constants::GhostRoamSpeed});
+
+        if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane"))
+            ghostMover_->setMaxLinearSpeed({Constants::GhostRoamSpeed, Constants::GhostRoamSpeed});
+
         ghostMover_->startMovement();
     }
 

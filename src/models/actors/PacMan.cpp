@@ -36,6 +36,12 @@ namespace spm {
     {
         setTag("pacman");
 
+        // Make pacman able to pass through a special hidden wall
+        getCollisionExcludeList().add("hiddenWall");
+
+        // Make pacman not detectable by the slow lane sensor
+        getCollisionExcludeList().add("slowLaneSensor");
+
         auto animations = PacManAnimations();
         animations.create();
         getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{0, 0});
