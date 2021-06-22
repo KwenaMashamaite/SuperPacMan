@@ -36,6 +36,8 @@ namespace spm {
         gridMover_{nullptr},
         isPacmanSuper_{false}
     {
+        setCollisionGroup("ghosts");
+
         auto animations = GhostAnimations();
         int spriteSheetRow;
         if (colour == Colour::Red) {

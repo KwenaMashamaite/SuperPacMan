@@ -35,6 +35,7 @@ namespace spm {
         gridMover_{nullptr}
     {
         setTag("pacman");
+        setCollisionGroup("pacman");
 
         // Make pacman able to pass through a special hidden wall
         getCollisionExcludeList().add("hiddenWall");

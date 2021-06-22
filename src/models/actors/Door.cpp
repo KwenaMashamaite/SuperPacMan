@@ -42,6 +42,8 @@ namespace spm {
         setDoorTexture("unlocked_door");
         getSprite().scale(2.07f, 2.07f);
         resetSpriteOrigin(); // Set sprite origin as the centre
+
+        setCollisionGroup("doors");
     }
 
     void Door::setOrientation(Orientation orientation) {

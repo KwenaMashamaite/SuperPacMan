@@ -52,6 +52,7 @@ namespace spm {
         });
 
         setTag("apple"); // Set apple texture by default
+        setCollisionGroup("fruits");
     }
 
     std::string Fruit::getClassName() const {

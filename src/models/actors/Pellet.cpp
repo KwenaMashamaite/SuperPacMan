@@ -30,6 +30,8 @@ namespace spm {
         ime::GameObject(scene),
         type_{type}
     {
+        setCollisionGroup(type == Type::Power ? "powerPellets" : "superPellets");
+
         auto animations = PelletAnimations();
         animations.createAnimationFor((type == Type::Power ? "powerPellet" : "superPellet"));
         getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{0, 0});

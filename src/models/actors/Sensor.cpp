@@ -27,7 +27,9 @@
 namespace spm {
     Sensor::Sensor(ime::Scene &scene) :
         ime::GameObject(scene)
-    {}
+    {
+        setCollisionGroup("sensors");
+    }
 
     std::string Sensor::getClassName() const {
         return "Sensor";

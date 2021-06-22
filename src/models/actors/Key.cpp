@@ -33,6 +33,8 @@ namespace spm {
         getSprite().setTextureRect({290, 142, 16, 16});
         resetSpriteOrigin(); // Set sprite origin as the centre
         getTransform().scale(2.0f, 2.0f);
+
+        setCollisionGroup("keys");
     }
 
     void Key::setId(int id) {
