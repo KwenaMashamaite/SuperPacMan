@@ -32,7 +32,8 @@ namespace spm {
     GhostGridMover::GhostGridMover(ime::TileMap& tileMap, ime::GameObject* ghost) :
         ime::TargetGridMover(tileMap, ghost),
         destinationReachedId_{-1},
-        reverseDirection_{false}
+        reverseDirection_{false},
+        isRandomMove_{false}
     {}
 
     void GhostGridMover::generateRandomDestination() {
@@ -88,8 +89,10 @@ namespace spm {
 
     void GhostGridMover::setRandomMoveEnable(bool enable) {
         // Random movement already enabled
-        if (destinationReachedId_ != -1 && enable)
+        if (isRandomMove_ == enable)
             return;
+
+        isRandomMove_ = enable;
 
         if (enable) {
             generateRandomDestination(); // Generate initial random position
@@ -104,7 +107,15 @@ namespace spm {
         }
     }
 
+    bool GhostGridMover::isRandomMoveEnabled() const {
+        return isRandomMove_;
+    }
+
     void GhostGridMover::setReverseDirEnable(bool reverse) {
         reverseDirection_ = reverse;
+    }
+
+    bool GhostGridMover::isReverseDirEnabled() const {
+        return reverseDirection_;
     }
 }

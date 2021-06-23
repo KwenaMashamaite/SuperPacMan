@@ -29,6 +29,7 @@
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
 #include <cassert>
+#include <stack>
 
 namespace spm {
     ChaseState::ChaseState(ActorStateFSM* fsm, int level) :
@@ -41,6 +42,7 @@ namespace spm {
         assert(ghostMover_ && "Cannot enter chase state without a ghost grid mover");
 
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
+        initEvents();
 
         if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane"))
             ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
@@ -48,6 +50,16 @@ namespace spm {
         ghostMover_->setDestination(ghost_->getUserData().getValue<ime::Index>("pacmanTileIndex"));
         ghostMover_->startMovement();
         initTimer(ime::seconds(Constants::CHASE_MODE_DURATION + currentLevel_));
+    }
+
+    void ChaseState::initEvents() {
+        // Make ghost wonder around if it can't find pacman
+        ghostMover_->onPathGenFinish([this](const std::stack<ime::Index>& path) {
+            if (path.empty()) { // Pacman not found
+                ghostMover_->setRandomMoveEnable(true);
+            } else if (ghostMover_->isRandomMoveEnabled())
+                ghostMover_->setRandomMoveEnable(false);
+        });
     }
 
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
@@ -61,16 +73,19 @@ namespace spm {
 
     void ChaseState::onPause() {
         ghostMover_->clearPath();
+        ghostMover_->onPathGenFinish(nullptr);
     }
 
     void ChaseState::onResume() {
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
+        initEvents();
         ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
         ghostMover_->setDestination(ghost_->getUserData().getValue<ime::Index>("pacmanTileIndex"));
     }
 
     void ChaseState::onExit() {
         ghostMover_->clearPath();
+        ghostMover_->onPathGenFinish(nullptr);
 
         // OnExit is only called when transitioning to ScatterState, for others
         // this state is paused, so there is no need to perform a check

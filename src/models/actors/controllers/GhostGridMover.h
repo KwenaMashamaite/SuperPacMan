@@ -46,8 +46,18 @@ namespace spm {
         /**
          * @brief Enable or disable random movement
          * @param random True to enable or false to disable
+         *
+         * By default, random movement is disabled
          */
         void setRandomMoveEnable(bool enable);
+
+        /**
+         * @brief Check if random movement is enabled or not
+         * @return True if enabled, otherwise false
+         *
+         * @see setRandomMoveEnable
+         */
+        bool isRandomMoveEnabled() const;
 
         /**
          * @brief Enable or disable direction reversing
@@ -68,6 +78,14 @@ namespace spm {
          */
         void setReverseDirEnable(bool reverse);
 
+        /**
+         * @brief Check if reversing direction is allowed or not
+         * @return True if reversing direction is allowed, otherwise false
+         *
+         * @see setReverseDirEnable
+         */
+        bool isReverseDirEnabled() const;
+
     private:
         /**
          * @brief Generate a random destination for the target
@@ -76,7 +94,8 @@ namespace spm {
 
     private:
         int destinationReachedId_;                      //!< Destination reached event handler id
-        bool reverseDirection_;                         //!< A flag indicating whether or not the ghost can reverse directions
+        bool reverseDirection_;                         //!< A flag indicating whether or not the ghost can reverse directions4
+        bool isRandomMove_;                             //!< A flag indicating whether or not the ghost is moving randomly
         std::vector<ime::Direction> directionAttempts_; //!< Stores directions to be attempted by randomly moving ghost
     };
 }

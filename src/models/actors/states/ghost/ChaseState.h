@@ -74,6 +74,12 @@ namespace spm {
         void onExit() override;
 
     private:
+        /**
+         * @brief Init state events
+         */
+        void initEvents();
+
+    private:
         int currentLevel_; //!< The current game level
     };
 }
