@@ -34,6 +34,7 @@ namespace spm {
     Ghost::Ghost(ime::Scene& scene, Colour colour) :
         ime::GameObject(scene),
         gridMover_{nullptr},
+        direction_{ime::Left},
         isPacmanSuper_{false}
     {
         setCollisionGroup("ghosts");

@@ -145,6 +145,17 @@ namespace spm {
         void startCountDown();
 
         /**
+         * @brief Start the ghost house probation counter
+         *
+         * Initially, three of the four ghosts are locked inside the ghost
+         * house indefinitely. This timer controls when each ghost can leave
+         * the ghost house and enter the maze. The probation period is
+         * different for each ghost and decreases as the game level increases.
+         * If the probation period is zero the ghost is freed immediately
+         */
+        void startGhostHouseArrestTimer();
+
+        /**
          * @brief Reset pacman and the ghosts to their respective spawm tiles
          */
         void resetActors();

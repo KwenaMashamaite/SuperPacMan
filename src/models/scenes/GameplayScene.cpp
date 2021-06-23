@@ -35,6 +35,7 @@
 #include <IME/core/physics/grid/KeyboardGridMover.h>
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
+#include <cassert>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
@@ -106,8 +107,14 @@ namespace spm {
                 utils::lockDoor(static_cast<Door*>(actor));
             else if (actor->getClassName() == "Fruit") // Set fruit texture based on current level
                 actor->setTag(utils::getFruitName(currentLevel_));
-            else if (actor->getClassName() == "Ghost") // Used to detect if ghost is entering or leaving the slow lane
+            else if (actor->getClassName() == "Ghost") { // Used to detect if ghost is entering or leaving the slow lane
                 actor->getUserData().addProperty({"is_in_slow_lane", false});
+                actor->getUserData().addProperty({"is_locked_in_ghost_house", true});
+
+                // The red ghost starts outside the ghost house
+                if (actor->getTag() == "blinky")
+                    actor->getUserData().setValue("is_locked_in_ghost_house",false);
+            }
         });
     }
 
@@ -448,11 +455,40 @@ namespace spm {
                 soundEffect->setLoop(true);
                 emit(GameEvent::LevelStarted);
                 gridMovers().findByTag("pacmanGridMover")->requestDirectionChange(ime::Left);
+                startGhostHouseArrestTimer();
             } else {
                 gui().getWidget<ime::ui::Label>("lblReady")->setText(std::to_string(counter));
                 counter--;
             }
         }, 3);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::startGhostHouseArrestTimer() {
+        /// @param duration Probation duration in seconds
+        /// @param tag The tag of the ghost serving time
+        auto startProbationTimer = [this](const std::string& tag, float duration) {
+            auto* ghost = gameObjects().getGroup("Ghost").findByTag(tag);
+            assert(ghost && "Failed to start probation timer: Invalid ghost tag");
+
+            if (!ghost->getUserData().getValue<bool>("is_locked_in_ghost_house"))
+                return;
+
+            auto probationDuration = duration - currentLevel_;
+
+            // Free ghost immediately, no longer under house arrest
+            if (probationDuration <= 0)
+                ghost->getUserData().setValue("is_locked_in_ghost_house", false);
+            else { // Make ghost serve time
+                timer().setTimeout(ime::seconds(probationDuration), [this, tag, ghost] {
+                    ghost->getUserData().setValue("is_locked_in_ghost_house", false);
+                });
+            }
+        };
+
+        startProbationTimer("pinky", Constants::PINKY_HOUSE_ARREST_DURATION);
+        startProbationTimer("inky", Constants::INKY_HOUSE_ARREST_DURATION);
+        startProbationTimer("clyde", Constants::CLYDE_HOUSE_ARREST_DURATION);
     }
 
     ///////////////////////////////////////////////////////////////

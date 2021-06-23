@@ -49,14 +49,20 @@ namespace spm {
         static constexpr auto GhostRetreatSpeed = 2 * GhostScatterSpeed;
         static constexpr auto GhostRoamSpeed = PacManNormalSpeed;
         static constexpr auto SlowLaneSpeed = GhostChaseSpeed / 1.8f;
+        static constexpr auto GhostHouseSpeed = GhostScatterSpeed / 2.0f;
 
         // Base durations (seconds)
         static constexpr auto LEVEL_START_DELAY = 3.0f;      //!< Time player must wait before they can control pacman
         static constexpr auto SUPER_MODE_DURATION = 15.0f;   //!< The initial duration of super pellet effects on pacman and ghost
         static constexpr auto POWER_MODE_DURATION = 10.0f;   //!< Initial duration of power pellet effects on ghosts
         static constexpr auto SCATTER_MODE_DURATION = 15.0f; //!< The initial duration of a ghosts scatter mode
-        static constexpr auto CHASE_MODE_DURATION = 4.0f;   //!< The initial duration of a ghosts chase mode
+        static constexpr auto CHASE_MODE_DURATION = 4.0f;    //!< The initial duration of a ghosts chase mode
         static constexpr auto PacManLives = 4;
+
+        // Time spent by a ghost in the ghost house before it can enter the maze (Base)
+        static constexpr auto PINKY_HOUSE_ARREST_DURATION = 3.0f; //!< Pinky's house arrest period
+        static constexpr auto INKY_HOUSE_ARREST_DURATION = 5.0f;  //!< Inky's house arrest period
+        static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 7.0f; //!< Clyde's house arrest period
 
         /**
          * @brief Points awarded to the player when pacman eats another actor

@@ -89,6 +89,16 @@ namespace spm {
         void setTargetPosition();
 
         /**
+         * @brief Set the speed of the ghost
+         */
+        void setSpeed();
+
+        /**
+         * @brief Clear the current scatter path
+         */
+        void clearPath();
+
+        /**
          * @brief Initialize on destination reached handler
          */
         void initEvents();
@@ -97,7 +107,9 @@ namespace spm {
         ime::Index targetCorner_;     //!< The position the ghost must reach first before cycling corner
         std::queue<ime::Index> path_; //!< Cyclic path ghost follows after reaching target position
         int destFoundHandler_;        //!< Handler id for a target destination event
+        int valueChangeHandler_;      //!< Handler id for a the "locked in ghost house" state change
         const int currentLevel_;      //!< Current game level
+        bool isLockedInGhostHouse_;   //!< A flag indicating whether or not the ghost is locked inside the ghost house
     };
 }
 
