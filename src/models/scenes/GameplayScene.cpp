@@ -446,7 +446,10 @@ namespace spm {
             ghost->getSprite().setVisible(true);
         });
 
-        timer().setInterval(ime::milliseconds(500), [this, counter = 3]() mutable {
+        // Make the timer repeat every half a second regardless of delay
+        int counter = Constants::LEVEL_START_DELAY;
+        ime::Time interval = ime::seconds(Constants::LEVEL_START_DELAY / (2 * counter));
+        timer().setInterval(interval, [this, counter]() mutable {
             if (counter == 0) {
                 gui().getWidget("lblReady")->setVisible(false);
                 gameObjects().findByTag("pacman")->getSprite().setVisible(true);
@@ -460,7 +463,7 @@ namespace spm {
                 gui().getWidget<ime::ui::Label>("lblReady")->setText(std::to_string(counter));
                 counter--;
             }
-        }, 3);
+        }, counter);
     }
 
     ///////////////////////////////////////////////////////////////
