@@ -420,7 +420,7 @@ namespace spm {
         });
 
         // Pause game and display pause menu when user requests to close game window
-        engine().onWindowClose([this]{
+        engine().getWindow().onClose([this] {
             pauseGame();
         });
     }
@@ -606,7 +606,7 @@ namespace spm {
     void GameplayScene::onPause() {
         audio().pauseAll();
         engine().onFrameEnd(nullptr);
-        engine().onWindowClose(nullptr);
+        engine().getWindow().onClose(nullptr);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -733,7 +733,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onExit() {
         engine().onFrameEnd(nullptr);
-        engine().onWindowClose(nullptr);
+        engine().getWindow().onClose(nullptr);
     }
 
 } // namespace spm

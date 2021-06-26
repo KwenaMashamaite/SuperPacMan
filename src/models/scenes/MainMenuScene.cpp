@@ -37,7 +37,7 @@ namespace spm {
     {}
 
     void MainMenuScene::onEnter() {
-        engine().onWindowClose(nullptr); // Let window be closed with exit button only
+        engine().getWindow().onClose(nullptr); // Let window be closed with exit button only
 
         view_.init();
 

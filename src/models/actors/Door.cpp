@@ -31,7 +31,6 @@ namespace spm {
         spriteSheet_{"spritesheet.png", {16, 16}, {1, 1}, {368, 17, 86, 18}},
         isBroken_{false}
     {
-        setAsObstacle(true);
         spriteSheet_.assignAlias({0, 0}, "unlocked_door");
         spriteSheet_.assignAlias({0, 1}, "locked_door_horizontal");
         spriteSheet_.assignAlias({0, 2}, "broken_door_horizontal");
@@ -62,7 +61,8 @@ namespace spm {
         if (!isLocked()) {
             doorLocker_.lock(key);
             if (doorLocker_.isLocked()) {
-                setCollidable(true);
+                setAsObstacle(true);
+                setCollisionId(0); // All collidable actors have an a collision of 0
                 if (orientation_ == Orientation::Horizontal)
                     setDoorTexture("locked_door_horizontal");
                 else
@@ -75,7 +75,8 @@ namespace spm {
         if (isLocked()) {
             doorLocker_.unlock(key);
             if (!doorLocker_.isLocked()) {
-                setCollidable(false);
+                setAsObstacle(false);
+                setCollisionId(-1); // Assign door a unique collision id so that it cannot be collided with
                 setDoorTexture("unlocked_door");
             }
         }
@@ -90,7 +91,8 @@ namespace spm {
             return;
 
         isBroken_ = true;
-        setCollidable(false);
+        setAsObstacle(false);
+        setCollisionId(-1); // Assign door unique collision id so that it cannot be collided with
         if (orientation_ == Orientation::Horizontal)
             setDoorTexture("broken_door_horizontal");
         else

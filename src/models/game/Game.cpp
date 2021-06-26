@@ -35,7 +35,7 @@ namespace spm {
 
     void Game::initialize() {
         // Make game window unresizable
-        engine_.setWindowStyle(ime::WindowStyle::Close);
+        engine_.getWindow().setStyle(ime::WindowStyle::Close);
 
         // Initialize the game engine
         engine_.initialize();

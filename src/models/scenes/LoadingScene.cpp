@@ -48,7 +48,7 @@ namespace spm {
         // Prevent the game from being exited while assets are being loaded
         // The resource loading thread must finish first before we can stop
         // the main thread
-        engine().onWindowClose(nullptr);
+        engine().getWindow().onClose(nullptr);
 
         LoadingSceneView::init(gui());
         auto pbrAssetLoading = gui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
