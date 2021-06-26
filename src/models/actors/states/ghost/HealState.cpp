@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/states/ghost/HealState.h"
+#include "src/models/actors/states/ghost/FrightenedState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
 #include <cassert>
@@ -51,6 +52,11 @@ namespace spm {
         destFoundHandler_ = ghostMover_->onDestinationReached([this](ime::Index) {
             fsm_->pop();
         });
+    }
+
+    void HealState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+        if (event == GameEvent::PowerModeBegin)
+            fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
     }
 
     void HealState::onExit() {

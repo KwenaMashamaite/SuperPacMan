@@ -60,6 +60,13 @@ namespace spm {
          */
         void onExit() override;
 
+        /**
+        * @brief Handle a game event
+        * @param event The event to be handled
+        * @param args Arguments associated with the event
+        */
+        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
+
     private:
         int destFoundHandler_; //!< Handler id for a target destination event
     };
