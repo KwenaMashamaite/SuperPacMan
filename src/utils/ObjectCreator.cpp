@@ -49,12 +49,15 @@ namespace spm {
             if (tile.getId() == 'X') {
                 actor = std::make_unique<PacMan>(grid.getScene());
                 actor->attachRigidBody(world.createBody(ime::RigidBody::Type::Kinematic));
-            } else if (tile.getId() == 'T' || tile.getId() == 'H') { // Sensors
+            } else if (tile.getId() == 'T' || tile.getId() == 'H' || tile.getId() == '!') { // Sensors
                 actor = std::make_unique<Sensor>(grid.getScene());
 
                 if (tile.getId() == 'H') {
-                    actor->setTag("slowLaneSensor");
-                    actor->setCollisionGroup("slowLaneSensor");
+                    actor->setTag("slowLaneEntrySensor");
+                    actor->setCollisionGroup("slowLaneEntrySensor");
+                } else if (tile.getId() == '!') {
+                    actor->setTag("slowLaneExitSensor");
+                    actor->setCollisionGroup("slowLaneExitSensor");
                 }
 
             } else if (tile.getId() == 'K')

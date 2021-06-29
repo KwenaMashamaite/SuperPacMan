@@ -41,7 +41,8 @@ namespace spm {
         getCollisionExcludeList().add("hiddenWall");
 
         // Make pacman not detectable by the slow lane sensor
-        getCollisionExcludeList().add("slowLaneSensor");
+        getCollisionExcludeList().add("slowLaneEntrySensor");
+        getCollisionExcludeList().add("slowLaneExitSensor");
 
         auto animations = PacManAnimations();
         animations.create();

@@ -167,12 +167,7 @@ namespace spm {
         btnExitGame->setText("Exit Game");
 
         // Add action buttons to container
-        if (!wonGame)
-            vlContainer->addWidget(std::move(btnRetryLevel), "btnRetryLevel");
-        else // Reduce vertical size of container to accommodate only two buttons instead of three
-            vlContainer->setHeight("60%");
-
-
+        vlContainer->addWidget(std::move(btnRetryLevel), "btnRetryLevel");
         vlContainer->addWidget(std::move(btnExitMainMenu), "btnExitMainMenu");
         vlContainer->addWidget(std::move(btnExitGame), "btnExitGame");
 

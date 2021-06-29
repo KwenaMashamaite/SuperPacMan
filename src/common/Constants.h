@@ -64,6 +64,9 @@ namespace spm {
         static constexpr auto INKY_HOUSE_ARREST_DURATION = 5.0f;  //!< Inky's house arrest period
         static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 7.0f; //!< Clyde's house arrest period
 
+        // Non-gameplay constants
+        static constexpr auto MAX_NUM_LEVEL_RESTARTS = 2;
+
         /**
          * @brief Points awarded to the player when pacman eats another actor
          */

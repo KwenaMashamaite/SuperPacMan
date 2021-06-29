@@ -27,6 +27,7 @@
 #include "src/models/scenes/MainMenuScene.h"
 #include "src/models/scenes/GameplayScene.h"
 #include "src/models/scenes/LevelStartScene.h"
+#include "src/common/Constants.h"
 #include <IME/ui/widgets/ToggleButton.h>
 #include <IME/core/engine/Engine.h>
 
@@ -41,15 +42,23 @@ namespace spm {
         }));
 
         // 2. Restart button click handler
-        gui().getWidget("btnRestart")->on("click", ime::Callback<>([this] {
-            engine().removeAllScenesExceptActive(); // Popping scene twice will call GamePlayScene::onResume(), which we don't want to do
-            engine().popScene();
-            engine().pushScene(std::make_unique<GameplayScene>());
-            engine().pushScene(std::make_unique<LevelStartScene>());
-        }));
+        if (cache().getValue<int>("LEVEL_RESTART_COUNT") > 0) {
+            gui().getWidget("btnRestart")->on("click", ime::Callback<>([this] {
+                cache().setValue("LEVEL_RESTART_COUNT", cache().getValue<int>("LEVEL_RESTART_COUNT") - 1);
+                engine().removeAllScenesExceptActive(); // Popping scene twice will call GamePlayScene::onResume(), which we don't want to do
+                engine().popScene();
+                engine().pushScene(std::make_unique<GameplayScene>());
+                engine().pushScene(std::make_unique<LevelStartScene>());
+            }));
+        } else {
+            gui().removeWidget("btnRestart");
+            gui().getWidget("vlPauseMenu")->setHeight("35%");
+        }
 
         // 3. Main menu button click handler
         gui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
+            cache().setValue("LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS);
+            cache().setValue("PLAYER_LIVES", Constants::PacManLives);
             cache().setValue("CURRENT_LEVEL", 1);
             cache().setValue("CURRENT_SCORE", 0);
             engine().removeAllScenesExceptActive();

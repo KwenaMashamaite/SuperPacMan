@@ -21,7 +21,8 @@
 #   E = Power Pellet
 #   S = Super Pellet
 #   T = Tunnel exit sensor
-#   H = Speeding sensor (For ghosts when they enter the slow lane - pathway under ghost house)
+#   H = Slow lane entrance sensor (For ghosts when they enter the slow lane - pathway under ghost house)
+#   ! = Slow lane exit sensor (For ghosts when they leave the slow lane - pathway under ghost house)
 ###########################################
 
 .........................
@@ -37,7 +38,7 @@
 ||.|D|.|.|.NNN.|.|.|D|.||
 ||K..|F|.|..C..|.|F|..K||
 ||#|.|.|.|#####|.|.|.##||
-TDFD.DFD.H..X..H.DFD.DFDT
+TDFD.DFD!H..X..H!DFD.DFDT
 ||#|.|#|.|#|N|#|.|#|.##||
 ||K.....K|.|.|.|K.....K||
 ||.|D|.|D|#|.|#|D|.|D|.||

@@ -52,6 +52,7 @@ namespace spm {
         engine_.getPersistentData().addProperty({"PLAYER_LIVES", Constants::PacManLives});
         engine_.getPersistentData().addProperty({"MASTER_VOLUME", 100.0f});
         engine_.getPersistentData().addProperty({"PLAYER_WON_GAME", false});
+        engine_.getPersistentData().addProperty({"LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS});
 
         // If not found, player will be prompted for name in StartUpScene
         if (engine_.getConfigs().hasPref("PLAYER_NAME"))

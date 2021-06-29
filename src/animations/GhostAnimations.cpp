@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "GhostAnimations.h"
+#include <cassert>
 
 namespace spm {
     GhostAnimations::GhostAnimations() :
@@ -50,17 +51,18 @@ namespace spm {
     }
 
     void GhostAnimations::createMovementAnimations(const std::string& tag) {
-        auto row = -1;
+        int row = -1;
         if (tag == "blinky")
             row = 0;
         else if (tag == "pinky")
             row = 1;
-        else if (tag == "clyde")
-            row = 2;
         else if (tag == "inky")
+            row = 2;
+        else if (tag == "clyde")
             row = 3;
-        else
-            return;
+        else {
+            assert(false && "Failed to construct ghost animation: Invalid ghost tag");
+        }
 
         createAnimation("goingLeft", {row, 0});
         createAnimation("goingUp", {row, 2});
