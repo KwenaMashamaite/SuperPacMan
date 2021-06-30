@@ -28,6 +28,7 @@
 #include "src/utils/Utils.h"
 #include "src/models/actors/Actors.h"
 #include "src/common/Constants.h"
+#include "src/common/PositionTracker.h"
 #include "src/models/scenes/GameOverScene.h"
 #include "src/models/scenes/GamePauseScene.h"
 #include "src/models/actors/controllers/GhostGridMover.h"
@@ -131,6 +132,7 @@ namespace spm {
 
         auto pacman = gameObjects().findByTag<PacMan>("pacman");
         pacman->setMoveController(pacmanGridMover.get());
+        PositionTracker::updatePos("pacman", pacmanGridMover->getTargetTileIndex());
         gridMovers().addObject(std::move(pacmanGridMover));
 
         // 2. Create movement controllers for all ghost
@@ -144,6 +146,7 @@ namespace spm {
 
             static_cast<Ghost*>(ghost)->setMovementController(ghostMover.get());
             static_cast<Ghost*>(ghost)->initFSM();
+            PositionTracker::updatePos(ghost->getTag(), ghostMover->getTargetTileIndex());
             gridMovers().addObject(std::move(ghostMover), "GhostMovers");
         });
     }
@@ -159,6 +162,13 @@ namespace spm {
         // Notify interested parties that pacman has moved to a different tile
         pacmanGridMover->onAdjacentMoveEnd([this](ime::Index index) {
             emit(GameEvent::PacManMoved);
+        });
+
+        // Keep track of the grid position of each grid controlled actor
+        gridMovers().forEach([](ime::GridMover* gridMover) {
+            gridMover->onAdjacentMoveEnd([gridMover](ime::Index index) {
+                PositionTracker::updatePos(gridMover->getTarget()->getTag(), index);
+            });
         });
     }
 
@@ -532,10 +542,12 @@ namespace spm {
     void GameplayScene::emit(GameEvent event) {
         ime::PropertyContainer args;
         switch (event) {
-            case GameEvent::PacManMoved:
-                args.addProperty({"pacmanTileIndex", tilemap().getTileOccupiedByChild(gameObjects().findByTag("pacman")).getIndex()});
+            case GameEvent::PacManMoved: {
+                auto* pacman = gameObjects().findByTag<PacMan>("pacman");
+                args.addProperty({"pacmanTileIndex", tilemap().getTileOccupiedByChild(pacman).getIndex()});
+                args.addProperty({"pacmanDirection", pacman->getDirection()});
                 break;
-            case GameEvent::LevelStarted:
+            }case GameEvent::LevelStarted:
             case GameEvent::LevelCompleted:
             case GameEvent::GameCompleted:
                 args.addProperty({"level", currentLevel_});

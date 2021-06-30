@@ -65,15 +65,6 @@ namespace spm {
 
         getSprite().scale(2.0f, 2.0f);
         getSprite().getAnimator().startAnimation("goingLeft");
-
-        // @todo - Put this somewhere else, don't know where, here temporarily
-        // For now we will make the ghost track pacmans position since some
-        // states require this information. Storing it in a state will get lost
-        // when the state is popped. However, when stored in a Ghost it will only
-        // be lost when the ghost is destroyed and this only happens when a level
-        // is completed or restarted. In both cases pacman resets his position to
-        // his spawn index, so they will always be in sync
-        getUserData().addProperty(ime::Property{"pacmanTileIndex", Constants::PacManSpawnTile});
     }
 
     void Ghost::initFSM() {
@@ -141,8 +132,6 @@ namespace spm {
             isPacmanSuper_ = true;
         else if (event == GameEvent::SuperModeEnd)
             isPacmanSuper_ = false;
-        else if (event == GameEvent::PacManMoved)
-            getUserData().setValue("pacmanTileIndex", args.getValue<ime::Index>("pacmanTileIndex"));
 
         fsm_.top()->handleEvent(event, args);
     }

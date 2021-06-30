@@ -28,6 +28,7 @@
 #include "src/models/actors/states/ghost/FrightenedState.h"
 #include "src/models/actors/Ghost.h"
 #include "src/common/Constants.h"
+#include "src/common/PositionTracker.h"
 #include <cassert>
 #include <stack>
 
@@ -47,7 +48,7 @@ namespace spm {
         if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane"))
             ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
 
-        ghostMover_->setDestination(ghost_->getUserData().getValue<ime::Index>("pacmanTileIndex"));
+        ghostMover_->setDestination(PositionTracker::getPos("pacman"));
         ghostMover_->startMovement();
         initTimer(ime::seconds(Constants::CHASE_MODE_DURATION + currentLevel_));
     }
@@ -63,9 +64,37 @@ namespace spm {
     }
 
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
-        if (event == GameEvent::PacManMoved)
-            ghostMover_->setDestination(args.getValue<ime::Index>("pacmanTileIndex"));
-        else if (event == GameEvent::SuperModeBegin)
+        if (event == GameEvent::PacManMoved) {
+            auto pacmanTile = args.getValue<ime::Index>("pacmanTileIndex");
+            auto pacmanDir = args.getValue<ime::Vector2i>("pacmanDirection");
+
+            if (ghost_->getTag() == "blinky")
+                ghostMover_->setDestination(pacmanTile);
+            else if (ghost_->getTag() == "pinky")
+                ghostMover_->setDestination(ime::Index{pacmanTile.row + 4 * pacmanDir.y, pacmanTile.colm + 4 * pacmanDir.x});
+            else if (ghost_->getTag() == "inky") {
+                ime::Index blinkyTile = PositionTracker::getPos("blinky");
+                // Choose a position two tiles in front of pacman
+                ime::Index pacmanTileOffset = ime::Index{pacmanTile.row + 2 * pacmanDir.y, pacmanTile.colm + 2 * pacmanDir.x};
+
+                // Create a vector from chosen position to blinky's tile
+                ime::Index pacmanTileOffsetToBlinkyVector = {-1 * (pacmanTileOffset.row - blinkyTile.row), -1 * (pacmanTileOffset.colm - blinkyTile.colm)};
+
+                // Flip vector 180 degrees and set the new vector as inky's target tile
+                ghostMover_->setDestination(ime::Index{pacmanTileOffset.row - pacmanTileOffsetToBlinkyVector.row, pacmanTileOffset.colm - pacmanTileOffsetToBlinkyVector.colm});
+            } else if (ghost_->getTag() == "clyde") {
+                const static int CLYDE_SHYNESS_DISTANCE = 8; // In tiles
+                ime::Index clydeTile = ghostMover_->getGrid().getTileOccupiedByChild(ghost_).getIndex();
+                if ((std::abs(pacmanTile.row - clydeTile.row) > CLYDE_SHYNESS_DISTANCE) ||
+                    (std::abs(pacmanTile.colm - clydeTile.colm) > CLYDE_SHYNESS_DISTANCE))
+                {
+                    ghostMover_->setDestination(pacmanTile);
+                } else
+                    ghostMover_->setRandomMoveEnable(true);
+            } else {
+                assert("Failed to set ghost target tile: Invalid ghost tag");
+            }
+        } else if (event == GameEvent::SuperModeBegin)
             fsm_->push(std::make_unique<RoamState>(fsm_, ghost_, ghostMover_));
         else if (event == GameEvent::PowerModeBegin)
             fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
@@ -80,7 +109,7 @@ namespace spm {
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
         initEvents();
         ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
-        ghostMover_->setDestination(ghost_->getUserData().getValue<ime::Index>("pacmanTileIndex"));
+        ghostMover_->setDestination(PositionTracker::getPos("pacman"));
     }
 
     void ChaseState::onExit() {

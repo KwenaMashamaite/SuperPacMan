@@ -1,5 +1,6 @@
 set(SRC_FILES
     main.cpp
+    common/PositionTracker.cpp
     models/actors/states/ghost/GhostState.cpp
     models/actors/states/ghost/ScatterState.cpp
     models/actors/states/ghost/ChaseState.cpp
