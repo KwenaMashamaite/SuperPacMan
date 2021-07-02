@@ -132,11 +132,13 @@ namespace spm {
 
         auto pacman = gameObjects().findByTag<PacMan>("pacman");
         pacman->setMoveController(pacmanGridMover.get());
-        PositionTracker::updatePos("pacman", pacmanGridMover->getTargetTileIndex());
+        PositionTracker::updatePosition("pacman", pacmanGridMover->getTargetTileIndex());
+        PositionTracker::updateDirection("pacman", pacman->getDirection());
         gridMovers().addObject(std::move(pacmanGridMover));
 
         // 2. Create movement controllers for all ghost
-        gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
+        gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
+            auto* ghost = static_cast<Ghost*>(ghostBase);
             ghost->getRigidBody()->setLinearVelocity({Constants::GhostScatterSpeed, Constants::GhostScatterSpeed});
             auto ghostMover = std::make_unique<GhostGridMover>(tilemap(), ghost);
 
@@ -144,9 +146,10 @@ namespace spm {
             ghostMover->setPathViewEnable(true);
 #endif
 
-            static_cast<Ghost*>(ghost)->setMovementController(ghostMover.get());
-            static_cast<Ghost*>(ghost)->initFSM();
-            PositionTracker::updatePos(ghost->getTag(), ghostMover->getTargetTileIndex());
+            ghost->setMovementController(ghostMover.get());
+            ghost->initFSM();
+            PositionTracker::updatePosition(ghost->getTag(), ghostMover->getTargetTileIndex());
+            PositionTracker::updateDirection(ghost->getTag(), ghost->getDirection());
             gridMovers().addObject(std::move(ghostMover), "GhostMovers");
         });
     }
@@ -164,10 +167,11 @@ namespace spm {
             emit(GameEvent::PacManMoved);
         });
 
-        // Keep track of the grid position of each grid controlled actor
+        // Keep track of the grid position and direction of each grid controlled actor
         gridMovers().forEach([](ime::GridMover* gridMover) {
-            gridMover->onAdjacentMoveEnd([gridMover](ime::Index index) {
-                PositionTracker::updatePos(gridMover->getTarget()->getTag(), index);
+            gridMover->onAdjacentMoveBegin([gridMover](ime::Index index) {
+                PositionTracker::updatePosition(gridMover->getTarget()->getTag(), index);
+                PositionTracker::updateDirection(gridMover->getTarget()->getTag(), gridMover->getDirection());
             });
         });
     }

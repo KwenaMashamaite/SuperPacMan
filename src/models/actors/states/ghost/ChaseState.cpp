@@ -48,7 +48,7 @@ namespace spm {
         if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane"))
             ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
 
-        ghostMover_->setDestination(PositionTracker::getPos("pacman"));
+        ghostMover_->setDestination(PositionTracker::getPosition("pacman"));
         ghostMover_->startMovement();
         initTimer(ime::seconds(Constants::CHASE_MODE_DURATION + currentLevel_));
     }
@@ -73,7 +73,7 @@ namespace spm {
             else if (ghost_->getTag() == "pinky")
                 ghostMover_->setDestination(ime::Index{pacmanTile.row + 4 * pacmanDir.y, pacmanTile.colm + 4 * pacmanDir.x});
             else if (ghost_->getTag() == "inky") {
-                ime::Index blinkyTile = PositionTracker::getPos("blinky");
+                ime::Index blinkyTile = PositionTracker::getPosition("blinky");
                 // Choose a position two tiles in front of pacman
                 ime::Index pacmanTileOffset = ime::Index{pacmanTile.row + 2 * pacmanDir.y, pacmanTile.colm + 2 * pacmanDir.x};
 
@@ -109,7 +109,7 @@ namespace spm {
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
         initEvents();
         ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
-        ghostMover_->setDestination(PositionTracker::getPos("pacman"));
+        ghostMover_->setDestination(PositionTracker::getPosition("pacman"));
     }
 
     void ChaseState::onExit() {

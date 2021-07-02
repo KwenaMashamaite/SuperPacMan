@@ -23,7 +23,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "src/models/actors/controllers/GhostGridMover.h"
+#include "src/models/actors/controllers/ForwardDirectionalBFS.h"
 #include "src/models/actors/Ghost.h"
+#include "src/common/PositionTracker.h"
 #include <cassert>
 #include <algorithm>
 #include <random>
@@ -34,7 +36,10 @@ namespace spm {
         destinationReachedId_{-1},
         reverseDirection_{false},
         isRandomMove_{false}
-    {}
+    {
+        assert(ghost && "spm::GhostGridMover target must not be a nullptr");
+        setPathFinder(std::make_unique<ForwardDirectionalBFS>(tileMap.getSizeInTiles(), ghost->getTag()));
+    }
 
     void GhostGridMover::generateRandomDestination() {
         ime::Direction reverseGhostDir = static_cast<Ghost*>(getTarget())->getDirection() * -1;
@@ -68,6 +73,7 @@ namespace spm {
                 // Since this is the last attempt, it should succeed or fail. If it
                 // succeeds the ghost will reverse direction and move backwards and
                 // if it fails then the ghost is blocked in all directions.
+                PositionTracker::updateDirection(getTarget()->getTag(), reverseGhostDir);
                 setDestination(newDestination);
 
                 return;
@@ -112,7 +118,17 @@ namespace spm {
     }
 
     void GhostGridMover::setReverseDirEnable(bool reverse) {
+        if (reverseDirection_ == reverse)
+            return;
+
         reverseDirection_ = reverse;
+
+        if (reverse)
+            setPathFinder(std::make_unique<ime::BFS>(getGrid().getSizeInTiles()));
+        else
+            setPathFinder(std::make_unique<ForwardDirectionalBFS>(getGrid().getSizeInTiles(), getTarget()->getTag()));
+
+        emitChange(ime::Property{"reverseDirEnable", reverseDirection_});
     }
 
     bool GhostGridMover::isReverseDirEnabled() const {

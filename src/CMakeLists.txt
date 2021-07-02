@@ -11,6 +11,7 @@ set(SRC_FILES
     models/actors/states/ActorStateFSM.cpp
     models/actors/states/ActorStateFSM.h
     models/actors/controllers/GhostGridMover.cpp
+    models/actors/controllers/ForwardDirectionalBFS.cpp
     models/actors/Door.cpp
     models/actors/DoorLocker.cpp
     models/actors/Fruit.cpp

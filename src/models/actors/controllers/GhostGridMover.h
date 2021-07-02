@@ -41,7 +41,7 @@ namespace spm {
          * @param tileMap The grid the target is in
          * @param ghost Ghost to be moved in the tilemap
          */
-        explicit GhostGridMover(ime::TileMap& tileMap, ime::GameObject* ghost = nullptr);
+        explicit GhostGridMover(ime::TileMap& tileMap, ime::GameObject* ghost);
 
         /**
          * @brief Enable or disable random movement
@@ -68,9 +68,8 @@ namespace spm {
          * diagonal movement is disabled or seven directions if diagonal
          * movement is enabled
          *
-         * Note that this function only has an effect when the ghost is
-         * moved randomly in the grid. In addition, the ghost will reverse
-         * directions if it is stuck in a dead-end
+         * Note that this the ghost will reverse directions if it is stuck
+         * in a dead-end
          *
          * By default, reversing direction is disabled
          *
