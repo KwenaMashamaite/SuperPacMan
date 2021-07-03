@@ -100,6 +100,7 @@ namespace spm {
                 actor->attachRigidBody(world.createBody(ime::RigidBody::Type::Kinematic));
             }
 
+            actor->getUserData().addProperty({"scene", std::ref(grid.getScene())});
             grid.addActor(std::move(actor), tile.getIndex());
         });
     }

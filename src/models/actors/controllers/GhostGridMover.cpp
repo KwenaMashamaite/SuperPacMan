@@ -39,7 +39,7 @@ namespace spm {
         isRandomMove_{false}
     {
         assert(ghost && "spm::GhostGridMover target must not be a nullptr");
-        setPathFinder(std::make_unique<ForwardDirectionalBFS>(tileMap.getSizeInTiles(), ghost->getTag()));
+        setPathFinder(std::make_unique<ForwardDirectionalBFS>(tileMap.getSizeInTiles(), ghost));
     }
 
     ///////////////////////////////////////////////////////////////
@@ -131,7 +131,7 @@ namespace spm {
         if (reverse)
             setPathFinder(std::make_unique<ime::BFS>(getGrid().getSizeInTiles()));
         else
-            setPathFinder(std::make_unique<ForwardDirectionalBFS>(getGrid().getSizeInTiles(), getTarget()->getTag()));
+            setPathFinder(std::make_unique<ForwardDirectionalBFS>(getGrid().getSizeInTiles(), getTarget()));
 
         emitChange(ime::Property{"reverseDirEnable", reverseDirection_});
     }

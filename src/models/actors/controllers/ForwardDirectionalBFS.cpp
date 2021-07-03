@@ -24,26 +24,31 @@
 
 #include "src/models/actors/controllers/ForwardDirectionalBFS.h"
 #include "src/common/PositionTracker.h"
+#include "src/models/actors/Wall.h"
 #include <IME/core/tilemap/TileMap.h>
 #include <cassert>
 #include <iostream>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    ForwardDirectionalBFS::ForwardDirectionalBFS(const ime::Vector2u &gridSize, const std::string& tag) :
+    ForwardDirectionalBFS::ForwardDirectionalBFS(const ime::Vector2u &gridSize, ime::GameObject* actor) :
         bfs_{gridSize},
-        tag_{tag}
-    {}
+        actor_{actor},
+        wall_{nullptr}
+    {
+        assert(actor_);
+        wall_ = std::make_unique<Wall>(actor_->getUserData().getValue<std::reference_wrapper<ime::Scene>>("scene"));
+    }
 
     ///////////////////////////////////////////////////////////////
     std::stack<ime::Index> ForwardDirectionalBFS::findPath(ime::TileMap &grid, ime::Index sourceTile, ime::Index targetTile) {
         ime::Index actorTile;
         ime::Vector2i actorDirection;
         try {
-            actorTile = PositionTracker::getPosition(tag_);
-            actorDirection = PositionTracker::getDirection(tag_);
+            actorTile = PositionTracker::getPosition(actor_->getTag());
+            actorDirection = PositionTracker::getDirection(actor_->getTag());
         } catch (...) {
-            std::cout << "SPM Warning: Path generation ignored, the tag \"" + tag_ + "\" does not exists in spm::PositionTracker \n";
+            std::cout << "SPM Warning: Path generation ignored, the tag \"" + actor_->getTag() + "\" does not exists in spm::PositionTracker \n";
             return {};
         }
 
@@ -51,13 +56,12 @@ namespace spm {
         ime::Index tileBehindActor = {actorTile.row + (-1) * actorDirection.y, actorTile.colm + (-1) * actorDirection.x};
 
         // Flag the tile behind the actor as inaccessible
-        // ime::BFS ignores paths with collidable tiles
-        grid.setCollidableByIndex(tileBehindActor, true);
+        grid.addChild(wall_.get(), tileBehindActor);
 
         std::stack<ime::Index> path = bfs_.findPath(grid, sourceTile, targetTile);
 
-        // Reset accessibility state
-        grid.setCollidableByIndex(tileBehindActor, false);
+        // Unblock path
+        grid.removeChild(wall_.get());
 
         return path;
     }
