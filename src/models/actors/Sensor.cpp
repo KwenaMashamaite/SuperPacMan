@@ -25,13 +25,16 @@
 #include "src/models/actors/Sensor.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Sensor::Sensor(ime::Scene &scene) :
         ime::GameObject(scene)
     {
         setCollisionGroup("sensors");
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string Sensor::getClassName() const {
         return "Sensor";
     }
-}
+
+} // namespace spm

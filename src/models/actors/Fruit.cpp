@@ -26,6 +26,7 @@
 #include "src/animations/FruitAnimation.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Fruit::Fruit(ime::Scene& scene) :
         ime::GameObject(scene)
     {
@@ -55,7 +56,9 @@ namespace spm {
         setCollisionGroup("fruits");
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string Fruit::getClassName() const {
         return "Fruit";
     }
-}
+
+} // namespace spm

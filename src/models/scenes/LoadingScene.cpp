@@ -40,10 +40,12 @@ namespace spm {
         const auto numOfResources = 21;
     }
 
+    ///////////////////////////////////////////////////////////////
     LoadingScene::LoadingScene() :
         loadingFinished_{false}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void LoadingScene::onEnter() {
         // Prevent the game from being exited while assets are being loaded
         // The resource loading thread must finish first before we can stop
@@ -81,6 +83,7 @@ namespace spm {
         }));
     }
 
+    ///////////////////////////////////////////////////////////////
     void LoadingScene::loadGameAssets() {
         auto loadFromFile = [this](ime::ResourceType rType, std::initializer_list<std::string> assets) {
             auto lblLoading = gui().getWidget<ime::ui::Label>("lblLoading");
@@ -136,7 +139,9 @@ namespace spm {
         loadingFinished_ = true;
     }
 
+    ///////////////////////////////////////////////////////////////
     void LoadingScene::onExit() {
         engine().pushScene(std::make_unique<MainMenuScene>());
     }
-}
+
+} // namespace spm

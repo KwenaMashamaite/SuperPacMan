@@ -25,10 +25,12 @@
 #include "PelletAnimations.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     PelletAnimations::PelletAnimations() :
         spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {249, 17, 120, 18}}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void PelletAnimations::createAnimationFor(const std::string& tag) {
         auto blinkAnimation = ime::Animation::create("blink", spritesheet_, ime::milliseconds(300));
         blinkAnimation->setRepeatCount(-1);
@@ -43,7 +45,9 @@ namespace spm {
         animations_.push_back(std::move(blinkAnimation));
     }
 
+    ///////////////////////////////////////////////////////////////
     const std::vector<ime::Animation::Ptr> & PelletAnimations::getAll() const {
         return animations_;
     }
-}
+
+} // namespace spm

@@ -31,6 +31,7 @@
 #include <IME/ui/widgets/Button.h>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     void StartUpScene::onEnter() {
         StartUpSceneView().init(gui());
 
@@ -41,6 +42,7 @@ namespace spm {
             promptName();
     }
 
+    ///////////////////////////////////////////////////////////////
     void StartUpScene::startCountdown() {
         auto pnlContainer = gui().getWidget<ime::ui::Panel>("pnlContainer");
         pnlContainer->showWithEffect(ime::ShowAnimationType::Fade, ime::seconds(3));
@@ -54,6 +56,7 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void StartUpScene::promptName() {
         using namespace ime::ui;
         gui().getWidget<Panel>("pnlContainer")->setVisible(false);
@@ -89,6 +92,7 @@ namespace spm {
         }));
     }
 
+    ///////////////////////////////////////////////////////////////
     void StartUpScene::enableSceneSkip() {
         input().onKeyUp([this](ime::Key key) {
             if (key == ime::Key::Enter)
@@ -96,8 +100,10 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void StartUpScene::onExit() {
         gui().removeAllWidgets();
         engine().pushScene(std::make_unique<LoadingScene>());
     }
-}
+
+} // namespace spm

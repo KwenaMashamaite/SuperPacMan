@@ -26,6 +26,7 @@
 #include "src/animations/PelletAnimations.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Pellet::Pellet(ime::Scene& scene, Type type) :
         ime::GameObject(scene),
         type_{type}
@@ -43,11 +44,14 @@ namespace spm {
         resetSpriteOrigin(); // Set sprite origin as the centre
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string Pellet::getClassName() const {
         return "Pellet";
     }
 
+    ///////////////////////////////////////////////////////////////
     Pellet::Type Pellet::getPelletType() const {
         return type_;
     }
-}
+
+} // namespace spm

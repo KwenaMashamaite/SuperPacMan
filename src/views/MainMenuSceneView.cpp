@@ -35,11 +35,13 @@
 using namespace ime::ui;
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     MainMenuSceneView::MainMenuSceneView(GuiContainer& gui) :
         gui_{gui},
         subView_{SubView::MainMenu}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void MainMenuSceneView::init() {
         // This panel is used to block a previous subview content from that of
         // the current subview such that only one subview can be visible at a time
@@ -54,6 +56,7 @@ namespace spm {
         setSubView(subView_);
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::ui::Widget::Ptr MainMenuSceneView::createBackBtn() {
         auto btnReturn = Button::create("BACK");
         btnReturn->getRenderer()->setRoundedBorderRadius(10.0f);
@@ -72,6 +75,7 @@ namespace spm {
         return btnReturn;
     }
 
+    ///////////////////////////////////////////////////////////////
     void MainMenuSceneView::createMainMenuView() {
         auto* pnlContainer = gui_.addWidget<Panel>(Panel::create(), "pnlMain");
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Black);
@@ -124,6 +128,7 @@ namespace spm {
         }));
     }
 
+    ///////////////////////////////////////////////////////////////
     void MainMenuSceneView::createCreditsMenuView() {
         // Container for all widgets in this sub view
         auto* pnlContainer = gui_.addWidget<Panel>(Panel::create(), "pnlCredits");
@@ -139,6 +144,7 @@ namespace spm {
         pnlContainer->addWidget(createBackBtn(), "btnReturn");
     }
 
+    ///////////////////////////////////////////////////////////////
     void MainMenuSceneView::createOptionsMenuView() {
         // Create container for all widgets in the sub menu
         auto* pnlParentContainer = gui_.addWidget<Panel>(Panel::create(), "pnlOptions");
@@ -253,6 +259,7 @@ namespace spm {
         tbsOptions->addPanel(std::move(pnlControlsSettings), "Controls");
     }
 
+    ///////////////////////////////////////////////////////////////
     void MainMenuSceneView::createHighScoresView() {
         // Sub menu widget container
         auto pnlParentContainer = gui_.addWidget<Panel>(Panel::create(), "pnlHighScores");
@@ -354,6 +361,7 @@ namespace spm {
         pnlParentContainer->addWidget(std::move(btnBack), "btnReturn");
     }
 
+    ///////////////////////////////////////////////////////////////
     void MainMenuSceneView::setSubView(SubView view) {
         gui_.moveWidgetToFront("pnlBlank");
         switch (view) {
@@ -372,4 +380,5 @@ namespace spm {
         }
         subView_ = view;
     }
-}
+
+} // namespace spm

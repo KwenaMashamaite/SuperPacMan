@@ -28,6 +28,7 @@
 
 namespace spm {
     namespace {
+        ///////////////////////////////////////////////////////////////
         ime::GameObject::Ptr createDoor(const ime::Tile& tile, ime::Scene& scene) {
             auto door = std::make_unique<Door>(scene);
             door->getUserData().addProperty({"gridIndex", tile.getIndex()});
@@ -40,8 +41,9 @@ namespace spm {
 
             return door;
         }
-    }
+    } // namespace anonymous
 
+    ///////////////////////////////////////////////////////////////
     void ObjectCreator::createObjects(ime::PhysicsWorld& world, Grid &grid) {
         grid.forEachCell([&world, &grid, keyId = 0](const ime::Tile& tile) mutable {
             ime::GameObject::Ptr actor;
@@ -101,4 +103,5 @@ namespace spm {
             grid.addActor(std::move(actor), tile.getIndex());
         });
     }
-}
+
+} // namespace spm

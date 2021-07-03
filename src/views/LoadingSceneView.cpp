@@ -29,6 +29,7 @@
 #include <IME/ui/widgets/Panel.h>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     void LoadingSceneView::init(ime::ui::GuiContainer& gui) {
         using namespace ime::ui;
         auto pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
@@ -56,4 +57,5 @@ namespace spm {
         lblLoading->setPosition("50%", ime::bindTop(pbrAssetLoading));
         pnlContainer->addWidget(std::move(lblLoading), "lblLoading");
     }
-}
+
+} // namespace spm

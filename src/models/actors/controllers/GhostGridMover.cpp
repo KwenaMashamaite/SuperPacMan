@@ -31,6 +31,7 @@
 #include <random>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     GhostGridMover::GhostGridMover(ime::TileMap& tileMap, ime::GameObject* ghost) :
         ime::TargetGridMover(tileMap, ghost),
         destinationReachedId_{-1},
@@ -41,6 +42,7 @@ namespace spm {
         setPathFinder(std::make_unique<ForwardDirectionalBFS>(tileMap.getSizeInTiles(), ghost->getTag()));
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostGridMover::generateRandomDestination() {
         ime::Direction reverseGhostDir = static_cast<Ghost*>(getTarget())->getDirection() * -1;
         assert(reverseGhostDir != ime::Unknown && "A ghost must have a valid direction before initiating random movement");
@@ -93,6 +95,7 @@ namespace spm {
         directionAttempts_.clear();
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostGridMover::setRandomMoveEnable(bool enable) {
         // Random movement already enabled
         if (isRandomMove_ == enable)
@@ -113,10 +116,12 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     bool GhostGridMover::isRandomMoveEnabled() const {
         return isRandomMove_;
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostGridMover::setReverseDirEnable(bool reverse) {
         if (reverseDirection_ == reverse)
             return;
@@ -131,7 +136,9 @@ namespace spm {
         emitChange(ime::Property{"reverseDirEnable", reverseDirection_});
     }
 
+    ///////////////////////////////////////////////////////////////
     bool GhostGridMover::isReverseDirEnabled() const {
         return reverseDirection_;
     }
-}
+
+} // namespace spm

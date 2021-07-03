@@ -32,12 +32,14 @@
 using namespace ime::ui;
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     void GameOverSceneView::init(ime::ui::GuiContainer &gui, bool wonGame) {
         gui.setFont("ChaletLondonNineteenSixty.ttf");
         createPreSaveMenu(gui, wonGame);
         createNavButtons(gui, wonGame);
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameOverSceneView::createPreSaveMenu(GuiContainer &gui, bool wonGame) {
         auto pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
@@ -142,6 +144,7 @@ namespace spm {
         vlInnerCentreContainer->addWidget(std::move(hlInfo), "hlInfo");
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameOverSceneView::createNavButtons(ime::ui::GuiContainer& gui, bool wonGame) {
         auto vlContainer = VerticalLayout::create("100%", "90%");
         vlContainer->setOrigin(0.5f, 0.5f);
@@ -180,4 +183,5 @@ namespace spm {
         pnlButtonsContainer->setPosition("50%", ime::bindBottom(gui.getWidget("pnlInnerCentreContainer")).append("+15%"));
         gui.getWidget<Panel>("pnlCentreContainer")->addWidget(std::move(pnlButtonsContainer), "pnlButtonsContainer");
     }
-}
+
+} // namespace spm

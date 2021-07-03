@@ -27,6 +27,7 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Grid::Grid(ime::TileMap &tileMap, ime::Scene& scene, ime::GameObjectContainer& objects) :
         grid_{tileMap},
         scene_{scene},
@@ -77,22 +78,27 @@ namespace spm {
         background_.scale(2.1f, 2.1f);
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::loadFromFile(const std::string& filename) {
         grid_.loadFromFile(filename);
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::setVisible(bool visible) {
         grid_.getRenderer().setVisible(visible);
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::setPosition(ime::Vector2f pos) {
         grid_.setPosition(pos.x, pos.y);
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::setBackgroundImagePosition(ime::Vector2f pos) {
         background_.setPosition(pos);
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::setBackground(int level) {
         ime::Sprite sprite;
         if (level == 0)
@@ -112,6 +118,7 @@ namespace spm {
         background_.setTextureRect(sprite.getTextureRect());
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::addActor(ime::GameObject::Ptr object, ime::Index index) {
         assert(object && "Object must not be a nullptr");
         std::string renderLayer = object->getClassName() + "s";
@@ -121,26 +128,31 @@ namespace spm {
         actors_.add(group, std::move(object), 0, renderLayer);
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::GameObject* Grid::getActorById(int id) const {
         return grid_.getChildWithId(id);
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::removeActor(int id) {
         grid_.removeChildWithId(id);
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::forEachCell(const ime::Callback<const ime::Tile&>& callback) {
         grid_.forEachTile([&callback](const ime::Tile& tile) {
             callback(tile);
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::forEachActor(const ime::Callback<ime::GameObject*> &callback) {
         grid_.forEachChild([&callback](ime::GameObject* actor) {
             callback(actor);
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::Time Grid::playFlashAnimation(int level) {
         auto colour = std::string();
         if (level >= 1 && level <= 4)
@@ -158,19 +170,24 @@ namespace spm {
         return background_.getAnimator().getActiveAnimation()->getDuration();
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::onAnimationFinish(ime::Callback<> callback) {
         onAnimFinish_ = std::move(callback);
     }
 
+    ///////////////////////////////////////////////////////////////
     bool Grid::isAnimationPlaying() {
         return background_.getAnimator().isAnimationPlaying();
     }
 
+    ///////////////////////////////////////////////////////////////
     void Grid::update(ime::Time deltaTime) {
         background_.updateAnimation(deltaTime);
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::Scene& Grid::getScene() {
         return scene_;
     }
-}
+
+} // namespace spm

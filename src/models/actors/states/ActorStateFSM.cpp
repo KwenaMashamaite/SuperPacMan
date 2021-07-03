@@ -26,11 +26,13 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     ActorStateFSM::ActorStateFSM() :
         isStarted_{false},
         isExitingState_{false}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void ActorStateFSM::start() {
         if (!isStarted_) {
             isStarted_ = true;
@@ -39,6 +41,7 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void ActorStateFSM::push(std::unique_ptr<IActorState> state) {
         assert(state && "Cannot push a nullptr to the FSM");
 
@@ -54,6 +57,7 @@ namespace spm {
             states_.top()->onEntry();
     }
 
+    ///////////////////////////////////////////////////////////////
     void ActorStateFSM::pop(std::unique_ptr<IActorState> state) {
         if (states_.empty())
             return;
@@ -82,16 +86,20 @@ namespace spm {
             states_.top()->onResume();
     }
 
+    ///////////////////////////////////////////////////////////////
     IActorState *ActorStateFSM::top() {
         return states_.empty() ? nullptr : states_.top().get();
     }
 
+    ///////////////////////////////////////////////////////////////
     std::size_t ActorStateFSM::getCount() const {
         return states_.size();
     }
 
+    ///////////////////////////////////////////////////////////////
     void ActorStateFSM::clear() {
         auto emptyStack = std::stack<std::unique_ptr<IActorState>>{};
         states_.swap(emptyStack);
     }
-}
+
+} // namespace spm

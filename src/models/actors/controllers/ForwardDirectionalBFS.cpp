@@ -29,11 +29,13 @@
 #include <iostream>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     ForwardDirectionalBFS::ForwardDirectionalBFS(const ime::Vector2u &gridSize, const std::string& tag) :
         bfs_{gridSize},
         tag_{tag}
     {}
 
+    ///////////////////////////////////////////////////////////////
     std::stack<ime::Index> ForwardDirectionalBFS::findPath(ime::TileMap &grid, ime::Index sourceTile, ime::Index targetTile) {
         ime::Index actorTile;
         ime::Vector2i actorDirection;
@@ -60,7 +62,9 @@ namespace spm {
         return path;
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string ForwardDirectionalBFS::getType() const {
         return "ForwardDirectionalBFS";
     }
-}
+
+} // namespace spm

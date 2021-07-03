@@ -28,6 +28,7 @@
 #include <IME/ui/widgets/Panel.h>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     LevelStartSceneView::LevelStartSceneView(ime::ui::GuiContainer& gui) :
         gui_{gui},
         commonView_{gui}
@@ -36,6 +37,7 @@ namespace spm {
         gui_.setTextSize(12.0f);
     }
 
+    ///////////////////////////////////////////////////////////////
     void LevelStartSceneView::init(int level, int lives, int score, int highScore) {
         commonView_.init(level, lives);
         commonView_.setScore(score);
@@ -63,7 +65,9 @@ namespace spm {
         gui_.addWidget(std::move(lblPoints), "lblPoints");
     }
 
+    ///////////////////////////////////////////////////////////////
     void LevelStartSceneView::update(ime::Time deltaTime) {
         commonView_.update(deltaTime);
     }
-}
+
+} // namespace spm

@@ -34,12 +34,14 @@
 using namespace ime::ui;
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     void GameOverScene::onEnter() {
         updateLeaderboard();
         initGui();
         initButtonEvents();
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameOverScene::updateLeaderboard() {
         auto playerScore = cache().getValue<int>("CURRENT_SCORE");
         auto playerLevel = cache().getValue<int>("CURRENT_LEVEL");
@@ -54,6 +56,7 @@ namespace spm {
         scoreboard->updateHighScoreFile();
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameOverScene::initGui() {
         view_.init(gui(), cache().getValue<bool>("PLAYER_WON_GAME"));
         gui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(cache().getValue<int>("HIGH_SCORE")));
@@ -62,6 +65,7 @@ namespace spm {
         gui().getWidget<Label>("lblPlayerNameVal")->setText(cache().getValue<std::string>("PLAYER_NAME"));
     }
 
+    ///////////////////////////////////////////////////////////////
     void GameOverScene::initButtonEvents() {
         if (!cache().getValue<bool>("PLAYER_WON_GAME") && cache().getValue<int>("LEVEL_RESTART_COUNT") > 0) {
             // Replenish pacmans lives and restart level when "Restart Level" button is clicked
@@ -97,4 +101,5 @@ namespace spm {
             engine().quit();
         }));
     }
-}
+
+} // namespace spm

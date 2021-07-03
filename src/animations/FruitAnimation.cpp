@@ -25,6 +25,7 @@
 #include "FruitAnimation.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     FruitAnimation::FruitAnimation() :
         spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {0, 141, 290, 18}}
     {
@@ -33,7 +34,9 @@ namespace spm {
         animation_->setRepeatCount(-1);
     }
 
+    ///////////////////////////////////////////////////////////////
     std::shared_ptr<ime::Animation> FruitAnimation::getAnimation() {
         return animation_;
     }
-}
+
+} // namespace spm

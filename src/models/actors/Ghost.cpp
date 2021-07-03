@@ -31,6 +31,7 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Ghost::Ghost(ime::Scene& scene, Colour colour) :
         ime::GameObject(scene),
         gridMover_{nullptr},
@@ -67,6 +68,7 @@ namespace spm {
         getSprite().getAnimator().startAnimation("goingLeft");
     }
 
+    ///////////////////////////////////////////////////////////////
     void Ghost::initFSM() {
         fsm_.clear();
 
@@ -76,6 +78,7 @@ namespace spm {
         fsm_.start();
     }
 
+    ///////////////////////////////////////////////////////////////
     void Ghost::setMovementController(ime::GridMover* gridMover) {
         gridMover_ = gridMover;
         gridMover_->setTarget(this);
@@ -102,22 +105,27 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::GridMover* Ghost::getMoveController() const {
         return gridMover_;
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string Ghost::getClassName() const {
         return "Ghost";
     }
 
+    ///////////////////////////////////////////////////////////////
     Ghost::State Ghost::getState() const {
         return static_cast<Ghost::State>(ime::GameObject::getState());
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::Vector2i Ghost::getDirection() const {
         return direction_;
     }
 
+    ///////////////////////////////////////////////////////////////
     void Ghost::update(ime::Time deltaTime) {
         assert(fsm_.top() && "A ghost FSM must have at least one state before it is updated");
 
@@ -125,6 +133,7 @@ namespace spm {
         fsm_.top()->update(deltaTime);
     }
 
+    ///////////////////////////////////////////////////////////////
     void Ghost::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         assert(fsm_.top() && "A ghost FSM must have at least one state before handling an event");
 
@@ -136,9 +145,12 @@ namespace spm {
         fsm_.top()->handleEvent(event, args);
     }
 
+    ///////////////////////////////////////////////////////////////
     bool Ghost::isPacmanSuper() const {
         return isPacmanSuper_;
     }
 
+    ///////////////////////////////////////////////////////////////
     Ghost::~Ghost() = default;
-}
+
+} // namespace spm

@@ -29,6 +29,7 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     RoamState::RoamState(ActorStateFSM *fsm, Ghost* target, GhostGridMover* gridMover) :
         GhostState(fsm)
     {
@@ -36,6 +37,7 @@ namespace spm {
         setGridMover(gridMover);
     }
 
+    ///////////////////////////////////////////////////////////////
     void RoamState::onEntry() {
         assert(ghost_ && "Cannot enter roam state without a ghost");
         assert(ghostMover_ && "Cannot enter roam state without a ghost grid mover");
@@ -49,6 +51,7 @@ namespace spm {
         ghostMover_->startMovement();
     }
 
+    ///////////////////////////////////////////////////////////////
     void RoamState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::SuperModeEnd)
             fsm_->pop();
@@ -56,8 +59,10 @@ namespace spm {
             fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
     }
 
+    ///////////////////////////////////////////////////////////////
     void RoamState::onExit() {
         ghostMover_->setRandomMoveEnable(false);
         ghostMover_->clearPath();
     }
-}
+
+} // namespace spm

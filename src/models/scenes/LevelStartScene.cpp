@@ -26,10 +26,12 @@
 #include <IME/core/engine/Engine.h>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     LevelStartScene::LevelStartScene() :
         view_{gui()}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void LevelStartScene::onEnter() {
         auto level = cache().getValue<int>("CURRENT_LEVEL");
         auto lives = cache().getValue<int>("PLAYER_LIVES");
@@ -49,7 +51,9 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void LevelStartScene::update(ime::Time deltaTime) {
         view_.update(deltaTime);
     }
-}
+
+} // namespace spm

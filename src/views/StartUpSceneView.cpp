@@ -33,6 +33,7 @@
 using namespace ime::ui;
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     void StartUpSceneView::init(ime::ui::GuiContainer& gui) {
         auto* pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
@@ -78,6 +79,7 @@ namespace spm {
         createNamePrompt(gui);
     }
 
+    ///////////////////////////////////////////////////////////////
     void StartUpSceneView::createNamePrompt(ime::ui::GuiContainer &gui) {
         // Name prompt panel
         auto pnlParentContainer = Panel::create();
@@ -136,4 +138,5 @@ namespace spm {
         pnlParentContainer->addWidget(std::move(pnlSecondaryContainer), "pnlSecondaryNameContainer");
         gui.addWidget(std::move(pnlParentContainer), "pnlNamePrompt");
     }
-}
+
+} // namespace spm

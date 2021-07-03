@@ -25,6 +25,7 @@
 #include "src/models/actors/Key.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Key::Key(ime::Scene& scene, int id) :
         ime::GameObject(scene),
         id_(id)
@@ -37,15 +38,19 @@ namespace spm {
         setCollisionGroup("keys");
     }
 
+    ///////////////////////////////////////////////////////////////
     void Key::setId(int id) {
         id_ = id;
     }
 
+    ///////////////////////////////////////////////////////////////
     int Key::getId() const {
         return id_;
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string Key::getClassName() const {
         return "Key";
     }
-}
+
+} // namespace spm

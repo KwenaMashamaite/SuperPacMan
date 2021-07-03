@@ -33,11 +33,13 @@
 #include <stack>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     ChaseState::ChaseState(ActorStateFSM* fsm, int level) :
         GhostState(fsm),
         currentLevel_{level}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void ChaseState::onEntry() {
         assert(ghost_ && "Cannot enter chase state without a ghost");
         assert(ghostMover_ && "Cannot enter chase state without a ghost grid mover");
@@ -58,6 +60,7 @@ namespace spm {
         initTimer(ime::seconds(Constants::CHASE_MODE_DURATION + currentLevel_));
     }
 
+    ///////////////////////////////////////////////////////////////
     void ChaseState::initEvents() {
         // Make ghost wonder around if it can't find pacman
         ghostMover_->onPathGenFinish([this](const std::stack<ime::Index>& path) {
@@ -68,6 +71,7 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::PacManMoved && !ghost_->isPacmanSuper()) {
             auto pacmanTile = args.getValue<ime::Index>("pacmanTileIndex");
@@ -105,12 +109,14 @@ namespace spm {
             fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
     }
 
+    ///////////////////////////////////////////////////////////////
     void ChaseState::onPause() {
         ghostMover_->clearPath();
         ghostMover_->onPathGenFinish(nullptr);
         ghostMover_->setRandomMoveEnable(false);
     }
 
+    ///////////////////////////////////////////////////////////////
     void ChaseState::onResume() {
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
         initEvents();
@@ -125,6 +131,7 @@ namespace spm {
         ghostMover_->startMovement();
     }
 
+    ///////////////////////////////////////////////////////////////
     void ChaseState::onExit() {
         ghostMover_->clearPath();
         ghostMover_->onPathGenFinish(nullptr);
@@ -137,4 +144,5 @@ namespace spm {
         nextState->setGridMover(ghost_->getMoveController());
         fsm_->push(std::move(nextState));
     }
-}
+
+} // namespace spm

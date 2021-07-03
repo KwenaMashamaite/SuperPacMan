@@ -32,10 +32,12 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     MainMenuScene::MainMenuScene() :
         view_{gui()}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void MainMenuScene::onEnter() {
         engine().getWindow().onClose(nullptr); // Let window be closed with exit button only
 
@@ -72,4 +74,5 @@ namespace spm {
             engine().quit();
         }));
     }
-}
+
+} // namespace spm

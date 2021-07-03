@@ -57,6 +57,7 @@ namespace spm {
         const auto CLYDE_GHOST_HOUSE_PATH = std::queue<ime::Index>({Constants::InkySpawnTile, Constants::PinkySpawnTile, Constants::ClydeSpawnTile});
     } // namespace anonymous
 
+    ///////////////////////////////////////////////////////////////
     ScatterState::ScatterState(ActorStateFSM* fsm, int level) :
         GhostState(fsm),
         targetCorner_{UNKNOWN_CORNER},
@@ -66,6 +67,7 @@ namespace spm {
         isLockedInGhostHouse_{false}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void ScatterState::onEntry() {
         assert(ghost_ && "Cannot enter scatter state without a ghost");
         assert(ghostMover_ && "Cannot enter scatter state without a ghost grid mover");
@@ -79,6 +81,7 @@ namespace spm {
         ghostMover_->startMovement();
     }
 
+    ///////////////////////////////////////////////////////////////
     void ScatterState::setTargetPosition() {
         if (ghost_->getTag() == "blinky")
             targetCorner_ = TOP_RIGHT_CORNER;
@@ -104,6 +107,7 @@ namespace spm {
         ghostMover_->setDestination(targetCorner_);
     }
 
+    ///////////////////////////////////////////////////////////////
     void ScatterState::setSpeed() {
         // Slow lane speed is controlled by the slow lane sensor whenever the ghost triggers it
         if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane")) {
@@ -114,6 +118,7 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void ScatterState::clearPath() {
         if (!path_.empty()) {
             auto emptyQueue = std::queue<ime::Index>{};
@@ -121,6 +126,7 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void ScatterState::initEvents() {
         // Make ghost cycle corner after it finds its target corner
         destFoundHandler_ = ghostMover_->onDestinationReached([this](ime::Index) {
@@ -166,6 +172,7 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void ScatterState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::SuperModeBegin && !isLockedInGhostHouse_)
             fsm_->push(std::make_unique<RoamState>(fsm_, ghost_, ghostMover_));
@@ -173,6 +180,7 @@ namespace spm {
             fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
     }
 
+    ///////////////////////////////////////////////////////////////
     void ScatterState::onPause() {
         // Destroy ScatterState specific event handlers
         ghostMover_->unsubscribe(destFoundHandler_);
@@ -185,6 +193,7 @@ namespace spm {
         clearPath();
     }
 
+    ///////////////////////////////////////////////////////////////
     void ScatterState::onResume() {
         initEvents();
         setTargetPosition();
@@ -192,6 +201,7 @@ namespace spm {
         setSpeed();
     }
 
+    ///////////////////////////////////////////////////////////////
     void ScatterState::onExit() {
         ghostMover_->unsubscribe(destFoundHandler_);
         ghost_->getUserData().unsubscribe("is_locked_in_ghost_house", valueChangeHandler_);
@@ -212,4 +222,5 @@ namespace spm {
         nextState->setGridMover(ghost_->getMoveController());
         fsm_->push(std::move(nextState));
     }
-}
+
+} // namespace spm

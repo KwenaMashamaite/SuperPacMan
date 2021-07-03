@@ -27,10 +27,12 @@
 #include <algorithm>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Scoreboard::Scoreboard(const std::string &filename) :
         highScoresFile_(filename)
     {}
 
+    ///////////////////////////////////////////////////////////////
     void Scoreboard::load() {
         auto highScores = std::stringstream();
         ime::utility::DiskFileReader().readFileInto(highScoresFile_, highScores);
@@ -47,19 +49,23 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void Scoreboard::addScore(const Score &score) {
         highScores_.push_back(score);
         std::sort(std::begin(highScores_), std::end(highScores_),std::greater<>());
     }
 
+    ///////////////////////////////////////////////////////////////
     const Score& Scoreboard::getTopScore() const {
         return highScores_.front();
     }
 
+    ///////////////////////////////////////////////////////////////
     std::size_t Scoreboard::getSize() const {
         return highScores_.size();
     }
 
+    ///////////////////////////////////////////////////////////////
     void Scoreboard::updateHighScoreFile() {
         auto newHighscoreList = std::stringstream();
         newHighscoreList << highScores_.front().getOwner() + ":" + std::to_string(highScores_.front().getValue()) + " " + std::to_string(highScores_.front().getLevel());
@@ -70,8 +76,10 @@ namespace spm {
         ime::utility::DiskFileReader().writeToFile(newHighscoreList, highScoresFile_);
     }
 
+    ///////////////////////////////////////////////////////////////
     void Scoreboard::forEachScore(std::function<void(const Score&)> callback) {
         for (const auto& score : highScores_)
             callback(score);
     }
-}
+
+} // namespace spm

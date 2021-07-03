@@ -30,12 +30,14 @@
 using namespace ime::ui;
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     CommonView::CommonView(GuiContainer &gui) :
         gui_{gui}
     {
         gui_.setFont("namco.ttf");
     }
 
+    ///////////////////////////////////////////////////////////////
     void CommonView::init(unsigned int level, unsigned int lives) {
         createWidgets();
         createSprites(level, lives);
@@ -46,16 +48,19 @@ namespace spm {
         timer_.start();
     }
 
+    ///////////////////////////////////////////////////////////////
     void CommonView::setScore(int score) {
         gui_.getWidget<Label>("lblScoreValue")
             ->setText(score == 0 ? "00" : std::to_string(score));
     }
 
+    ///////////////////////////////////////////////////////////////
     void CommonView::setHighScore(int highScore) {
         gui_.getWidget<Label>("lblHighScoreValue")
             ->setText(highScore == 0 ? "00" : std::to_string(highScore));
     }
 
+    ///////////////////////////////////////////////////////////////
     void CommonView::createWidgets() {
         auto* pnlContainer = gui_.addWidget<Panel>(Panel::create(), "pnlContainer");;
         pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
@@ -84,6 +89,7 @@ namespace spm {
         pnlContainer->addWidget(std::move(lblCredit), "lblCredit");
     }
 
+    ///////////////////////////////////////////////////////////////
     void CommonView::createSprites(unsigned int level, unsigned int lives) {
         auto* pnlContainer = gui_.getWidget<Panel>("pnlContainer");
 
@@ -123,11 +129,14 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void CommonView::updateLives(unsigned int pacmanLives) {
         gui_.removeWidget("picLife" + std::to_string(pacmanLives));
     }
 
+    ///////////////////////////////////////////////////////////////
     void CommonView::update(ime::Time deltaTime) {
         timer_.update(deltaTime);
     }
-}
+
+} // namespace spm

@@ -25,6 +25,7 @@
 #include "src/models/actors/Wall.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Wall::Wall(ime::Scene& scene) :
         ime::GameObject(scene)
     {
@@ -33,7 +34,9 @@ namespace spm {
         getSprite().setTextureRect({0, 0, 16, 16});
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string Wall::getClassName() const {
         return "Wall";
     }
-}
+
+} // namespace spm

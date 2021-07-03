@@ -25,19 +25,24 @@
 #include "src/common/PositionTracker.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     void PositionTracker::updatePosition(const std::string &tag, const ime::Index& index) {
         positions_[tag].first = index;
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::Index PositionTracker::getPosition(const std::string &tag) {
         return positions_.at(tag).first;
     }
 
+    ///////////////////////////////////////////////////////////////
     void PositionTracker::updateDirection(const std::string &tag, const ime::Vector2i &dir) {
         positions_[tag].second = dir;
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::Vector2i PositionTracker::getDirection(const std::string &tag) {
         return positions_.at(tag).second;
     }
-}
+
+} // namespace spm

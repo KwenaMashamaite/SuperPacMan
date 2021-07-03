@@ -25,6 +25,7 @@
 #include "src/models/actors/Door.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Door::Door(ime::Scene& scene) :
         ime::GameObject(scene),
         orientation_(Orientation::Unknown),
@@ -45,18 +46,22 @@ namespace spm {
         setCollisionGroup("doors");
     }
 
+    ///////////////////////////////////////////////////////////////
     void Door::setOrientation(Orientation orientation) {
         orientation_ = orientation;
     }
 
+    ///////////////////////////////////////////////////////////////
     Orientation Door::getOrientation() const {
         return orientation_;
     }
 
+    ///////////////////////////////////////////////////////////////
     void Door::addDoorLocker(DoorLocker doorLocker) {
         doorLocker_ = doorLocker;
     }
 
+    ///////////////////////////////////////////////////////////////
     void Door::lockWith(const Key &key) {
         if (!isLocked()) {
             doorLocker_.lock(key);
@@ -71,6 +76,7 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void Door::unlockWith(const Key &key) {
         if (isLocked()) {
             doorLocker_.unlock(key);
@@ -82,10 +88,12 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     bool Door::isLocked() const {
         return doorLocker_.isLocked();
     }
 
+    ///////////////////////////////////////////////////////////////
     void Door::burstOpen() {
         if (isBroken_)
             return;
@@ -99,15 +107,19 @@ namespace spm {
             setDoorTexture("broken_door_vertical");
     }
 
+    ///////////////////////////////////////////////////////////////
     bool Door::isBroken() const {
         return isBroken_;
     }
 
+    ///////////////////////////////////////////////////////////////
     void Door::setDoorTexture(const std::string &alias) {
         getSprite().setTextureRect(spriteSheet_.getSprite(alias).getTextureRect());
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string Door::getClassName() const {
         return "Door";
     }
-}
+
+} // namespace spm

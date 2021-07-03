@@ -26,10 +26,12 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     GhostAnimations::GhostAnimations() :
         spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {0, 158, 358, 69}}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void GhostAnimations::createAnimationsFor(const std::string& tag) {
         animations_.clear();
 
@@ -38,10 +40,12 @@ namespace spm {
         createFrightenedAnimations();
     }
 
+    ///////////////////////////////////////////////////////////////
     const std::vector<ime::Animation::Ptr> &GhostAnimations::getAll() const {
         return animations_;
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostAnimations::createAnimation(const std::string &name, ime::Index startPos) {
         auto anim = ime::Animation::create(name, spritesheet_, ime::milliseconds(180));
         anim->setRepeatCount(-1);
@@ -50,6 +54,7 @@ namespace spm {
         animations_.push_back(std::move(anim));
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostAnimations::createMovementAnimations(const std::string& tag) {
         int row = -1;
         if (tag == "blinky")
@@ -75,15 +80,18 @@ namespace spm {
         createAnimation("goingDownFlat", {row, 14});
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostAnimations::createFrightenedAnimations() {
         createAnimation("frightened", {2, 17});
         createAnimation("flash", {2, 19});
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostAnimations::createEatenAnimations() {
         createAnimation("goingLeftEaten", {0, 17});
         createAnimation("goingUpEaten", {0, 19});
         createAnimation("goingRightEaten", {1, 17});
         createAnimation("goingDownEaten", {1, 19});
     }
-}
+
+} // namespace spm

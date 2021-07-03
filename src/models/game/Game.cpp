@@ -28,11 +28,13 @@
 #include "src/common/Constants.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     Game::Game() :
         settingsFilename_("assets/textFiles/settings.txt"),
         engine_{"Super Pac-Man", settingsFilename_}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void Game::initialize() {
         // Make game window unresizable
         engine_.getWindow().setStyle(ime::WindowStyle::Close);
@@ -61,7 +63,9 @@ namespace spm {
         engine_.pushScene(std::make_unique<StartUpScene>());
     }
 
+    ///////////////////////////////////////////////////////////////
     void Game::start() {
         engine_.run();
     }
-}
+
+} // namespace spm

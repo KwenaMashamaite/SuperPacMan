@@ -29,6 +29,7 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     FrightenedState::FrightenedState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover) :
         GhostState(fsm)
     {
@@ -36,6 +37,7 @@ namespace spm {
         setGridMover(gridMover);
     }
 
+    ///////////////////////////////////////////////////////////////
     void FrightenedState::onEntry() {
         assert(ghost_ && "Cannot enter frightened state without a ghost");
         assert(ghostMover_ && "Cannot enter frightened state without a ghost grid mover");
@@ -49,6 +51,7 @@ namespace spm {
         ghost_->getSprite().getAnimator().startAnimation("frightened");
     }
 
+    ///////////////////////////////////////////////////////////////
     void FrightenedState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::PowerModeEnd)
             fsm_->pop();
@@ -56,8 +59,10 @@ namespace spm {
             fsm_->pop(std::make_unique<HealState>(fsm_, ghost_, ghostMover_));
     }
 
+    ///////////////////////////////////////////////////////////////
     void FrightenedState::onExit() {
         ghostMover_->setRandomMoveEnable(false);
         ghostMover_->clearPath();
     }
-}
+
+} // namespace spm

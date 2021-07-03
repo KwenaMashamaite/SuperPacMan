@@ -26,6 +26,7 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     GhostState::GhostState(ActorStateFSM* fsm) :
         fsm_{fsm},
         ghost_{nullptr},
@@ -34,21 +35,25 @@ namespace spm {
         assert(fsm_ && "A ghost's FSM cannot be a nullptr");
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostState::setTarget(Ghost *ghost) {
         assert(ghost && "Ghost must not be a nullptr");
         ghost_ = ghost;
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostState::setGridMover(ime::GridMover* gridMover) {
         assert(gridMover && "Grid mover must not be nullptr");
         ghostMover_ = dynamic_cast<GhostGridMover*>(gridMover);
         assert(ghostMover_ && "Ghost state requires spm::GhostMover as a movement controller");
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostState::update(ime::Time deltaTime) {
         timer_.update(deltaTime);
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostState::initTimer(ime::Time timeout) {
         if (timer_.getStatus() != ime::Timer::Status::Running) {
             timer_.setTimeoutCallback([this] {
@@ -60,8 +65,9 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void GhostState::updateTimeout(ime::Time value) {
         timer_.setInterval(timer_.getRemainingDuration() + value);
     }
-}
 
+} // namespace spm

@@ -29,6 +29,7 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     PacMan::PacMan(ime::Scene& scene) :
         ime::GameObject(scene),
         livesCount_{Constants::PacManLives},
@@ -55,15 +56,18 @@ namespace spm {
         state_ = State::Idle;
     }
 
+    ///////////////////////////////////////////////////////////////
     void PacMan::setLivesCount(int numOfLives) {
         livesCount_ = numOfLives;
         emitChange(ime::Property{"livesCount", livesCount_});
     }
 
+    ///////////////////////////////////////////////////////////////
     int PacMan::getLivesCount() const {
         return livesCount_;
     }
 
+    ///////////////////////////////////////////////////////////////
     void PacMan::setMoveController(ime::GridMover* gridMover) {
         assert(gridMover && "Grid mover cannot be a nullptr");
         gridMover_ = gridMover;
@@ -76,10 +80,12 @@ namespace spm {
             gridMover_->setMovementRestriction(ime::GridMover::MoveRestriction::All);
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::GridMover* PacMan::getMoveController() const {
         return gridMover_;
     }
 
+    ///////////////////////////////////////////////////////////////
     void PacMan::switchAnimation(ime::Direction dir) {
         auto strDir = utils::convertToString(dir);
         auto& animator = getSprite().getAnimator();
@@ -94,6 +100,7 @@ namespace spm {
         resetSpriteOrigin();
     }
 
+    ///////////////////////////////////////////////////////////////
     void PacMan::setState(PacMan::State state) {
         if (state_ != state) {
             assert(gridMover_ && "Cannot set state without a grid mover");
@@ -129,6 +136,7 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void PacMan::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::SuperModeBegin)
             setState(State::Super);
@@ -136,10 +144,12 @@ namespace spm {
             setState(State::Normal);
     }
 
+    ///////////////////////////////////////////////////////////////
     PacMan::State PacMan::getState() const {
         return static_cast<State>(ime::GameObject::getState());
     }
 
+    ///////////////////////////////////////////////////////////////
     void PacMan::setDirection(const ime::Vector2i &direction) {
         if (direction_ != direction) {
             direction_ = direction;
@@ -147,11 +157,14 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     ime::Vector2i PacMan::getDirection() const {
         return direction_;
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string PacMan::getClassName() const {
         return "PacMan";
     }
-}
+
+} // namespace spm

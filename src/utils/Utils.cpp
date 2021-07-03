@@ -40,8 +40,9 @@ namespace spm::utils {
          * key it is placed
          */
         int getLockerId(ime::Index doorIndex);
-    }
+    } // namespace anonymous
 
+    ///////////////////////////////////////////////////////////////
     std::string convertToString(ime::Direction direction) {
         if (direction == ime::Left)
             return "Left";
@@ -55,6 +56,7 @@ namespace spm::utils {
             return "Unknown";
     }
 
+    ///////////////////////////////////////////////////////////////
     bool unlockDoor(Door* door, const Key* key) {
         if (!door->isLocked())
             return false;
@@ -66,12 +68,14 @@ namespace spm::utils {
         return false;
     }
 
+    ///////////////////////////////////////////////////////////////
     void lockDoor(Door* door) {
         auto index = door->getUserData().getValue<ime::Index>("gridIndex");
         door->addDoorLocker(DoorLocker(getLockerId(index)));
         door->lockWith(Key(door->getUserData().getValue<std::reference_wrapper<ime::Scene>>("scene"), getLockerId(index)));
     }
 
+    ///////////////////////////////////////////////////////////////
     std::string getFruitName(int level) {
         auto static fruitName = std::vector{
             "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake", "peach",
@@ -86,6 +90,7 @@ namespace spm::utils {
     }
 
     namespace {
+        ///////////////////////////////////////////////////////////////
         int getLockerId(ime::Index doorIndex) {
             if (doorIndex == ime::Index{4, 4} || doorIndex == ime::Index{6, 4})
                 return 0;
@@ -119,5 +124,6 @@ namespace spm::utils {
                 return 14;
             else return -1;
         }
-    }
-}
+    } // namespace anonymous
+
+} // namespace spm

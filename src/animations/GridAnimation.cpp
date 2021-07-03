@@ -25,6 +25,7 @@
 #include "GridAnimation.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     GridAnimation::GridAnimation() :
         spritesheet_{"spritesheet.png", {224, 244}, {1, 1}, {0, 237, 901, 491}}
     {
@@ -35,10 +36,12 @@ namespace spm {
         createFlashAnimation("Green", {1, 3});
     }
 
+    ///////////////////////////////////////////////////////////////
     const std::vector<ime::Animation::Ptr> & GridAnimation::getAll() {
         return animations_;
     }
 
+    ///////////////////////////////////////////////////////////////
     void GridAnimation::createFlashAnimation(const std::string& gridColour, ime::Index gridFrame) {
         auto animation = ime::Animation::create("flash" + gridColour, spritesheet_, ime::seconds(2.0f));
         const int MAX_NUM_OF_FRAMES = 10;
@@ -50,4 +53,5 @@ namespace spm {
         }
         animations_.push_back(std::move(animation));
     }
-}
+
+} // namespace spm

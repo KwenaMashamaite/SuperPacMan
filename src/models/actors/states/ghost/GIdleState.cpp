@@ -27,16 +27,19 @@
 #include "src/models/actors/states/ghost/ScatterState.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     GIdleState::GIdleState(ActorStateFSM* fsm) :
         GhostState(fsm),
         level_{1}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void GIdleState::onEntry() {
         ghost_->setState(static_cast<int>(Ghost::State::Idle));
         ghost_->getMoveController()->setMovementRestriction(ime::GridMover::MoveRestriction::All);
     }
 
+    ///////////////////////////////////////////////////////////////
     void GIdleState::handleEvent(GameEvent event, const ime::PropertyContainer& args) {
         if (event == GameEvent::LevelStarted) {
             level_ = args.getValue<int>("level");
@@ -44,6 +47,7 @@ namespace spm {
         }
     }
 
+    ///////////////////////////////////////////////////////////////
     void GIdleState::onExit() {
         ghost_->getMoveController()->setMovementRestriction(ime::GridMover::MoveRestriction::None);
 
@@ -52,4 +56,5 @@ namespace spm {
         nextState->setGridMover(ghost_->getMoveController());
         fsm_->push(std::move(nextState));
     }
-}
+
+} // namespace spm

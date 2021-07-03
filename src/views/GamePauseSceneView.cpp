@@ -31,6 +31,7 @@
 #include <IME/ui/widgets/ToggleButton.h>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     void spm::GamePauseSceneView::init(ime::ui::GuiContainer& gui) {
         using namespace ime::ui;
 
@@ -102,4 +103,5 @@ namespace spm {
 
         pnlInnerContainer->addWidget(std::move(vlBtnContainer), "vlPauseMenu");
     }
-}
+
+} // namespace spm

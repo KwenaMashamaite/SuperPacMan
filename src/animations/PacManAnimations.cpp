@@ -25,12 +25,14 @@
 #include "PacManAnimations.h"
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     PacManAnimations::PacManAnimations() :
         normalSizeSpritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {198, 0, 52, 69}},
         superSizeSpritesheet_{"spritesheet.png", {32, 32}, {1, 1}, {0, 0, 199, 132}},
         deathSpritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {198, 0, 239, 18}}
     {}
 
+    ///////////////////////////////////////////////////////////////
     void PacManAnimations::create() {
         createAnimation("goingLeft", {0, 0});
         createAnimation("goingUp", {1, 0});
@@ -52,10 +54,12 @@ namespace spm {
         animations_.push_back(std::move(deathAnimation));
     }
 
+    ///////////////////////////////////////////////////////////////
     const std::vector<ime::Animation::Ptr> &PacManAnimations::getAll() const {
         return animations_;
     }
 
+    ///////////////////////////////////////////////////////////////
     void PacManAnimations::createAnimation(const std::string &name, ime::Index index, bool super) {
         auto movementAnimDuration = ime::milliseconds(150);
         ime::Animation::Ptr animation;
@@ -69,4 +73,5 @@ namespace spm {
         animation->showTargetOnStart(false);
         animations_.push_back(std::move(animation));
     }
-}
+
+} // namespace spm

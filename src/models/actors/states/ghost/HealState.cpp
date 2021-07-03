@@ -29,6 +29,7 @@
 #include <cassert>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     HealState::HealState(ActorStateFSM* fsm, Ghost* target, GhostGridMover* gridMover) :
         GhostState(fsm),
         destFoundHandler_{-1}
@@ -37,6 +38,7 @@ namespace spm {
         setGridMover(gridMover);
     }
 
+    ///////////////////////////////////////////////////////////////
     void HealState::onEntry() {
         assert(ghost_ && "Cannot enter heal state without a ghost");
         assert(ghostMover_ && "Cannot enter heal state without a ghost grid mover");
@@ -54,12 +56,15 @@ namespace spm {
         });
     }
 
+    ///////////////////////////////////////////////////////////////
     void HealState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
         if (event == GameEvent::PowerModeBegin)
             fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, ghostMover_));
     }
 
+    ///////////////////////////////////////////////////////////////
     void HealState::onExit() {
         ghostMover_->unsubscribe(destFoundHandler_);
     }
-}
+
+} // namespace spm

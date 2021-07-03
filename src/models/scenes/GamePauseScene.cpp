@@ -32,6 +32,7 @@
 #include <IME/core/engine/Engine.h>
 
 namespace spm {
+    ///////////////////////////////////////////////////////////////
     void GamePauseScene::onEnter() {
         //------------ Init pause menu gui and click event handlers ------------//
         GamePauseSceneView::init(gui());
@@ -92,4 +93,5 @@ namespace spm {
                engine().popScene();
         });
     }
-}
+
+} // namespace spm
