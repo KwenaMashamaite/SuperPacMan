@@ -92,35 +92,35 @@ namespace spm::utils {
     namespace {
         ///////////////////////////////////////////////////////////////
         int getLockerId(ime::Index doorIndex) {
-            if (doorIndex == ime::Index{4, 4} || doorIndex == ime::Index{6, 4})
+            if (doorIndex == ime::Index{4, 5} || doorIndex == ime::Index{6, 5})
                 return 0;
-            else if (doorIndex == ime::Index{4, 20} || doorIndex == ime::Index{6, 20})
+            else if (doorIndex == ime::Index{4, 21} || doorIndex == ime::Index{6, 21})
                 return 1;
-            else if (doorIndex == ime::Index{5, 7} || doorIndex == ime::Index{4, 12})
+            else if (doorIndex == ime::Index{5, 8} || doorIndex == ime::Index{4, 13})
                 return 2;
-            else if (doorIndex == ime::Index{5, 17})
+            else if (doorIndex == ime::Index{5, 18})
                 return 3;
-            else if (doorIndex == ime::Index{10, 4} || doorIndex == ime::Index{13, 3} || doorIndex == ime::Index{13, 5})
+            else if (doorIndex == ime::Index{10, 5} || doorIndex == ime::Index{13, 4} || doorIndex == ime::Index{13, 6})
                 return 4;
-            else if (doorIndex == ime::Index{10, 20} || doorIndex == ime::Index{13, 19} || doorIndex == ime::Index{13, 21})
+            else if (doorIndex == ime::Index{10, 21} || doorIndex == ime::Index{13, 20} || doorIndex == ime::Index{13, 22})
                 return 5;
-            else if (doorIndex == ime::Index{16, 4} || doorIndex == ime::Index{20, 4})
+            else if (doorIndex == ime::Index{16, 5} || doorIndex == ime::Index{20, 5})
                 return 6;
-            else if (doorIndex == ime::Index{13, 7} || doorIndex == ime::Index{16, 8} || doorIndex == ime::Index{17, 11})
+            else if (doorIndex == ime::Index{13, 8} || doorIndex == ime::Index{16, 9} || doorIndex == ime::Index{17, 12})
                 return 7;
-            else if (doorIndex == ime::Index{13, 17} || doorIndex == ime::Index{17, 13} || doorIndex == ime::Index{16, 16})
+            else if (doorIndex == ime::Index{13, 18} || doorIndex == ime::Index{17, 14} || doorIndex == ime::Index{16, 17})
                 return 8;
-            else if (doorIndex == ime::Index{16, 20} || doorIndex == ime::Index{20, 20})
+            else if (doorIndex == ime::Index{16, 21} || doorIndex == ime::Index{20, 21})
                 return 9;
-            else if (doorIndex == ime::Index{22, 12} || doorIndex == ime::Index{13, 1} || doorIndex == ime::Index{13, 23})
+            else if (doorIndex == ime::Index{22, 13} || doorIndex == ime::Index{13, 2} || doorIndex == ime::Index{13, 24})
                 return 10;
-            else if (doorIndex == ime::Index{22, 8} || doorIndex == ime::Index{25, 7} || doorIndex == ime::Index{24, 12})
+            else if (doorIndex == ime::Index{22, 9} || doorIndex == ime::Index{25, 8} || doorIndex == ime::Index{24, 13})
                 return 11;
-            else if (doorIndex == ime::Index{22, 16} || doorIndex == ime::Index{25, 17})
+            else if (doorIndex == ime::Index{22, 17} || doorIndex == ime::Index{25, 18})
                 return 12;
-            else if (doorIndex == ime::Index{22, 4} || doorIndex == ime::Index{24, 4})
+            else if (doorIndex == ime::Index{22, 5} || doorIndex == ime::Index{24, 5})
                 return 13;
-            else if (doorIndex == ime::Index{22, 20} || doorIndex == ime::Index{24, 20})
+            else if (doorIndex == ime::Index{22, 21} || doorIndex == ime::Index{24, 21})
                 return 14;
             else return -1;
         }

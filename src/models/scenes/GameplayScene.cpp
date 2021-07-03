@@ -89,7 +89,7 @@ namespace spm {
         createTilemap(20, 20);
         grid_ = std::make_unique<Grid>(tilemap(), *this, gameObjects());
         grid_->loadFromFile("assets/textFiles/mazes/gameplayMaze.txt");
-        grid_->setPosition({-21, 0});
+        grid_->setPosition({-42, 0});
         grid_->setBackground(currentLevel_);
         grid_->setBackgroundImagePosition({7.0f, 48.0f});
 #ifndef NDEBUG
@@ -170,6 +170,11 @@ namespace spm {
         // Keep track of the grid position and direction of each grid controlled actor
         gridMovers().forEach([](ime::GridMover* gridMover) {
             gridMover->onAdjacentMoveBegin([gridMover](ime::Index index) {
+                PositionTracker::updatePosition(gridMover->getTarget()->getTag(), index);
+                PositionTracker::updateDirection(gridMover->getTarget()->getTag(), gridMover->getDirection());
+            });
+
+            gridMover->onTargetTileReset([gridMover](ime::Index index) {
                 PositionTracker::updatePosition(gridMover->getTarget()->getTag(), index);
                 PositionTracker::updateDirection(gridMover->getTarget()->getTag(), gridMover->getDirection());
             });
@@ -275,7 +280,7 @@ namespace spm {
         };
 
         // 6. Tunnel sensor collision handler
-        auto onTunnelSensorCollision = [this](ime::GridMover* gridMover, ime::GameObject* other) {
+        auto onTunnelExitSensorTrigger = [this](ime::GridMover* gridMover, ime::GameObject* other) {
             ime::Direction actorDirection = ime::Unknown;
             if (other->getClassName() == "PacMan")
                 actorDirection = static_cast<PacMan*>(other)->getDirection();
@@ -295,6 +300,8 @@ namespace spm {
                 tilemap().addChild(other, {prevTile.getIndex().row, 0});
 
             gridMover->resetTargetTile();
+            gridMover->teleportTargetToDestination();
+            gridMover->requestDirectionChange(actorDirection);
         };
 
         // 7. Slow lane entry sensor trigger handler
@@ -343,7 +350,7 @@ namespace spm {
             else if (other->getClassName() == "Ghost")
                 onGhostCollision(pacman, other);
             else if (other->getClassName() == "Sensor")
-                onTunnelSensorCollision(pacmanGridMover, pacman);
+                onTunnelExitSensorTrigger(pacmanGridMover, pacman);
         });
 
         // Subscribe collision handlers to ghost grid mover
@@ -357,7 +364,7 @@ namespace spm {
                     else if (other->getTag() == "slowLaneExitSensor")
                         onSlowLaneExitSensorTrigger(ghostMover, ghost);
                     else
-                        onTunnelSensorCollision(ghostMover, ghost);
+                        onTunnelExitSensorTrigger(ghostMover, ghost);
                 }
             });
         });

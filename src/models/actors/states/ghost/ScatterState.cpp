@@ -34,22 +34,22 @@
 namespace spm {
     namespace {
         // Starting point of cyclic corner path
-        const auto TOP_LEFT_CORNER = ime::Index{3, 3};
-        const auto TOP_RIGHT_CORNER = ime::Index{3, 19};
-        const auto BOTTOM_LEFT_CORNER = ime::Index{21, 3};
-        const auto BOTTOM_RIGHT_CORNER = ime::Index{25, 19};
+        const auto TOP_LEFT_CORNER = ime::Index{3, 4};
+        const auto TOP_RIGHT_CORNER = ime::Index{3, 20};
+        const auto BOTTOM_LEFT_CORNER = ime::Index{21, 4};
+        const auto BOTTOM_RIGHT_CORNER = ime::Index{25, 20};
         const auto UNKNOWN_CORNER = ime::Index{-1, -1};
 
         // Cyclic paths at specific corners
-        const auto TOP_LEFT_CORNER_PATH = std::queue<ime::Index>({ime::Index{7, 4}, ime::Index{5, 6}, ime::Index{3, 4}});
-        const auto TOP_RIGHT_CORNER_PATH = std::queue<ime::Index>({ime::Index{5, 22}, ime::Index{7, 20}, ime::Index{3, 20}});
-        const auto BOTTOM_LEFT_CORNER_PATH = std::queue<ime::Index>({ime::Index{25, 4}, ime::Index{23, 6}, ime::Index{21, 4}});
-        const auto BOTTOM_RIGHT_CORNER_PATH = std::queue<ime::Index>({ime::Index{23, 22}, ime::Index{21, 20}, ime::Index{25, 20}});
+        const auto TOP_LEFT_CORNER_PATH = std::queue<ime::Index>({ime::Index{7, 5}, ime::Index{5, 7}, ime::Index{3, 5}});
+        const auto TOP_RIGHT_CORNER_PATH = std::queue<ime::Index>({ime::Index{5, 23}, ime::Index{7, 21}, ime::Index{3, 21}});
+        const auto BOTTOM_LEFT_CORNER_PATH = std::queue<ime::Index>({ime::Index{25, 5}, ime::Index{23, 7}, ime::Index{21, 5}});
+        const auto BOTTOM_RIGHT_CORNER_PATH = std::queue<ime::Index>({ime::Index{23, 23}, ime::Index{21, 21}, ime::Index{25, 21}});
 
         // Starting point of cyclic ghost house path
-        const auto PINKY_GHOST_HOUSE_START_POS = ime::Index{11, 10};
-        const auto INKY_GHOST_HOUSE_START_POS = ime::Index{9, 12};
-        const auto CLYDE_GHOST_HOUSE_START_POS = ime::Index{11, 14};
+        const auto PINKY_GHOST_HOUSE_START_POS = ime::Index{11, 11};
+        const auto INKY_GHOST_HOUSE_START_POS = ime::Index{9, 13};
+        const auto CLYDE_GHOST_HOUSE_START_POS = ime::Index{11, 15};
 
         // Ghost house cyclic paths
         const auto PINKY_GHOST_HOUSE_PATH = std::queue<ime::Index>({Constants::ClydeSpawnTile, Constants::InkySpawnTile, Constants::PinkySpawnTile});
