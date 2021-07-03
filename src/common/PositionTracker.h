@@ -33,7 +33,8 @@
 
 namespace spm {
     /**
-     * @brief Tracks the position and direction of an actor using its tag
+     * @brief Tracks the position and direction of an actor in the grid using
+     *        its tag
      */
     class PositionTracker {
     public:
