@@ -91,8 +91,16 @@ namespace spm {
          */
         void generateRandomDestination();
 
+        /**
+         * @brief Check whether or not the actors path is blocked by an obstacle
+         *        in the current direction
+         * @param targetTileIndex The index of the tile the actor wants to occupy
+         * @return True if actor is blocked by an obstacle, otherwise false
+         */
+        bool isBlocked(const ime::Index& targetTileIndex) const;
+
     private:
-        int destinationReachedId_;                      //!< Destination reached event handler id
+        int moveFinishId_;                              //!< Destination reached event handler id
         bool reverseDirection_;                         //!< A flag indicating whether or not the ghost can reverse directions4
         bool isRandomMove_;                             //!< A flag indicating whether or not the ghost is moving randomly
         std::vector<ime::Direction> directionAttempts_; //!< Stores directions to be attempted by randomly moving ghost

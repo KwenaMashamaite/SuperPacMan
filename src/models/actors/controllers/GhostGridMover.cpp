@@ -34,7 +34,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     GhostGridMover::GhostGridMover(ime::TileMap& tileMap, ime::GameObject* ghost) :
         ime::TargetGridMover(tileMap, ghost),
-        destinationReachedId_{-1},
+        moveFinishId_{-1},
         reverseDirection_{false},
         isRandomMove_{false}
     {
@@ -44,7 +44,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::generateRandomDestination() {
-        ime::Direction reverseGhostDir = static_cast<Ghost*>(getTarget())->getDirection() * -1;
+        ime::Direction reverseGhostDir = PositionTracker::getDirection(getTarget()->getTag()) * -1;
         assert(reverseGhostDir != ime::Unknown && "A ghost must have a valid direction before initiating random movement");
 
         // Ghost only allowed to move non-diagonally
@@ -61,38 +61,50 @@ namespace spm {
         auto static randomEngine = std::default_random_engine{std::random_device{}()};
         std::shuffle(directionAttempts_.begin(), directionAttempts_.end(), randomEngine);
 
-        // Find path
-        ime::Index newDestination {-1, -1};
+        ime::Index currentTile = PositionTracker::getPosition(getTarget()->getTag());
+        ime::Index targetTile {-1, -1};
 
         do {
             // Tried all possible non-reverse directions with no luck (ghost in stuck in a dead-end)
             // Attempt to reverse direction and go backwards. This an exception to the no reverse
             // direction rule. Without the exception, the game will be stuck in an infinite loop
             if (directionAttempts_.empty()) {
-                newDestination.row = getTargetTileIndex().row + reverseGhostDir.y;
-                newDestination.colm = getTargetTileIndex().colm + reverseGhostDir.x;
-
-                // Since this is the last attempt, it should succeed or fail. If it
-                // succeeds the ghost will reverse direction and move backwards and
-                // if it fails then the ghost is blocked in all directions.
-                PositionTracker::updateDirection(getTarget()->getTag(), reverseGhostDir);
-                setDestination(newDestination);
-
-                return;
+                requestDirectionChange(reverseGhostDir);
+                break;
             }
 
             auto dir = directionAttempts_.back();
-            directionAttempts_.pop_back(); // Prevent the same direction from being evaluated again
+            directionAttempts_.pop_back(); // Prevent the same direction from being evaluated more than once
 
-            newDestination.row = getTargetTileIndex().row + dir.y;
-            newDestination.colm = getTargetTileIndex().colm + dir.x;
-        } while(!isDestinationReachable(newDestination));
+            targetTile.row = currentTile.row + dir.y;
+            targetTile.colm = currentTile.colm + dir.x;
 
-        // Update the ghosts path
-        setDestination(newDestination);
+            if (!isBlocked(targetTile)) {
+                directionAttempts_.clear();
+                requestDirectionChange(dir);
+                break;
+            }
 
-        // Clear current attempt directions
-        directionAttempts_.clear();
+        } while(true);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    bool GhostGridMover::isBlocked(const ime::Index& targetTileIndex) const {
+        bool isObstacleInFront = false;
+        const ime::Tile& targetTile = getGrid().getTile(targetTileIndex);
+
+        // The documentation of ime::TileMap::forEachChildInTile function
+        // says it does bounds checking but doesn't :(  --> IME v2.1.0.
+        if (targetTile.getIndex().colm < 0 || targetTile.getIndex().colm < 0)
+            return true;
+
+        getGrid().forEachChildInTile(targetTile, [&isObstacleInFront] (ime::GameObject* actor) {
+            // Sadly, no way to terminate loop early :( --> IME v2.1.0.
+            if (actor->isObstacle())
+                isObstacleInFront = true;
+        });
+
+        return isObstacleInFront;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -104,15 +116,16 @@ namespace spm {
         isRandomMove_ = enable;
 
         if (enable) {
-            generateRandomDestination(); // Generate initial random position
+            if (!isTargetMoving())
+                generateRandomDestination(); // Generate initial random position
 
-            // Generate a new random position when target reaches its current destination
-            destinationReachedId_ = onDestinationReached([this](ime::Index) {
+            // Generate a new random position when target finishes its current move
+            moveFinishId_ = onAdjacentMoveEnd([this](ime::Index) {
                 generateRandomDestination();
             });
         } else {
-            unsubscribe(destinationReachedId_);
-            destinationReachedId_ = -1;
+            unsubscribe(moveFinishId_);
+            moveFinishId_ = -1;
         }
     }
 
