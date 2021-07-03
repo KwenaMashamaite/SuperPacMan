@@ -126,6 +126,24 @@ namespace spm {
         virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args);
 
         /**
+         * @brief Check if pacman is in super state or not
+         * @return True if pacman is in super state, otherwise false
+         *
+         * @attention This function is a quick fix to a problem that requires
+         * pacman-ghost interaction design reconsideration. spm::ChaseState
+         * needs to know if pacman is in super state or not on enter. In an
+         * attempt to keep spm::PacMan and spm::Ghost unaware of each other,
+         * we let the ghost track pacmans state change via game events, see
+         * handleEvent(). Now the spm::ChaseState queries the ghost about
+         * pacmans super state via this function. Logically, this doesnt make
+         * any sense. However due to time constrains, this function is in here
+         * to push v1.0.0 release. As of this text, the game is in v1-beta.x
+         *
+         * @todo Remove this function post v1.0.0 release
+         */
+        bool isPacmanSuper() const;
+
+        /**
          * @brief Destructor
          */
         ~Ghost() override;

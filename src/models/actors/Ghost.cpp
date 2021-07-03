@@ -136,5 +136,9 @@ namespace spm {
         fsm_.top()->handleEvent(event, args);
     }
 
+    bool Ghost::isPacmanSuper() const {
+        return isPacmanSuper_;
+    }
+
     Ghost::~Ghost() = default;
 }

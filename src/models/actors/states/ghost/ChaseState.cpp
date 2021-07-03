@@ -48,7 +48,12 @@ namespace spm {
         if (!ghost_->getUserData().getValue<bool>("is_in_slow_lane"))
             ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
 
-        ghostMover_->setDestination(PositionTracker::getPosition("pacman"));
+        // Prevent ghost from chasing pacman when he is in super state
+        if (ghost_->isPacmanSuper())
+            ghostMover_->setRandomMoveEnable(true);
+        else
+            ghostMover_->setDestination(PositionTracker::getPosition("pacman"));
+
         ghostMover_->startMovement();
         initTimer(ime::seconds(Constants::CHASE_MODE_DURATION + currentLevel_));
     }
@@ -58,13 +63,13 @@ namespace spm {
         ghostMover_->onPathGenFinish([this](const std::stack<ime::Index>& path) {
             if (path.empty()) { // Pacman not found
                 ghostMover_->setRandomMoveEnable(true);
-            } else if (ghostMover_->isRandomMoveEnabled())
+            } else if (ghostMover_->isRandomMoveEnabled() && !ghost_->isPacmanSuper())
                 ghostMover_->setRandomMoveEnable(false);
         });
     }
 
     void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
-        if (event == GameEvent::PacManMoved) {
+        if (event == GameEvent::PacManMoved && !ghost_->isPacmanSuper()) {
             auto pacmanTile = args.getValue<ime::Index>("pacmanTileIndex");
             auto pacmanDir = args.getValue<ime::Vector2i>("pacmanDirection");
 
@@ -103,18 +108,27 @@ namespace spm {
     void ChaseState::onPause() {
         ghostMover_->clearPath();
         ghostMover_->onPathGenFinish(nullptr);
+        ghostMover_->setRandomMoveEnable(false);
     }
 
     void ChaseState::onResume() {
         ghost_->setState(static_cast<int>(Ghost::State::Chase));
         initEvents();
         ghostMover_->setMaxLinearSpeed({Constants::GhostChaseSpeed, Constants::GhostChaseSpeed});
-        ghostMover_->setDestination(PositionTracker::getPosition("pacman"));
+
+        // Prevent ghost from chasing pacman when he is in super state
+        if (ghost_->isPacmanSuper())
+            ghostMover_->setRandomMoveEnable(true);
+        else
+            ghostMover_->setDestination(PositionTracker::getPosition("pacman"));
+
+        ghostMover_->startMovement();
     }
 
     void ChaseState::onExit() {
         ghostMover_->clearPath();
         ghostMover_->onPathGenFinish(nullptr);
+        ghostMover_->setRandomMoveEnable(false);
 
         // OnExit is only called when transitioning to ScatterState, for others
         // this state is paused, so there is no need to perform a check
