@@ -23,6 +23,7 @@
 #   T = Tunnel exit sensor
 #   H = Slow lane entrance sensor (For ghosts when they enter the slow lane - pathway under ghost house)
 #   ! = Slow lane exit sensor (For ghosts when they leave the slow lane - pathway under ghost house)
+#   + = Door + Slow lane entrance sensor (For ghosts when they enter the tunnel)
 ###########################################
 
 .........................
@@ -38,7 +39,7 @@
 ||.|D|.|.|.NNN.|.|.|D|.||
 ||K..|F|.|..C..|.|F|..K||
 ||#|.|.|.|#####|.|.|.##||
-TDFD.DFD!H..X..H!DFD.DFDT
+TDF+!DFD!H..X..H!DFD!+FDT
 ||#|.|#|.|#|N|#|.|#|.##||
 ||K.....K|.|.|.|K.....K||
 ||.|D|.|D|#|.|#|D|.|D|.||
