@@ -1,0 +1,57 @@
+###########################################
+# Lines that start with '#' are comments.
+#
+# This files defines the Super PacMan map.
+# All levels of the game use the same map
+#
+# The tile id's are as follows:
+#   | = solid wall block
+#   # = solid wall block
+#   N = Special hidden wall that only pacman can pass through
+#   . = Empty tile
+#   B = Blinky spawn position
+#   P = Pinky spawn position
+#   I = Inky spawn position
+#   C = Clyde spawn position
+#   R = Revival position for ghosts
+#   X = Pacman spawn position
+#   K = key
+#   D = Door
+#   F = Food
+#   E = Power Pellet
+#   S = Super Pellet
+#   T = Tunnel exit sensor
+#   H = Slow lane entrance sensor (For ghosts when they enter the slow lane - pathway under ghost house)
+#   ! = Slow lane exit sensor (For ghosts when they leave the slow lane - pathway under ghost house)
+#   + = Door + Slow lane entrance sensor (For ghosts when they enter the tunnel)
+###########################################
+
+...........................
+...........................
+..|#####################|..
+..|K...................K|..
+..|.|D|.|####D####|.|D|.|..
+..|.|E|.DF.F.F.F.FD.|E|.|..
+..|.|D|.|#########|.|D|.|..
+..|....K.....B.....K....|..
+..|.|D##|.|##.##|.|##D|.|..
+..|.|F.F|.|P...I|.|F.F|.|..
+..|.|D|.|.|.NNN.|.|.|D|.|..
+..|K..|F|.|..C..|.|F|..K|..
+|###|.|.|.|#####|.|.|.|###|
+T.DF+!DFD!H..X..H!DFD!+FD.T
+|###|.|#|.|#|N|#|.|#|.|###|
+..|K.....K|.|.|.|K.....K|..
+..|.|D|.|D|#|.|#|D|.|D|.|..
+..|.|F|.|S.FD.DF.S|.|F|.|..
+..|.|.|.|.|#|.|#|.|.|.|.|..
+..|.|F|.|F|..K..|F|.|F|.|..
+..|.|D|.|.|.|#|.|.|.|D|.|..
+..|.....|F|.|F|.|F|.....|..
+..|.|D|.|D|.|D|.|D|.|D|.|..
+..|.|E|K...........K|E|.|..
+..|.|D|.|####D####|.|D|.|..
+..|K....DF.F.F.F.FD....K|..
+..|#####################|..
+...........................
+...........................
