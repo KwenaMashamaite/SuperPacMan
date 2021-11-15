@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Super Pac-Man clone
+// Pac-Man clone
 //
-// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+// Copyright (c) 2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,16 +27,14 @@
 
 #include <IME/graphics/Sprite.h>
 #include <IME/ui/GuiContainer.h>
-#include "src/views/CommonView.h"
 
 namespace spm {
     /**
-     * @brief Main menu sub views
+     * @brief Main menu sub Views
      */
     enum class SubView {
         MainMenu,    //!< View rendered when main menu state is rendered
         OptionsMenu, //!< View rendered when options view is clicked
-        CreditsMenu, //!< View rendered when credits button is clicked
         HighScores,  //!< View rendered when high scores button is clicked
     };
 
@@ -79,14 +77,6 @@ namespace spm {
          * clicked
          */
         void createOptionsMenuView();
-
-        /**
-         * @brief Create the credits view
-         *
-         * This view displays a list of assets authors and sources. The view
-         * is displayed when the credits button from the main view is clicked
-         */
-        void createCreditsMenuView();
 
         /**
          * @brief Create the high score view

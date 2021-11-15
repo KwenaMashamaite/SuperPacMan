@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Super Pac-Man clone
+// Pac-Man clone
 //
-// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+// Copyright (c) 2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,6 @@ namespace spm {
 
         createMainMenuView();
         createOptionsMenuView();
-        createCreditsMenuView();
         createHighScoresView();
         setSubView(subView_);
     }
@@ -88,16 +87,18 @@ namespace spm {
 
         auto* picPacmanLogo = pnlContainer->addWidget(Picture::create("pacman_logo.png"), "picPacmanLogo");
         picPacmanLogo->setOrigin(0.5f, 0.0f);
-        picPacmanLogo->setSize("62%", "17%");
+        picPacmanLogo->setSize("70%", "17%");
         picPacmanLogo->setPosition("50%", "10%");
+        picPacmanLogo->rotate(-0.8f);
 
         struct ButtonDetails{std::string name; std::string text;};
         auto navBtns = std::vector<ButtonDetails>{
             {"btnPlay", "Play"}, {"btnOptions", "Options"},
-            {"btnCredits", "Credits"}, {"btnHighScores", "High Scores"},
+            {"btnHighScores", "High Scores"},
             {"btnQuit", "Quit"}
         };
-        auto* vlNavButtons = pnlContainer->addWidget<VerticalLayout>(VerticalLayout::create("40%", "26%"), "vlNavbuttons");
+
+        auto* vlNavButtons = pnlContainer->addWidget<VerticalLayout>(VerticalLayout::create("40%", "22%"), "vlNavbuttons");
         vlNavButtons->setOrigin(0.5f, 0.0f);
         vlNavButtons->setPosition("50%", ime::bindBottom(picPacmanLogo).append("+8%"));
         vlNavButtons->getRenderer()->setSpaceBetweenWidgets(12);
@@ -119,29 +120,9 @@ namespace spm {
             setSubView(SubView::OptionsMenu);
         }));
 
-        vlNavButtons->getWidget("btnCredits")->on("click", ime::Callback<>([this] {
-            setSubView(SubView::CreditsMenu);
-        }));
-
         vlNavButtons->getWidget("btnHighScores")->on("click", ime::Callback<>([this] {
             setSubView(SubView::HighScores);
         }));
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void MainMenuSceneView::createCreditsMenuView() {
-        // Container for all widgets in this sub view
-        auto* pnlContainer = gui_.addWidget<Panel>(Panel::create(), "pnlCredits");
-        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
-
-        // View background
-        auto picBackground = Picture::create("credits_menu_background.jpg");
-        picBackground->setSize("100%", "32%");
-        picBackground->setOrigin(1.0f, 1.0f);
-        picBackground->setPosition("100%", "100%");
-        pnlContainer->addWidget(std::move(picBackground), "picBckgrnd");
-
-        pnlContainer->addWidget(createBackBtn(), "btnReturn");
     }
 
     ///////////////////////////////////////////////////////////////
@@ -152,7 +133,11 @@ namespace spm {
         pnlParentContainer->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
 
         // Create sub menu background
-        auto picBackground = gui_.getWidget<Panel>("pnlMain")->getWidget("picBckgrnd")->clone();
+        // View background
+        auto picBackground = Picture::create("main_menu_background_blurred.jpg");
+        picBackground->setSize("100%", "32%");
+        picBackground->setOrigin(1.0f, 1.0f);
+        picBackground->setPosition("100%", "100%");
         pnlParentContainer->addWidget(std::move(picBackground), "picBckgrnd");
 
         //
@@ -265,8 +250,8 @@ namespace spm {
         auto pnlParentContainer = gui_.addWidget<Panel>(Panel::create(), "pnlHighScores");
         pnlParentContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
 
-        // Make the credits submenu and this sub menu have the same background
-        auto picBackground = gui_.getWidget<Panel>("pnlCredits")->getWidget("picBckgrnd")->clone();
+        // Make the options submenu and this sub menu have the same background
+        auto picBackground = gui_.getWidget<Panel>("pnlOptions")->getWidget("picBckgrnd")->clone();
         pnlParentContainer->addWidget(std::move(picBackground), "picBckgrnd");
 
         // Container for all widgets
@@ -371,9 +356,6 @@ namespace spm {
             case SubView::OptionsMenu:
                 gui_.moveWidgetToFront("pnlOptions");
                 break;
-            case SubView::CreditsMenu:
-                gui_.moveWidgetToFront("pnlCredits");
-                break;
             case SubView::HighScores:
                 gui_.moveWidgetToFront("pnlHighScores");
                 break;
@@ -381,4 +363,4 @@ namespace spm {
         subView_ = view;
     }
 
-} // namespace spm
+} // namespace pm

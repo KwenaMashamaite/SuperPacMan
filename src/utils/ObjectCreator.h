@@ -26,7 +26,7 @@
 #define SUPERPACMAN_OBJECTCREATOR_H
 
 #include <IME/core/physics/PhysicsWorld.h>
-#include "src/models/world/Grid.h"
+#include "Grid.h"
 
 namespace spm {
     /**

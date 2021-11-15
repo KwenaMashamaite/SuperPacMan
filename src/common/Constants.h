@@ -39,17 +39,14 @@ namespace spm {
         static inline auto InkySpawnTile = ime::Index{9, 15};           //!< Inky's spawn position when a level starts or restarts
         static inline auto ClydeSpawnTile = ime::Index{11, 13};         //!< Clyde's spawn position when a level starts or restarts
         static inline auto EatenGhostRespawnTile = ime::Index{11, 13};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
+        static inline const auto PINKY_SCATTER_TARGET_TILE = ime::Index{0, 2};   //!< The tile the pink ghost targets when in scatter state
+        static inline const auto BLINKY_SCATTER_TARGET_TILE = ime::Index{0, 24}; //!< The tile the red ghost targets when in scatter state
+        static inline const auto INKY_SCATTER_TARGET_TILE = ime::Index{28, 24};  //!< The tile blue ghost targets when in scatter state
+        static inline const auto CLYDE_SCATTER_TARGET_TILE = ime::Index{28, 2};  //!< The tile the orange ghost targets when in scatter state
 
         // 2. Actor speeds (pixels/second)
         static constexpr auto PacManNormalSpeed = 120.0f;                          //!< Pacman's speed when not in super mode
-        static constexpr auto PacManSuperSpeed = 2.0f * PacManNormalSpeed;         //!< Pacman's maximum speed when in super mode (player may choose to use normal speed or super speed)
-        static constexpr auto GhostChaseSpeed = 0.98f * PacManNormalSpeed;         //!< The maximum speed of a ghost when it is in chase mode (decreases when it enters a slow lane)
-        static constexpr auto GhostScatterSpeed = 0.9f * GhostChaseSpeed;          //!< The maximum speed of a ghost when it is in scatter mode (decreases when it enters a slow lane)
-        static constexpr auto GhostFrightenedSpeed = GhostChaseSpeed / 2.0f;       //!< The maximum speed of a ghost when it is frightened (decreases when it enters a slow lane)
-        static constexpr auto GhostRetreatSpeed = 2.0f * GhostChaseSpeed;          //!< The speed of a ghost when it is eaten
-        static constexpr auto GhostRoamSpeed = PacManNormalSpeed;                  //!< The maximum speed of a ghost when it wonders the maze (decreases when it enters a slow lane)
-        static constexpr auto SlowLaneSpeed = GhostChaseSpeed / 2.0f;              //!< The speed of a ghost when it enters a slow lane
-        static constexpr auto GhostHouseSpeed = 0.8f * GhostScatterSpeed;          //!< The speed of a ghost when it is locked inside the ghost house
+        static constexpr auto PacManSuperSpeed = 4.0f * PacManNormalSpeed;         //!< Pacman's maximum speed when in super mode (player may choose to use normal speed or super speed)
 
         // 3. Timing - base durations (seconds)
         static constexpr auto LEVEL_START_DELAY = 3.0f;                //!< Time player must wait before they can control pacman

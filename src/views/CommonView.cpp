@@ -22,7 +22,8 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/CommonView.h"
+#include "CommonView.h"
+#include "Common/Constants.h"
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/Picture.h>
 #include <IME/ui/widgets/Panel.h>
@@ -32,7 +33,8 @@ using namespace ime::ui;
 namespace spm {
     ///////////////////////////////////////////////////////////////
     CommonView::CommonView(GuiContainer &gui) :
-        gui_{gui}
+        gui_{gui},
+        pacmanLives_{0}
     {
         gui_.setFont("namco.ttf");
     }
@@ -40,12 +42,13 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void CommonView::init(unsigned int level, unsigned int lives) {
         createWidgets();
-        createSprites(level, lives);
+        createLevelIndicatorSprites(level);
+        createPlayerLivesIndicatorSprites(lives);
 
         timer_ = ime::Timer::create(ime::milliseconds(200), [this] {
             gui_.getWidget("lblOneUp")->toggleVisibility();
         }, -1);
-        timer_.start();
+        timer_->start();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -87,10 +90,21 @@ namespace spm {
         lblCredit->getRenderer()->setTextColour(ime::Colour::White);
         lblCredit->setPosition("8.3%", "&.h - h");
         pnlContainer->addWidget(std::move(lblCredit), "lblCredit");
+
+        auto lblGetReady = ime::ui::Label::create("Ready!");
+        lblGetReady->setVisible(false);
+        lblGetReady->setTextSize(15.0f);
+        lblGetReady->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Center);
+        lblGetReady->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
+        lblGetReady->getRenderer()->setTextColour(ime::Colour::Red);
+        lblGetReady->getRenderer()->setTextStyle(ime::TextStyle::Bold);
+        lblGetReady->setOrigin(0.5f, 0.5f);
+        lblGetReady->setPosition(242, 284);
+        pnlContainer->addWidget(std::move(lblGetReady), "lblReady");
     }
 
     ///////////////////////////////////////////////////////////////
-    void CommonView::createSprites(unsigned int level, unsigned int lives) {
+    void CommonView::createLevelIndicatorSprites(unsigned int level) {
         auto* pnlContainer = gui_.getWidget<Panel>("pnlContainer");
 
         // Depict the current game level as fruit images
@@ -109,34 +123,44 @@ namespace spm {
 
             pnlContainer->addWidget(std::move(picFruit), "picFruit" + std::to_string(i));
         }
-
-        // Depict the remaining lives of pacman as a sprite image
-        if (lives > 0) {
-            pnlContainer->getWidget("lblCredit")->setVisible(false);
-
-            startPos = {216, 1};
-            auto* picLife = pnlContainer->addWidget(Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y}), "picLife0");
-            picLife->setOrigin(0.0f, 1.0f);
-            picLife->scale(0.2f, 0.2f);
-            picLife->setPosition(0, pnlContainer->getSize().y);
-
-            for (auto i = 1u; i < lives; ++i) {
-                auto picLifeCopy = picLife->clone();
-                auto picPrev = pnlContainer->getWidget("picLife" + std::to_string(i - 1));
-                picLifeCopy->setPosition(ime::bindRight(picPrev).append("+0.5%"), std::to_string(picPrev->getPosition().y));
-                pnlContainer->addWidget(std::move(picLifeCopy), "picLife" + std::to_string(i));
-            }
-        }
     }
 
     ///////////////////////////////////////////////////////////////
-    void CommonView::updateLives(unsigned int pacmanLives) {
-        gui_.removeWidget("picLife" + std::to_string(pacmanLives));
+    void CommonView::createPlayerLivesIndicatorSprites(unsigned int lives) {
+        for (unsigned int i = 0u; i < lives; ++i)
+            addLife();
     }
 
     ///////////////////////////////////////////////////////////////
     void CommonView::update(ime::Time deltaTime) {
-        timer_.update(deltaTime);
+        timer_->update(deltaTime);
     }
+
+    ///////////////////////////////////////////////////////////////
+    void CommonView::addLife() {
+        auto* pnlContainer = gui_.getWidget<Panel>("pnlContainer");
+        auto static frameSize = ime::Vector2u{16, 16};
+        auto static startPos = ime::Vector2u{216, 1}; //Top-left position of the frame on the spritesheet
+
+        if (pacmanLives_ == 0) {
+            pnlContainer->getWidget("lblCredit")->setVisible(false);
+            auto* picLife = pnlContainer->addWidget(Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y}), "picLife" + std::to_string(++pacmanLives_));
+            picLife->setOrigin(0.0f, 1.0f);
+            picLife->scale(0.2f, 0.2f);
+            picLife->setPosition(0, pnlContainer->getSize().y);
+        } else {
+            auto picLastAdded = pnlContainer->getWidget("picLife" + std::to_string(pacmanLives_));
+            auto picNewLife  = picLastAdded->clone();
+            picNewLife->setPosition(ime::bindRight(picLastAdded).append("+0.5%"), std::to_string(picLastAdded->getPosition().y));
+            pnlContainer->addWidget(std::move(picNewLife), "picLife" + std::to_string(++pacmanLives_));
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void CommonView::removeLife() {
+        if (pacmanLives_ > 0)
+            gui_.removeWidget("picLife" + std::to_string(pacmanLives_--));
+    }
+
 
 } // namespace spm

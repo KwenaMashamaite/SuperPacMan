@@ -26,7 +26,7 @@
 #define SUPERPACMAN_LEVELSTARTSCENEVIEW_H
 
 #include <IME/core/time/Time.h>
-#include "src/views/CommonView.h"
+#include "Views/CommonView.h"
 
 namespace spm {
     /**

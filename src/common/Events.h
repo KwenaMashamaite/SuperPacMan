@@ -30,17 +30,15 @@ namespace spm {
      * @brief Events that take place during gameplay
      */
     enum class GameEvent {
-        PowerModeBegin,   //!< Occurs when pacman eats a power pellet
-        PowerModeEnd,     //!< Occurs when power pellet effects wore off
-        SuperModeBegin,   //!< Occurs when pacman eats a Super pellet
-        SuperModeEnd,     //!< Occurs when super pellet effects wore off
-        PacManDied,       //!< Occurs when pacman collides with a ghost and is not in super mode
-        PacManMoved,      //!< Occurs when pacman moves from one tile to another
-        GhostEaten,       //!< Occurs when a ghost is eaten by pacman
-        GhostRespawned,   //!< Occurs when an eaten ghost is revived
-        LevelStarted,     //!< Fired when a level is started for the first time or when it is restarted
-        LevelCompleted,   //!< Occurs when a level is completed (All fruits and pellets eaten)
-        GameCompleted,    //!< Occurs when all 17 levels are completed
+        FrightenedModeBegin, //!< Occurs when pacman eats an energizer pellet
+        FrightenedModeEnd,   //!< Occurs when the frightened mode timesout
+        ChaseModeBegin,      //!< Occurs when scatter mode expires
+        ChaseModeEnd,        //!< Occurs when chase mode expires
+        ScatterModeBegin,    //!< Occurs when chase mode expires
+        ScatterModeEnd,      //!< Occurs when scatter mode expires
+        SuperModeBegin,      //!< Occurs when pacman eats a Super pellet
+        SuperModeEnd,        //!< Occurs when super pellet effects wore off
+        GhostEaten,          //!< Occurs when a ghost is eaten by pacman
     };
 }
 

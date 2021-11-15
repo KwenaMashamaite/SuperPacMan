@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/GameOverSceneView.h"
+#include "GameOverSceneView.h"
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/Panel.h>
 #include <IME/ui/widgets/VerticalLayout.h>

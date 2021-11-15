@@ -22,22 +22,19 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/utils/ObjectCreator.h"
-#include "src/models/actors/Actors.h"
-#include <IME/core/physics/rigid_body/colliders/BoxCollider.h>
+#include "ObjectCreator.h"
+#include "GameObjects/GameObjects.h"
 
 namespace spm {
     namespace {
         ///////////////////////////////////////////////////////////////
         ime::GameObject::Ptr createDoor(const ime::Tile& tile, ime::Scene& scene) {
             auto door = std::make_unique<Door>(scene);
-            door->getUserData().addProperty({"gridIndex", tile.getIndex()});
-            door->getUserData().addProperty(ime::Property{"scene", std::ref(scene)});
 
             if (tile.getIndex().row % 2 == 0)
-                door->setOrientation(Orientation::Horizontal);
+                door->setOrientation(Door::Orientation::Horizontal);
             else
-                door->setOrientation(Orientation::Vertical);
+                door->setOrientation(Door::Orientation::Vertical);
 
             return door;
         }
@@ -45,60 +42,56 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void ObjectCreator::createObjects(Grid &grid) {
-        grid.forEachCell([&grid, keyId = 0](const ime::Tile& tile) mutable {
-            ime::GameObject::Ptr actor;
+        grid.forEachCell([&grid](const ime::Tile& tile) {
+            ime::GameObject::Ptr gameObject;
 
             if (tile.getId() == 'X') {
-                actor = std::make_unique<PacMan>(grid.getScene());
+                gameObject = std::make_unique<PacMan>(grid.getScene());
             } else if (tile.getId() == 'T' || tile.getId() == 'H' || tile.getId() == '!' || tile.getId() == '+') { // Sensors
-                actor = std::make_unique<Sensor>(grid.getScene());
+                gameObject = std::make_unique<Sensor>(grid.getScene());
 
+                if (tile.getId() == 'T')
+                    gameObject->setTag("teleportationSensor");
                 if (tile.getId() == 'H' || tile.getId() == '+') {
-                    actor->setTag("slowLaneEntrySensor");
-                    actor->setCollisionGroup("slowLaneEntrySensor");
+                    static int counter = 1;
+                    gameObject->setTag("slowDownSensor" + std::to_string(counter++));
 
                     if (tile.getId() == '+') { // Sensor + Door,
-                        grid.addActor(std::move(actor), tile.getIndex());
+                        grid.addActor(std::move(gameObject), tile.getIndex());
                         grid.addActor(createDoor(tile, grid.getScene()), tile.getIndex());
                         return;
                     }
-
-                } else if (tile.getId() == '!') {
-                    actor->setTag("slowLaneExitSensor");
-                    actor->setCollisionGroup("slowLaneExitSensor");
                 }
-
             } else if (tile.getId() == 'K')
-                actor = std::make_unique<Key>(grid.getScene(), keyId++);
+                gameObject = std::make_unique<Key>(grid.getScene());
             else if (tile.getId() == 'F')
-                actor = std::make_unique<Fruit>(grid.getScene());
+                gameObject = std::make_unique<Fruit>(grid.getScene());
             else if (tile.getId() == 'E')
-                actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Power);
+                gameObject = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Power);
             else if (tile.getId() == 'S')
-                actor = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Super);
+                gameObject = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Super);
             else if (tile.getId() == 'D')
-                actor = createDoor(tile, grid.getScene());
+                gameObject = createDoor(tile, grid.getScene());
             else if (tile.getId() == '#' || tile.getId() == '|' || tile.getId() == 'N') {// Walls
-                actor = std::make_unique<Wall>(grid.getScene());
+                gameObject = std::make_unique<Wall>(grid.getScene());
 
                 // Hidden wall that Only pacman can pass through
                 if (tile.getId() == 'N')
-                    actor->setCollisionGroup("hiddenWall");
+                    gameObject->setCollisionGroup("hiddenWall");
             } else {
                 if (tile.getId() == 'B')
-                    actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Red);
+                    gameObject = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Red);
                 else if (tile.getId() == 'P')
-                    actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Pink);
+                    gameObject = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Pink);
                 else if (tile.getId() == 'I')
-                    actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Cyan);
+                    gameObject = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Cyan);
                 else if (tile.getId() == 'C')
-                    actor = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Orange);
+                    gameObject = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Orange);
                 else
                     return;
             }
 
-            actor->getUserData().addProperty({"scene", std::ref(grid.getScene())});
-            grid.addActor(std::move(actor), tile.getIndex());
+            grid.addActor(std::move(gameObject), tile.getIndex());
         });
     }
 

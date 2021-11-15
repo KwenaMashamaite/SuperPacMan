@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Super Pac-Man clone
+// Pac-Man clone
 //
-// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+// Copyright (c) 2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/StartUpSceneView.h"
+#include "StartUpSceneView.h"
 #include <IME/ui/widgets/Picture.h>
 #include <IME/ui/widgets/Panel.h>
 #include <IME/ui/widgets/Label.h>
@@ -41,16 +41,17 @@ namespace spm {
         // Create game logo
         auto picPacmanLogo = Picture::create("pacman_logo.png");
         picPacmanLogo->setOrigin(0.5f, 0.0f);
-        picPacmanLogo->setSize("62%", "17%");
+        picPacmanLogo->setSize("70%", "17%");
         picPacmanLogo->setPosition("50%", "10%");
+        picPacmanLogo->rotate(-0.6f);
         pnlContainer->addWidget(std::move(picPacmanLogo), "picPacmanLogo");
 
         auto* lblDisclaimer = pnlContainer->addWidget<Label>(Label::create(), "lblDisclaimer");
         lblDisclaimer->setText(
             "This game is a demo for my game engine, Infinite Motion Engine "
-            "which can be found here - www.github.com/KwenaMashamaite/IME \n\n"
+            "which can be found here - github.com/KwenaMashamaite/IME \n\n"
             "I do not own nor do I claim the idea for this game. The game is a "
-            "clone of the original Super Pac-Man from Bandai Namco Entertainment. "
+            "clone of the original Pac-Man game from Bandai Namco Entertainment. "
             "All third party content, brands, names, and logos are used under license "
             "and remain property of their respective owners.");
 
@@ -86,19 +87,19 @@ namespace spm {
         pnlParentContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
         pnlParentContainer->setVisible(false);
 
-        auto pnlSecondaryContainer = Panel::create("80%", "40%");
+        auto pnlSecondaryContainer = Panel::create("80%", "28%");
         pnlSecondaryContainer->getRenderer()->setBackgroundColour(ime::Colour("#27293d33"));
         pnlSecondaryContainer->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
-        pnlSecondaryContainer->getRenderer()->setBorderColour(ime::Colour(128, 128, 128, 128));
+        pnlSecondaryContainer->getRenderer()->setBorderColour(ime::Colour(128, 128, 128, 60));
         pnlSecondaryContainer->setOrigin(0.5f, 0.5f);
         pnlSecondaryContainer->setPosition("50%", "50%");
         auto vlCentreContainer = VerticalLayout::create();
 
         // Create name prompt heading
         auto* lblHeading = pnlSecondaryContainer->addWidget<Label>(Label::create(), "lblNameHeading");
-        lblHeading->setText("ENTER YOUR NAME");
+        lblHeading->setText("Player Name");
         lblHeading->getRenderer()->setTextColour(ime::Colour::White);
-        lblHeading->setTextSize(18);
+        lblHeading->setTextSize(16);
         lblHeading->setOrigin(0.5f, 0.0f);
         lblHeading->setPosition("50%", "10%");
 
@@ -115,14 +116,14 @@ namespace spm {
         txtName->getRenderer()->setBorderColour(ime::Colour("#5427d880"));
         txtName->getRenderer()->setFocusedBorderColour(ime::Colour("#4000ff"));
         txtName->getRenderer()->setBorderHoverColour(ime::Colour("#450af5"));
-        txtName->setTextSize(24);
-        txtName->setSize("70%","25%");
+        txtName->setTextSize(20);
+        txtName->setSize("70%","23%");
         txtName->setOrigin(0.5f, 0.5f);
         txtName->setPosition("50%", "50%");
 
         // Create button to save the player name
-        auto btnContinue = Button::create("Continue");
-        btnContinue->setWidth("80%");
+        auto btnContinue = Button::create("OK");
+        btnContinue->setWidth("35%");
         btnContinue->setOrigin(0.5f, 1.0f);
         btnContinue->setPosition("50%", "95%");
         btnContinue->getRenderer()->setRoundedBorderRadius(10.0f);
@@ -139,4 +140,4 @@ namespace spm {
         gui.addWidget(std::move(pnlParentContainer), "pnlNamePrompt");
     }
 
-} // namespace spm
+} // namespace pm

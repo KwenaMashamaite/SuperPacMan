@@ -69,7 +69,7 @@ namespace spm {
             animation = ime::Animation::create(name, normalSizeSpritesheet_, movementAnimDuration);
 
         animation->addFrames(index, 3);
-        animation->setRepeatCount(-1);
+        animation->setLoop(true);
         animation->showTargetOnStart(false);
         animations_.push_back(std::move(animation));
     }

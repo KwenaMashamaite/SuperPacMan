@@ -31,7 +31,7 @@ namespace spm {
     {
         animation_ = ime::Animation::create("fruitSlide", spritesheet_, ime::seconds(1));
         animation_->addFrames({0, 0}, 17);
-        animation_->setRepeatCount(-1);
+        animation_->setLoop(true);
     }
 
     ///////////////////////////////////////////////////////////////

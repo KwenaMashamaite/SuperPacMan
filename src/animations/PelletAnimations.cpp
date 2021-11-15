@@ -33,7 +33,8 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void PelletAnimations::createAnimationFor(const std::string& tag) {
         auto blinkAnimation = ime::Animation::create("blink", spritesheet_, ime::milliseconds(300));
-        blinkAnimation->setRepeatCount(-1);
+        blinkAnimation->setLoop(true);
+
         if (tag == "powerPellet")
             blinkAnimation->addFrames({0, 0}, 2);
         else if (tag == "superPellet") {

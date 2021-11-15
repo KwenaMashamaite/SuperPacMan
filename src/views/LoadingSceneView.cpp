@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Super Pac-Man clone
+// Pac-Man clone
 //
-// Copyright (c) 2020-2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
+// Copyright (c) 2021 Kwena Mashamaite (kwena.mashamaite1@gmail.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/LoadingSceneView.h"
+#include "LoadingSceneView.h"
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/ProgressBar.h>
 #include <IME/ui/widgets/Picture.h>
@@ -58,4 +58,4 @@ namespace spm {
         pnlContainer->addWidget(std::move(lblLoading), "lblLoading");
     }
 
-} // namespace spm
+} // namespace pm

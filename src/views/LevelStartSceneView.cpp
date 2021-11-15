@@ -22,7 +22,7 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "src/views/LevelStartSceneView.h"
+#include "LevelStartSceneView.h"
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/Picture.h>
 #include <IME/ui/widgets/Panel.h>

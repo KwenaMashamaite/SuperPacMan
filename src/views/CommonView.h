@@ -83,10 +83,14 @@ namespace spm {
         void update(ime::Time deltaTime);
 
         /**
-         * @brief Update the number of lives shown for pacman
-         * @param pacmanLives The current number of pacman lives
+         * @brief Remove last added player lives depiction image
          */
-        void updateLives(unsigned int pacmanLives);
+        void removeLife();
+
+        /**
+         * @brief Append a new player lives depiction image
+         */
+        void addLife();
 
     private:
         /**
@@ -95,15 +99,21 @@ namespace spm {
         void createWidgets();
 
         /**
-         * @brief Create current level fruit and pacman lives depictions
+         * @brief Create current level fruit depiction
          * @param level The current game level
-         * @param The current number of lives of Pacman
          */
-        void createSprites(unsigned int level, unsigned int lives);
+        void createLevelIndicatorSprites(unsigned int level);
+
+        /**
+         * @brief Create current player lives depiction
+         * @param The current number of pacman lives
+         */
+        void createPlayerLivesIndicatorSprites(unsigned int lives);
 
     private:
         ime::ui::GuiContainer& gui_;  //!< Container for all widgets
-        ime::Timer timer_;            //!< One up text flash Timer
+        ime::Timer::Ptr timer_;       //!< One up text flash Timer
+        unsigned int pacmanLives_;    //!< Records the number of pacman lives after a lives update
     };
 }
 
