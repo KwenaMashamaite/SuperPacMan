@@ -33,9 +33,7 @@ namespace spm {
         FrightenedModeBegin, //!< Occurs when pacman eats an energizer pellet
         FrightenedModeEnd,   //!< Occurs when the frightened mode timesout
         ChaseModeBegin,      //!< Occurs when scatter mode expires
-        ChaseModeEnd,        //!< Occurs when chase mode expires
         ScatterModeBegin,    //!< Occurs when chase mode expires
-        ScatterModeEnd,      //!< Occurs when scatter mode expires
         SuperModeBegin,      //!< Occurs when pacman eats a Super pellet
         SuperModeEnd,        //!< Occurs when super pellet effects wore off
         GhostEaten,          //!< Occurs when a ghost is eaten by pacman

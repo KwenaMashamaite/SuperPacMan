@@ -68,9 +68,9 @@ namespace spm {
         else if (event == GameEvent::FrightenedModeBegin) {
             frighten_ = true;
             fsm_->pop();
-        } else if (event == GameEvent::ChaseModeEnd)
+        } else if (event == GameEvent::ScatterModeBegin)
             nextState_ = Ghost::State::Scatter;
-        else if (event == GameEvent::ScatterModeEnd)
+        else if (event == GameEvent::ChaseModeBegin)
             nextState_ = Ghost::State::Chase;
     }
 
