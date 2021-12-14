@@ -38,7 +38,7 @@ namespace spm {
     namespace {
         //Warning!! This number must be updated each time a new resource is added to the
         // Number of assets to be loaded
-        const int numOfResources = 21;
+        const int numOfResources = 22;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -130,7 +130,7 @@ namespace spm {
         loadFromFile(ime::ResourceType::SoundEffect, {
             "doorBroken.wav", "fruitEaten.wav", "ghostEaten.wav",
             "pacmanDying.wav", "powerPelletEaten.wav", "superPelletEaten.wav",
-            "beginning.wav", "levelComplete.ogg", "wieu_wieu_slow.ogg"
+            "beginning.wav", "levelComplete.ogg", "wieu_wieu_slow.ogg", "extraLife.wav"
         });
 
         loadFromFile(ime::ResourceType::Music, {
