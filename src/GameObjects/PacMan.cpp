@@ -102,7 +102,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void PacMan::setDirection(const ime::Vector2i &direction) {
-        if (direction_ != direction) {
+        if (direction_ != direction && getState() != State::Dying) {
             direction_ = direction;
             switchAnimation(direction_);
         }

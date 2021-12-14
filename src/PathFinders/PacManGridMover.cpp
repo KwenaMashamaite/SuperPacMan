@@ -58,6 +58,9 @@ namespace spm {
 
         // Prevent pacman from turning into a direction that causes a collision with an obstacle
         onInput([this, pacman](ime::Keyboard::Key key) {
+            if (pacman->getState() == PacMan::State::Dying)
+                return false;
+
             ime::Direction newDir;
 
             if (key == getTriggerKeys().rightKey)
