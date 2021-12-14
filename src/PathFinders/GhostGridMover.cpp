@@ -24,6 +24,7 @@
 
 #include "GhostGridMover.h"
 #include "Common/Constants.h"
+#include "Common/ObjectReferenceKeeper.h"
 #include <cassert>
 #include <algorithm>
 #include <random>
@@ -39,7 +40,9 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    bool isInGhostHouse(const ime::Index& curIndex) {
+    bool isInGhostHouse(ime::GameObject* gameObject) {
+        assert(gameObject);
+        ime::Index curIndex = gameObject->getGridMover()->getCurrentTileIndex();
         return curIndex.row >= 9 && curIndex.row <= 11 && curIndex.colm >= 11 && curIndex.colm <= 15;
     }
 
@@ -65,7 +68,7 @@ namespace spm {
         ime::Direction reverseGhostDir = ghost_->getDirection() * -1;
         initPossibleDirections(reverseGhostDir);
 
-        bool isInGhostPen = isInGhostHouse(getCurrentTileIndex());
+        bool isInGhostPen = isInGhostHouse(ghost_);
         bool allowedInGhostHouse = isAllowedToBeInGhostHouse();
 
         if (possibleDirections_.empty()) // Ghost is in a dead end, only option is backwards (special case)
@@ -107,12 +110,11 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::initPossibleDirections(const ime::Direction& reverseGhostDir) {
         static const auto allowedDirections = {ime::Up, ime::Left, ime::Down, ime::Right};
-        bool preventGoingDown = isSpecialTile(getCurrentTileIndex()) && getTarget()->getState() != static_cast<int>(Ghost::State::Frightened);
+        bool preventGoingDown = isSpecialTile(getCurrentTileIndex()) || (getCurrentTileIndex() == Constants::BlinkySpawnTile && !isAllowedToBeInGhostHouse());
 
         for (const auto& dir : allowedDirections) {
             if (dir == reverseGhostDir ||
                 isBlockedInDirection(dir).first ||
-                (getCurrentTileIndex() == Constants::BlinkySpawnTile && dir == ime::Down && getTarget()->getState() != static_cast<int>(Ghost::State::Eaten)) ||
                 preventGoingDown && dir == ime::Down)
             {
                 continue;
@@ -152,7 +154,8 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     bool GhostGridMover::isAllowedToBeInGhostHouse() {
-        return ghost_->isLockedInGhostHouse() || ghost_->getState() == Ghost::State::Eaten;
+        return ghost_->isLockedInGhostHouse() || ghost_->getState() == Ghost::State::Eaten ||
+                (ghost_->getState() == Ghost::State::Chase && isInGhostHouse(ObjectReferenceKeeper::getActor("pacman")));
     }
 
 } // namespace pm
