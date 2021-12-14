@@ -238,14 +238,28 @@ namespace spm {
          */
         void endGameplay();
 
+        /**
+         * @brief Start the ghost scatter mode timer
+         */
+        void startScatterTimer();
+
+        /**
+         * @brief Start the ghost chase mode timer
+         */
+        void startChaseTimer();
+
     private:
-        int currentLevel_;           //!< Current game level
-        int pointsMultiplier_;       //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)
-        bool isPaused_;              //!< A flag indicating whether or not the game is paused
-        CommonView view_;            //!< Scene view without the gameplay grid
-        std::unique_ptr<Grid> grid_; //!< Gameplay grid view
-        ime::Timer superModeTimer_;  //!< Super mode duration counter
-        ime::Timer powerModeTimer_;  //!< Power mode duration counter
+        int currentLevel_;              //!< Current game level
+        int pointsMultiplier_;          //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)
+        bool isPaused_;                 //!< A flag indicating whether or not the game is paused
+        CommonView view_;               //!< Scene view without the gameplay grid
+        std::unique_ptr<Grid> grid_;    //!< Gameplay grid view
+        ime::Timer scatterModeTimer_;   //!< Ghosts scatter mode duration counter
+        ime::Timer chaseModeTimer_;     //!< Ghosts chase mode duration counter
+        ime::Timer superModeTimer_;     //!< Pacman Super mode duration counter
+        ime::Timer powerModeTimer_;     //!< Energizer mode duration counter
+        unsigned int scatterWaveLevel_; //!< The current scatter mode level (up to 4 levels)
+        unsigned int chaseWaveLevel_;   //!< The current chase mode level (up to 5 levels)
         CollisionResponseRegisterer collisionResponseRegisterer_;
 
         friend class CollisionResponseRegisterer;

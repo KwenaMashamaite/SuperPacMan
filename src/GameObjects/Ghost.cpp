@@ -37,10 +37,9 @@ namespace spm {
         isLockedInHouse_{false},
         isFlat_{false}
     {
-        if (colour == Colour::Red) {
+        if (colour == Colour::Red)
             setTag("blinky");
-            direction_ = ime::Right;
-        } else if (colour == Colour::Pink)
+        else if (colour == Colour::Pink)
             setTag("pinky");
         else if (colour == Colour::Cyan)
             setTag("inky");

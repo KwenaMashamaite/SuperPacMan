@@ -47,6 +47,8 @@ namespace spm {
         pointsMultiplier_{1},
         isPaused_{false},
         view_{gui()},
+        scatterWaveLevel_{0},
+        chaseWaveLevel_{0},
         collisionResponseRegisterer_{*this}
     {}
 
@@ -161,12 +163,21 @@ namespace spm {
 
             auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
             soundEffect->setLoop(true);
+
+            if (!chaseModeTimer_.isRunning() && !scatterModeTimer_.isRunning())
+                startScatterTimer();
+            else {
+                chaseModeTimer_.stop();
+                scatterModeTimer_.restart();
+            }
         }));
 
         eventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {
             audio().stopAll();
             superModeTimer_.stop();
             powerModeTimer_.stop();
+            scatterModeTimer_.stop();
+            chaseModeTimer_.stop();
             gameObjects().removeGroup("Ghost");
 
             auto* pacman = gameObjects().findByTag("pacman");
@@ -285,6 +296,56 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameplayScene::startScatterTimer() {
+        if (scatterWaveLevel_ < 4)
+            scatterWaveLevel_++;
+
+        ime::Time duration;
+
+        if (scatterWaveLevel_ <= 2) {
+            if (currentLevel_ < 5)
+                duration = ime::seconds(7.0f);
+            else
+                duration = ime::seconds(5.0f);
+        } else if (scatterWaveLevel_ == 3)
+            duration = ime::seconds(5);
+        else {
+            if (currentLevel_ == 1)
+                duration = ime::seconds(5.0f);
+            else
+                duration = ime::seconds(1.0f / engine().getWindow().getFrameRateLimit()); // one frame
+        }
+
+        scatterModeTimer_.setInterval(duration);
+        scatterModeTimer_.setTimeoutCallback([this] { startChaseTimer(); });
+        scatterModeTimer_.start();
+        emit(GameEvent::ScatterModeBegin);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::startChaseTimer() {
+        if (chaseWaveLevel_ < 4)
+            chaseWaveLevel_++;
+
+        ime::Time duration;
+
+        if (chaseWaveLevel_ <= 2)
+            duration = ime::seconds(20.0f);
+        else if (chaseWaveLevel_ == 3) {
+            if (currentLevel_ == 1)
+                duration = ime::seconds(20.0f);
+            else
+                duration = ime::minutes(17);
+        } else if (chaseWaveLevel_ == 4)
+            duration = ime::hours(1);
+
+        chaseModeTimer_.setInterval(duration);
+        chaseModeTimer_.setTimeoutCallback([this] { startScatterTimer();});
+        chaseModeTimer_.start();
+        emit(GameEvent::ChaseModeBegin);
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::resetActors() {
         auto* pacman = gameObjects().findByTag<PacMan>("pacman");
         pacman->setState(PacMan::State::Normal);
@@ -315,8 +376,20 @@ namespace spm {
     void GameplayScene::emit(GameEvent event) {
         ime::PropertyContainer args;
         switch (event) {
+            case GameEvent::FrightenedModeBegin:
+                if (chaseModeTimer_.isRunning())
+                    chaseModeTimer_.pause();
+                else if (scatterModeTimer_.isRunning())
+                    scatterModeTimer_.pause();
+
+                break;
             case GameEvent::FrightenedModeEnd:
                 pointsMultiplier_ = 1;
+
+                if (chaseModeTimer_.isPaused())
+                    chaseModeTimer_.start();
+                else if (scatterModeTimer_.isPaused())
+                    scatterModeTimer_.start();
                 break;
             default:
                 break;
@@ -422,6 +495,8 @@ namespace spm {
     void GameplayScene::update(ime::Time deltaTime) {
         view_.update(deltaTime);
         grid_->update(deltaTime);
+        scatterModeTimer_.update(deltaTime);
+        chaseModeTimer_.update(deltaTime);
         superModeTimer_.update(deltaTime);
         powerModeTimer_.update(deltaTime);
         updatePacmanFlashAnimation();
