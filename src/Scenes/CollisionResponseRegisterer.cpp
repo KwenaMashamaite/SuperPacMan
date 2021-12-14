@@ -201,8 +201,10 @@ namespace spm {
             else
                 speed = 0.50f * Constants::Constants::PacManNormalSpeed;
 
-            if (((sensorNum == '2' || sensorNum == '4') && objectOnSensor->getGridMover()->getDirection() == ime::Right) ||
-                ((sensorNum == '1' || sensorNum == '3') && objectOnSensor->getGridMover()->getDirection() == ime::Left))
+            ime::Direction dir = objectOnSensor->getGridMover()->getDirection();
+            if (((sensorNum == '2' || sensorNum == '4') && dir == ime::Right) ||
+                ((sensorNum == '1' || sensorNum == '3') && dir == ime::Left) ||
+                (sensorNum == '5' && dir == ime::Up))
             {
                 objectOnSensor->getGridMover()->setMaxLinearSpeed(ime::Vector2f{speed, speed});
             }
