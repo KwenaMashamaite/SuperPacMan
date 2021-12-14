@@ -223,6 +223,20 @@ namespace spm {
             cache().setValue("HIGH_SCORE", newScore);
             view_.setHighScore(newScore);
         }
+
+        auto extraLivesGiven = cache().getValue<int>("NUM_EXTRA_LIVES_WON");
+        if (newScore >= Constants::FIRST_EXTRA_LIFE_MIN_SCORE && extraLivesGiven == 0 ||
+            newScore >= Constants::SECOND_EXTRA_LIFE_MIN_SCORE && extraLivesGiven == 1 ||
+            newScore >= Constants::THIRD_EXTRA_LIFE_MIN_SCORE && extraLivesGiven == 2)
+        {
+            cache().setValue("NUM_EXTRA_LIVES_WON", extraLivesGiven + 1);
+            auto* pacman = gameObjects().findByTag<PacMan>("pacman");
+            pacman->addLife();
+            cache().setValue("PLAYER_LIVES", pacman->getLivesCount());
+            view_.addLife();
+
+            audio().play(ime::audio::Type::Sfx, "extraLife.wav");
+        }
     }
 
     ///////////////////////////////////////////////////////////////

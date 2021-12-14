@@ -64,6 +64,11 @@ namespace spm {
         int getLivesCount() const;
 
         /**
+         * @brief Add one life
+         */
+        void addLife();
+
+        /**
          * @brief Get the name of this class
          * @return The name of this class
          */

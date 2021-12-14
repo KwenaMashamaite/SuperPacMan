@@ -90,6 +90,7 @@ namespace spm {
             cache().setValue("CURRENT_LEVEL", 1);
             cache().setValue("CURRENT_SCORE", 0);
             cache().setValue("PLAYER_LIVES", Constants::PacManLives);
+            cache().setValue("NUM_EXTRA_LIVES_WON", 0);
 
             engine().removeAllScenesExceptActive();
             engine().popScene(); // Destroy this scene

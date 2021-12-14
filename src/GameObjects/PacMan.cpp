@@ -54,6 +54,11 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void PacMan::addLife() {
+        livesCount_++;
+    }
+
+    ///////////////////////////////////////////////////////////////
     void PacMan::switchAnimation(ime::Vector2i dir) {
         auto strDir = utils::convertToString(dir);
         auto& animator = getSprite().getAnimator();
