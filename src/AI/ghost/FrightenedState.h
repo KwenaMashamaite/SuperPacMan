@@ -61,6 +61,14 @@ namespace spm {
          */
         void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
 
+        /**
+         * @brief Exit a state
+         *
+         * This function will be called by the FSM before the state is
+         * destroyed
+         */
+        void onExit() override;
+
     private:
         Ghost::State nextState_; //!< The state
     };

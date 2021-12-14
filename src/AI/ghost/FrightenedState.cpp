@@ -40,6 +40,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void FrightenedState::onEntry() {
         ghost_->setState(Ghost::State::Frightened);
+        ghost_->getCollisionExcludeList().add("sensors");
         GhostState::onEntry();
 
         ghost_->getSprite().getAnimator().startAnimation("frightened");
@@ -61,6 +62,11 @@ namespace spm {
             }
         } else if (event == GameEvent::GhostEaten)
             fsm_->pop(std::make_unique<EatenState>(fsm_, ghost_, nextState_));
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void FrightenedState::onExit() {
+        ghost_->getCollisionExcludeList().remove("sensors");
     }
 
 } // namespace pm
