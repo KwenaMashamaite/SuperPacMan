@@ -43,6 +43,7 @@ namespace spm {
         ghost_->getCollisionExcludeList().add("sensors");
         GhostState::onEntry();
 
+        reverseDirection();
         ghost_->getSprite().getAnimator().startAnimation("frightened");
         gridMover_->setMoveStrategy(GhostGridMover::Strategy::Random);
         gridMover_->startMovement();

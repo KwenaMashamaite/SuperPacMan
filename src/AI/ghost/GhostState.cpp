@@ -65,15 +65,17 @@ namespace spm {
         switch (ghost_->getState()) {
             case Ghost::State::Scatter:
             case Ghost::State::Chase:
-            case Ghost::State::Eaten:
-                if (event == GameEvent::ScatterModeBegin || event == GameEvent::FrightenedModeBegin) {
-                    if (!ghost_->isLockedInGhostHouse() && ghost_->getGridMover()->getCurrentTileIndex() != Constants::EatenGhostRespawnTile)
-                        ghost_->setDirection(ghost_->getDirection() * -1);
-                }
+                if (event == GameEvent::ScatterModeBegin || event == GameEvent::ChaseModeBegin)
+                    reverseDirection();
                 break;
             default:
                 break;
         }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GhostState::reverseDirection() {
+        ghost_->setDirection(ghost_->getDirection() * -1);
     }
 
 } // namespace pm

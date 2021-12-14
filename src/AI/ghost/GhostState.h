@@ -87,6 +87,12 @@ namespace spm {
         void onExit() override {}
 
     protected:
+        /**
+         * @brief Reverse direction
+         */
+        void reverseDirection();
+
+    protected:
         ActorStateFSM* fsm_;        //!< Ghost state controller
         Ghost* ghost_;              //!< Ghost whose behavior is to be defined by the state
         GhostGridMover* gridMover_; //!< Responsible for moving the ghost in the grid
