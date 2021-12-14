@@ -25,6 +25,7 @@
 #include "EatenState.h"
 #include "ChaseState.h"
 #include "ScatterState.h"
+#include "FrightenedState.h"
 #include "GameObjects/Ghost.h"
 #include "Common/Constants.h"
 #include "Utils/Utils.h"
@@ -35,7 +36,8 @@ namespace spm {
     EatenState::EatenState(ActorStateFSM* fsm, Ghost* target, Ghost::State nextState) :
         GhostState(fsm, target),
         destFoundHandler_{-1},
-        nextState_{nextState}
+        nextState_{nextState},
+        frighten_{false}
     {
         assert((nextState == Ghost::State::Scatter || nextState == Ghost::State::Chase) && "Invalid regeneration transition state");
     }
@@ -63,7 +65,10 @@ namespace spm {
 
         if (event == GameEvent::SuperModeEnd)
             ghost_->setFlattened(false);
-        else if (event == GameEvent::ChaseModeEnd)
+        else if (event == GameEvent::FrightenedModeBegin) {
+            frighten_ = true;
+            fsm_->pop();
+        } else if (event == GameEvent::ChaseModeEnd)
             nextState_ = Ghost::State::Scatter;
         else if (event == GameEvent::ScatterModeEnd)
             nextState_ = Ghost::State::Chase;
@@ -75,10 +80,15 @@ namespace spm {
         ghost_->getCollisionExcludeList().remove("doors");
         gridMover_->unsubscribe(destFoundHandler_);
 
-        if (nextState_ == Ghost::State::Chase)
+        if (frighten_)
+            fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, nextState_));
+        else if (nextState_ == Ghost::State::Chase)
             fsm_->push(std::make_unique<ChaseState>(fsm_, ghost_));
-        else
+        else if (nextState_ == Ghost::State::Scatter)
             fsm_->push(std::make_unique<ScatterState>(fsm_, ghost_));
+        else {
+            assert(false && "Unknown state transition from eaten state");
+        }
     }
 
 } // namespace pm
