@@ -43,6 +43,8 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void EatenState::onEntry() {
         ghost_->setState(Ghost::State::Eaten);
+        ghost_->getCollisionExcludeList().add("sensors");
+        ghost_->getCollisionExcludeList().add("doors");
         GhostState::onEntry();
 
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()) + "Eaten");
@@ -69,6 +71,8 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void EatenState::onExit() {
+        ghost_->getCollisionExcludeList().remove("sensors");
+        ghost_->getCollisionExcludeList().remove("doors");
         gridMover_->unsubscribe(destFoundHandler_);
 
         if (nextState_ == Ghost::State::Chase)

@@ -59,6 +59,7 @@ namespace spm {
         orientation_(Orientation::Vertical),
         spriteSheet_{"spritesheet.png", {16, 16}, {1, 1}, {368, 17, 86, 18}}
     {
+        setCollisionGroup("doors");
         spriteSheet_.assignAlias({0, 0}, "unlocked_door");
         spriteSheet_.assignAlias({0, 1}, "locked_door_horizontal");
         spriteSheet_.assignAlias({0, 2}, "broken_door_horizontal");
