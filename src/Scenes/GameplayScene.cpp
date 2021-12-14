@@ -89,8 +89,10 @@ namespace spm {
                 static_cast<Door*>(gameObject)->lock();
             else if (gameObject->getClassName() == "Fruit")
                 gameObject->setTag(utils::getFruitName(currentLevel_));
-            else if (gameObject->getClassName() == "Ghost" && gameObject->getTag() != "blinky")
-                static_cast<Ghost*>(gameObject)->setLockInGhostHouse(true);
+            else if (gameObject->getClassName() == "Ghost") {
+                if (gameObject->getTag() == "inky" || gameObject->getTag() == "clyde")
+                    static_cast<Ghost *>(gameObject)->setLockInGhostHouse(true);
+            }
         });
     }
 
@@ -278,7 +280,6 @@ namespace spm {
             }
         };
 
-        startProbationTimer("pinky", Constants::PINKY_HOUSE_ARREST_DURATION);
         startProbationTimer("inky", Constants::INKY_HOUSE_ARREST_DURATION);
         startProbationTimer("clyde", Constants::CLYDE_HOUSE_ARREST_DURATION);
     }
