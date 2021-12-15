@@ -152,6 +152,8 @@ namespace spm {
         });
 
         eventEmitter().on("levelStartCountdownComplete", ime::Callback<>([this] {
+            setInputEnable(true);
+
             gui().getWidget("lblReady")->setVisible(false);
             auto* pacman = gameObjects().findByTag("pacman");
             pacman->getSprite().setVisible(true);
@@ -255,6 +257,8 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initLevelStartCountdown() {
+        setInputEnable(false);
+
         auto* lblReady = gui().getWidget<ime::ui::Label>("lblReady");
         lblReady->setText("Get Ready!");
         lblReady->setVisible(true);
