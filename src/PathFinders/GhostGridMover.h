@@ -71,6 +71,11 @@ namespace spm {
          */
         void startMovement();
 
+        /**
+         * @brief @brief Make the ghost reverse direction
+         */
+        void reverseDirection();
+
     private:
         /**
          * @brief Move the ghost
@@ -116,6 +121,7 @@ namespace spm {
     private:
         Ghost* ghost_;                                   //!< The target ghost
         bool movementStarted_;                           //!< Flags if PathFinders has been initiated or not
+        bool forceDirReversal_;                          //!< A flag indicating whether or not to force the ghost to reverse directions
         Strategy moveStrategy_;                          //!< The current PathFinders strategy of the ghost
         ime::Index targetTile_;                          //!< The target tile to move to when move strategy is target
         std::vector<ime::Direction> possibleDirections_; //!< Stores directions to be attempted by randomly moving ghost

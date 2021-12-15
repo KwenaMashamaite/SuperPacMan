@@ -76,7 +76,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GhostState::reverseDirection() {
-        ghost_->setDirection(ghost_->getDirection() * -1);
+        gridMover_->reverseDirection();
     }
 
 } // namespace pm

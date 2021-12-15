@@ -51,6 +51,7 @@ namespace spm {
         ime::GridMover(tileMap, ghost),
         ghost_{ghost},
         movementStarted_{false},
+        forceDirReversal_{false},
         moveStrategy_{Strategy::Random},
         targetTile_{0, 0}
     {
@@ -66,6 +67,12 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::move() {
         ime::Direction reverseGhostDir = ghost_->getDirection() * -1;
+
+        if (forceDirReversal_) {
+            forceDirReversal_ = false;
+            requestDirectionChange(reverseGhostDir);
+        }
+
         initPossibleDirections(reverseGhostDir);
 
         bool isInGhostPen = isInGhostHouse(ghost_);
@@ -105,6 +112,11 @@ namespace spm {
             movementStarted_ = true;
             move();
         }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GhostGridMover::reverseDirection() {
+        forceDirReversal_ = true;
     }
 
     ///////////////////////////////////////////////////////////////
