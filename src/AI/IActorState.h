@@ -28,6 +28,7 @@
 #include "Common/Events.h"
 #include <IME/core/time/Time.h>
 #include <IME/common/PropertyContainer.h>
+#include <memory>
 
 namespace spm {
     /**
@@ -35,22 +36,14 @@ namespace spm {
      */
     class IActorState {
     public:
+        using Ptr = std::unique_ptr<IActorState>;
+
         /**
          * @brief Initialize the state
          *
          * This function is called when the state is entered
          */
         virtual void onEntry() = 0;
-
-        /**
-         * @brief Pause the state
-         */
-        virtual void onPause() = 0;
-
-        /**
-         * @brief Resume the state
-         */
-        virtual void onResume() = 0;
 
         /**
          * @brief Exit a state

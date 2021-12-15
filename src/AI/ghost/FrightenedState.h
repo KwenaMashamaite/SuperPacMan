@@ -39,12 +39,14 @@ namespace spm {
     public:
         /**
          * @brief Constructor
-         * @param fsm The ghosts Finite State Machine
-         * @param target The ghost whose behaviour is to be defined by this state
          * @param nextState The state the ghost must transition to when frightened
          *                  mode expires
+         *
+         * @note @a nextState may change if the the state timer corresponding
+         * to it expires. In this case it will be automatically adjusted to the
+         * appropriate state
          */
-        FrightenedState(ActorStateFSM* fsm, Ghost* target, Ghost::State nextState);
+        FrightenedState(Ghost::State nextState);
 
         /**
          * @brief Initialize the state

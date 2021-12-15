@@ -32,14 +32,13 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    ChaseState::ChaseState(ActorStateFSM* fsm, Ghost* target) :
-        GhostState(fsm, target),
+    ChaseState::ChaseState() :
         adjMoveHandlerID_{-1}
     {}
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::onEntry() {
-        ghost_->setState(Ghost::State::Chase);
+        ghost_->ime::GameObject::setState(static_cast<int>(Ghost::State::Chase));
         GhostState::onEntry();
 
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()) + (ghost_->isFlat() ? "Flat" : ""));
@@ -108,10 +107,10 @@ namespace spm {
             gridMover_->setMoveStrategy(GhostGridMover::Strategy::Target);
             ghost_->setFlattened(false);
         } else if (event == GameEvent::FrightenedModeBegin)
-            fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, Ghost::State::Chase));
+            ghost_->setState(std::make_unique<FrightenedState>(Ghost::State::Chase));
         else if (event == GameEvent::ScatterModeBegin) {
             reverseDirection();
-            fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_));
+            ghost_->setState(std::make_unique<ScatterState>());
         }
     }
 

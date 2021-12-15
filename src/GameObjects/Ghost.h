@@ -25,10 +25,9 @@
 #ifndef SUPERPACMAN_GHOST_H
 #define SUPERPACMAN_GHOST_H
 
-#include "AI/ActorStateFSM.h"
+#include "AI/IActorState.h"
 #include "Common/Events.h"
 #include <IME/core/game_object/GameObject.h>
-#include <IME/core/physics/grid/GridMover.h>
 #include <memory>
 
 namespace spm {
@@ -53,6 +52,7 @@ namespace spm {
          * @brief States a ghost can be in at any given time
          */
         enum class State {
+            None = -1,    //!< No state
             Scatter,      //!< The ghost cycles a grid corner (cannot be eaten by Pacman)
             Chase,        //!< The ghost chases pacman (cannot be eaten by PacMan)
             Frightened,   //!< The ghost runs away from pacman (can be eaten by PacMan)
@@ -67,21 +67,19 @@ namespace spm {
         Ghost(ime::Scene& scene, Colour colour);
 
         /**
-         * @brief Initialize the ghosts Finite State Machine
-         */
-        void initFSM();
-
-        /**
          * @brief Get the name of this class
          * @return The name of this class
          */
         std::string getClassName() const override;
 
         /**
-         * @brief Set the state
+         * @brief Change the state
          * @param state The new state
+         *
+         * Any active state will be destroyed. Pass @a state as nullptr to
+         * remove the current state
          */
-        void setState(State state);
+        void setState(IActorState::Ptr state);
 
         /**
          * @brief Get the current state of the ghost
@@ -169,10 +167,10 @@ namespace spm {
         void initAnimations();
 
     private:
-        ActorStateFSM fsm_;          //!< Ghosts finite state machine
-        ime::Vector2i direction_;    //!< The direction of the ghost
-        bool isLockedInHouse_;       //!< A flag indicating whether or not the ghost is locked in the ghost pen
-        bool isFlat_;                //!< A flag indicating whether or not the ghost is flat
+        IActorState::Ptr state_;   //!< The current state of the ghost
+        ime::Vector2i direction_;  //!< The direction of the ghost
+        bool isLockedInHouse_;     //!< A flag indicating whether or not the ghost is locked in the ghost pen
+        bool isFlat_;              //!< A flag indicating whether or not the ghost is flat
     };
 }
 

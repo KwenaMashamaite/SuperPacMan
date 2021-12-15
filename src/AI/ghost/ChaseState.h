@@ -34,11 +34,9 @@ namespace spm {
     class ChaseState final : public GhostState {
     public:
         /**
-         * @brief Construct state
-         * @param fsm The ghost's Finite State Machine
-         * @param target The ghost whose behaviour is to be defined by this state
+         * @brief Constructor
          */
-        ChaseState(ActorStateFSM* fsm, Ghost* target);
+        ChaseState();
 
         /**
          * @brief Initialize the state

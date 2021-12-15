@@ -26,8 +26,9 @@
 #include "Animations/GhostAnimations.h"
 #include "AI/ghost/ScatterState.h"
 #include "Utils/Utils.h"
+#include "Common/ObjectReferenceKeeper.h"
 #include <memory>
-#include <Common/ObjectReferenceKeeper.h>
+#include <cassert>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
@@ -51,20 +52,24 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Ghost::initFSM() {
-        fsm_.clear();
-        fsm_.push(std::make_unique<ScatterState>(&fsm_, this));
-        fsm_.start();
-    }
-
-    ///////////////////////////////////////////////////////////////
     std::string Ghost::getClassName() const {
         return "Ghost";
     }
 
     ///////////////////////////////////////////////////////////////
-    void Ghost::setState(Ghost::State state) {
-        ime::GameObject::setState(static_cast<int>(state));
+    void Ghost::setState(IActorState::Ptr state) {
+        if (state_)
+            state_->onExit();
+
+        state_ = std::move(state);
+
+        if (state_) {
+            auto* ghostState = dynamic_cast<GhostState*>(state_.get());
+            assert(ghostState && "Invalid ghost state");
+            ghostState->setTarget(this);
+            state_->onEntry();
+        } else if (getState() != State::None)
+            ime::GameObject::setState(static_cast<int>(State::None));
     }
 
     ///////////////////////////////////////////////////////////////
@@ -145,12 +150,14 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void Ghost::update(ime::Time deltaTime) {
-        fsm_.update(deltaTime);
+        if (state_)
+            state_->update(deltaTime);
     }
 
     ///////////////////////////////////////////////////////////////
     void Ghost::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
-        fsm_.handleEvent(event, args);
+        if (state_)
+            state_->handleEvent(event, args);
     }
 
     ///////////////////////////////////////////////////////////////

@@ -39,8 +39,6 @@ namespace spm {
     public:
         /**
          * @brief Constructor
-         * @param fsm The ghosts Finite State Machine
-         * @param target The ghost whose behaviour is to be defined by this state
          * @param nextState The state the ghost must transition to after it
          *                  regenerates
          *
@@ -48,7 +46,7 @@ namespace spm {
          * to it expires. In this case it will be automatically adjusted to the
          * appropriate state
          */
-        EatenState(ActorStateFSM* fsm, Ghost* target, Ghost::State nextState);
+        explicit EatenState(Ghost::State nextState);
 
         /**
          * @brief Initialize the state
@@ -76,7 +74,6 @@ namespace spm {
     private:
         int destFoundHandler_;   //!< Handler id for a target destination event
         Ghost::State nextState_; //!< The state to transition to after reaching the regeneration spot
-        bool frighten_;          //!< A flag indicating whether or not the ghost should return back to frightened state
     };
 }
 

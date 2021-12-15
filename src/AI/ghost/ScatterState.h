@@ -42,13 +42,6 @@ namespace spm {
     class ScatterState final : public GhostState {
     public:
         /**
-         * @brief Construct state
-         * @param fsm The ghost's Finite State Machine
-         * @param target The ghost whose behaviour is to be defined by this state
-         */
-        ScatterState(ActorStateFSM* fsm, Ghost* ghost);
-
-        /**
          * @brief Initialize the state
          *
          * This function will be called by the FSM before a state is entered

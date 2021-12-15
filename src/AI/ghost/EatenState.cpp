@@ -33,18 +33,16 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    EatenState::EatenState(ActorStateFSM* fsm, Ghost* target, Ghost::State nextState) :
-        GhostState(fsm, target),
+    EatenState::EatenState(Ghost::State nextState) :
         destFoundHandler_{-1},
-        nextState_{nextState},
-        frighten_{false}
+        nextState_{nextState}
     {
         assert((nextState == Ghost::State::Scatter || nextState == Ghost::State::Chase) && "Invalid regeneration transition state");
     }
 
     ///////////////////////////////////////////////////////////////
     void EatenState::onEntry() {
-        ghost_->setState(Ghost::State::Eaten);
+        ghost_->ime::GameObject::setState(static_cast<int>(Ghost::State::Eaten));
         ghost_->getCollisionExcludeList().add("sensors");
         ghost_->getCollisionExcludeList().add("doors");
         GhostState::onEntry();
@@ -54,8 +52,15 @@ namespace spm {
         gridMover_->startMovement();
 
         destFoundHandler_ = gridMover_->onAdjacentMoveEnd([this](ime::Index index) {
-            if (index == Constants::EatenGhostRespawnTile)
-                fsm_->pop();
+            if (index == Constants::EatenGhostRespawnTile) {
+                if (nextState_ == Ghost::State::Chase)
+                    ghost_->setState(std::make_unique<ChaseState>());
+                else if (nextState_ == Ghost::State::Scatter)
+                    ghost_->setState(std::make_unique<ScatterState>());
+                else {
+                    assert(false && "Unknown state transition from eaten state");
+                }
+            }
         });
     }
 
@@ -65,13 +70,12 @@ namespace spm {
 
         if (event == GameEvent::SuperModeEnd)
             ghost_->setFlattened(false);
-        else if (event == GameEvent::FrightenedModeBegin) {
-            frighten_ = true;
-            fsm_->pop();
-        } else if (event == GameEvent::ScatterModeBegin)
-            nextState_ = Ghost::State::Scatter;
+        else if (event == GameEvent::FrightenedModeBegin)
+            ghost_->setState(std::make_unique<FrightenedState>(nextState_));
+        else if (event == GameEvent::ScatterModeBegin)
+            ghost_->setState(std::make_unique<ScatterState>());
         else if (event == GameEvent::ChaseModeBegin)
-            nextState_ = Ghost::State::Chase;
+            ghost_->setState(std::make_unique<ChaseState>());
     }
 
     ///////////////////////////////////////////////////////////////
@@ -79,16 +83,6 @@ namespace spm {
         ghost_->getCollisionExcludeList().remove("sensors");
         ghost_->getCollisionExcludeList().remove("doors");
         gridMover_->unsubscribe(destFoundHandler_);
-
-        if (frighten_)
-            fsm_->push(std::make_unique<FrightenedState>(fsm_, ghost_, nextState_));
-        else if (nextState_ == Ghost::State::Chase)
-            fsm_->push(std::make_unique<ChaseState>(fsm_, ghost_));
-        else if (nextState_ == Ghost::State::Scatter)
-            fsm_->push(std::make_unique<ScatterState>(fsm_, ghost_));
-        else {
-            assert(false && "Unknown state transition from eaten state");
-        }
     }
 
 } // namespace pm

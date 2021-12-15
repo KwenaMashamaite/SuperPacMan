@@ -32,6 +32,7 @@
 #include "PathFinders/GhostGridMover.h"
 #include "PathFinders/PacManGridMover.h"
 #include "Common/ObjectReferenceKeeper.h"
+#include "AI/ghost/ScatterState.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
@@ -158,7 +159,7 @@ namespace spm {
             startGhostHouseArrestTimer();
 
             gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
-                static_cast<Ghost*>(gameObject)->initFSM();
+                static_cast<Ghost*>(gameObject)->setState(std::make_unique<ScatterState>());
             });
 
             auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");

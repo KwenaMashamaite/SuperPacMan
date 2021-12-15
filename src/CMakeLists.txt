@@ -2,7 +2,6 @@ set(SRC_FILES
         main.cpp
         Game.cpp
         Grid.cpp
-        AI/ActorStateFSM.cpp
         AI/ghost/GhostState.cpp
         AI/ghost/ScatterState.cpp
         AI/ghost/ChaseState.cpp

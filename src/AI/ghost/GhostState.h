@@ -26,7 +26,6 @@
 #define SUPERPACMAN_GHOSTSTATE_H
 
 #include "AI/IActorState.h"
-#include "AI/ActorStateFSM.h"
 #include "PathFinders/GhostGridMover.h"
 #include <IME/core/time/Timer.h>
 #include <IME/core/physics/grid/GridMover.h>
@@ -45,13 +44,14 @@ namespace spm {
     public:
         /**
          * @brief Constructor
-         * @param fsm The ghost's finite state machine
-         * @param ghost The ghost the ghost for the state
-         * @param gridMover The ghosts grid mover
-         *
-         * @warning @a ghost must not be a nullptr
          */
-        explicit GhostState(ActorStateFSM* fsm, Ghost* ghost);
+        GhostState();
+
+        /**
+         * @brief @brief Set the target for the state
+         * @param ghost The target ghost
+         */
+        void setTarget(Ghost* ghost);
 
         /**
          * @brief Initialize the state
@@ -72,16 +72,6 @@ namespace spm {
         void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
 
         /**
-         * @brief Pause the state
-         */
-        void onPause() override {}
-
-        /**
-         * @brief Resume the state
-         */
-        void onResume() override {}
-
-        /**
          * @brief Exit the state
          */
         void onExit() override {}
@@ -93,9 +83,8 @@ namespace spm {
         void reverseDirection();
 
     protected:
-        ActorStateFSM* fsm_;        //!< Ghost state controller
-        Ghost* ghost_;              //!< Ghost whose behavior is to be defined by the state
-        GhostGridMover* gridMover_; //!< Responsible for moving the ghost in the grid
+        Ghost* ghost_;              //!< Ghost whose behavior is to be defined by the state (@warning Do not access in constructor)
+        GhostGridMover* gridMover_; //!< Responsible for moving the ghost in the grid (@warning Do not access in constructor)
     };
 }
 

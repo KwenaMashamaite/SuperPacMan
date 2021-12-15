@@ -31,13 +31,8 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    ScatterState::ScatterState(ActorStateFSM* fsm, Ghost* ghost) :
-        GhostState(fsm, ghost)
-    {}
-
-    ///////////////////////////////////////////////////////////////
     void ScatterState::onEntry() {
-        ghost_->setState(Ghost::State::Scatter);
+        ghost_->ime::GameObject::setState(static_cast<int>(Ghost::State::Scatter));
         GhostState::onEntry();
 
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()) + (ghost_->isFlat() ? "Flat" : ""));
@@ -66,10 +61,10 @@ namespace spm {
         else if (event == GameEvent::SuperModeEnd)
             ghost_->setFlattened(false);
         else if (event == GameEvent::FrightenedModeBegin)
-            fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, Ghost::State::Scatter));
+            ghost_->setState(std::make_unique<FrightenedState>(Ghost::State::Scatter));
         else if (event == GameEvent::ChaseModeBegin) {
             reverseDirection();
-            fsm_->pop(std::make_unique<ChaseState>(fsm_, ghost_));
+            ghost_->setState(std::make_unique<ChaseState>());
         }
     }
 

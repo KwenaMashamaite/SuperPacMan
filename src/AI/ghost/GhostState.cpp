@@ -29,15 +29,15 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    GhostState::GhostState(ActorStateFSM* fsm, Ghost* ghost) :
-        fsm_{nullptr},
+    GhostState::GhostState() :
         ghost_{nullptr},
         gridMover_{nullptr}
-    {
-        assert(fsm && "A ghost's FSM cannot be a nullptr");
+    {}
+
+    ///////////////////////////////////////////////////////////////
+    void GhostState::setTarget(Ghost *ghost) {
         assert(ghost && "Ghost must not be a nullptr");
         assert(ghost->getGridMover() && "Cannot construct a ghost state without a grid mover");
-        fsm_ = fsm;
         ghost_ = ghost;
         gridMover_ = dynamic_cast<GhostGridMover*>(ghost->getGridMover());
         assert(gridMover_ && "Invalid ghost grid mover, only candidate is spm::GhostGridMover");

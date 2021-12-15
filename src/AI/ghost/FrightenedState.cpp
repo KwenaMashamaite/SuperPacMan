@@ -32,14 +32,13 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    FrightenedState::FrightenedState(ActorStateFSM* fsm, Ghost* target, Ghost::State nextState) :
-        GhostState(fsm, target),
+    FrightenedState::FrightenedState(Ghost::State nextState) :
         nextState_{nextState}
     {}
 
     ///////////////////////////////////////////////////////////////
     void FrightenedState::onEntry() {
-        ghost_->setState(Ghost::State::Frightened);
+        ghost_->ime::GameObject::setState(static_cast<int>(Ghost::State::Frightened));
         ghost_->getCollisionExcludeList().add("sensors");
         GhostState::onEntry();
 
@@ -54,14 +53,14 @@ namespace spm {
 
         if (event == GameEvent::FrightenedModeEnd) {
             if (nextState_ == Ghost::State::Scatter)
-                fsm_->pop(std::make_unique<ScatterState>(fsm_, ghost_));
+                ghost_->setState(std::make_unique<ScatterState>());
             else if (nextState_ == Ghost::State::Chase)
-                fsm_->pop(std::make_unique<ChaseState>(fsm_, ghost_));
+                ghost_->setState(std::make_unique<ChaseState>());
             else {
                 assert(false && "Ghost can only transition to scatter or chase state after it was frightened");
             }
         } else if (event == GameEvent::GhostEaten)
-            fsm_->pop(std::make_unique<EatenState>(fsm_, ghost_, nextState_));
+            ghost_->setState(std::make_unique<EatenState>(nextState_));
     }
 
     ///////////////////////////////////////////////////////////////
