@@ -174,7 +174,9 @@ namespace spm {
             startGhostHouseArrestTimer();
 
             gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
-                static_cast<Ghost*>(gameObject)->setState(std::make_unique<ScatterState>());
+                auto* ghost = static_cast<Ghost*>(gameObject);
+                ghost->clearState();
+                ghost->setState(std::make_unique<ScatterState>());
             });
 
             auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");

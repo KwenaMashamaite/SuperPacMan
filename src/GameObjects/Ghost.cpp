@@ -61,15 +61,20 @@ namespace spm {
         if (state_)
             state_->onExit();
 
-        state_ = std::move(state);
-
-        if (state_) {
+        if (state) {
+            state_ = std::move(state);
             auto* ghostState = dynamic_cast<GhostState*>(state_.get());
             assert(ghostState && "Invalid ghost state");
             ghostState->setTarget(this);
             state_->onEntry();
-        } else if (getState() != State::None)
-            ime::GameObject::setState(static_cast<int>(State::None));
+        } else
+            clearState();
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void Ghost::clearState() {
+        state_ = nullptr;
+        ime::GameObject::setState(static_cast<int>(State::None));
     }
 
     ///////////////////////////////////////////////////////////////

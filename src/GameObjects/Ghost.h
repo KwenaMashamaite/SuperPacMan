@@ -36,8 +36,6 @@ namespace spm {
      */
     class Ghost : public ime::GameObject {
     public:
-        using Ptr = std::unique_ptr<Ghost>; //!< Shared actor pointer
-
         /**
          * @brief The colour of the ghost
          */
@@ -80,6 +78,15 @@ namespace spm {
          * remove the current state
          */
         void setState(IActorState::Ptr state);
+
+        /**
+         * @brief Destroy the current state
+         *
+         * Similarly to passing nullptr as an argument to spm::Ghost::State,
+         * this function removes the current state. However it does not call
+         * the onExit function on the state before destroying it.
+         */
+        void clearState();
 
         /**
          * @brief Get the current state of the ghost
