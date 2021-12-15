@@ -36,7 +36,6 @@ namespace spm {
         ScatterModeBegin,    //!< Occurs when chase mode expires
         SuperModeBegin,      //!< Occurs when pacman eats a Super pellet
         SuperModeEnd,        //!< Occurs when super pellet effects wore off
-        GhostEaten,          //!< Occurs when a ghost is eaten by pacman
     };
 }
 

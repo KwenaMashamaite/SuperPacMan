@@ -174,13 +174,9 @@ namespace spm {
          * @brief Emit a game event after the timer expires
          * @param timer The timer to configure
          * @param duration How long the timer runs before it expires
-         * @param event The event to be emitted
-         *
-         * This function will start the timer if its not running or increase
-         * its expiry time if its already running. When the timer expires it
-         * will emit @a event
+         * @param timeoutCallback The function to execute when the timer expires
          */
-        void configureTimer(ime::Timer& timer, ime::Time duration, GameEvent event);
+        void configureTimer(ime::Timer& timer, ime::Time duration, ime::Callback<> timeoutCallback);
 
         /**
          * @brief Transition game to pause menu
@@ -248,14 +244,47 @@ namespace spm {
          */
         void startChaseTimer();
 
+        /**
+         * @brief Get the duration of the ghosts scatter mode
+         * @return Scatter mode duration
+         */
+        ime::Time getScatterModeDuration() const;
+
+        /**
+         * @brief Get the duration of the ghosts chase mode
+         * @return Chase mode duration
+         */
+        ime::Time getChaseModeDuration() const;
+
+        /**
+         * @brief Get the ghosts frightened mode duration
+         * @return Frightened mode duration
+         */
+        ime::Time getFrightenedModeDuration();
+
+        /**
+         * @brief Get pacmans super mode duration
+         * @return Pacman super mode duration
+         */
+        ime::Time getSuperModeDuration();
+
+        /**
+         * @brief Pause the scatter-chase transition timer
+         */
+        void pauseGhostAITimer();
+
+        /**
+         * @brief Resume the scatter-chase transition timer
+         */
+        void resumeGhostAITimer();
+
     private:
         int currentLevel_;              //!< Current game level
         int pointsMultiplier_;          //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)
         bool isPaused_;                 //!< A flag indicating whether or not the game is paused
         CommonView view_;               //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_;    //!< Gameplay grid view
-        ime::Timer scatterModeTimer_;   //!< Ghosts scatter mode duration counter
-        ime::Timer chaseModeTimer_;     //!< Ghosts chase mode duration counter
+        ime::Timer ghostAITimer_;       //!< Scatter-chase state transition timer
         ime::Timer superModeTimer_;     //!< Pacman Super mode duration counter
         ime::Timer powerModeTimer_;     //!< Energizer mode duration counter
         unsigned int scatterWaveLevel_; //!< The current scatter mode level (up to 4 levels)

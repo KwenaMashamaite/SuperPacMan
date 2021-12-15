@@ -56,6 +56,8 @@ namespace spm {
         engine_.getPersistentData().addProperty({"MASTER_VOLUME", 100.0f});
         engine_.getPersistentData().addProperty({"PLAYER_WON_GAME", false});
         engine_.getPersistentData().addProperty({"LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS});
+        engine_.getPersistentData().addProperty({"GHOSTS_FRIGHTENED_MODE_DURATION", ime::seconds(Constants::POWER_MODE_DURATION)});
+        engine_.getPersistentData().addProperty({"PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION)});
 
         // If not found, player will be prompted for name in StartUpScene
         if (engine_.getConfigs().hasPref("PLAYER_NAME"))

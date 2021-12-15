@@ -28,6 +28,7 @@
 #include "Common/Constants.h"
 #include "LevelStartScene.h"
 #include "Utils/Utils.h"
+#include "AI/ghost/EatenState.h"
 #include <IME/core/engine/Engine.h>
 #include <cassert>
 
@@ -109,23 +110,34 @@ namespace spm {
         pellet->setActive(false);
 
         if (pellet->getPelletType() == Pellet::Type::Power) {
+            game_.pauseGhostAITimer();
             game_.updateScore(Constants::Points::POWER_PELLET);
+
+            game_.configureTimer(game_.powerModeTimer_, game_.getFrightenedModeDuration(), [this] {
+                game_.pointsMultiplier_ = 1;
+
+                if (!game_.superModeTimer_.isRunning())
+                    game_.resumeGhostAITimer();
+
+                game_.emit(GameEvent::FrightenedModeEnd);
+            });
+
+            // Extend super mode duration by power mode duration
+            if (game_.superModeTimer_.isRunning())
+                game_.superModeTimer_.setInterval(game_.superModeTimer_.getRemainingDuration() + game_.getFrightenedModeDuration());
+
             game_.audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
-
-            auto powerModeDuration = ime::seconds(Constants::POWER_MODE_DURATION / game_.currentLevel_);
-            game_.configureTimer(game_.powerModeTimer_, powerModeDuration, GameEvent::FrightenedModeEnd);
-
-            // Extend super mode duration by power mode duration (Power pill effects must always timeout before super mode effects)
-            if (game_.superModeTimer_.getStatus() == ime::Timer::Status::Running)
-                game_.configureTimer(game_.superModeTimer_, powerModeDuration, GameEvent::SuperModeEnd);
-
             game_.emit(GameEvent::FrightenedModeBegin);
         } else {
+            game_.pauseGhostAITimer();
             game_.updateScore(Constants::Points::SUPER_PELLET);
-            game_.audio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
 
-            auto superModeDuration = ime::seconds(Constants::SUPER_MODE_DURATION / game_.currentLevel_);
-            game_.configureTimer(game_.superModeTimer_, superModeDuration, GameEvent::SuperModeEnd);
+            game_.configureTimer(game_.superModeTimer_, game_.getSuperModeDuration(), [this] {
+                game_.emit(GameEvent::SuperModeEnd);
+                game_.resumeGhostAITimer();
+            });
+
+            game_.audio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
             game_.emit(GameEvent::SuperModeBegin);
         }
     }
@@ -138,28 +150,36 @@ namespace spm {
         if (pacman->getClassName() != "PacMan")
             return;
 
-        // Prevent pacman from being killed while his death animation is playing
-        if (pacman->getSprite().getAnimator().getActiveAnimation()->getName() == "dying")
-            return;
-
         auto pacmanState = static_cast<PacMan*>(pacman)->getState();
         auto ghostState = static_cast<Ghost*>(ghost)->getState();
 
+        if (pacmanState == PacMan::State::Dying)
+            return;
+
         if (ghostState == Ghost::State::Frightened) {
-            game_.audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
+            setMovementFreeze(true);
             game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
             replaceWithScoreTexture(pacman, ghost);
             game_.updatePointsMultiplier();
-            setMovementFreeze(true);
+
+            game_.powerModeTimer_.pause();
+
+            if (pacmanState == PacMan::State::Super)
+                game_.superModeTimer_.pause();
 
             // Unfreeze moving actors after a delay
-            game_.timer().setTimeout(ime::seconds(1), [this, ghost, pacman] {
+            game_.timer().setTimeout(ime::seconds(1), [=] {
                 setMovementFreeze(false);
+                game_.powerModeTimer_.start();
 
-                // Let ghost know it has been eaten
-                static_cast<Ghost*>(ghost)->handleEvent(GameEvent::GhostEaten, {});
+                if (pacmanState == PacMan::State::Super)
+                    game_.superModeTimer_.start();
+
+                static_cast<Ghost*>(ghost)->setState(std::make_unique<EatenState>(Ghost::State::Scatter));
                 pacman->getSprite().setVisible(true);
             });
+
+            game_.audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
         } else if (pacmanState != PacMan::State::Super && ghostState != Ghost::State::Eaten) { // Vulnerable pacman
             game_.onPrePacManDeathAnim();
             pacman->getSprite().getAnimator().startAnimation("dying");
