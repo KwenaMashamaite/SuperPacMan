@@ -24,7 +24,6 @@
 
 #include "GhostState.h"
 #include "Common/Constants.h"
-#include "PathFinders/GhostGridMover.h"
 #include <cassert>
 
 namespace spm {
@@ -49,8 +48,8 @@ namespace spm {
 
         float speed = 0;
         switch (ghost_->getState()) {
-            case Ghost::State::Scatter:     speed = 0.85f * Constants::PacManNormalSpeed; break;
-            case Ghost::State::Chase:       speed = 0.95f * Constants::PacManNormalSpeed; break;
+            case Ghost::State::Scatter:     speed = Constants::PacManNormalSpeed; break;
+            case Ghost::State::Chase:       speed = Constants::PacManNormalSpeed + 3; break;
             case Ghost::State::Frightened:  speed = 0.5f * Constants::PacManNormalSpeed; break;
             case Ghost::State::Eaten:       speed = Constants::PacManSuperSpeed; break;
             default: break;
