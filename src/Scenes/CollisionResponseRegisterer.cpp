@@ -54,8 +54,13 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithPellet(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolvePelletCollision, this, std::placeholders::_2));
+    void CollisionResponseRegisterer::registerCollisionWithPowerPellet(ime::GameObject *gameObject) {
+        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolvePowerPelletCollision, this, std::placeholders::_2));
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void CollisionResponseRegisterer::registerCollisionWithSuperPellet(ime::GameObject *gameObject) {
+        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveSuperPelletCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
@@ -102,14 +107,10 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolvePelletCollision(ime::GameObject* pelletBase) {
-        if (pelletBase->getClassName() != "Pellet")
-            return;
+    void CollisionResponseRegisterer::resolvePowerPelletCollision(ime::GameObject *pellet) {
+        if (pellet->getClassName() == "Pellet" && pellet->getTag() == "power") {
+            pellet->setActive(false);
 
-        auto pellet = static_cast<Pellet*>(pelletBase);
-        pellet->setActive(false);
-
-        if (pellet->getPelletType() == Pellet::Type::Power) {
             game_.pauseGhostAITimer();
             game_.updateScore(Constants::Points::POWER_PELLET);
 
@@ -128,7 +129,14 @@ namespace spm {
 
             game_.audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
             game_.emit(GameEvent::FrightenedModeBegin);
-        } else {
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void CollisionResponseRegisterer::resolveSuperPelletCollision(ime::GameObject *pellet) {
+        if (pellet->getClassName() == "Pellet" && pellet->getTag() == "super") {
+            pellet->setActive(false);
+
             game_.pauseGhostAITimer();
             game_.updateScore(Constants::Points::SUPER_PELLET);
 

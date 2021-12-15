@@ -48,22 +48,13 @@ namespace spm {
          * @param scene The scene the object is in
          * @param type The type of the pellet
          */
-        explicit Pellet(ime::Scene& scene, Type type);
+        Pellet(ime::Scene& scene, Type type);
 
         /**
          * @brief Get the class type
          * @return Name of the concrete class the pellet belongs to
          */
         std::string getClassName() const override;
-
-        /**
-         * @brief Get the type of the pellet
-         * @return The type of the pellet
-         */
-        Type getPelletType() const;
-
-    private:
-        Type type_;
     };
 }
 

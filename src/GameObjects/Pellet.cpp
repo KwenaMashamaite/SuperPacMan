@@ -28,10 +28,10 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     Pellet::Pellet(ime::Scene& scene, Type type) :
-        ime::GameObject(scene),
-        type_{type}
+        ime::GameObject(scene)
     {
         setCollisionGroup(type == Type::Power ? "powerPellets" : "superPellets");
+        setTag(type == Type::Power ? "power" : "super");
 
         auto animations = PelletAnimations();
         animations.createAnimationFor((type == Type::Power ? "powerPellet" : "superPellet"));
@@ -47,11 +47,6 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     std::string Pellet::getClassName() const {
         return "Pellet";
-    }
-
-    ///////////////////////////////////////////////////////////////
-    Pellet::Type Pellet::getPelletType() const {
-        return type_;
     }
 
 } // namespace spm

@@ -60,10 +60,16 @@ namespace spm {
         void registerCollisionWithDoor(ime::GameObject* gameObject);
 
         /**
-         * @brief Register a pellet collision handler
+         * @brief Register a power pellet collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithPellet(ime::GameObject* gameObject);
+        void registerCollisionWithPowerPellet(ime::GameObject* gameObject);
+
+        /**
+         * @brief Register a super pellet collision handler
+         * @param gameObject The game object to register the collision handler on
+         */
+        void registerCollisionWithSuperPellet(ime::GameObject* gameObject);
 
         /**
          * @brief Register a ghost collision handler
@@ -100,7 +106,13 @@ namespace spm {
          * @brief Resolve a collision between a pellet object and another game object
          * @param pellet The pellet in collision with another game object
          */
-        void resolvePelletCollision(ime::GameObject* pellet);
+        void resolvePowerPelletCollision(ime::GameObject* pellet);
+
+        /**
+         * @brief Resolve a collision between a pellet object and another game object
+         * @param pellet The pellet in collision with another game object
+         */
+        void resolveSuperPelletCollision(ime::GameObject* pellet);
 
         /**
          * @brief Resolve a collision between a ghost and another game object

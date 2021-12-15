@@ -131,7 +131,8 @@ namespace spm {
         collisionResponseRegisterer_.registerCollisionWithFruit(pacman);
         collisionResponseRegisterer_.registerCollisionWithKey(pacman);
         collisionResponseRegisterer_.registerCollisionWithDoor(pacman);
-        collisionResponseRegisterer_.registerCollisionWithPellet(pacman);
+        collisionResponseRegisterer_.registerCollisionWithPowerPellet(pacman);
+        collisionResponseRegisterer_.registerCollisionWithSuperPellet(pacman);
         collisionResponseRegisterer_.registerCollisionWithGhost(pacman);
         collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(pacman);
 
