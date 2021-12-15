@@ -65,7 +65,8 @@ namespace spm {
         switch (ghost_->getState()) {
             case Ghost::State::Scatter:
             case Ghost::State::Chase:
-                if (event == GameEvent::ScatterModeBegin || event == GameEvent::ChaseModeBegin)
+            case Ghost::State::Eaten:
+                if (event == GameEvent::FrightenedModeBegin)
                     reverseDirection();
                 break;
             default:

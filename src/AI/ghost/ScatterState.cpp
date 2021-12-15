@@ -67,8 +67,10 @@ namespace spm {
             ghost_->setFlattened(false);
         else if (event == GameEvent::FrightenedModeBegin)
             fsm_->pop(std::make_unique<FrightenedState>(fsm_, ghost_, Ghost::State::Scatter));
-        else if (event == GameEvent::ChaseModeBegin)
+        else if (event == GameEvent::ChaseModeBegin) {
+            reverseDirection();
             fsm_->pop(std::make_unique<ChaseState>(fsm_, ghost_));
+        }
     }
 
 } // namespace pm
