@@ -152,7 +152,7 @@ namespace spm {
         vlContainer->getRenderer()->setSpaceBetweenWidgets(7.0f);
 
         // Create action buttons
-        auto btnRetryLevel = Button::create("Retry Level");
+        auto btnRetryLevel = Button::create("Play Again");
         btnRetryLevel->getRenderer()->setFont("DejaVuSans.ttf");
         btnRetryLevel->getRenderer()->setRoundedBorderRadius(18.0f);
         btnRetryLevel->getRenderer()->setRoundedBorderRadius(18);
@@ -170,7 +170,7 @@ namespace spm {
         btnExitGame->setText("Exit Game");
 
         // Add action buttons to container
-        vlContainer->addWidget(std::move(btnRetryLevel), "btnRetryLevel");
+        vlContainer->addWidget(std::move(btnRetryLevel), "btnRetry");
         vlContainer->addWidget(std::move(btnExitMainMenu), "btnExitMainMenu");
         vlContainer->addWidget(std::move(btnExitGame), "btnExitGame");
 

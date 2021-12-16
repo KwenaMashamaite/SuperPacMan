@@ -35,6 +35,14 @@ using namespace ime::ui;
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
+    void restoreCache(ime::PropertyContainer& cache) {
+        cache.setValue("CURRENT_LEVEL", 1);
+        cache.setValue("CURRENT_SCORE", 0);
+        cache.setValue("PLAYER_LIVES", Constants::PacManLives);
+        cache.setValue("NUM_EXTRA_LIVES_WON", 0);
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameOverScene::onEnter() {
         updateLeaderboard();
         initGui();
@@ -67,31 +75,17 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::initButtonEvents() {
-        if (!cache().getValue<bool>("PLAYER_WON_GAME") && cache().getValue<int>("LEVEL_RESTART_COUNT") > 0) {
-            // Replenish pacmans lives and restart level when "Restart Level" button is clicked
-            gui().getWidget("btnRetryLevel")->on("click", ime::Callback<>([this] {
-                cache().setValue("LEVEL_RESTART_COUNT", cache().getValue<int>("LEVEL_RESTART_COUNT") - 1);
-                cache().setValue("PLAYER_LIVES", Constants::PacManLives);
-                engine().removeAllScenesExceptActive();
-                engine().popScene(); // Destroy this scene
-                engine().pushScene(std::make_unique<GameplayScene>());
-                engine().pushScene(std::make_unique<LevelStartScene>());
-            }));
-        } else {
-            gui().removeWidget("btnRetryLevel");
-
-            // Reduce vertical size of container to accommodate only two buttons instead of three
-            gui().getWidget("vlButtonsContainer")->setHeight("60%");
-        }
+        gui().getWidget("btnRetry")->on("click", ime::Callback<>([this] {
+            restoreCache(cache());
+            engine().removeAllScenesExceptActive();
+            engine().popScene(); // Destroy this scene
+            engine().pushScene(std::make_unique<GameplayScene>());
+            engine().pushScene(std::make_unique<LevelStartScene>());
+        }));
 
         // Exit to the games main menu when "Exit to Main Menu" is clicked
         gui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
-            cache().setValue("LEVEL_RESTART_COUNT", Constants::MAX_NUM_LEVEL_RESTARTS);
-            cache().setValue("CURRENT_LEVEL", 1);
-            cache().setValue("CURRENT_SCORE", 0);
-            cache().setValue("PLAYER_LIVES", Constants::PacManLives);
-            cache().setValue("NUM_EXTRA_LIVES_WON", 0);
-
+            restoreCache(cache());
             engine().removeAllScenesExceptActive();
             engine().popScene(); // Destroy this scene
             engine().pushScene(std::make_unique<MainMenuScene>());

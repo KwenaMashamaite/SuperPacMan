@@ -60,12 +60,11 @@ namespace spm {
 
         // Create pause menu buttons
         auto btnList = {std::pair{"Resume", "btnResume"},
-                        std::pair{"Restart Level", "btnRestart"},
                         std::pair{"Exit to Main Menu", "btnMainMenu"},
                         std::pair{"Exit Game", "btnExit"}};
 
         // Container for pause menu buttons
-        auto vlBtnContainer = VerticalLayout::create("90%", "45%");
+        auto vlBtnContainer = VerticalLayout::create("90%", "35%");
         vlBtnContainer->setOrigin(0.5f, 0.5f);
         vlBtnContainer->setPosition("50%", "50%");
         vlBtnContainer->getRenderer()->setSpaceBetweenWidgets(7.0f);

@@ -57,7 +57,6 @@ namespace spm {
         static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 21.0f;     //!< Time spent by clyde in the ghost house before entering the maze
 
         // 4. Miscellaneous
-        static constexpr auto MAX_NUM_LEVEL_RESTARTS = 2;            //!< The number of times the player can restart a level before being forced to start from level 1
         static constexpr auto FIRST_EXTRA_LIFE_MIN_SCORE = 30000;    //!< The number of points the player must score before being awarded the first extra life
         static constexpr auto SECOND_EXTRA_LIFE_MIN_SCORE = 100000;  //!< The number of points the player must score before being awarded the second extra life
         static constexpr auto THIRD_EXTRA_LIFE_MIN_SCORE = 200000;   //!< The number of points the player must score before being awarded the third extra life
