@@ -137,6 +137,7 @@ namespace spm {
         collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(pacman);
 
         gameObjects().forEachInGroup("Ghost", [this] (ime::GameObject* ghost){
+            collisionResponseRegisterer_.registerCollisionWithPacMan(ghost);
             collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(ghost);
             collisionResponseRegisterer_.registerCollisionWithSlowDownSensor(ghost);
         });
@@ -506,23 +507,6 @@ namespace spm {
                     ghost->setFlash(false);
             });
         }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::onPrePacManDeathAnim() {
-        audio().stopAll();
-        stopAllTimers();
-
-        auto pacman = gameObjects().findByTag<PacMan>("pacman");
-        pacman->setState(PacMan::State::Dying);
-        pacman->setLivesCount(pacman->getLivesCount() - 1);
-        cache().setValue("PLAYER_LIVES", pacman->getLivesCount());
-        view_.removeLife();
-
-        gameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
-            ghost->getSprite().setVisible(false);
-            ghost->getGridMover()->setMovementFreeze(true);
-        });
     }
 
     ///////////////////////////////////////////////////////////////

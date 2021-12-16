@@ -72,6 +72,12 @@ namespace spm {
         void registerCollisionWithSuperPellet(ime::GameObject* gameObject);
 
         /**
+         * @brief Register a pacman collision handler
+         * @param gameObject The game object to register the collision handler on
+         */
+        void registerCollisionWithPacMan(ime::GameObject* gameObject);
+
+        /**
          * @brief Register a ghost collision handler
          * @param gameObject The game object to register the collision handler on
          */
@@ -115,6 +121,13 @@ namespace spm {
         void resolveSuperPelletCollision(ime::GameObject* pellet);
 
         /**
+         * @brief Resolve a collision between pacman and another game object
+         * @param pacman Pacman
+         * * @param otherGameObject The game object in collision with pacman
+         */
+        void resolvePacmanCollision(ime::GameObject* pacman, ime::GameObject* otherGameObject);
+
+        /**
          * @brief Resolve a collision between a ghost and another game object
          * @param ghost The ghost in collision with another game object
          * * @param otherGameObject The game object in collision with the ghost
@@ -143,16 +156,11 @@ namespace spm {
         void resolveTeleportationSensorCollision(ime::GameObject* sensor, ime::GameObject* objectOnSensor);
 
         /**
-         * @brief Convert pacman and an eaten ghost into a single score texture
-         * @param pacman Pacman
+         * @brief Convert the eaten ghost and the object that ate it into a single score texture
          * @param ghost Eaten ghost
-         *
-         * This function is called when pacman collides with a blue ghost,
-         * after the collision, the ghost and pacman textures are momentarily
-         * combined into a single score texture which corresponds to the number
-         * of points the player earned for eating the ghost
+         * @param otherGameObject Game object that ate the ghost
          */
-        void replaceWithScoreTexture(ime::GameObject* pacman, ime::GameObject* ghost) const;
+        void replaceWithScoreTexture(ime::GameObject* ghost, ime::GameObject* otherGameObject) const;
 
         /**
          * @brief Freeze or unfreeze pacman and the ghosts

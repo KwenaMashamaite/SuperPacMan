@@ -64,6 +64,11 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void CollisionResponseRegisterer::registerCollisionWithPacMan(ime::GameObject *gameObject) {
+        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolvePacmanCollision, this, std::placeholders::_2, std::placeholders::_1));
+    }
+
+    ///////////////////////////////////////////////////////////////
     void CollisionResponseRegisterer::registerCollisionWithGhost(ime::GameObject *gameObject) {
         gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveGhostCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
@@ -151,55 +156,63 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveGhostCollision(ime::GameObject *ghost, ime::GameObject *pacman) {
-        if (ghost->getClassName() != "Ghost" )
-            return;
+    void CollisionResponseRegisterer::resolvePacmanCollision(ime::GameObject* pacman, ime::GameObject* otherGameObject) {
+        if (pacman->getClassName() == "PacMan" && static_cast<PacMan*>(pacman)->getState() != PacMan::State::Super) {
+            auto* ghost = dynamic_cast<Ghost*>(otherGameObject);
+            if (ghost && (ghost->getState() == Ghost::State::Frightened || ghost->getState() == Ghost::State::Eaten))
+                return;
 
-        if (pacman->getClassName() != "PacMan")
-            return;
+            game_.audio().stopAll();
+            game_.stopAllTimers();
 
-        auto pacmanState = static_cast<PacMan*>(pacman)->getState();
-        auto ghostState = static_cast<Ghost*>(ghost)->getState();
+            auto pac = static_cast<PacMan*>(pacman);
+            pac->setState(PacMan::State::Dying);
+            pac->getSprite().getAnimator().startAnimation("dying");
+            pac->setLivesCount(pac->getLivesCount() - 1);
+            game_.cache().setValue("PLAYER_LIVES", pac->getLivesCount());
+            game_.view_.removeLife();
 
-        if (pacmanState == PacMan::State::Dying)
-            return;
-
-        if (ghostState == Ghost::State::Frightened) {
-            setMovementFreeze(true);
-            game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
-            replaceWithScoreTexture(pacman, ghost);
-            game_.updatePointsMultiplier();
-
-            game_.powerModeTimer_.pause();
-
-            if (pacmanState == PacMan::State::Super)
-                game_.superModeTimer_.pause();
-
-            // Unfreeze moving actors after a delay
-            game_.timer().setTimeout(ime::seconds(1), [=] {
-                setMovementFreeze(false);
-                game_.powerModeTimer_.start();
-
-                if (pacmanState == PacMan::State::Super)
-                    game_.superModeTimer_.start();
-
-                static_cast<Ghost*>(ghost)->setState(std::make_unique<EatenState>(Ghost::State::Scatter));
-                pacman->getSprite().setVisible(true);
+            game_.gameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
+                ghost->getSprite().setVisible(false);
+                ghost->getGridMover()->setMovementFreeze(true);
             });
 
-            game_.audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
-        } else if (pacmanState != PacMan::State::Super && ghostState != Ghost::State::Eaten) { // Vulnerable pacman
-            game_.onPrePacManDeathAnim();
-            pacman->getSprite().getAnimator().startAnimation("dying");
-            game_.audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
-
-            auto deathAnimDuration = pacman->getSprite().getAnimator().getActiveAnimation()->getDuration();
+            auto deathAnimDuration = pacman->getSprite().getAnimator().getAnimation("dying")->getDuration();
             game_.timer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this, pacman] {
                 if (static_cast<PacMan*>(pacman)->getLivesCount() <= 0)
                     game_.endGameplay();
                 else
                     game_.engine().pushScene(std::make_unique<LevelStartScene>());
             });
+
+            game_.audio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void CollisionResponseRegisterer::resolveGhostCollision(ime::GameObject *ghost, ime::GameObject *otherGameObject) {
+        if (ghost->getClassName() == "Ghost" && static_cast<Ghost*>(ghost)->getState() == Ghost::State::Frightened) {
+            setMovementFreeze(true);
+            game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
+            replaceWithScoreTexture(ghost, otherGameObject);
+            game_.updatePointsMultiplier();
+            game_.powerModeTimer_.pause();
+
+            if (game_.superModeTimer_.isRunning())
+                game_.superModeTimer_.pause();
+
+            game_.timer().setTimeout(ime::seconds(1), [=] {
+                setMovementFreeze(false);
+                otherGameObject->getSprite().setVisible(true);
+                game_.powerModeTimer_.start();
+
+                if (game_.superModeTimer_.isPaused())
+                    game_.superModeTimer_.start();
+
+                static_cast<Ghost*>(ghost)->setState(std::make_unique<EatenState>(Ghost::State::Scatter));
+            });
+
+            game_.audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
         }
     }
 
@@ -260,8 +273,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::replaceWithScoreTexture(ime::GameObject *pacman, ime::GameObject *ghost) const {
-        pacman->getSprite().setVisible(false);
+    void CollisionResponseRegisterer::replaceWithScoreTexture(ime::GameObject* ghost, ime::GameObject* otherGameObject) const {
+        otherGameObject->getSprite().setVisible(false);
         ghost->getSprite().setTexture("spritesheet.png");
 
         if (game_.pointsMultiplier_ == 1)
