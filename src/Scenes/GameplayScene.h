@@ -209,14 +209,6 @@ namespace spm {
         void updateGhostsFlashAnimation();
 
         /**
-         * @brief Update the game world
-         *
-         * This function is called when pacman is killed by a ghost but
-         * before his death animation starts playing
-         */
-        void onPrePacManDeathAnim();
-
-        /**
          * @brief Update the ghost point multiplier
          *
          * The multiplier increases by a factor of 2 every time the player

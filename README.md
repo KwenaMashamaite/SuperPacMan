@@ -1,17 +1,12 @@
-# Super Pac-Man
-
-[Super Pac-Man](https://en.wikipedia.org/wiki/Super_Pac-Man) is an arcade game
-that was created in 1982 as a spin-off from the popular Pac-Man game.
-
 ## Overview
 
-This project is a Super Pac-Man clone using the [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME), 
-a 2D game engine that I developed. The game uses the same core logic and a UI as my [clone](https://github.com/KwenaMashamaite/PacMan) 
+This project is a [Super Pac-Man](https://en.wikipedia.org/wiki/Super_Pac-Man) clone using the [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME), 
+a 2D game engine that I developed. This game uses the same core logic as my [clone](https://github.com/KwenaMashamaite/PacMan) 
 of the original Pac-Man game.
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v0.1)
+1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.0.0)
    the latest game version
 2. Extract the zip archive
 3. Run _SuperPacMan.exe_
@@ -29,7 +24,7 @@ of the original Pac-Man game.
 
 3. Gameplay Scene
 
-![](docs/screenshots/gameplay.png)
+![](docs/screenshots/gameplay.gif)
 
 4. Pause Menu Scene
 
@@ -44,24 +39,20 @@ of the original Pac-Man game.
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*
 
 This project is a CMake project, therefore you must download and install [CMake](https://cmake.org/). 
-You also need to download [Infinite Motion Engine v2.2.0](https://github.com/KwenaMashamaite/IME/releases/tag/v2.2.0) or higher. 
+You also need to download [Infinite Motion Engine v2.4.0](https://github.com/KwenaMashamaite/IME/releases/tag/v2.4.0). 
 Then:
 
 1. Clone the repository
 ```git
 $ git clone https://github.com/KwenaMashamaite/SuperPacMan
 ```   
-2. Create a folder in the root of the directoryK created in step 1 and name it `extlibs`
+2. Create a folder in the root of the directory created in step 1 and name it `extlibs`
 3. Extract **IME** to the `extlibs` folder created in step 2. It should look like:
 
 ![](docs/screenshots/extlibs_directory_structure.png)
    
-At this point your ready to build the project. The easiest way to do this is to
-use an IDE that supports building with *CMake*. I recommend using [CLion](https://www.jetbrains.com/clion/) (Paid - Free 30 day trial) 
-or [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/) (Free)
-
-To build the game using the *CLI*, run the following commands from the project root 
-directory:
+At this point your ready to build the project. You may use an IDE that supports building with *CMake*.
+or the *CLI* using the the following commands:
 
 ```shell
 mkdir build
@@ -70,8 +61,7 @@ cmake ..
 cmake --build .
 ```
 
-After the build process completes, you will find the game executable in `SuperPacMan/bin`
-folder
+The executable will can be found in the `bin` directory
 
 ## Platform
 
