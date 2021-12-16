@@ -34,7 +34,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     Ghost::Ghost(ime::Scene& scene, Colour colour) :
         ime::GameObject(scene),
-        direction_{ime::Left},
+        direction_{ime::Right},
         isLockedInHouse_{false},
         isFlat_{false}
     {
@@ -42,9 +42,10 @@ namespace spm {
             setTag("blinky");
         else if (colour == Colour::Pink)
             setTag("pinky");
-        else if (colour == Colour::Cyan)
+        else if (colour == Colour::Cyan) {
             setTag("inky");
-        else if (colour == Colour::Orange)
+            direction_ = ime::Left;
+        } else if (colour == Colour::Orange)
             setTag("clyde");
 
         initAnimations();
