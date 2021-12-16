@@ -179,9 +179,10 @@ namespace spm {
 
             auto deathAnimDuration = pacman->getSprite().getAnimator().getAnimation("dying")->getDuration();
             game_.timer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this, pacman] {
-                if (static_cast<PacMan*>(pacman)->getLivesCount() <= 0)
+                if (static_cast<PacMan*>(pacman)->getLivesCount() <= 0) {
+                    game_.gameObjects().remove(pacman);
                     game_.endGameplay();
-                else
+                } else
                     game_.engine().pushScene(std::make_unique<LevelStartScene>());
             });
 
