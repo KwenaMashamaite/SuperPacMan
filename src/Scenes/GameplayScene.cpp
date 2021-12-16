@@ -470,6 +470,8 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onResume() {
+        setOnPauseAction(ime::Scene::OnPauseAction::Default);
+
         if (isPaused_) {
             isPaused_ = false;
             audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
