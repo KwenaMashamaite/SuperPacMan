@@ -35,7 +35,7 @@ namespace spm {
         pendingDirection_{ime::Unknown}
     {
         assert(pacman && "Cannot create pacman's grid mover with a nullptr");
-        setTag("pacmanGridMover");
+        setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
     }
 
     ///////////////////////////////////////////////////////////////

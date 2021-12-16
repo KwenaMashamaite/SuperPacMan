@@ -62,6 +62,7 @@ namespace spm {
         });
 
         onAdjacentMoveEnd(std::bind(&GhostGridMover::move, this));
+        setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
     }
 
     ///////////////////////////////////////////////////////////////
