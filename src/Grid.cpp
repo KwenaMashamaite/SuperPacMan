@@ -113,7 +113,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::addActor(ime::GameObject::Ptr object, ime::Index index) {
+    void Grid::addGameObject(ime::GameObject::Ptr object, ime::Index index) {
         assert(object && "Object must not be a nullptr");
         std::string renderLayer = object->getClassName() + "s";
 
@@ -123,13 +123,13 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::GameObject* Grid::getActorById(int id) const {
-        return grid_.getChildWithId(id);
+    void Grid::addGameObject(ime::GameObject *object, ime::Index index) {
+        grid_.addChild(object, index);
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::removeActor(int id) {
-        grid_.removeChildWithId(id);
+    void Grid::removeGameObject(ime::GameObject *gameObject) {
+        grid_.removeChild(gameObject);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -185,10 +185,6 @@ namespace spm {
 
     Grid::operator ime::TileMap& () {
         return grid_;
-    }
-
-    void Grid::removeGameObjects(const std::string &group) {
-        actors_.removeGroup(group);
     }
 
 } // namespace spm

@@ -57,8 +57,8 @@ namespace spm {
                     gameObject->setTag("slowDownSensor" + std::to_string(counter++));
 
                     if (tile.getId() == '+') { // Sensor + Door,
-                        grid.addActor(std::move(gameObject), tile.getIndex());
-                        grid.addActor(createDoor(tile, grid.getScene()), tile.getIndex());
+                        grid.addGameObject(std::move(gameObject), tile.getIndex());
+                        grid.addGameObject(createDoor(tile, grid.getScene()), tile.getIndex());
                         return;
                     }
                 }
@@ -91,7 +91,7 @@ namespace spm {
                     return;
             }
 
-            grid.addActor(std::move(gameObject), tile.getIndex());
+            grid.addGameObject(std::move(gameObject), tile.getIndex());
         });
     }
 

@@ -120,7 +120,7 @@ namespace spm {
         gridMovers().addObject(std::move(pacmanController));
 
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* gameObject) {
-            auto ghostMover = std::make_unique<GhostGridMover>(tilemap(), static_cast<Ghost*>(gameObject));
+            auto ghostMover = std::make_unique<GhostGridMover>(*grid_, static_cast<Ghost*>(gameObject));
             gridMovers().addObject(std::move(ghostMover));
         });
     }
@@ -187,9 +187,7 @@ namespace spm {
 
         eventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {
             audio().stopAll();
-            superModeTimer_.stop();
-            powerModeTimer_.stop();
-            ghostAITimer_.stop();
+            stopAllTimers();
             gameObjects().removeGroup("Ghost");
 
             auto* pacman = gameObjects().findByTag("pacman");
@@ -390,24 +388,31 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameplayScene::stopAllTimers() {
+        ghostAITimer_.stop();
+        superModeTimer_.stop();
+        powerModeTimer_.stop();
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::resetActors() {
         auto* pacman = gameObjects().findByTag<PacMan>("pacman");
         pacman->setState(PacMan::State::Normal);
         pacman->setDirection(ime::Left);
-        tilemap().removeChild(pacman);
-        tilemap().addChild(pacman, Constants::PacManSpawnTile);
+        grid_->removeGameObject(pacman);
+        grid_->addGameObject(pacman, Constants::PacManSpawnTile);
 
         gameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
-            tilemap().removeChild(ghost);
+            grid_->removeGameObject(ghost);
 
             if (ghost->getTag() == "blinky")
-                tilemap().addChild(ghost, Constants::BlinkySpawnTile);
+                grid_->addGameObject(ghost, Constants::BlinkySpawnTile);
             else if (ghost->getTag() == "pinky")
-                tilemap().addChild(ghost, Constants::PinkySpawnTile);
+                grid_->addGameObject(ghost, Constants::PinkySpawnTile);
             else if (ghost->getTag() == "inky")
-                tilemap().addChild(ghost, Constants::InkySpawnTile);
+                grid_->addGameObject(ghost, Constants::InkySpawnTile);
             else
-                tilemap().addChild(ghost, Constants::ClydeSpawnTile);
+                grid_->addGameObject(ghost, Constants::ClydeSpawnTile);
 
             ghost->getSprite().setVisible(true);
         });
@@ -450,7 +455,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::resetLevel() {
-        ghostAITimer_.stop();
+        stopAllTimers();
         resetActors();
         initLevelStartCountdown();
         audio().playAll();
@@ -504,9 +509,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onPrePacManDeathAnim() {
         audio().stopAll();
-        ghostAITimer_.stop();
-        superModeTimer_.stop();
-        powerModeTimer_.stop();
+        stopAllTimers();
 
         auto pacman = gameObjects().findByTag<PacMan>("pacman");
         pacman->setState(PacMan::State::Dying);

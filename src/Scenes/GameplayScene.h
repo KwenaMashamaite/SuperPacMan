@@ -278,6 +278,11 @@ namespace spm {
          */
         void resumeGhostAITimer();
 
+        /**
+         * @brief Stop all timers
+         */
+        void stopAllTimers();
+
     private:
         int currentLevel_;              //!< Current game level
         int pointsMultiplier_;          //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)

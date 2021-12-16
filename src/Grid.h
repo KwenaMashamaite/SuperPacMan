@@ -54,25 +54,23 @@ namespace spm {
 
         /**
          * @brief Add an actor to the grid
-         * @param actor The actor to be added to the grid
+         * @param object The actor to be added to the grid
          * @param index The index of the cell to add the actor to
          */
-        void addActor(ime::GameObject::Ptr actor, ime::Index index);
+        void addGameObject(ime::GameObject::Ptr object, ime::Index index);
 
         /**
-         * @brief Get an actor from the grid by
-         * @param id The id of the actor to retrieve
-         * @return The actor with the given id if it exists, otherwise a nullptr
+         * @brief Add an actor to the grid
+         * @param object The actor to be added to the grid
+         * @param index The index of the cell to add the actor to
          */
-        ime::GameObject* getActorById(int id) const;
+        void addGameObject(ime::GameObject* object, ime::Index index);
 
         /**
-         * @brief Remove an actor from the grid
-         * @param id The id of the actor to be removed
+         * @brief Remove an game object from the grid
+         * @param gameObject The game object to be removed
          */
-        void removeActor(int id);
-
-        void removeGameObjects(const std::string& group);
+        void removeGameObject(ime::GameObject *gameObject);
 
         /**
          * @brief Apply a callback to each cell of the grid
