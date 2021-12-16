@@ -153,7 +153,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::endGameplay() {
-        setOnPauseAction(ime::Scene::Show);
+        setOnPauseAction(ime::Scene::Show | ime::Scene::UpdateTime);
         audio().setMute(true);
         gui().setOpacity(0.0f);
         engine().pushScene(std::make_unique<GameOverScene>());
