@@ -192,14 +192,15 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void CollisionResponseRegisterer::resolveGhostCollision(ime::GameObject *ghost, ime::GameObject *otherGameObject) {
         if (ghost->getClassName() == "Ghost" && static_cast<Ghost*>(ghost)->getState() == Ghost::State::Frightened) {
-            setMovementFreeze(true);
-            game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
-            replaceWithScoreTexture(ghost, otherGameObject);
-            game_.updatePointsMultiplier();
             game_.powerModeTimer_.pause();
 
             if (game_.superModeTimer_.isRunning())
                 game_.superModeTimer_.pause();
+
+            setMovementFreeze(true);
+            game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
+            replaceWithScoreTexture(ghost, otherGameObject);
+            game_.updatePointsMultiplier();
 
             game_.timer().setTimeout(ime::seconds(1), [=] {
                 setMovementFreeze(false);
@@ -275,16 +276,17 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void CollisionResponseRegisterer::replaceWithScoreTexture(ime::GameObject* ghost, ime::GameObject* otherGameObject) const {
         otherGameObject->getSprite().setVisible(false);
-        ghost->getSprite().setTexture("spritesheet.png");
+        static const ime::SpriteSheet numbers{"spritesheet.png", ime::Vector2u{16, 16}, ime::Vector2u{1, 1}, ime::UIntRect{306, 141, 69, 18}};
+        ghost->getSprite().setTexture(numbers.getTexture());
 
         if (game_.pointsMultiplier_ == 1)
-            ghost->getSprite().setTextureRect(ime::UIntRect{307, 142, 16, 16}); // 100
+            ghost->getSprite().setTextureRect(*numbers.getFrame(ime::Index{0, 0})); // 100
         else if (game_.pointsMultiplier_ == 2)
-            ghost->getSprite().setTextureRect(ime::UIntRect{324, 142, 16, 16}); // 200
+            ghost->getSprite().setTextureRect(*numbers.getFrame(ime::Index{0, 1})); // 200
         else if (game_.pointsMultiplier_ == 4)
-            ghost->getSprite().setTextureRect(ime::UIntRect{341, 142, 16, 16}); // 800
+            ghost->getSprite().setTextureRect(*numbers.getFrame(ime::Index{0, 2})); // 800
         else
-            ghost->getSprite().setTextureRect(ime::UIntRect{358, 142, 16, 16}); // 1600
+            ghost->getSprite().setTextureRect(*numbers.getFrame(ime::Index{0, 3})); // 1600
     }
 
     void CollisionResponseRegisterer::setMovementFreeze(bool freeze) {
