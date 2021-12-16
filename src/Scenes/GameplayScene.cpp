@@ -456,10 +456,10 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::resetLevel() {
+        audio().stopAll();
         stopAllTimers();
         resetActors();
         initLevelStartCountdown();
-        audio().playAll();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -477,7 +477,7 @@ namespace spm {
             isPaused_ = false;
             audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
             audio().playAll();
-        } else // Returning from level info display scene
+        } else
             resetLevel();
 
         initEngineLevelEvents();
