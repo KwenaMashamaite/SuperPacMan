@@ -40,7 +40,10 @@ namespace spm {
         view_.init(level, lives, score, highScore);
 
         ime::Time sceneDuration = ime::seconds(2);
-        if (level == 1) {
+
+        static bool playedAudio = false;
+        if (level == 1 && !playedAudio) {
+            playedAudio = true;
             audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
             audio().play(ime::audio::Type::Sfx, "beginning.wav");
             sceneDuration = ime::seconds(4.2);

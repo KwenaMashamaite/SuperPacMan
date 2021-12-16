@@ -289,7 +289,7 @@ namespace spm {
 
     void CollisionResponseRegisterer::setMovementFreeze(bool freeze) {
         game_.grid_->forEachGameObject([freeze](ime::GameObject* gameObject) {
-            if (gameObject->getClassName() == "Ghost" || gameObject->getClassName() == "PacMan") {
+            if (gameObject->getGridMover()) { // Movable object
                 gameObject->getSprite().getAnimator().setTimescale(freeze ? 0.0f : 1.0f);
                 gameObject->getGridMover()->setMovementFreeze(freeze);
             }
