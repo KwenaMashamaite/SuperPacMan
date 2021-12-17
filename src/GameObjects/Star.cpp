@@ -22,32 +22,29 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "FruitAnimation.h"
+#include "Star.h"
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    FruitAnimation::FruitAnimation() :
-        spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {0, 141, 290, 18}}
+    Star::Star(ime::Scene &scene) : GameObject(scene)
     {
-        animation_ = ime::Animation::create("slide", spritesheet_);
-        animation_->setFrameRate(3);
-        animation_->showTargetOnStart(true);
-        animation_->addFrames({0, 0}, 17);
-        animation_->setCurrentFrameResetOnInterrupt(false);
-        animation_->setLoop(true);
+        setTag("star");
 
-        auto static fruitNames = std::vector{
-            "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake", "peach",
-            "melon", "coffee", "mushroom", "bell", "clover", "galaxian", "gift", "plant"
-        };
+        ime::SpriteSheet spriteSheet{"spritesheet.png", ime::Vector2u{16, 16}, {1, 1}, {289, 209, 35, 18}};
+        getSprite() = spriteSheet.getSprite(ime::Index{0, 0});
 
-        for (unsigned int i = 0; i < animation_->getFrameCount(); i++)
-            animation_->getFrameAt(i)->setName(fruitNames[i]);
+        ime::Animation::Ptr blinkAnim = ime::Animation::create("blink", spriteSheet, ime::seconds(0.27));
+        blinkAnim->addFrames(ime::Index{0, 0}, 2);
+        blinkAnim->setLoop(true);
+        getSprite().getAnimator().addAnimation(std::move(blinkAnim));
+
+        getSprite().scale(2.0f, 2.0f);
+        resetSpriteOrigin();
+        getSprite().getAnimator().startAnimation("blink");
     }
 
     ///////////////////////////////////////////////////////////////
-    std::shared_ptr<ime::Animation> FruitAnimation::getAnimation() {
-        return animation_;
+    std::string Star::getClassName() const {
+        return "Star";
     }
-
-} // namespace spm
+}

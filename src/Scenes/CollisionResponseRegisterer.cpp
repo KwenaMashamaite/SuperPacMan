@@ -74,6 +74,11 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void CollisionResponseRegisterer::registerCollisionWithStar(ime::GameObject *gameObject) {
+        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveStarCollision, this, std::placeholders::_2, std::placeholders::_1));
+    }
+
+    ///////////////////////////////////////////////////////////////
     void CollisionResponseRegisterer::registerCollisionWithTeleportationSensor(ime::GameObject *gameObject) {
         gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveTeleportationSensorCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
@@ -90,6 +95,7 @@ namespace spm {
 
         fruit->setActive(false);
         game_.updateScore(Constants::Points::FRUIT * game_.currentLevel_);
+        game_.numFruitsEaten_++;
         game_.audio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
     }
 
@@ -132,6 +138,7 @@ namespace spm {
             if (game_.superModeTimer_.isRunning())
                 game_.superModeTimer_.setInterval(game_.superModeTimer_.getRemainingDuration() + game_.getFrightenedModeDuration());
 
+            game_.numPelletsEaten_++;
             game_.audio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
             game_.emit(GameEvent::FrightenedModeBegin);
         }
@@ -150,6 +157,7 @@ namespace spm {
                 game_.resumeGhostAITimer();
             });
 
+            game_.numPelletsEaten_++;
             game_.audio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
             game_.emit(GameEvent::SuperModeBegin);
         }
@@ -162,6 +170,7 @@ namespace spm {
             if (ghost && (ghost->getState() == Ghost::State::Frightened || ghost->getState() == Ghost::State::Eaten))
                 return;
 
+            game_.despawnStar();
             game_.audio().stopAll();
             game_.stopAllTimers();
 
@@ -215,6 +224,67 @@ namespace spm {
             });
 
             game_.audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void CollisionResponseRegisterer::resolveStarCollision(ime::GameObject *star, ime::GameObject *otherGameObject) {
+        if (star->getClassName() == "Star") {
+            game_.starTimer_.stop();
+
+            if (game_.ghostAITimer_.isRunning())
+                game_.ghostAITimer_.pause();
+
+            if (game_.powerModeTimer_.isRunning())
+                game_.powerModeTimer_.pause();
+
+            if (game_.superModeTimer_.isRunning())
+                game_.superModeTimer_.pause();
+
+            setMovementFreeze(true);
+            star->getSprite().getAnimator().stop();
+
+            ime::Time freezeDuration = ime::seconds(1);
+            ime::AnimationFrame* leftFruitFrame = game_.gameObjects().findByTag("leftBonusFruit")->getSprite().getAnimator().getCurrentFrame();
+            ime::AnimationFrame* rightFruitFrame = game_.gameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().getCurrentFrame();
+            if (leftFruitFrame->getIndex() == rightFruitFrame->getIndex()) {
+                otherGameObject->getSprite().setVisible(false);
+                star->getSprite().setTexture("spritesheet.png");
+
+                if (leftFruitFrame->getName() == utils::getFruitName(game_.currentLevel_))
+                {
+                    game_.updateScore(Constants::Points::MATCHING_BONUS_FRUIT_AND_LEVEL_FRUIT);
+                    star->getSprite().setTextureRect({408, 142, 32, 16}); // 5000
+                } else
+                {
+                    game_.updateScore(Constants::Points::MATCHING_BONUS_FRUIT);
+                    star->getSprite().setTextureRect({441, 142, 32, 16}); // 2000
+                }
+
+                star->resetSpriteOrigin();
+                freezeDuration = ime::seconds(3);
+            } else {
+                game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
+                replaceWithScoreTexture(star, otherGameObject);
+            }
+
+            game_.gameObjects().findByTag("leftBonusFruit")->getSprite().getAnimator().stop();
+            game_.gameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().stop();
+
+            game_.timer().setTimeout(freezeDuration, [this, otherGameObject] {
+                setMovementFreeze(false);
+                otherGameObject->getSprite().setVisible(true);
+                game_.despawnStar();
+
+                if (game_.ghostAITimer_.isPaused())
+                    game_.ghostAITimer_.start();
+
+                if (game_.powerModeTimer_.isPaused())
+                    game_.powerModeTimer_.start();
+
+                if (game_.superModeTimer_.isPaused())
+                    game_.superModeTimer_.start();
+            });
         }
     }
 

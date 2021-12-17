@@ -220,6 +220,16 @@ namespace spm {
         void updatePointsMultiplier();
 
         /**
+         * @brief Spawn a start game object
+         */
+        void spawnStar();
+
+        /**
+         * @brief Despawn a star
+         */
+        void despawnStar();
+
+        /**
          * @brief End the gameplay
          *
          * This function is called when the player loses all lives
@@ -284,8 +294,12 @@ namespace spm {
         ime::Timer ghostAITimer_;       //!< Scatter-chase state transition timer
         ime::Timer superModeTimer_;     //!< Pacman Super mode duration counter
         ime::Timer powerModeTimer_;     //!< Energizer mode duration counter
+        ime::Timer starTimer_;          //!< Star appearance timer
         unsigned int scatterWaveLevel_; //!< The current scatter mode level (up to 4 levels)
         unsigned int chaseWaveLevel_;   //!< The current chase mode level (up to 5 levels)
+        unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
+        unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
+        bool starAppeared_;             //!< A flag indicatinig whether or not a star has already been spawned
         CollisionResponseRegisterer collisionResponseRegisterer_;
 
         friend class CollisionResponseRegisterer;

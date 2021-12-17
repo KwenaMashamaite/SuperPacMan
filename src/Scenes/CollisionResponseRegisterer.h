@@ -84,6 +84,12 @@ namespace spm {
         void registerCollisionWithGhost(ime::GameObject* gameObject);
 
         /**
+         * @brief Register a star collision handler
+         * @param gameObject The game object to register the collision handler on
+         */
+        void registerCollisionWithStar(ime::GameObject* gameObject);
+
+        /**
          * @brief Register a teleportation sensor handler
          * @param gameObject The game object to register the collision handler on
          */
@@ -123,21 +129,28 @@ namespace spm {
         /**
          * @brief Resolve a collision between pacman and another game object
          * @param pacman Pacman
-         * * @param otherGameObject The game object in collision with pacman
+         * @param otherGameObject The game object in collision with pacman
          */
         void resolvePacmanCollision(ime::GameObject* pacman, ime::GameObject* otherGameObject);
 
         /**
          * @brief Resolve a collision between a ghost and another game object
          * @param ghost The ghost in collision with another game object
-         * * @param otherGameObject The game object in collision with the ghost
+         * @param otherGameObject The game object in collision with the ghost
          */
         void resolveGhostCollision(ime::GameObject* ghost, ime::GameObject* otherGameObject);
 
         /**
+         * @brief Resolve a collision between pacman and another game object
+         * @param star The star in collision with another game object
+         * @param otherGameObject The game object in collision with the star
+         */
+        void resolveStarCollision(ime::GameObject* star, ime::GameObject* otherGameObject);
+
+        /**
          * @brief Resolve a collision between a door and another game object
          * @param door The door in collision with another game object
-         * * @param otherGameObject The game object in collision with the door
+         * @param otherGameObject The game object in collision with the door
          */
         void resolveDoorCollision(ime::GameObject* door, ime::GameObject* otherGameObject);
 

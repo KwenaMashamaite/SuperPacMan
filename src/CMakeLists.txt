@@ -21,6 +21,7 @@ set(SRC_FILES
         GameObjects/Key.cpp
         GameObjects/PacMan.cpp
         GameObjects/Pellet.cpp
+        GameObjects/Star.cpp
         GameObjects/Sensor.cpp
         GameObjects/Wall.cpp
         PathFinders/PacManGridMover.cpp

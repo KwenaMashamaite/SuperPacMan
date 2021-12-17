@@ -22,32 +22,30 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "FruitAnimation.h"
+#ifndef SUPERPACMAN_STAR_H
+#define SUPERPACMAN_STAR_H
+
+#include <IME/core/game_object/GameObject.h>
 
 namespace spm {
-    ///////////////////////////////////////////////////////////////
-    FruitAnimation::FruitAnimation() :
-        spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {0, 141, 290, 18}}
-    {
-        animation_ = ime::Animation::create("slide", spritesheet_);
-        animation_->setFrameRate(3);
-        animation_->showTargetOnStart(true);
-        animation_->addFrames({0, 0}, 17);
-        animation_->setCurrentFrameResetOnInterrupt(false);
-        animation_->setLoop(true);
+    /**
+     * @brief A star game object
+     */
+    class Star : public ime::GameObject {
+    public:
+        /**
+         * @brief Constrictor
+         * @param scene The scene the object belongs to
+         */
+        explicit Star(ime::Scene& scene);
 
-        auto static fruitNames = std::vector{
-            "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake", "peach",
-            "melon", "coffee", "mushroom", "bell", "clover", "galaxian", "gift", "plant"
-        };
+        /**
+         * @brief Get the name of the class
+         * @return The name of the class
+         */
+        std::string getClassName() const override;
+    };
+}
 
-        for (unsigned int i = 0; i < animation_->getFrameCount(); i++)
-            animation_->getFrameAt(i)->setName(fruitNames[i]);
-    }
 
-    ///////////////////////////////////////////////////////////////
-    std::shared_ptr<ime::Animation> FruitAnimation::getAnimation() {
-        return animation_;
-    }
-
-} // namespace spm
+#endif //SUPERPACMAN_STAR_H

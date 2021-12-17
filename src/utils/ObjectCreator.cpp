@@ -24,6 +24,7 @@
 
 #include "ObjectCreator.h"
 #include "GameObjects/GameObjects.h"
+#include "Animations/FruitAnimation.h"
 
 namespace spm {
     namespace {
@@ -78,7 +79,21 @@ namespace spm {
                 // Hidden wall that Only pacman can pass through
                 if (tile.getId() == 'N')
                     gameObject->setCollisionGroup("hiddenWall");
-            } else {
+            } else if (tile.getId() == '?') {
+                gameObject = ime::GameObject::create(grid.getScene());
+                ime::Animation::Ptr fruitSlideAnim = FruitAnimation().getAnimation();
+
+                if (tile.getIndex().colm == 11) {
+                    gameObject->setTag("leftBonusFruit");
+                    fruitSlideAnim->setLoop(false);
+                    fruitSlideAnim->setTimescale(2.0f);
+                } else
+                    gameObject->setTag("rightBonusFruit");
+
+                gameObject->getSprite().getAnimator().addAnimation(std::move(fruitSlideAnim));
+                gameObject->getSprite().setScale(2.0f, 2.0f);
+                gameObject->getSprite().setOrigin(8, 8);
+            }else {
                 if (tile.getId() == 'B')
                     gameObject = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Red);
                 else if (tile.getId() == 'P')

@@ -35,6 +35,7 @@
 #include "PacMan.h"
 #include "Ghost.h"
 #include "Pellet.h"
+#include "Star.h"
 #include "Fruit.h"
 #include "Sensor.h"
 

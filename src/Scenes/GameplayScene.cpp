@@ -36,6 +36,7 @@
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
+#include <IME/utility/Utils.h>
 #include <cassert>
 
 namespace spm {
@@ -50,6 +51,9 @@ namespace spm {
         view_{gui()},
         scatterWaveLevel_{0},
         chaseWaveLevel_{0},
+        numFruitsEaten_{0},
+        numPelletsEaten_{0},
+        starAppeared_{false},
         collisionResponseRegisterer_{*this}
     {
         // IME v2.4.0 does not allow a non-repeating timer to be restarted in
@@ -134,6 +138,7 @@ namespace spm {
         collisionResponseRegisterer_.registerCollisionWithPowerPellet(pacman);
         collisionResponseRegisterer_.registerCollisionWithSuperPellet(pacman);
         collisionResponseRegisterer_.registerCollisionWithGhost(pacman);
+        collisionResponseRegisterer_.registerCollisionWithStar(pacman);
         collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(pacman);
 
         gameObjects().forEachInGroup("Ghost", [this] (ime::GameObject* ghost){
@@ -152,7 +157,45 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameplayScene::spawnStar() {
+        ime::GameObject::Ptr star = std::make_unique<Star>(*this);
+        grid_->addGameObject(std::move(star), ime::Index{15, 13});
+
+        ime::GameObject* leftFruit = gameObjects().findByTag("leftBonusFruit");
+        int numFrames = leftFruit->getSprite().getAnimator().getAnimation("slide")->getFrameCount();
+        auto* anim = leftFruit->getSprite().getAnimator().getAnimation("slide").get();
+        int stopFrame = ime::utility::generateRandomNum(0, numFrames - 1);
+        leftFruit->getSprite().getAnimator().getAnimation("slide")->onFrameSwitch([anim, stopFrame](const ime::AnimationFrame& frame) {
+            if (frame.getIndex() == stopFrame)
+                anim->setTimescale(0.0f);
+        });
+
+        leftFruit->getSprite().getAnimator().startAnimation("slide");
+
+        gameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().startAnimation("slide");
+
+        configureTimer(starTimer_, ime::seconds(Constants::STAR_ON_SCREEN_TIME), [this] {
+            despawnStar();
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::despawnStar() {
+        starTimer_.stop();
+
+        ime::GameObject* leftFruit = gameObjects().findByTag("leftBonusFruit");
+        ime::GameObject* rightFruit = gameObjects().findByTag("rightBonusFruit");
+        leftFruit->getSprite().getAnimator().stop();
+        rightFruit->getSprite().getAnimator().stop();
+        leftFruit->getSprite().setVisible(false);
+        rightFruit->getSprite().setVisible(false);
+
+        gameObjects().removeByTag("star");
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::endGameplay() {
+        despawnStar();
         setOnPauseAction(ime::Scene::Show | ime::Scene::UpdateTime);
         audio().setMute(true);
         gui().setOpacity(0.0f);
@@ -228,6 +271,11 @@ namespace spm {
             gameObjects().removeIf([](const ime::GameObject* actor) {
                 return !actor->isActive();
             });
+
+            if (!starAppeared_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)) {
+                starAppeared_ = true;
+                spawnStar();
+            }
 
             if ((gameObjects().getGroup("Pellet").getCount() == 0) &&
                 (gameObjects().getGroup("Fruit").getCount() == 0))
@@ -393,6 +441,7 @@ namespace spm {
         ghostAITimer_.stop();
         superModeTimer_.stop();
         powerModeTimer_.stop();
+        starTimer_.stop();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -456,6 +505,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::resetLevel() {
+        despawnStar();
         audio().stopAll();
         stopAllTimers();
         resetActors();
@@ -516,6 +566,7 @@ namespace spm {
         ghostAITimer_.update(deltaTime);
         superModeTimer_.update(deltaTime);
         powerModeTimer_.update(deltaTime);
+        starTimer_.update(deltaTime);
         updatePacmanFlashAnimation();
         updateGhostsFlashAnimation();
     }

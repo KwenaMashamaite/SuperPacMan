@@ -54,6 +54,8 @@ namespace spm {
         grid_.renderLayers().create("Keys");
         grid_.renderLayers().create("Fruits");
         grid_.renderLayers().create("Pellets");
+        grid_.renderLayers().create("Stars");
+        grid_.renderLayers().create("GameObjects");
         grid_.renderLayers().create("Ghosts");
         grid_.renderLayers().create("PacMans");
 

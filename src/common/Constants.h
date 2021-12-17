@@ -55,11 +55,13 @@ namespace spm {
         static constexpr auto PacManLives = 3;                         //!< The initial number of player lives
         static constexpr auto INKY_HOUSE_ARREST_DURATION = 7.0f;      //!< Time spent by inky in the ghost house before entering the maze
         static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 21.0f;     //!< Time spent by clyde in the ghost house before entering the maze
+        static constexpr auto STAR_ON_SCREEN_TIME = 10;                //!< Time a star appears on the screen before being removed
 
         // 4. Miscellaneous
         static constexpr auto FIRST_EXTRA_LIFE_MIN_SCORE = 30000;    //!< The number of points the player must score before being awarded the first extra life
         static constexpr auto SECOND_EXTRA_LIFE_MIN_SCORE = 100000;  //!< The number of points the player must score before being awarded the second extra life
         static constexpr auto THIRD_EXTRA_LIFE_MIN_SCORE = 200000;   //!< The number of points the player must score before being awarded the third extra life
+        static constexpr auto STAR_SPAWN_EATEN_ITEMS = 15;           //!< The number of items the player must eat (excluding keys) to trigger a star spawn
 
         /**
          * @brief Points awarded to the player when pacman eats another actor
@@ -71,6 +73,8 @@ namespace spm {
             static constexpr int SUPER_PELLET = 100;      //!< Points awarded to the player when they eat a super pellet
             static constexpr int BROKEN_DOOR = 200;       //!< Points awarded to the player when they break a door (super mode only)
             static constexpr int GHOST = 200;             //!< Points awarded to the player when they eat a ghost (Multiplies when ghosts are eaten in succession - up to 1600 points)
+            static constexpr int MATCHING_BONUS_FRUIT = 2000; //!< Points awarded to the player when they eat a star while the fruits to the left and right of the star but do not match with the current level fruit
+            static constexpr int MATCHING_BONUS_FRUIT_AND_LEVEL_FRUIT = 5000; //!< Points awarded to the player when they eat a star while the fruits to the left and right of the star are the same and also match the current level fruit
         }; // struct Points
     }; // struct Constants
 } // namespace spm
