@@ -59,7 +59,8 @@ namespace spm {
             else {
                 assert(false && "Ghost can only transition to scatter or chase state after it was frightened");
             }
-        }
+        } else if (event == GameEvent::FrightenedModeBegin)
+            reverseDirection();
     }
 
     ///////////////////////////////////////////////////////////////
