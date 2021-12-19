@@ -55,6 +55,7 @@ namespace spm {
         engine_.getPersistentData().addProperty({"NUM_EXTRA_LIVES_WON", 0});
         engine_.getPersistentData().addProperty({"MASTER_VOLUME", 100.0f});
         engine_.getPersistentData().addProperty({"PLAYER_WON_GAME", false});
+        engine_.getPersistentData().addProperty({"BONUS_STAGE", 3});
         engine_.getPersistentData().addProperty({"GHOSTS_FRIGHTENED_MODE_DURATION", ime::seconds(Constants::POWER_MODE_DURATION)});
         engine_.getPersistentData().addProperty({"PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION)});
 

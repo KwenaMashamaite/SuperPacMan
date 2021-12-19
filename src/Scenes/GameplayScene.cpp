@@ -54,6 +54,7 @@ namespace spm {
         numFruitsEaten_{0},
         numPelletsEaten_{0},
         starAppeared_{false},
+        isBonusStage_{false},
         collisionResponseRegisterer_{*this}
     {
         // IME v2.4.0 does not allow a non-repeating timer to be restarted in
@@ -67,6 +68,11 @@ namespace spm {
         audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
         currentLevel_ = cache().getValue<int>("CURRENT_LEVEL");
 
+        if (currentLevel_ == cache().getValue<int>("BONUS_STAGE")) {
+            cache().setValue("BONUS_STAGE", currentLevel_ + 4); // Next bonus stage
+            isBonusStage_ = true;
+        }
+
         if (currentLevel_ == 1) {
             cache().setValue("GHOSTS_FRIGHTENED_MODE_DURATION", ime::seconds(Constants::POWER_MODE_DURATION));
             cache().setValue("PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION));
@@ -77,8 +83,8 @@ namespace spm {
 
         initGui();
         initGrid();
-        initMovementControllers();
         initGameObjects();
+        initMovementControllers();
         initSceneLevelEvents();
         initEngineLevelEvents();
         initCollisions();
@@ -90,6 +96,16 @@ namespace spm {
         view_.init(cache().getValue<int>("CURRENT_LEVEL"), cache().getValue<int>("PLAYER_LIVES"));
         view_.setHighScore(cache().getValue<int>("HIGH_SCORE"));
         view_.setScore(cache().getValue<int>("CURRENT_SCORE"));
+
+        if (isBonusStage_) {
+            ime::ui::Label::Ptr lblRemainingTime = ime::ui::Label::create("");
+            lblRemainingTime->setName("lblRemainingTime");
+            lblRemainingTime->setTextSize(15);
+            lblRemainingTime->getRenderer()->setTextColour(ime::Colour::White);
+            lblRemainingTime->setOrigin(0.5f, 0.5f);
+            lblRemainingTime->setPosition(242, 221);
+            gui().addWidget(std::move(lblRemainingTime));
+        }
     }
 
     ///////////////////////////////////////////////////////////////
@@ -110,7 +126,9 @@ namespace spm {
             else if (gameObject->getClassName() == "Fruit")
                 gameObject->setTag(utils::getFruitName(currentLevel_));
             else if (gameObject->getClassName() == "Ghost") {
-                if (gameObject->getTag() == "inky" || gameObject->getTag() == "clyde")
+                if (isBonusStage_)
+                    gameObjects().remove(gameObject);
+                else if (gameObject->getTag() == "inky" || gameObject->getTag() == "clyde")
                     static_cast<Ghost *>(gameObject)->setLockInGhostHouse(true);
             }
         });
@@ -213,33 +231,50 @@ namespace spm {
             setInputEnable(true);
 
             gui().getWidget("lblReady")->setVisible(false);
-            auto* pacman = gameObjects().findByTag("pacman");
+            auto* pacman = gameObjects().findByTag<PacMan>("pacman");
             pacman->getSprite().setVisible(true);
             pacman->getGridMover()->requestDirectionChange(ime::Left);
-            startGhostHouseArrestTimer();
 
-            gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
-                auto* ghost = static_cast<Ghost*>(gameObject);
-                ghost->clearState();
-                ghost->setState(std::make_unique<ScatterState>());
-            });
+            if (isBonusStage_) {
+                pacman->setState(PacMan::State::Super);
+
+                configureTimer(bonusStageTimer_, ime::seconds(Constants::BONUS_STAGE_DURATION), [this] {
+                    eventEmitter().emit("levelComplete");
+                });
+
+                bonusStageTimer_.onUpdate([this](ime::Timer& timer) {
+                    gui().getWidget<ime::ui::Label>("lblRemainingTime")->setText(std::to_string(timer.getRemainingDuration().asMilliseconds()));
+                });
+            } else {
+                gameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
+                    auto* ghost = static_cast<Ghost*>(gameObject);
+                    ghost->clearState();
+                    ghost->setState(std::make_unique<ScatterState>());
+                });
+
+                startGhostHouseArrestTimer();
+                startScatterTimer();
+            }
 
             auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
             soundEffect->setLoop(true);
-            startScatterTimer();
         }));
 
         eventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {
+            updateScore(bonusStageTimer_.getRemainingDuration().asMilliseconds());
             audio().stopAll();
             stopAllTimers();
-            gameObjects().removeGroup("Ghost");
+            despawnStar();
+            gameObjects().getGroup("Ghost").removeAll();
 
             auto* pacman = gameObjects().findByTag("pacman");
             pacman->getSprite().getAnimator().setTimescale(0);
             pacman->getGridMover()->setMovementFreeze(true);
 
             timer().setTimeout(ime::seconds(0.5), [this, pacman] {
-                gameObjects().removeGroup("Key");
+                gameObjects().getGroup("Pellet").removeAll();
+                gameObjects().getGroup("Fruit").removeAll();
+                gameObjects().getGroup("Key").removeAll();
                 pacman->getSprite().setVisible(false);
                 grid_->flash(currentLevel_);
 
@@ -442,6 +477,7 @@ namespace spm {
         superModeTimer_.stop();
         powerModeTimer_.stop();
         starTimer_.stop();
+        bonusStageTimer_.stop();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -567,6 +603,7 @@ namespace spm {
         superModeTimer_.update(deltaTime);
         powerModeTimer_.update(deltaTime);
         starTimer_.update(deltaTime);
+        bonusStageTimer_.update(deltaTime);
         updatePacmanFlashAnimation();
         updateGhostsFlashAnimation();
     }

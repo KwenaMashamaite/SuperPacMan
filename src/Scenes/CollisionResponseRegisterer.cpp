@@ -125,14 +125,16 @@ namespace spm {
             game_.pauseGhostAITimer();
             game_.updateScore(Constants::Points::POWER_PELLET);
 
-            game_.configureTimer(game_.powerModeTimer_, game_.getFrightenedModeDuration(), [this] {
-                game_.pointsMultiplier_ = 1;
+            if (!game_.isBonusStage_) {
+                game_.configureTimer(game_.powerModeTimer_, game_.getFrightenedModeDuration(), [this] {
+                    game_.pointsMultiplier_ = 1;
 
-                if (!game_.superModeTimer_.isRunning())
-                    game_.resumeGhostAITimer();
+                    if (!game_.superModeTimer_.isRunning())
+                        game_.resumeGhostAITimer();
 
-                game_.emit(GameEvent::FrightenedModeEnd);
-            });
+                    game_.emit(GameEvent::FrightenedModeEnd);
+                });
+            }
 
             // Extend super mode duration by power mode duration
             if (game_.superModeTimer_.isRunning())
@@ -152,10 +154,12 @@ namespace spm {
             game_.pauseGhostAITimer();
             game_.updateScore(Constants::Points::SUPER_PELLET);
 
-            game_.configureTimer(game_.superModeTimer_, game_.getSuperModeDuration(), [this] {
-                game_.emit(GameEvent::SuperModeEnd);
-                game_.resumeGhostAITimer();
-            });
+            if (!game_.isBonusStage_) {
+                game_.configureTimer(game_.superModeTimer_, game_.getSuperModeDuration(), [this] {
+                    game_.emit(GameEvent::SuperModeEnd);
+                    game_.resumeGhostAITimer();
+                });
+            }
 
             game_.numPelletsEaten_++;
             game_.audio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
@@ -241,6 +245,9 @@ namespace spm {
             if (game_.superModeTimer_.isRunning())
                 game_.superModeTimer_.pause();
 
+            if (game_.bonusStageTimer_.isRunning())
+                game_.bonusStageTimer_.pause();
+
             setMovementFreeze(true);
             star->getSprite().getAnimator().stop();
 
@@ -284,6 +291,9 @@ namespace spm {
 
                 if (game_.superModeTimer_.isPaused())
                     game_.superModeTimer_.start();
+
+                if (game_.bonusStageTimer_.isPaused())
+                    game_.bonusStageTimer_.start();
             });
         }
     }

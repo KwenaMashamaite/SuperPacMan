@@ -56,6 +56,7 @@ namespace spm {
         static constexpr auto INKY_HOUSE_ARREST_DURATION = 7.0f;      //!< Time spent by inky in the ghost house before entering the maze
         static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 21.0f;     //!< Time spent by clyde in the ghost house before entering the maze
         static constexpr auto STAR_ON_SCREEN_TIME = 10;                //!< Time a star appears on the screen before being removed
+        static constexpr auto BONUS_STAGE_DURATION = 20;               //!< The amount of time the player has to complete a bonus stage
 
         // 4. Miscellaneous
         static constexpr auto FIRST_EXTRA_LIFE_MIN_SCORE = 30000;    //!< The number of points the player must score before being awarded the first extra life

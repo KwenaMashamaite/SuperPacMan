@@ -295,11 +295,13 @@ namespace spm {
         ime::Timer superModeTimer_;     //!< Pacman Super mode duration counter
         ime::Timer powerModeTimer_;     //!< Energizer mode duration counter
         ime::Timer starTimer_;          //!< Star appearance timer
+        ime::Timer bonusStageTimer_;    //!< Bonus stage counter
         unsigned int scatterWaveLevel_; //!< The current scatter mode level (up to 4 levels)
         unsigned int chaseWaveLevel_;   //!< The current chase mode level (up to 5 levels)
         unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
         unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
         bool starAppeared_;             //!< A flag indicatinig whether or not a star has already been spawned
+        bool isBonusStage_;             //!< A counter indicating whether or not the current level is a bonus stage
         CollisionResponseRegisterer collisionResponseRegisterer_;
 
         friend class CollisionResponseRegisterer;

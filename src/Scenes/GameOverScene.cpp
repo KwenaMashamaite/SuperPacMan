@@ -40,6 +40,7 @@ namespace spm {
         cache.setValue("CURRENT_SCORE", 0);
         cache.setValue("PLAYER_LIVES", Constants::PacManLives);
         cache.setValue("NUM_EXTRA_LIVES_WON", 0);
+        cache.setValue("BONUS_STAGE", 3);
     }
 
     ///////////////////////////////////////////////////////////////

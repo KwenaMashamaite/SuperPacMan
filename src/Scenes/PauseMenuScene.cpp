@@ -51,6 +51,7 @@ namespace spm {
             cache().setValue("CURRENT_LEVEL", 1);
             cache().setValue("CURRENT_SCORE", 0);
             cache().setValue("NUM_EXTRA_LIVES_WON", 0);
+            cache().setValue("BONUS_STAGE", 3);
             engine().removeAllScenesExceptActive();
             engine().popScene();
             engine().pushScene(std::make_unique<MainMenuScene>());

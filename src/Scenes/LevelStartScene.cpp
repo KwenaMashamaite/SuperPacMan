@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "LevelStartScene.h"
+#include <IME/ui/widgets/Label.h>
 #include <IME/core/engine/Engine.h>
 
 namespace spm {
@@ -39,6 +40,9 @@ namespace spm {
         auto highScore = cache().getValue<int>("HIGH_SCORE");
         view_.init(level, lives, score, highScore);
 
+        if (level == cache().getValue<int>("BONUS_STAGE"))
+            gui().getWidget<ime::ui::Label>("lblLevel")->setText("BONUS STAGE");
+
         ime::Time sceneDuration = ime::seconds(2);
 
         static bool playedAudio = false;
@@ -52,8 +56,6 @@ namespace spm {
         timer().setTimeout(sceneDuration, [this] {
             engine().popScene();
         });
-
-        setInputEnable(false);
     }
 
     ///////////////////////////////////////////////////////////////
