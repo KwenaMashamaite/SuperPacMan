@@ -261,11 +261,10 @@ namespace spm {
                 if (leftFruitFrame->getName() == utils::getFruitName(game_.currentLevel_))
                 {
                     game_.updateScore(Constants::Points::MATCHING_BONUS_FRUIT_AND_LEVEL_FRUIT);
-                    star->getSprite().setTextureRect({408, 142, 32, 16}); // 5000
-                } else
-                {
+                    star->getSprite().setTextureRect({441, 142, 32, 16}); // 5000
+                } else {
                     game_.updateScore(Constants::Points::MATCHING_BONUS_FRUIT);
-                    star->getSprite().setTextureRect({441, 142, 32, 16}); // 2000
+                    star->getSprite().setTextureRect({408, 142, 32, 16}); // 2000
                 }
 
                 star->resetSpriteOrigin();
