@@ -78,7 +78,11 @@ namespace spm {
             cache().setValue("PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION));
         } else {
             cache().setValue("GHOSTS_FRIGHTENED_MODE_DURATION", cache().getValue<ime::Time>("GHOSTS_FRIGHTENED_MODE_DURATION") - ime::seconds(1));
-            cache().setValue("PACMAN_SUPER_MODE_DURATION", cache().getValue<ime::Time>("PACMAN_SUPER_MODE_DURATION") - ime::seconds(1));
+
+            if (currentLevel_ < 8)
+                cache().setValue("PACMAN_SUPER_MODE_DURATION", cache().getValue<ime::Time>("PACMAN_SUPER_MODE_DURATION") - ime::seconds(1));
+            else
+                cache().setValue("PACMAN_SUPER_MODE_DURATION", ime::seconds(2));
         }
 
         initGui();
