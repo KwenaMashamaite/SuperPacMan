@@ -46,6 +46,12 @@ namespace spm {
          * @return The name of the fruit
          */
         extern std::string getFruitName(int level);
+
+        /**
+         * @brief Reset the cache to default values
+         * @param cache The cache to be reset
+         */
+        extern void resetCache(ime::PropertyContainer& cache);
     }
 }
 

@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Utils.h"
+#include "Common/Constants.h"
 #include <cassert>
 
 namespace spm::utils {
@@ -52,6 +53,18 @@ namespace spm::utils {
 
         assert(false && "Levels 17 and beyond are unsupported");
         return ""; // Silence warning: Non-void function does not return a value in all control paths
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void resetCache(ime::PropertyContainer &cache) {
+        cache.setValue("CURRENT_LEVEL", 1);
+        cache.setValue("CURRENT_SCORE", 0);
+        cache.setValue("PLAYER_LIVES", Constants::PacManLives);
+        cache.setValue("NUM_EXTRA_LIVES_WON", 0);
+        cache.setValue("BONUS_STAGE", 3);
+        cache.setValue("PLAYER_WON_GAME", false);
+        cache.setValue("GHOSTS_FRIGHTENED_MODE_DURATION", ime::seconds(Constants::POWER_MODE_DURATION));
+        cache.setValue("PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION));
     }
 
 } // namespace spm

@@ -28,6 +28,7 @@
 #include "LevelStartScene.h"
 #include "Views/PauseMenuSceneView.h"
 #include "Common/Constants.h"
+#include "Utils/Utils.h"
 #include <IME/ui/widgets/ToggleButton.h>
 #include <IME/core/engine/Engine.h>
 
@@ -47,11 +48,7 @@ namespace spm {
 
         // 3. Main menu button click handler
         gui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
-            cache().setValue("PLAYER_LIVES", Constants::PacManLives);
-            cache().setValue("CURRENT_LEVEL", 1);
-            cache().setValue("CURRENT_SCORE", 0);
-            cache().setValue("NUM_EXTRA_LIVES_WON", 0);
-            cache().setValue("BONUS_STAGE", 3);
+            utils::resetCache(cache());
             engine().removeAllScenesExceptActive();
             engine().popScene();
             engine().pushScene(std::make_unique<MainMenuScene>());

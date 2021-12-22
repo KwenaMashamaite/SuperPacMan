@@ -28,21 +28,13 @@
 #include "MainMenuScene.h"
 #include "Scoreboard/Scoreboard.h"
 #include "Common/Constants.h"
+#include "Utils/Utils.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
 
 using namespace ime::ui;
 
 namespace spm {
-    ///////////////////////////////////////////////////////////////
-    void restoreCache(ime::PropertyContainer& cache) {
-        cache.setValue("CURRENT_LEVEL", 1);
-        cache.setValue("CURRENT_SCORE", 0);
-        cache.setValue("PLAYER_LIVES", Constants::PacManLives);
-        cache.setValue("NUM_EXTRA_LIVES_WON", 0);
-        cache.setValue("BONUS_STAGE", 3);
-    }
-
     ///////////////////////////////////////////////////////////////
     void GameOverScene::onEnter() {
         updateLeaderboard();
@@ -77,7 +69,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameOverScene::initButtonEvents() {
         gui().getWidget("btnRetry")->on("click", ime::Callback<>([this] {
-            restoreCache(cache());
+            utils::resetCache(cache());
             engine().removeAllScenesExceptActive();
             engine().popScene(); // Destroy this scene
             engine().pushScene(std::make_unique<GameplayScene>());
@@ -86,7 +78,7 @@ namespace spm {
 
         // Exit to the games main menu when "Exit to Main Menu" is clicked
         gui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
-            restoreCache(cache());
+            utils::resetCache(cache());
             engine().removeAllScenesExceptActive();
             engine().popScene(); // Destroy this scene
             engine().pushScene(std::make_unique<MainMenuScene>());
