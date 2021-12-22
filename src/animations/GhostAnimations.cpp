@@ -47,7 +47,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GhostAnimations::createAnimation(const std::string &name, ime::Index startPos) {
-        auto anim = ime::Animation::create(name, spritesheet_, ime::milliseconds(180));
+        auto anim = ime::Animation::create(name, spritesheet_, ime::milliseconds(150));
         anim->setLoop(true);
         anim->showTargetOnStart(false);
         anim->addFrames(startPos, 2);

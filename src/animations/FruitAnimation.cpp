@@ -32,13 +32,13 @@ namespace spm {
         animation_ = ime::Animation::create("slide", spritesheet_);
         animation_->setFrameRate(3);
         animation_->showTargetOnStart(true);
-        animation_->addFrames({0, 0}, 17);
+        animation_->addFrames(ime::Index{0, 0}, 16);
         animation_->setCurrentFrameResetOnInterrupt(false);
         animation_->setLoop(true);
 
         auto static fruitNames = std::vector{
             "apple", "banana", "donut", "hamburger", "egg", "corn", "shoe", "cake", "peach",
-            "melon", "coffee", "mushroom", "bell", "clover", "galaxian", "gift", "plant"
+            "melon", "coffee", "mushroom", "bell", "clover", "galaxian", "gift"
         };
 
         for (unsigned int i = 0; i < animation_->getFrameCount(); i++)

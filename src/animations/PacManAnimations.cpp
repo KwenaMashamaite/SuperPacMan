@@ -61,7 +61,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void PacManAnimations::createAnimation(const std::string &name, ime::Index index, bool super) {
-        auto movementAnimDuration = ime::milliseconds(150);
+        auto movementAnimDuration = ime::milliseconds(120);
         ime::Animation::Ptr animation;
         if (super)
             animation = ime::Animation::create(name, superSizeSpritesheet_, movementAnimDuration);
