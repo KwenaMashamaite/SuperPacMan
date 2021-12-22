@@ -50,7 +50,7 @@ namespace spm::utils {
         if (level <= fruitName.size())
             return fruitName.at(level - 1);
 
-        assert(false && (std::string("Level \"") + std::to_string(level) + "\" is unsupported").c_str());
+        assert(false && "Levels 17 and beyond are unsupported");
         return ""; // Silence warning: Non-void function does not return a value in all control paths
     }
 

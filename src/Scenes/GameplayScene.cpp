@@ -283,9 +283,14 @@ namespace spm {
                 grid_->flash(currentLevel_);
 
                 grid_->onFlashStop([this] {
-                    timer().setTimeout(ime::seconds(1), [this] {
-                        eventEmitter().emit("startNewLevel");
-                    });
+                    if (currentLevel_ == 16) {
+                        cache().setValue("PLAYER_WON_GAME", true);
+                        endGameplay();
+                    } else {
+                        timer().setTimeout(ime::seconds(1), [this] {
+                            eventEmitter().emit("startNewLevel");
+                        });
+                    }
                 });
 
                 audio().play(ime::audio::Type::Sfx, "levelComplete.ogg");
