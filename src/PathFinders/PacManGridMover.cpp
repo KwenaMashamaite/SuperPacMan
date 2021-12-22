@@ -46,7 +46,7 @@ namespace spm {
         onAdjacentMoveEnd([this, pacman](ime::Index) {
             if (pendingDirection_ != ime::Unknown) {
                 auto [isBlocked, obstacle] = isBlockedInDirection(pendingDirection_);
-                if (!isBlocked || (pacman->getState() == PacMan::State::Super && obstacle->getClassName() == "Door")) {
+                if (!isBlocked || (pacman->getState() == PacMan::State::Super && obstacle && obstacle->getClassName() == "Door")) {
                     requestDirectionChange(pendingDirection_);
                     pendingDirection_ = ime::Unknown;
                     return;
@@ -73,7 +73,7 @@ namespace spm {
                 newDir = ime::Down;
 
             auto [isBlocked, obstacle] = isBlockedInDirection(newDir);
-            if (!isTargetMoving() && (!isBlocked || (pacman->getState() == PacMan::State::Super && obstacle->getClassName() == "Door"))) {
+            if (!isTargetMoving() && (!isBlocked || (pacman->getState() == PacMan::State::Super && obstacle && obstacle->getClassName() == "Door"))) {
                 pendingDirection_ = ime::Unknown;
                 return true;
             } else
