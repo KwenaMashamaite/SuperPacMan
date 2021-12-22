@@ -113,7 +113,8 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initGameObjects() {
-        grid_->forEachGameObject([this](ime::GameObject* gameObject) {
+        std::vector<ime::Index> keyIndexes;
+        grid_->forEachGameObject([this, &keyIndexes](ime::GameObject* gameObject) {
             if (gameObject->getClassName() == "PacMan")
                 static_cast<PacMan*>(gameObject)->setLivesCount(cache().getValue<int>("PLAYER_LIVES"));
             else if (gameObject->getClassName() == "Door")
@@ -125,8 +126,24 @@ namespace spm {
                     gameObjects().remove(gameObject);
                 else if (gameObject->getTag() == "inky" || gameObject->getTag() == "clyde")
                     static_cast<Ghost *>(gameObject)->setLockInGhostHouse(true);
+            } else if (gameObject->getClassName() == "Key") {
+                keyIndexes.push_back(tilemap().getTile(gameObject->getTransform().getPosition()).getIndex());
             }
         });
+
+        if (currentLevel_ >= 8) { // Randomise key positions to break pattern
+            auto static randomEngine = std::default_random_engine{std::random_device{}()};
+
+            // Seed engine with current level to ensure the randomly placed keys open the same doors on each game run
+            randomEngine.seed(currentLevel_);
+
+            std::shuffle(keyIndexes.begin(), keyIndexes.end(), randomEngine);
+
+            gameObjects().forEachInGroup("Key", [this, index = 0, &keyIndexes](ime::GameObject* key) mutable {
+                grid_->removeGameObject(key);
+                grid_->addGameObject(key, keyIndexes[index++]);
+            });
+        }
     }
 
     ///////////////////////////////////////////////////////////////
