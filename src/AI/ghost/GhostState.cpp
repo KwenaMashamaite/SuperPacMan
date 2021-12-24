@@ -49,7 +49,7 @@ namespace spm {
         float speed = 0;
         switch (ghost_->getState()) {
             case Ghost::State::Scatter:     speed = Constants::PacManNormalSpeed; break;
-            case Ghost::State::Chase:       speed = Constants::PacManNormalSpeed + 3; break;
+            case Ghost::State::Chase:       speed = Constants::PacManNormalSpeed + 5; break;
             case Ghost::State::Frightened:  speed = 0.5f * Constants::PacManNormalSpeed; break;
             case Ghost::State::Eaten:       speed = Constants::PacManSuperSpeed; break;
             default: break;
