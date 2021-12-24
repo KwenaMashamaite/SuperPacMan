@@ -6,7 +6,7 @@ of the original Pac-Man game.
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.0.0)
+1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.1.0)
    the latest game version
 2. Extract the zip archive
 3. Run _SuperPacMan.exe_
@@ -39,7 +39,7 @@ of the original Pac-Man game.
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*
 
 This project is a CMake project, therefore you must download and install [CMake](https://cmake.org/). 
-You also need to download [Infinite Motion Engine v2.4.0](https://github.com/KwenaMashamaite/IME/releases/tag/v2.4.0). 
+You also need to download [Infinite Motion Engine v2.5.0](https://github.com/KwenaMashamaite/IME/releases/tag/v2.5.0). 
 Then:
 
 1. Clone the repository
@@ -61,8 +61,12 @@ cmake ..
 cmake --build .
 ```
 
-The executable will can be found in the `bin` directory
+The executable can be found in the `bin` directory
 
 ## Platform
 
 This game only runs on the Windows platform. It was tested on Windows 10.
+
+## License
+
+This game is released under the [MIT](LICENSE) license
