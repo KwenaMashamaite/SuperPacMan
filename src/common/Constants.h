@@ -52,7 +52,7 @@ namespace spm {
         static constexpr auto LEVEL_START_DELAY = 3.0f;                //!< Time player must wait before they can control pacman
         static constexpr auto SUPER_MODE_DURATION = 9.0f;              //!< The initial duration of super pellet effects on pacman and ghost
         static constexpr auto POWER_MODE_DURATION = 7.0f;              //!< Initial duration of power pellet effects on ghosts
-        static constexpr auto PacManLives = 3;                         //!< The initial number of player lives
+        static constexpr auto PacManLives = 4;                         //!< The initial number of player lives
         static constexpr auto INKY_HOUSE_ARREST_DURATION = 7.0f;      //!< Time spent by inky in the ghost house before entering the maze
         static constexpr auto CLYDE_HOUSE_ARREST_DURATION = 21.0f;     //!< Time spent by clyde in the ghost house before entering the maze
         static constexpr auto STAR_ON_SCREEN_TIME = 10;                //!< Time a star appears on the screen before being removed
