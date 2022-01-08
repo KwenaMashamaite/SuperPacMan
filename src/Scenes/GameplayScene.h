@@ -296,6 +296,8 @@ namespace spm {
         ime::Timer powerModeTimer_;     //!< Energizer mode duration counter
         ime::Timer starTimer_;          //!< Star appearance timer
         ime::Timer bonusStageTimer_;    //!< Bonus stage counter
+        ime::audio::Audio* mainAudio_;  //!< Main game audio
+        ime::audio::Audio* starSpawnSfx_; //!< Sound effect played when a star is spawned
         unsigned int scatterWaveLevel_; //!< The current scatter mode level (up to 4 levels)
         unsigned int chaseWaveLevel_;   //!< The current chase mode level (up to 5 levels)
         unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far

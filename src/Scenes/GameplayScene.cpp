@@ -48,6 +48,8 @@ namespace spm {
         pointsMultiplier_{1},
         isPaused_{false},
         view_{gui()},
+        mainAudio_{nullptr},
+        starSpawnSfx_{nullptr},
         scatterWaveLevel_{0},
         chaseWaveLevel_{0},
         numFruitsEaten_{0},
@@ -206,10 +208,18 @@ namespace spm {
         configureTimer(starTimer_, ime::seconds(Constants::STAR_ON_SCREEN_TIME), [this] {
             despawnStar();
         });
+
+        starSpawnSfx_ = audio().play(ime::audio::Type::Sfx, "starSpawned.wav");
+        starSpawnSfx_->setLoop(true);
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::despawnStar() {
+        if (starSpawnSfx_) {
+            starSpawnSfx_->stop();
+            starSpawnSfx_ = nullptr;
+        }
+
         starTimer_.stop();
 
         ime::GameObject* leftFruit = gameObjects().findByTag("leftBonusFruit");
@@ -265,10 +275,10 @@ namespace spm {
 
                 startGhostHouseArrestTimer();
                 startScatterTimer();
-            }
 
-            auto* soundEffect = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
-            soundEffect->setLoop(true);
+                mainAudio_ = audio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
+                mainAudio_->setLoop(true);
+            }
         }));
 
         eventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {

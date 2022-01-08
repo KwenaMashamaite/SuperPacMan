@@ -126,6 +126,10 @@ namespace spm {
             game_.updateScore(Constants::Points::POWER_PELLET);
 
             if (!game_.isBonusStage_) {
+                game_.mainAudio_->stop();
+                game_.mainAudio_->setSource("ghostsTurnedBlue.wav");
+                game_.mainAudio_->play();
+
                 game_.configureTimer(game_.powerModeTimer_, game_.getFrightenedModeDuration(), [this] {
                     game_.pointsMultiplier_ = 1;
 
@@ -133,6 +137,10 @@ namespace spm {
                         game_.resumeGhostAITimer();
 
                     game_.emit(GameEvent::FrightenedModeEnd);
+
+                    game_.mainAudio_->stop();
+                    game_.mainAudio_->setSource("wieu_wieu_slow.ogg");
+                    game_.mainAudio_->play();
                 });
             }
 
@@ -217,6 +225,7 @@ namespace spm {
             game_.updatePointsMultiplier();
 
             game_.timer().setTimeout(ime::seconds(1), [=] {
+                game_.mainAudio_->play();
                 setMovementFreeze(false);
                 otherGameObject->getSprite().setVisible(true);
                 game_.powerModeTimer_.start();
@@ -227,6 +236,7 @@ namespace spm {
                 static_cast<Ghost*>(ghost)->setState(std::make_unique<EatenState>(Ghost::State::Scatter));
             });
 
+            game_.mainAudio_->pause();
             game_.audio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
         }
     }
@@ -268,19 +278,32 @@ namespace spm {
                 }
 
                 star->resetSpriteOrigin();
-                freezeDuration = ime::seconds(3);
+                freezeDuration = ime::seconds(3.3);
+                game_.audio().play(ime::audio::Type::Sfx, "bonusFruitMatch.wav");
             } else {
                 game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
                 replaceWithScoreTexture(star, otherGameObject);
+                game_.audio().play(ime::audio::Type::Sfx, "bonusFruitNotMatch.wav");
             }
 
             game_.gameObjects().findByTag("leftBonusFruit")->getSprite().getAnimator().stop();
             game_.gameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().stop();
 
+            if (game_.starSpawnSfx_) {
+                game_.starSpawnSfx_->stop();
+                game_.starSpawnSfx_ = nullptr;
+            }
+
+            if (!game_.isBonusStage_)
+                game_.mainAudio_->pause();
+
             game_.timer().setTimeout(freezeDuration, [this, otherGameObject] {
                 setMovementFreeze(false);
                 otherGameObject->getSprite().setVisible(true);
                 game_.despawnStar();
+
+                if (!game_.isBonusStage_)
+                    game_.mainAudio_->play();
 
                 if (game_.ghostAITimer_.isPaused())
                     game_.ghostAITimer_.resume();
