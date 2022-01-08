@@ -25,6 +25,8 @@
 #include "Game.h"
 #include "Scoreboard/Scoreboard.h"
 #include "Scenes/StartUpScene.h"
+#include "Scenes/MainMenuScene.h"
+#include "Scenes/PauseMenuScene.h"
 #include "Common/Constants.h"
 
 namespace spm {
@@ -63,11 +65,15 @@ namespace spm {
         if (engine_.getConfigs().hasPref("PLAYER_NAME"))
             engine_.getPersistentData().addProperty({"PLAYER_NAME",engine_.getConfigs().getPref("PLAYER_NAME").getValue<std::string>()});
 
-        engine_.pushScene(std::make_unique<StartUpScene>());
+        // Since the user can go to these scenes on demand and as many times as they like,
+        // we cache them to avoid instantiating new once's every time they are needed
+        engine_.cacheScene("MainMenuScene", std::make_unique<MainMenuScene>());
+        engine_.cacheScene("PauseMenuScene", std::make_unique<PauseMenuScene>());
     }
 
     ///////////////////////////////////////////////////////////////
     void Game::start() {
+        engine_.pushScene(std::make_unique<StartUpScene>());
         engine_.run();
     }
 

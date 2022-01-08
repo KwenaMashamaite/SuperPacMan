@@ -42,12 +42,12 @@ namespace spm {
         engine().getWindow().onClose(nullptr); // Let window be closed with exit button only
 
         view_.init();
-        initLeaderboard();
+        updateLeaderboard();
         initEventHandlers();
     }
 
     ///////////////////////////////////////////////////////////////
-    void MainMenuScene::initLeaderboard() {
+    void MainMenuScene::updateLeaderboard() {
         auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
 
         const int NUM_SCORES_TO_DISPLAY = 10;
@@ -80,6 +80,10 @@ namespace spm {
         gui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {
             engine().quit();
         }));
+    }
+
+    void MainMenuScene::onResumeFromCache() {
+        updateLeaderboard();
     }
 
 } // namespace pm

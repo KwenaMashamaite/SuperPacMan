@@ -25,9 +25,7 @@
 #include "GameOverScene.h"
 #include "LevelStartScene.h"
 #include "GameplayScene.h"
-#include "MainMenuScene.h"
 #include "Scoreboard/Scoreboard.h"
-#include "Common/Constants.h"
 #include "Utils/Utils.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
@@ -80,8 +78,8 @@ namespace spm {
         gui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
             utils::resetCache(cache());
             engine().removeAllScenesExceptActive();
-            engine().popScene(); // Destroy this scene
-            engine().pushScene(std::make_unique<MainMenuScene>());
+            engine().popScene();
+            engine().pushCachedScene("MainMenuScene");
         }));
 
         // Exit to desktop when "Exit Game" button is clicked

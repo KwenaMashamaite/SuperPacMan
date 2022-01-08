@@ -57,8 +57,8 @@ namespace spm {
     {
         assert(ghost_ && "spm::GhostGridMover target must not be a nullptr");
 
-        onPropertyChange("direction", [ghost](const ime::Property& property) {
-            ghost->setDirection(property.getValue<ime::Direction>());
+        onDirectionChange([ghost](ime::Direction newDir) {
+            ghost->setDirection(newDir);
         });
 
         onAdjacentMoveEnd(std::bind(&GhostGridMover::move, this));
@@ -71,7 +71,7 @@ namespace spm {
 
         if (forceDirReversal_) {
             forceDirReversal_ = false;
-            requestDirectionChange(reverseGhostDir);
+            requestMove(reverseGhostDir);
         }
 
         initPossibleDirections(reverseGhostDir);
@@ -80,18 +80,18 @@ namespace spm {
         bool allowedInGhostHouse = isAllowedToBeInGhostHouse();
 
         if (possibleDirections_.empty()) // Ghost is in a dead end, only option is backwards (special case)
-            requestDirectionChange(reverseGhostDir);
+            requestMove(reverseGhostDir);
         else if (possibleDirections_.size() == 1) // Going forward is the only option
-            requestDirectionChange(possibleDirections_.front());
+            requestMove(possibleDirections_.front());
         else { // Multiple directions to move in
             if (isInGhostPen && ghost_->isLockedInGhostHouse())
-                requestDirectionChange(getMinDistanceDirection(Constants::EatenGhostRespawnTile));
+                requestMove(getMinDistanceDirection(Constants::EatenGhostRespawnTile));
             else if (isInGhostPen && !allowedInGhostHouse) // Kick it out to the front door
-                requestDirectionChange(getMinDistanceDirection(Constants::BlinkySpawnTile));
+                requestMove(getMinDistanceDirection(Constants::BlinkySpawnTile));
             else if (moveStrategy_ == Strategy::Random)
-                requestDirectionChange(getRandomDirection());
+                requestMove(getRandomDirection());
             else
-                requestDirectionChange(getMinDistanceDirection(targetTile_));
+                requestMove(getMinDistanceDirection(targetTile_));
         }
 
         possibleDirections_.clear();

@@ -52,11 +52,19 @@ namespace spm {
          */
         void onEnter() override;
 
+        /**
+         * @brief Resume scene from cache
+         *
+         * This function is called by the game engine when a cached scene
+         * is reactivated
+         */
+        void onResumeFromCache() override;
+
     private:
         /**
          * @brief Replace Scoreboard placeholder text with actual player scores
          */
-        void initLeaderboard();
+        void updateLeaderboard();
 
         /**
          * @brief Add "click" event handlers to main menu buttons

@@ -25,7 +25,6 @@
 #include "GameplayScene.h"
 #include "LevelStartScene.h"
 #include "GameOverScene.h"
-#include "PauseMenuScene.h"
 #include "Utils/Utils.h"
 #include "GameObjects/GameObjects.h"
 #include "Common/Constants.h"
@@ -245,7 +244,7 @@ namespace spm {
             gui().getWidget("lblReady")->setVisible(false);
             auto* pacman = gameObjects().findByTag<PacMan>("pacman");
             pacman->getSprite().setVisible(true);
-            pacman->getGridMover()->requestDirectionChange(ime::Left);
+            pacman->getGridMover()->requestMove(ime::Left);
 
             if (isBonusStage_) {
                 pacman->setState(PacMan::State::Super);
@@ -495,7 +494,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::resumeGhostAITimer() {
         if (ghostAITimer_.isPaused())
-            ghostAITimer_.start();
+            ghostAITimer_.resume();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -563,7 +562,7 @@ namespace spm {
         isPaused_ = true;
         audio().pauseAll();
         setOnPauseAction(ime::Scene::OnPauseAction::Show);
-        engine().pushScene(std::make_unique<PauseMenuScene>());
+        engine().pushCachedScene("PauseMenuScene");
     }
 
     ///////////////////////////////////////////////////////////////

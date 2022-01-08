@@ -23,11 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "PauseMenuScene.h"
-#include "MainMenuScene.h"
-#include "GameplayScene.h"
-#include "LevelStartScene.h"
 #include "Views/PauseMenuSceneView.h"
-#include "Common/Constants.h"
 #include "Utils/Utils.h"
 #include <IME/ui/widgets/ToggleButton.h>
 #include <IME/core/engine/Engine.h>
@@ -51,7 +47,7 @@ namespace spm {
             utils::resetCache(cache());
             engine().removeAllScenesExceptActive();
             engine().popScene();
-            engine().pushScene(std::make_unique<MainMenuScene>());
+            engine().pushCachedScene("MainMenuScene");
         }));
 
         // 4. Exit button click handler

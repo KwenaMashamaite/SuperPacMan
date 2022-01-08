@@ -47,13 +47,13 @@ namespace spm {
             if (pendingDirection_ != ime::Unknown) {
                 auto [isBlocked, obstacle] = isBlockedInDirection(pendingDirection_);
                 if (!isBlocked || (pacman->getState() == PacMan::State::Super && obstacle && obstacle->getClassName() == "Door")) {
-                    requestDirectionChange(pendingDirection_);
+                    requestMove(pendingDirection_);
                     pendingDirection_ = ime::Unknown;
                     return;
                 }
             }
 
-            requestDirectionChange(pacman->getDirection());
+            requestMove(pacman->getDirection());
         });
 
         // Prevent pacman from turning into a direction that causes a collision with an obstacle
@@ -97,9 +97,8 @@ namespace spm {
             }
         });
 
-        // Update pacmans direction when the grid mover turns him
-        onPropertyChange("direction", [pacman](const ime::Property& property) {
-            pacman->setDirection(property.getValue<ime::Direction>());
+        onDirectionChange([pacman](ime::Direction newDir) {
+            pacman->setDirection(newDir);
         });
 
         setMaxLinearSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});

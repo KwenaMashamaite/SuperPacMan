@@ -283,16 +283,16 @@ namespace spm {
                 game_.despawnStar();
 
                 if (game_.ghostAITimer_.isPaused())
-                    game_.ghostAITimer_.start();
+                    game_.ghostAITimer_.resume();
 
                 if (game_.powerModeTimer_.isPaused())
-                    game_.powerModeTimer_.start();
+                    game_.powerModeTimer_.resume();
 
                 if (game_.superModeTimer_.isPaused())
-                    game_.superModeTimer_.start();
+                    game_.superModeTimer_.resume();
 
                 if (game_.bonusStageTimer_.isPaused())
-                    game_.bonusStageTimer_.start();
+                    game_.bonusStageTimer_.resume();
             });
         }
     }
@@ -303,7 +303,7 @@ namespace spm {
             auto* pacman = dynamic_cast<PacMan*>(otherGameObject);
             if (pacman && pacman->getState() == PacMan::State::Super) {
                 static_cast<Door *>(door)->burst();
-                pacman->getGridMover()->requestDirectionChange(pacman->getDirection());
+                pacman->getGridMover()->requestMove(pacman->getDirection());
                 game_.updateScore(Constants::Points::BROKEN_DOOR);
                 game_.audio().play(ime::audio::Type::Sfx, "doorBroken.wav");
             }
@@ -349,7 +349,7 @@ namespace spm {
                 grid.addChild(objectOnSensor, {currentTile.getIndex().row, 0});
 
             gridMover->resetTargetTile();
-            gridMover->requestDirectionChange(gridMover->getDirection());
+            gridMover->requestMove(gridMover->getDirection());
         }
     }
 

@@ -24,7 +24,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "LoadingScene.h"
-#include "MainMenuScene.h"
 #include "Views/LoadingSceneView.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/ProgressBar.h>
@@ -142,7 +141,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void LoadingScene::onExit() {
-        engine().pushScene(std::make_unique<MainMenuScene>());
+        engine().pushCachedScene("MainMenuScene");
     }
 
 } // namespace pm
