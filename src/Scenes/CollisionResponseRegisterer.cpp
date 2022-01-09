@@ -232,7 +232,7 @@ namespace spm {
                 if (game_.superModeTimer_.isPaused())
                     game_.superModeTimer_.resume();
 
-                static_cast<Ghost*>(ghost)->setState(std::make_unique<EatenState>(Ghost::State::Scatter));
+                static_cast<Ghost*>(ghost)->setState(std::make_unique<EatenState>(game_.isChaseMode_ ? Ghost::State::Chase : Ghost::State::Scatter));
 
                 bool isSomeGhostsBlue = false;
                 game_.gameObjects().forEachInGroup("Ghost", [&isSomeGhostsBlue](ime::GameObject* ghost) {

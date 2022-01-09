@@ -54,6 +54,7 @@ namespace spm {
         chaseWaveLevel_{0},
         numFruitsEaten_{0},
         numPelletsEaten_{0},
+        isChaseMode_{false},
         starAppeared_{false},
         isBonusStage_{false},
         collisionResponseRegisterer_{*this}
@@ -428,6 +429,7 @@ namespace spm {
             startChaseTimer();
         });
 
+        isChaseMode_ = false;
         emit(GameEvent::ScatterModeBegin);
     }
 
@@ -442,6 +444,7 @@ namespace spm {
             startScatterTimer();
         });
 
+        isChaseMode_ = true;
         emit(GameEvent::ChaseModeBegin);
     }
 
@@ -559,7 +562,7 @@ namespace spm {
         else {
             assert(timeoutCallback);
             timer.setInterval(duration);
-            timer.setTimeoutCallback(std::move(timeoutCallback));
+            timer.onTimeout(timeoutCallback);
             timer.start();
         }
     }

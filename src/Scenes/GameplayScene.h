@@ -302,6 +302,7 @@ namespace spm {
         unsigned int chaseWaveLevel_;   //!< The current chase mode level (up to 5 levels)
         unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
         unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
+        bool isChaseMode_;              //!< A flag indicating whether or not ghosts are in chase mode
         bool starAppeared_;             //!< A flag indicatinig whether or not a star has already been spawned
         bool isBonusStage_;             //!< A counter indicating whether or not the current level is a bonus stage
         CollisionResponseRegisterer collisionResponseRegisterer_;
