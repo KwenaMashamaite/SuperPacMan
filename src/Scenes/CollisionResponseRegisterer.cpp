@@ -228,12 +228,22 @@ namespace spm {
                 game_.mainAudio_->play();
                 setMovementFreeze(false);
                 otherGameObject->getSprite().setVisible(true);
-                game_.powerModeTimer_.start();
 
                 if (game_.superModeTimer_.isPaused())
-                    game_.superModeTimer_.start();
+                    game_.superModeTimer_.resume();
 
                 static_cast<Ghost*>(ghost)->setState(std::make_unique<EatenState>(Ghost::State::Scatter));
+
+                bool isSomeGhostsBlue = false;
+                game_.gameObjects().forEachInGroup("Ghost", [&isSomeGhostsBlue](ime::GameObject* ghost) {
+                    if (static_cast<Ghost*>(ghost)->getState() == Ghost::State::Frightened)
+                        isSomeGhostsBlue = true;
+                });
+
+                if (isSomeGhostsBlue)
+                    game_.powerModeTimer_.resume();
+                else
+                    game_.powerModeTimer_.forceTimeout();
             });
 
             game_.mainAudio_->pause();
