@@ -68,11 +68,6 @@ namespace spm {
         for (const auto& animation : animations.getAll())
             background_.getAnimator().addAnimation(animation);
 
-        background_.getAnimator().on(ime::Animator::Event::AnimationComplete, [this] {
-            if (onAnimFinish_)
-                onAnimFinish_();
-        });
-
         background_.scale(2.1f, 2.1f);
     }
 
@@ -167,7 +162,9 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void Grid::onFlashStop(ime::Callback<> callback) {
-        onAnimFinish_ = std::move(callback);
+        background_.getAnimator().onAnimComplete([callback = std::move(callback)] (ime::Animation*) {
+            callback();
+        });
     }
 
     ///////////////////////////////////////////////////////////////

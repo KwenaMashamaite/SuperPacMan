@@ -60,7 +60,7 @@ namespace spm {
          * mouse). The function is called once per frame and the delta
          * passed to it is frame rate dependent
          */
-        void update(ime::Time deltaTime) override;
+        void onUpdate(ime::Time deltaTime) override;
 
     private:
         LevelStartSceneView view_; //!< View for this state

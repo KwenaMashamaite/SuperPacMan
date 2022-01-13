@@ -42,49 +42,49 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::updateLeaderboard() {
-        auto playerScore = cache().getValue<int>("CURRENT_SCORE");
-        auto playerLevel = cache().getValue<int>("CURRENT_LEVEL");
+        auto playerScore = getCache().getValue<int>("CURRENT_SCORE");
+        auto playerLevel = getCache().getValue<int>("CURRENT_LEVEL");
 
         auto score = Score();
         score.setValue(playerScore);
         score.setLevel(playerLevel);
-        score.setOwner(cache().getValue<std::string>("PLAYER_NAME"));
+        score.setOwner(getCache().getValue<std::string>("PLAYER_NAME"));
 
-        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
+        auto scoreboard = getCache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
         scoreboard->addScore(score);
         scoreboard->updateHighScoreFile();
     }
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::initGui() {
-        view_.init(gui(), cache().getValue<bool>("PLAYER_WON_GAME"));
-        gui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(cache().getValue<int>("HIGH_SCORE")));
-        gui().getWidget<Label>("lblScoreVal")->setText(std::to_string(cache().getValue<int>("CURRENT_SCORE")));
-        gui().getWidget<Label>("lblLevelVal")->setText(std::to_string(cache().getValue<int>("CURRENT_LEVEL")));
-        gui().getWidget<Label>("lblPlayerNameVal")->setText(cache().getValue<std::string>("PLAYER_NAME"));
+        view_.init(getGui(), getCache().getValue<bool>("PLAYER_WON_GAME"));
+        getGui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(getCache().getValue<int>("HIGH_SCORE")));
+        getGui().getWidget<Label>("lblScoreVal")->setText(std::to_string(getCache().getValue<int>("CURRENT_SCORE")));
+        getGui().getWidget<Label>("lblLevelVal")->setText(std::to_string(getCache().getValue<int>("CURRENT_LEVEL")));
+        getGui().getWidget<Label>("lblPlayerNameVal")->setText(getCache().getValue<std::string>("PLAYER_NAME"));
     }
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::initButtonEvents() {
-        gui().getWidget("btnRetry")->on("click", ime::Callback<>([this] {
-            utils::resetCache(cache());
-            engine().removeAllScenesExceptActive();
-            engine().popScene(); // Destroy this scene
-            engine().pushScene(std::make_unique<GameplayScene>());
-            engine().pushScene(std::make_unique<LevelStartScene>());
+        getGui().getWidget("btnRetry")->on("click", ime::Callback<>([this] {
+            utils::resetCache(getCache());
+            getEngine().removeAllScenesExceptActive();
+            getEngine().popScene(); // Destroy this scene
+            getEngine().pushScene(std::make_unique<GameplayScene>());
+            getEngine().pushScene(std::make_unique<LevelStartScene>());
         }));
 
         // Exit to the games main menu when "Exit to Main Menu" is clicked
-        gui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
-            utils::resetCache(cache());
-            engine().removeAllScenesExceptActive();
-            engine().popScene();
-            engine().pushCachedScene("MainMenuScene");
+        getGui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
+            utils::resetCache(getCache());
+            getEngine().removeAllScenesExceptActive();
+            getEngine().popScene();
+            getEngine().pushCachedScene("MainMenuScene");
         }));
 
         // Exit to desktop when "Exit Game" button is clicked
-        gui().getWidget("btnExitGame")->on("click", ime::Callback<>([this] {
-            engine().quit();
+        getGui().getWidget("btnExitGame")->on("click", ime::Callback<>([this] {
+            getEngine().quit();
         }));
     }
 

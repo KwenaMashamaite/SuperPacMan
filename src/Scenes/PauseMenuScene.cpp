@@ -31,49 +31,49 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     void PauseMenuScene::onEnter() {
-        PauseMenuSceneView::init(gui());
+        PauseMenuSceneView::init(getGui());
         initEventHandlers();
     }
 
     ///////////////////////////////////////////////////////////////
     void PauseMenuScene::initEventHandlers() {
         // 1. Resume button click handler
-        gui().getWidget("btnResume")->on("click", ime::Callback<>([this] {
-            engine().popScene();
+        getGui().getWidget("btnResume")->on("click", ime::Callback<>([this] {
+            getEngine().popScene();
         }));
 
         // 3. Main menu button click handler
-        gui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
-            utils::resetCache(cache());
-            engine().removeAllScenesExceptActive();
-            engine().popScene();
-            engine().pushCachedScene("MainMenuScene");
+        getGui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
+            utils::resetCache(getCache());
+            getEngine().removeAllScenesExceptActive();
+            getEngine().popScene();
+            getEngine().pushCachedScene("MainMenuScene");
         }));
 
         // 4. Exit button click handler
-        gui().getWidget("btnExit")->on("click", ime::Callback<>([this] {
-            engine().quit();
+        getGui().getWidget("btnExit")->on("click", ime::Callback<>([this] {
+            getEngine().quit();
         }));
 
         // 5. Audio toggle button click handler
-        auto btnOption = gui().getWidget<ime::ui::ToggleButton>("btnAudioToggle");
-        btnOption->setChecked(cache().getValue<float>("MASTER_VOLUME") > 0.0f);
+        auto btnOption = getGui().getWidget<ime::ui::ToggleButton>("btnAudioToggle");
+        btnOption->setChecked(getCache().getValue<float>("MASTER_VOLUME") > 0.0f);
         btnOption->setText(btnOption->isChecked() ? "on" : "off");
 
-        gui().getWidget("btnAudioToggle")->on("toggle", ime::Callback<bool>([this, btnOption](bool checked) {
+        getGui().getWidget("btnAudioToggle")->on("toggle", ime::Callback<bool>([this, btnOption](bool checked) {
             if (checked) {
-                cache().setValue("MASTER_VOLUME", 100.0f);
+                getCache().setValue("MASTER_VOLUME", 100.0f);
                 btnOption->setText("on");
             } else {
-                cache().setValue("MASTER_VOLUME", 0.0f);
+                getCache().setValue("MASTER_VOLUME", 0.0f);
                 btnOption->setText("off");
             }
         }));
 
         // Return to game when escape is pressed
-        input().onKeyUp([this](ime::Keyboard::Key key) {
+        getInput().onKeyUp([this](ime::Keyboard::Key key) {
             if (key == ime::Keyboard::Key::Escape || key == ime::Keyboard::Key::P)
-                engine().popScene();
+                getEngine().popScene();
         });
     }
 

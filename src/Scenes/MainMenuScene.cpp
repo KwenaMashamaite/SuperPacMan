@@ -34,13 +34,11 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     MainMenuScene::MainMenuScene() :
-        view_{gui()}
+        view_{getGui()}
     {}
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::onEnter() {
-        engine().getWindow().onClose(nullptr); // Let window be closed with exit button only
-
         view_.init();
         updateLeaderboard();
         initEventHandlers();
@@ -48,14 +46,14 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::updateLeaderboard() {
-        auto scoreboard = cache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
+        auto scoreboard = getCache().getValue<std::shared_ptr<Scoreboard>>("SCOREBOARD");
 
         const int NUM_SCORES_TO_DISPLAY = 10;
         assert(scoreboard->getSize() >= NUM_SCORES_TO_DISPLAY && "Scoreboard must have at least 10 entries");
 
-        auto namesContainer = gui().getWidget<ime::ui::VerticalLayout>("vlNames");
-        auto scoreContainer = gui().getWidget<ime::ui::VerticalLayout>("vlScores");
-        auto levelContainer = gui().getWidget<ime::ui::VerticalLayout>("vlLevels");
+        auto namesContainer = getGui().getWidget<ime::ui::VerticalLayout>("vlNames");
+        auto scoreContainer = getGui().getWidget<ime::ui::VerticalLayout>("vlScores");
+        auto levelContainer = getGui().getWidget<ime::ui::VerticalLayout>("vlLevels");
 
         // Replace placeholder text with actual Scoreboard data
         scoreboard->forEachScore([&, count = 1] (const Score& score) mutable {
@@ -71,14 +69,14 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::initEventHandlers() {
-        gui().getWidget("btnPlay")->on("click", ime::Callback<>([this] {
-            engine().popScene();
-            engine().pushScene(std::make_unique<GameplayScene>());
-            engine().pushScene(std::make_unique<LevelStartScene>());
+        getGui().getWidget("btnPlay")->on("click", ime::Callback<>([this] {
+            getEngine().popScene();
+            getEngine().pushScene(std::make_unique<GameplayScene>());
+            getEngine().pushScene(std::make_unique<LevelStartScene>());
         }));
 
-        gui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {
-            engine().quit();
+        getGui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {
+            getEngine().quit();
         }));
     }
 

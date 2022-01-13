@@ -42,42 +42,41 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     LoadingScene::LoadingScene() :
-        loadingFinished_{false}
+        loadingFinished_{false},
+        onFrameEndId_{-1}
     {}
 
     ///////////////////////////////////////////////////////////////
     void LoadingScene::onEnter() {
-        // Prevent the game from being exited while assets are being loaded
-        // The resource loading thread must finish first before we can stop
-        // the main thread
-        engine().getWindow().onClose(nullptr);
+        // Prevent the game window from being closed while the asset loading thread is active
+        getWindow().setDefaultOnCloseHandlerEnable(false);
 
-        LoadingSceneView::init(gui());
-        auto pbrAssetLoading = gui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
+        LoadingSceneView::init(getGui());
+        auto pbrAssetLoading = getGui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
         pbrAssetLoading->setMaximumValue(numOfResources);
 
         // Update progress bar text and loading text to indicate assets loaded successfully
         pbrAssetLoading->on("full", ime::Callback<>([this, pbrAssetLoading] {
-            gui().getWidget<ime::ui::Label>("lblLoading")
+            getGui().getWidget<ime::ui::Label>("lblLoading")
                 ->setText("Resources loaded successfully");
 
             pbrAssetLoading->setText("100%");
         }));
 
         // Transition to next scene after all assets are loaded
-        engine().onFrameEnd([this] {
+        onFrameEndId_ = getEngine().onFrameEnd([this] {
             if (loadingFinished_) {
-                engine().popScene();
-                engine().onFrameEnd(nullptr);
+                getEngine().removeEventListener(onFrameEndId_);
+                getEngine().popScene();
             }
         });
 
-        auto pnlContainer = gui().getWidget<ime::ui::Panel>("pnlContainer");
+        auto pnlContainer = getGui().getWidget<ime::ui::Panel>("pnlContainer");
         pnlContainer->showWithEffect(ime::ui::AnimationType::Fade, ime::seconds(0.5));
 
         // Initiate asset loading thread after view animation finishes
         pnlContainer->on("animationFinish", ime::Callback<>([this] {
-            timer().setTimeout(ime::milliseconds(25), [this] {
+            getTimer().setTimeout(ime::milliseconds(25), [this] {
                 std::thread([this] {
                     loadGameAssets();
                 }).detach();
@@ -88,7 +87,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void LoadingScene::loadGameAssets() {
         auto loadFromFile = [this](ime::ResourceType rType, std::initializer_list<std::string> assets) {
-            auto lblLoading = gui().getWidget<ime::ui::Label>("lblLoading");
+            auto lblLoading = getGui().getWidget<ime::ui::Label>("lblLoading");
             switch (rType) {
                 case ime::ResourceType::Texture:
                     lblLoading->setText("Loading textures...");
@@ -108,7 +107,7 @@ namespace spm {
             }
 
             ime::ResourceLoader::loadFromFile(rType, assets, [this](const std::string& text) {
-                auto pbrAssetLoading = gui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
+                auto pbrAssetLoading = getGui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
 
                 // Resources load very fast (less than a second), so we simulate a delay between each load
                 std::this_thread::sleep_for(std::chrono::milliseconds(80));
@@ -142,7 +141,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void LoadingScene::onExit() {
-        engine().pushCachedScene("MainMenuScene");
+        getEngine().pushCachedScene("MainMenuScene");
     }
 
 } // namespace pm

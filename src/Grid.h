@@ -143,7 +143,6 @@ namespace spm {
         ime::GameObjectContainer& actors_;
         ime::SpriteSheet spriteSheet_;
         ime::Sprite background_;
-        ime::Callback<> onAnimFinish_;
     };
 }
 

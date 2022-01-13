@@ -73,6 +73,7 @@ namespace spm {
 
     private:
         std::atomic_bool loadingFinished_; //!< A flag indicating whether or not all assets have been loaded from the disk
+        int onFrameEndId_;                 //!< The id number of the 'onFrameEnd' event handler
     };
 }
 

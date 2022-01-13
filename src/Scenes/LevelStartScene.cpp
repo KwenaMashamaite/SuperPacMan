@@ -29,37 +29,37 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     LevelStartScene::LevelStartScene() :
-        view_{gui()}
+        view_{getGui()}
     {}
 
     ///////////////////////////////////////////////////////////////
     void LevelStartScene::onEnter() {
-        auto level = cache().getValue<int>("CURRENT_LEVEL");
-        auto lives = cache().getValue<int>("PLAYER_LIVES");
-        auto score = cache().getValue<int>("CURRENT_SCORE");
-        auto highScore = cache().getValue<int>("HIGH_SCORE");
+        auto level = getCache().getValue<int>("CURRENT_LEVEL");
+        auto lives = getCache().getValue<int>("PLAYER_LIVES");
+        auto score = getCache().getValue<int>("CURRENT_SCORE");
+        auto highScore = getCache().getValue<int>("HIGH_SCORE");
         view_.init(level, lives, score, highScore);
 
-        if (level == cache().getValue<int>("BONUS_STAGE"))
-            gui().getWidget<ime::ui::Label>("lblLevel")->setText("BONUS STAGE");
+        if (level == getCache().getValue<int>("BONUS_STAGE"))
+            getGui().getWidget<ime::ui::Label>("lblLevel")->setText("BONUS STAGE");
 
         ime::Time sceneDuration = ime::seconds(2);
 
         static bool playedAudio = false;
         if (level == 1 && !playedAudio) {
             playedAudio = true;
-            audio().setMasterVolume(cache().getValue<float>("MASTER_VOLUME"));
-            audio().play(ime::audio::Type::Sfx, "beginning.wav");
+            getAudio().setMasterVolume(getCache().getValue<float>("MASTER_VOLUME"));
+            getAudio().play(ime::audio::Type::Sfx, "beginning.wav");
             sceneDuration = ime::seconds(4.2);
         }
 
-        timer().setTimeout(sceneDuration, [this] {
-            engine().popScene();
+        getTimer().setTimeout(sceneDuration, [this] {
+            getEngine().popScene();
         });
     }
 
     ///////////////////////////////////////////////////////////////
-    void LevelStartScene::update(ime::Time deltaTime) {
+    void LevelStartScene::onUpdate(ime::Time deltaTime) {
         view_.update(deltaTime);
     }
 
