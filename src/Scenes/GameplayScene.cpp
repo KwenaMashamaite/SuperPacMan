@@ -135,7 +135,7 @@ namespace spm {
             }
         });
 
-        if (currentLevel_ >= 8) { // Randomise key positions to break pattern
+        if (currentLevel_ >= Constants::RANDOM_KEY_POS_LEVEL) { // Randomise key positions to break pattern
             auto static randomEngine = std::default_random_engine{std::random_device{}()};
 
             // Seed engine with current level to ensure the randomly placed keys open the same doors on each game run
