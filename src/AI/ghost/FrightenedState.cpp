@@ -61,6 +61,8 @@ namespace spm {
             }
         } else if (event == GameEvent::FrightenedModeBegin)
             reverseDirection();
+        else if (event == GameEvent::SuperModeEnd)
+            ghost_->setFlattened(false);
     }
 
     ///////////////////////////////////////////////////////////////
