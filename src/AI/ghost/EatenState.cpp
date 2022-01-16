@@ -73,9 +73,9 @@ namespace spm {
         else if (event == GameEvent::FrightenedModeBegin)
             ghost_->setState(std::make_unique<FrightenedState>(nextState_));
         else if (event == GameEvent::ScatterModeBegin)
-            ghost_->setState(std::make_unique<ScatterState>());
+            nextState_ = Ghost::State::Scatter;
         else if (event == GameEvent::ChaseModeBegin)
-            ghost_->setState(std::make_unique<ChaseState>());
+            nextState_ = Ghost::State::Chase;
     }
 
     ///////////////////////////////////////////////////////////////
