@@ -1,10 +1,10 @@
-Brandon Jnr:150000 17
-Kyle Jenkins:125000 15
-Megan Bever:120000 13
-Paul Martinez:85000 12
-Sydney:55000 10
-Kate Watts:35000 8
-Jake Martins:22500 7
-Micheal Phillips:15000 3
-Tommy Shelby:10000 2
-John Stewart:6000 1
+Brandon Jnr:70000 10
+Kyle Jenkins:55000 9
+Megan Bever:45000 8
+Paul Martinez:40000 7
+Sydney Jacobs:35000 6
+Kate Watts:30000 5
+Jake Martins:25000 4
+Micheal Phillips:20000 3
+Tommy Shelby:15000 2
+John Stewart:9000 1
