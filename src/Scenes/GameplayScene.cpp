@@ -327,7 +327,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initEngineLevelEvents() {
-        onWindowCloseId_ = getEngine().getWindow().onClose([this] {
+        onWindowCloseId_ = getWindow().onClose([this] {
             pauseGame();
         });
 
@@ -595,7 +595,7 @@ namespace spm {
 
         // Prevent gameplay scene handlers from executing in other scenes
         getEngine().suspendedEventListener(onFrameEndId_, true);
-        getEngine().suspendedEventListener(onWindowCloseId_, true);
+        getWindow().suspendedEventListener(onWindowCloseId_, true);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -611,7 +611,7 @@ namespace spm {
 
         // Resume gameplay scene handlers
         getEngine().suspendedEventListener(onFrameEndId_, false);
-        getEngine().suspendedEventListener(onWindowCloseId_, false);
+        getWindow().suspendedEventListener(onWindowCloseId_, false);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -656,7 +656,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onExit() {
         getEngine().removeEventListener(onFrameEndId_);
-        getEngine().removeEventListener(onWindowCloseId_);
+        getWindow().removeEventListener(onWindowCloseId_);
     }
 
     ///////////////////////////////////////////////////////////////
