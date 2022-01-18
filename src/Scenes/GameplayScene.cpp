@@ -253,6 +253,7 @@ namespace spm {
 
         getEventEmitter().on("levelStartCountdownComplete", ime::Callback<>([this] {
             getInput().setAllInputEnable(true);
+            getWindow().suspendedEventListener(onWindowCloseId_, false);
 
             getGui().getWidget("lblReady")->setVisible(false);
             auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
@@ -285,6 +286,7 @@ namespace spm {
         }));
 
         getEventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {
+            getWindow().suspendedEventListener(onWindowCloseId_, true);
             updateScore(bonusStageTimer_.getRemainingDuration().asMilliseconds());
             getAudio().stopAll();
             stopAllTimers();
@@ -330,6 +332,8 @@ namespace spm {
         onWindowCloseId_ = getWindow().onClose([this] {
             pauseGame();
         });
+
+        getWindow().suspendedEventListener(onWindowCloseId_, true);
 
         onFrameEndId_ = getEngine().onFrameEnd([this] {
             getGameObjects().removeIf([](const ime::GameObject* actor) {
