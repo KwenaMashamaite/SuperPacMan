@@ -43,7 +43,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void ObjectCreator::createObjects(Grid &grid) {
-        grid.forEachCell([&grid](const ime::Tile& tile) {
+        grid.forEachCell([&grid, slowDownSensorCount = 0](const ime::Tile& tile) mutable {
             ime::GameObject::Ptr gameObject;
 
             if (tile.getId() == 'X') {
@@ -54,8 +54,7 @@ namespace spm {
                 if (tile.getId() == 'T')
                     gameObject->setTag("teleportationSensor");
                 if (tile.getId() == 'H' || tile.getId() == '+') {
-                    static int counter = 1;
-                    gameObject->setTag("slowDownSensor" + std::to_string(counter++));
+                    gameObject->setTag("slowDownSensor" + std::to_string(++slowDownSensorCount));
 
                     if (tile.getId() == '+') { // Sensor + Door,
                         grid.addGameObject(std::move(gameObject), tile.getIndex());
