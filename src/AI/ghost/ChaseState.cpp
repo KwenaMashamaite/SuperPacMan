@@ -28,6 +28,7 @@
 #include "Common/ObjectReferenceKeeper.h"
 #include "Common/Constants.h"
 #include "Utils/Utils.h"
+#include "GameObjects/PacMan.h"
 #include <cassert>
 
 namespace spm {
@@ -44,7 +45,11 @@ namespace spm {
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()) + (ghost_->isFlat() ? "Flat" : ""));
         adjMoveHandlerID_ = gridMover_->onAdjacentMoveEnd(std::bind(&ChaseState::chasePacman, this));
         gridMover_->startMovement();
-        chasePacman();
+
+        if (static_cast<PacMan*>(ObjectReferenceKeeper::getActor("pacman"))->getState() == PacMan::State::Super)
+            gridMover_->setMoveStrategy(GhostGridMover::Strategy::Random);
+        else
+            chasePacman();
     }
 
     ///////////////////////////////////////////////////////////////
