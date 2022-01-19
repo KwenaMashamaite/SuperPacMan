@@ -85,10 +85,12 @@ namespace spm {
         // Name prompt panel
         auto pnlParentContainer = Panel::create();
         pnlParentContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        pnlParentContainer->getRenderer()->setBackgroundTexture("namePromptBackground.jpeg");
         pnlParentContainer->setVisible(false);
 
         auto pnlSecondaryContainer = Panel::create("80%", "28%");
-        pnlSecondaryContainer->getRenderer()->setBackgroundColour(ime::Colour("#27293d33"));
+        pnlSecondaryContainer->getRenderer()->setRoundedBorderRadius(15.0f);
+        pnlSecondaryContainer->getRenderer()->setBackgroundColour(ime::Colour("#27293dCC"));
         pnlSecondaryContainer->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
         pnlSecondaryContainer->getRenderer()->setBorderColour(ime::Colour(128, 128, 128, 60));
         pnlSecondaryContainer->setOrigin(0.5f, 0.5f);
@@ -117,7 +119,7 @@ namespace spm {
         txtName->getRenderer()->setFocusedBorderColour(ime::Colour("#4000ff"));
         txtName->getRenderer()->setBorderHoverColour(ime::Colour("#450af5"));
         txtName->setTextSize(20);
-        txtName->setSize("70%","23%");
+        txtName->setSize("70%","20%");
         txtName->setOrigin(0.5f, 0.5f);
         txtName->setPosition("50%", "50%");
 
