@@ -93,12 +93,14 @@ namespace spm {
 
         struct ButtonDetails{std::string name; std::string text;};
         auto navBtns = std::vector<ButtonDetails>{
-            {"btnPlay", "Play"}, {"btnOptions", "Options"},
+            {"btnResume", "Resume"},
+            {"btnPlay", "Play"},
+            {"btnOptions", "Options"},
             {"btnHighScores", "High Scores"},
             {"btnQuit", "Quit"}
         };
 
-        auto* vlNavButtons = pnlContainer->addWidget<VerticalLayout>(VerticalLayout::create("40%", "22%"), "vlNavbuttons");
+        auto* vlNavButtons = pnlContainer->addWidget<VerticalLayout>(VerticalLayout::create("40%", "24%"), "vlNavbuttons");
         vlNavButtons->setOrigin(0.5f, 0.0f);
         vlNavButtons->setPosition("50%", ime::bindBottom(picPacmanLogo).append("+8%"));
         vlNavButtons->getRenderer()->setSpaceBetweenWidgets(12);

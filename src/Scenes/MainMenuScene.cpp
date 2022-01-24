@@ -26,9 +26,11 @@
 #include "LevelStartScene.h"
 #include "GameplayScene.h"
 #include "Scoreboard/Scoreboard.h"
+#include "Utils/Utils.h"
 #include <IME/ui/widgets/VerticalLayout.h>
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
+#include <IME/ui/widgets/Button.h>
 #include <cassert>
 
 namespace spm {
@@ -40,6 +42,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::onEnter() {
         view_.init();
+        getGui().getWidget("btnResume")->setVisible(false);
         updateLeaderboard();
         initEventHandlers();
     }
@@ -69,7 +72,14 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::initEventHandlers() {
+        getGui().getWidget("btnResume")->on("click", ime::Callback<>([this] {
+            getEngine().popScene();
+            getEngine().pushCachedScene("GameplayScene");
+        }));
+
         getGui().getWidget("btnPlay")->on("click", ime::Callback<>([this] {
+            utils::resetCache(getCache());
+            getEngine().uncacheScene("GameplayScene");
             getEngine().popScene();
             getEngine().pushScene(std::make_unique<GameplayScene>());
             getEngine().pushScene(std::make_unique<LevelStartScene>());
@@ -81,7 +91,17 @@ namespace spm {
     }
 
     void MainMenuScene::onResumeFromCache() {
+        if (getEngine().isSceneCached("GameplayScene")) {
+            getGui().getWidget("btnResume")->setVisible(true);
+            getGui().getWidget<ime::ui::Button>("btnPlay")->setText("New Game");
+        }
+
         updateLeaderboard();
+    }
+
+    void MainMenuScene::onExit() {
+        getGui().getWidget("btnResume")->setVisible(false);
+        getGui().getWidget<ime::ui::Button>("btnPlay")->setText("Play");
     }
 
 } // namespace pm

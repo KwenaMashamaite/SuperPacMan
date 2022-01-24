@@ -585,6 +585,22 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameplayScene::resumeGame() {
+        setOnPauseAction(ime::Scene::OnPauseAction::Default);
+
+        if (isPaused_) {
+            isPaused_ = false;
+            getAudio().setMasterVolume(getCache().getValue<float>("MASTER_VOLUME"));
+            getAudio().playAll();
+        } else
+            resetLevel();
+
+        // Resume gameplay scene handlers
+        getEngine().suspendedEventListener(onFrameEndId_, false);
+        getWindow().suspendedEventListener(onWindowCloseId_, false);
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameplayScene::resetLevel() {
         despawnStar();
         getAudio().stopAll();
@@ -604,18 +620,13 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onResume() {
-        setOnPauseAction(ime::Scene::OnPauseAction::Default);
+        resumeGame();
+    }
 
-        if (isPaused_) {
-            isPaused_ = false;
-            getAudio().setMasterVolume(getCache().getValue<float>("MASTER_VOLUME"));
-            getAudio().playAll();
-        } else
-            resetLevel();
-
-        // Resume gameplay scene handlers
-        getEngine().suspendedEventListener(onFrameEndId_, false);
-        getWindow().suspendedEventListener(onWindowCloseId_, false);
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::onResumeFromCache() {
+        setCached(false, "GameplayScene");
+        resumeGame();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -659,8 +670,10 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onExit() {
-        getEngine().removeEventListener(onFrameEndId_);
-        getWindow().removeEventListener(onWindowCloseId_);
+        if (!isCached()) {
+            getEngine().removeEventListener(onFrameEndId_);
+            getWindow().removeEventListener(onWindowCloseId_);
+        }
     }
 
     ///////////////////////////////////////////////////////////////

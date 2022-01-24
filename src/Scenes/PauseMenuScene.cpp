@@ -24,7 +24,6 @@
 
 #include "PauseMenuScene.h"
 #include "Views/PauseMenuSceneView.h"
-#include "Utils/Utils.h"
 #include <IME/ui/widgets/ToggleButton.h>
 #include <IME/core/engine/Engine.h>
 
@@ -44,8 +43,8 @@ namespace spm {
 
         // 3. Main menu button click handler
         getGui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
-            utils::resetCache(getCache());
-            getEngine().removeAllScenesExceptActive();
+            getEngine().getBackgroundScene()->setCached(true, "GameplayScene");
+            getEngine().popScene();
             getEngine().popScene();
             getEngine().pushCachedScene("MainMenuScene");
         }));

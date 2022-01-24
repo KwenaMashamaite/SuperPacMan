@@ -78,6 +78,14 @@ namespace spm {
         void onUpdate(ime::Time deltaTime) override;
 
         /**
+         * @brief Handle cache reactivation
+         *
+         * This function is called by the game engine when the scene is
+         * resumed from the cache
+         */
+        void onResumeFromCache() override;
+
+        /**
          * @brief Restore engine defaults
          *
          * This function is called by the game engine before the scene
@@ -182,6 +190,11 @@ namespace spm {
          * @brief Transition game to pause menu
          */
         void pauseGame();
+
+        /**
+         * @brief Resume gameplay
+         */
+        void resumeGame();
 
         /**
          * @brief Restart the current game level without resetting state

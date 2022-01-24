@@ -76,7 +76,6 @@ namespace spm {
 
         // Exit to the games main menu when "Exit to Main Menu" is clicked
         getGui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
-            utils::resetCache(getCache());
             getEngine().removeAllScenesExceptActive();
             getEngine().popScene();
             getEngine().pushCachedScene("MainMenuScene");

@@ -60,6 +60,14 @@ namespace spm {
          */
         void onResumeFromCache() override;
 
+        /**
+         * @brief Exit scene
+         *
+         * This function is called by the game engine when the scene is
+         * deactivated
+         */
+        void onExit() override;
+
     private:
         /**
          * @brief Replace Scoreboard placeholder text with actual player scores
