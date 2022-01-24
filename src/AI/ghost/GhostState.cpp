@@ -55,7 +55,7 @@ namespace spm {
             default: break;
         }
 
-        gridMover_->setMaxLinearSpeed(ime::Vector2f{speed, speed});
+        gridMover_->setSpeed(ime::Vector2f{speed, speed});
         gridMover_->setMoveStrategy(GhostGridMover::Strategy::Target);
     }
 

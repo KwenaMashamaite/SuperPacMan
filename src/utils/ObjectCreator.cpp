@@ -85,7 +85,7 @@ namespace spm {
                 if (tile.getIndex().colm == 11) {
                     gameObject->setTag("leftBonusFruit");
                     fruitSlideAnim->setLoop(false);
-                    fruitSlideAnim->setTimescale(2.0f);
+                    fruitSlideAnim->setPlaybackSpeed(2.0f);
                 } else
                     gameObject->setTag("rightBonusFruit");
 

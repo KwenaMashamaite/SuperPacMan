@@ -361,10 +361,10 @@ namespace spm {
                 ((sensorNum == '1' || sensorNum == '3') && dir == ime::Left) ||
                 (sensorNum == '5' && dir == ime::Up))
             {
-                objectOnSensor->getGridMover()->setMaxLinearSpeed(ime::Vector2f{speed, speed});
+                objectOnSensor->getGridMover()->setSpeed(ime::Vector2f{speed, speed});
             }
             else
-                objectOnSensor->getGridMover()->setMaxLinearSpeed(ime::Vector2f{Constants::Constants::PacManNormalSpeed, Constants::Constants::PacManNormalSpeed});
+                objectOnSensor->getGridMover()->setSpeed(ime::Vector2f{Constants::Constants::PacManNormalSpeed, Constants::Constants::PacManNormalSpeed});
         }
     }
 

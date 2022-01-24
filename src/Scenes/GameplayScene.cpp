@@ -201,7 +201,7 @@ namespace spm {
         int stopFrame = ime::utility::generateRandomNum(0, numFrames - 1);
         leftFruit->getSprite().getAnimator().getAnimation("slide")->onFrameSwitch([anim, stopFrame](ime::AnimationFrame* frame) {
             if (frame->getIndex() == stopFrame)
-                anim->setTimescale(0.0f);
+                anim->setPlaybackSpeed(0.0f);
         });
 
         leftFruit->getSprite().getAnimator().startAnimation("slide");

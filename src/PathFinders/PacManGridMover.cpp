@@ -86,10 +86,10 @@ namespace spm {
         pacmanStateChangeId_ = pacman->onPropertyChange("state", [this](const ime::Property& property) {
             switch (static_cast<PacMan::State>(property.getValue<int>())) {
                 case PacMan::State::Normal:
-                    setMaxLinearSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
+                    setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
                     break;
                 case PacMan::State::Super:
-                    setMaxLinearSpeed(ime::Vector2f{Constants::PacManSuperSpeed, Constants::PacManSuperSpeed});
+                    setSpeed(ime::Vector2f{Constants::PacManSuperSpeed, Constants::PacManSuperSpeed});
                     break;
                 case PacMan::State::Dying:
                     setMovementFreeze(true);
@@ -101,7 +101,7 @@ namespace spm {
             pacman->setDirection(newDir);
         });
 
-        setMaxLinearSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
+        setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
     }
 
     ///////////////////////////////////////////////////////////////
