@@ -35,6 +35,7 @@ namespace spm {
         pendingDirection_{ime::Unknown}
     {
         assert(pacman && "Cannot create pacman's grid mover with a nullptr");
+        setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
         setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
     }
 
@@ -85,23 +86,15 @@ namespace spm {
         // Move or stop pacman depending on his current state
         pacmanStateChangeId_ = pacman->onPropertyChange("state", [this](const ime::Property& property) {
             switch (static_cast<PacMan::State>(property.getValue<int>())) {
-                case PacMan::State::Normal:
-                    setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
-                    break;
-                case PacMan::State::Super:
-                    setSpeed(ime::Vector2f{Constants::PacManSuperSpeed, Constants::PacManSuperSpeed});
-                    break;
-                case PacMan::State::Dying:
-                    setMovementFreeze(true);
-                    break;
+                case PacMan::State::Normal:     setSpeedMultiplier(1.0f);   break;
+                case PacMan::State::Super:      setSpeedMultiplier(4.0f);   break;
+                case PacMan::State::Dying:      setSpeedMultiplier(0.0f);   break;
             }
         });
 
         onDirectionChange([pacman](ime::Direction newDir) {
             pacman->setDirection(newDir);
         });
-
-        setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
     }
 
     ///////////////////////////////////////////////////////////////

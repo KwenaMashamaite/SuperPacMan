@@ -45,8 +45,7 @@ namespace spm {
         static inline const auto CLYDE_SCATTER_TARGET_TILE = ime::Index{28, 2};  //!< The tile the orange ghost targets when in scatter state
 
         // 2. Actor speeds (pixels/second)
-        static constexpr auto PacManNormalSpeed = 120.0f;                          //!< Pacman's speed when not in super mode
-        static constexpr auto PacManSuperSpeed = 4.0f * PacManNormalSpeed;         //!< Pacman's maximum speed when in super mode (player may choose to use normal speed or super speed)
+        static constexpr auto PacManNormalSpeed = 120.0f;              //!< Pacman's speed when not in super mode
 
         // 3. Timing - base durations (seconds)
         static constexpr auto LEVEL_START_DELAY = 3.0f;                //!< Time player must wait before they can control pacman

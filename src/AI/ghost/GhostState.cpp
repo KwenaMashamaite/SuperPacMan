@@ -46,16 +46,14 @@ namespace spm {
     void GhostState::onEntry() {
         assert(ghost_->getGridMover() && "Cannot enter state without a ghost grid mover");
 
-        float speed = 0;
         switch (ghost_->getState()) {
-            case Ghost::State::Scatter:     speed = Constants::PacManNormalSpeed; break;
-            case Ghost::State::Chase:       speed = Constants::PacManNormalSpeed + 5; break;
-            case Ghost::State::Frightened:  speed = 0.5f * Constants::PacManNormalSpeed; break;
-            case Ghost::State::Eaten:       speed = Constants::PacManSuperSpeed; break;
+            case Ghost::State::Scatter:     ghost_->getGridMover()->setSpeedMultiplier(1.0f);   break;
+            case Ghost::State::Chase:       ghost_->getGridMover()->setSpeedMultiplier(1.08f);  break;
+            case Ghost::State::Frightened:  ghost_->getGridMover()->setSpeedMultiplier(0.5f);   break;
+            case Ghost::State::Eaten:       ghost_->getGridMover()->setSpeedMultiplier(4.0f);   break;
             default: break;
         }
 
-        gridMover_->setSpeed(ime::Vector2f{speed, speed});
         gridMover_->setMoveStrategy(GhostGridMover::Strategy::Target);
     }
 

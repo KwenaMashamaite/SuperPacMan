@@ -346,25 +346,25 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void CollisionResponseRegisterer::resolveSlowDownSensorCollision(ime::GameObject *sensor, ime::GameObject *objectOnSensor) {
         if (sensor->getClassName() == "Sensor" && sensor->getTag().find("slowDownSensor") != std::string::npos) {
-            char sensorNum = sensor->getTag().back();
-
-            float speed;
+            float speedMultiplier;
             if (game_.currentLevel_ == 1)
-                speed = 0.40 * Constants::Constants::PacManNormalSpeed;
+                speedMultiplier = 0.40f;
             else if (game_.currentLevel_ >= 2 && game_.currentLevel_ <= 4)
-                speed = 0.45f * Constants::Constants::PacManNormalSpeed;
+                speedMultiplier = 0.45f;
             else
-                speed = 0.50f * Constants::Constants::PacManNormalSpeed;
+                speedMultiplier = 0.50f;
 
+            char sensorNum = sensor->getTag().back();
             ime::Direction dir = objectOnSensor->getGridMover()->getDirection();
+
             if (((sensorNum == '2' || sensorNum == '4') && dir == ime::Right) ||
                 ((sensorNum == '1' || sensorNum == '3') && dir == ime::Left) ||
                 (sensorNum == '5' && dir == ime::Up))
             {
-                objectOnSensor->getGridMover()->setSpeed(ime::Vector2f{speed, speed});
+                objectOnSensor->getGridMover()->setSpeedMultiplier(speedMultiplier);
             }
             else
-                objectOnSensor->getGridMover()->setSpeed(ime::Vector2f{Constants::Constants::PacManNormalSpeed, Constants::Constants::PacManNormalSpeed});
+                objectOnSensor->getGridMover()->setSpeedMultiplier(1.0f);
         }
     }
 

@@ -62,6 +62,7 @@ namespace spm {
         });
 
         onAdjacentMoveEnd(std::bind(&GhostGridMover::move, this));
+        setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
         setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
     }
 
