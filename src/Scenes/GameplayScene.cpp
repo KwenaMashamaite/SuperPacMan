@@ -54,7 +54,6 @@ namespace spm {
         chaseWaveLevel_{0},
         numFruitsEaten_{0},
         numPelletsEaten_{0},
-        onFrameEndId_{-1},
         onWindowCloseId_{-1},
         isChaseMode_{false},
         starAppeared_{false},
@@ -334,23 +333,6 @@ namespace spm {
         });
 
         getWindow().suspendedEventListener(onWindowCloseId_, true);
-
-        onFrameEndId_ = getEngine().onFrameEnd([this] {
-            getGameObjects().removeIf([](const ime::GameObject* actor) {
-                return !actor->isActive();
-            });
-
-            if (!starAppeared_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)) {
-                starAppeared_ = true;
-                spawnStar();
-            }
-
-            if ((getGameObjects().getGroup("Pellet").getCount() == 0) &&
-                (getGameObjects().getGroup("Fruit").getCount() == 0))
-            {
-                getEventEmitter().emit("levelComplete");
-            }
-        });
     }
 
     ///////////////////////////////////////////////////////////////
@@ -595,8 +577,6 @@ namespace spm {
         } else
             resetLevel();
 
-        // Resume gameplay scene handlers
-        getEngine().suspendedEventListener(onFrameEndId_, false);
         getWindow().suspendedEventListener(onWindowCloseId_, false);
     }
 
@@ -612,9 +592,6 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onPause() {
         getAudio().pauseAll();
-
-        // Prevent gameplay scene handlers from executing in other scenes
-        getEngine().suspendedEventListener(onFrameEndId_, true);
         getWindow().suspendedEventListener(onWindowCloseId_, true);
     }
 
@@ -670,9 +647,25 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onExit() {
-        if (!isCached()) {
-            getEngine().removeEventListener(onFrameEndId_);
+        if (!isCached())
             getWindow().removeEventListener(onWindowCloseId_);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameplayScene::onFrameEnd() {
+        getGameObjects().removeIf([](const ime::GameObject* actor) {
+            return !actor->isActive();
+        });
+
+        if (!starAppeared_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)) {
+            starAppeared_ = true;
+            spawnStar();
+        }
+
+        if ((getGameObjects().getGroup("Pellet").getCount() == 0) &&
+            (getGameObjects().getGroup("Fruit").getCount() == 0))
+        {
+            getEventEmitter().emit("levelComplete");
         }
     }
 

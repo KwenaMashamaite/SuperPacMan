@@ -94,6 +94,14 @@ namespace spm {
         void onExit() override;
 
         /**
+         * @brief Handle frame end event
+         *
+         * This function is called by the game engine when the current
+         * frame ends
+         */
+        void onFrameEnd() override;
+
+        /**
          * @brief Destructor
          */
         ~GameplayScene();
@@ -315,7 +323,6 @@ namespace spm {
         unsigned int chaseWaveLevel_;   //!< The current chase mode level (up to 5 levels)
         unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
         unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
-        int onFrameEndId_;              //!< The id number of the 'onFrameEnd' event handler
         int onWindowCloseId_;           //!< The id number of the 'onClose' event handler
         bool isChaseMode_;              //!< A flag indicating whether or not ghosts are in chase mode
         bool starAppeared_;             //!< A flag indicatinig whether or not a star has already been spawned
