@@ -42,7 +42,7 @@ WINDOW_HEIGHT:INT=608
 WINDOW_ICON:STRING=res/Images/icon.png
 
 # FPS limit
-FPS_LIMIT:INT=120
+FPS_LIMIT:INT=60
 
 # Vertical synchronization (V-Sync)
 V_SYNC:BOOL=0
