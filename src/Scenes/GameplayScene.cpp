@@ -364,21 +364,13 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initLevelStartCountdown() {
         getInput().setAllInputEnable(false);
-
-        auto* lblReady = getGui().getWidget<ime::ui::Label>("lblReady");
-        lblReady->setText("Get Ready!");
-        lblReady->setVisible(true);
-
+        getGui().getWidget<ime::ui::Label>("lblReady")->setVisible(true);
         getGameObjects().findByTag("pacman")->getSprite().setVisible(false);
 
         int counter = Constants::LEVEL_START_DELAY;
         getTimer().setInterval(ime::seconds(0.5f), [this, counter]() mutable {
-            if (counter == 0)
+            if (counter-- == 0)
                 getEventEmitter().emit("levelStartCountdownComplete");
-            else {
-                getGui().getWidget<ime::ui::Label>("lblReady")->setText(std::to_string(counter));
-                counter--;
-            }
         }, counter);
     }
 

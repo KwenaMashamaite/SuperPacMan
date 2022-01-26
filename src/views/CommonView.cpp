@@ -91,15 +91,14 @@ namespace spm {
         lblCredit->setPosition("8.3%", "&.h - h");
         pnlContainer->addWidget(std::move(lblCredit), "lblCredit");
 
-        auto lblGetReady = ime::ui::Label::create("Ready!");
+        auto lblGetReady = ime::ui::Label::create("Player 1\nReady!!");
         lblGetReady->setVisible(false);
-        lblGetReady->setTextSize(15.0f);
+        lblGetReady->setTextSize(10.0f);
         lblGetReady->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Center);
         lblGetReady->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
-        lblGetReady->getRenderer()->setTextColour(ime::Colour::Red);
-        lblGetReady->getRenderer()->setTextStyle(ime::TextStyle::Bold);
-        lblGetReady->setOrigin(0.5f, 0.5f);
-        lblGetReady->setPosition(242, 284);
+        lblGetReady->getRenderer()->setTextColour(ime::Colour::White);
+        lblGetReady->getRenderer()->setTextStyle(ime::TextStyle::Italic);
+        lblGetReady->setPosition(242, 274);
         pnlContainer->addWidget(std::move(lblGetReady), "lblReady");
     }
 
