@@ -6,7 +6,7 @@ of the original Pac-Man game.
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.1.0)
+1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.2.0)
    the latest game version
 2. Extract the zip archive
 3. Run _SuperPacMan.exe_
@@ -14,23 +14,39 @@ of the original Pac-Man game.
 
 ## Screenshots
 
-1. Startup Scene
+1. First time boot screen
+
+![](docs/screenshots/name_prompt_scene.png)
+
+2. Default boot screen
 
 ![](docs/screenshots/startup_scene.png)
 
-2. Main Menu Scene
+3. Loading screen
 
-![](docs/screenshots/main-menu_scene.png)
+![](docs/screenshots/loading_scene.png)
 
-3. Gameplay Scene
+4. Main Menu
 
-![](docs/screenshots/gameplay.gif)
+![](docs/screenshots/main_menu_scene.png)
 
-4. Pause Menu Scene
+5. Level start
 
-![](docs/screenshots/game_pause_scene.png)
+![](docs/screenshots/level_start_scene.png)
 
-4. Game Over Scene
+6. Gameplay
+
+![](docs/screenshots/gameplay_scene.png)
+
+7. Bonus stage
+
+![](docs/screenshots/bonus_stage_scene.png)
+
+8. Pause Menu 
+
+![](docs/screenshots/pause_menu_scene.png)
+
+9. Game Over Menu
 
 ![](docs/screenshots/game_over_scene.png)
 
@@ -39,7 +55,7 @@ of the original Pac-Man game.
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*
 
 This project is a CMake project, therefore you must download and install [CMake](https://cmake.org/). 
-You also need to download [Infinite Motion Engine v2.5.0](https://github.com/KwenaMashamaite/IME/releases/tag/v2.5.0). 
+You also need to download [Infinite Motion Engine v2.6.0](https://github.com/KwenaMashamaite/IME/releases/tag/v2.6.0). 
 Then:
 
 1. Clone the repository
