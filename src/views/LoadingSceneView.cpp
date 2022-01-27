@@ -48,9 +48,10 @@ namespace spm {
         auto pbrAssetLoading = pnlContainer->addWidget<ProgressBar>(ProgressBar::create("loading fonts..."), "pbrAssetLoading");;
         pbrAssetLoading->getRenderer()->setBorderColour({0, 230, 64, 135});
         pbrAssetLoading->getRenderer()->setFillColour(ime::Colour("#4d05e8"));
+        pbrAssetLoading->setTextSize(9);
         pbrAssetLoading->setOrigin(0.5f, 0.0f);
-        pbrAssetLoading->setSize("80%", std::to_string(pbrAssetLoading->getSize().y));
-        pbrAssetLoading->setPosition("50%", "90%");
+        pbrAssetLoading->setSize("80%", "18");
+        pbrAssetLoading->setPosition("50%", "93%");
 
         auto lblLoading = Label::create("Loading resources, please wait...");
         lblLoading->setOrigin(0.5f, 1.0f);

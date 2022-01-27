@@ -36,12 +36,10 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void PauseMenuScene::initEventHandlers() {
-        // 1. Resume button click handler
         getGui().getWidget("btnResume")->on("click", ime::Callback<>([this] {
             getEngine().popScene();
         }));
 
-        // 3. Main menu button click handler
         getGui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
             getEngine().getBackgroundScene()->setCached(true, "GameplayScene");
             getEngine().popScene();
@@ -49,12 +47,10 @@ namespace spm {
             getEngine().pushCachedScene("MainMenuScene");
         }));
 
-        // 4. Exit button click handler
         getGui().getWidget("btnExit")->on("click", ime::Callback<>([this] {
             getEngine().quit();
         }));
 
-        // 5. Audio toggle button click handler
         auto btnOption = getGui().getWidget<ime::ui::ToggleButton>("btnAudioToggle");
         btnOption->setChecked(getCache().getValue<float>("MASTER_VOLUME") > 0.0f);
         btnOption->setText(btnOption->isChecked() ? "on" : "off");
@@ -69,7 +65,6 @@ namespace spm {
             }
         }));
 
-        // Return to game when escape is pressed
         getInput().onKeyUp([this](ime::Keyboard::Key key) {
             if (key == ime::Keyboard::Key::Escape || key == ime::Keyboard::Key::P)
                 getEngine().popScene();

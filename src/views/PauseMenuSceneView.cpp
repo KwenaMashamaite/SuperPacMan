@@ -37,20 +37,20 @@ namespace spm {
 
         // Container for all pause menu widgets
         auto* pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlPauseMenu");
-        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour("#2828284d"));
+        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour("#28282866"));
 
         // Container for pause menu buttons container
         auto* pnlInnerContainer = pnlContainer->addWidget<Panel>(Panel::create("40%", "40%"), "pnlSubContainer");
+        pnlInnerContainer->getRenderer()->setRoundedBorderRadius(10.0f);
         pnlInnerContainer->getRenderer()->setBackgroundColour(ime::Colour("#121212"));
-        pnlInnerContainer->getRenderer()->setBorders({1.5f, 1.5f, 1.5f, 1.5f});
-        pnlInnerContainer->getRenderer()->setBorderColour(ime::Colour("#212121"));
+        pnlInnerContainer->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
+        pnlInnerContainer->getRenderer()->setBorderColour(ime::Colour("#FFFFFF20"));
         pnlInnerContainer->setOrigin(0.5f, 0.5f);
         pnlInnerContainer->setPosition("50%", "50%");
 
         // Pause menu heading
         auto lblHeading = Label::create("PAUSED");
         lblHeading->getRenderer()->setTextStyle(ime::TextStyle::Bold);
-        lblHeading->setHorizontalAlignment(Label::HorizontalAlignment::Center);
         lblHeading->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
         lblHeading->getRenderer()->setTextColour(ime::Colour::Red);
         lblHeading->setOrigin(0.5f, 0.0f);

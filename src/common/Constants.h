@@ -62,7 +62,7 @@ namespace spm {
         static constexpr auto SECOND_EXTRA_LIFE_MIN_SCORE = 100000;  //!< The number of points the player must score before being awarded the second extra life
         static constexpr auto THIRD_EXTRA_LIFE_MIN_SCORE = 200000;   //!< The number of points the player must score before being awarded the third extra life
         static constexpr auto STAR_SPAWN_EATEN_ITEMS = 15;           //!< The number of items the player must eat (excluding keys) to trigger a star spawn
-        static constexpr auto RANDOM_KEY_POS_LEVEL = 8;             //!< The level on which keys are randomly placed
+        static constexpr auto RANDOM_KEY_POS_LEVEL = 5;             //!< The level on which keys are randomly placed
 
         /**
          * @brief Points awarded to the player when pacman eats another actor

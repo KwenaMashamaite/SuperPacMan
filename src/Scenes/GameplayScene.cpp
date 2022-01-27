@@ -293,7 +293,7 @@ namespace spm {
             getGameObjects().getGroup("Ghost").removeAll();
 
             auto* pacman = getGameObjects().findByTag("pacman");
-            pacman->getSprite().getAnimator().setTimescale(0);
+            pacman->getSprite().getAnimator().complete();
             pacman->getGridMover()->setMovementFreeze(true);
 
             getTimer().setTimeout(ime::seconds(0.5), [this, pacman] {
