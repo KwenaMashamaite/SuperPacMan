@@ -25,7 +25,8 @@
 #ifndef SUPERPACMAN_GRID_H
 #define SUPERPACMAN_GRID_H
 
-#include <IME/core/tilemap/TileMap.h>
+#include <IME/core/grid/Grid2D.h>
+#include <IME/core/object/GridObject.h>
 
 namespace spm {
     /**
@@ -35,11 +36,9 @@ namespace spm {
     public:
         /**
          * @brief Constructor
-         * @param tileMap Tilemap to base grid on
-         * @param scene The scene in which the object is in
-         * @param objects The scenes game object container
+         * @param grid Third party grid
          */
-        Grid(ime::TileMap& tileMap, ime::Scene& scene, ime::GameObjectContainer& objects);
+        explicit Grid(ime::Grid2D& grid);
 
         /**
          * @brief Create the grid
@@ -57,20 +56,20 @@ namespace spm {
          * @param object The actor to be added to the grid
          * @param index The index of the cell to add the actor to
          */
-        void addGameObject(ime::GameObject::Ptr object, ime::Index index);
+        void addGameObject(ime::GridObject::Ptr object, ime::Index index);
 
         /**
          * @brief Add an actor to the grid
          * @param object The actor to be added to the grid
          * @param index The index of the cell to add the actor to
          */
-        void addGameObject(ime::GameObject* object, ime::Index index);
+        void addGameObject(ime::GridObject* object, ime::Index index);
 
         /**
          * @brief Remove an game object from the grid
          * @param gameObject The game object to be removed
          */
-        void removeGameObject(ime::GameObject *gameObject);
+        void removeGameObject(ime::GridObject *gameObject);
 
         /**
          * @brief Apply a callback to each cell of the grid
@@ -82,7 +81,7 @@ namespace spm {
          * @brief Apply a callback to each actor in the grid
          * @param callback The function to be applied
          */
-        void forEachGameObject(const ime::Callback<ime::GameObject*>& callback);
+        void forEachGameObject(const ime::Callback<ime::GridObject*>& callback);
 
         /**
          * @brief Flash the grid
@@ -126,7 +125,7 @@ namespace spm {
         /**
          * @brief Implicit conversion operator
          */
-        operator ime::TileMap& ();
+        operator ime::Grid2D& ();
 
     private:
         /**
@@ -138,9 +137,7 @@ namespace spm {
         void setBackground(int level);
 
     private:
-        ime::TileMap& grid_;
-        ime::Scene& scene_;
-        ime::GameObjectContainer& actors_;
+        ime::Grid2D& grid_;
         ime::SpriteSheet spriteSheet_;
         ime::Sprite background_;
     };

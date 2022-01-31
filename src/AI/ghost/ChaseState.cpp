@@ -43,7 +43,7 @@ namespace spm {
         GhostState::onEntry();
 
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()) + (ghost_->isFlat() ? "Flat" : ""));
-        adjMoveHandlerID_ = gridMover_->onAdjacentMoveEnd(std::bind(&ChaseState::chasePacman, this));
+        adjMoveHandlerID_ = gridMover_->onMoveEnd(std::bind(&ChaseState::chasePacman, this));
         gridMover_->startMovement();
 
         if (static_cast<PacMan*>(ObjectReferenceKeeper::getActor("pacman"))->getState() == PacMan::State::Super)
@@ -54,7 +54,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::chasePacman() {
-        ime::GameObject* pacman = ObjectReferenceKeeper::getActor("pacman");
+        ime::GridObject* pacman = ObjectReferenceKeeper::getActor("pacman");
         ime::Index pacmanTile = pacman->getGridMover()->getCurrentTileIndex();
         ime::Vector2i pacmanDir = pacman->getGridMover()->getDirection();
 
@@ -69,7 +69,7 @@ namespace spm {
 
             gridMover_->setTargetTile(targetTile);
         } else if (ghost_->getTag() == "inky") {
-            ime::GameObject* blinky = ObjectReferenceKeeper::getActor("blinky");
+            ime::GridObject* blinky = ObjectReferenceKeeper::getActor("blinky");
             assert(blinky && "Inky cannot enter chase state without blinky in the maze");
             ime::Index blinkyTile = blinky->getGridMover()->getCurrentTileIndex();
 
@@ -121,7 +121,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::onExit() {
-        gridMover_->unsubscribe(adjMoveHandlerID_);
+        gridMover_->removeEventListener(adjMoveHandlerID_);
     }
 
 } // namespace pm

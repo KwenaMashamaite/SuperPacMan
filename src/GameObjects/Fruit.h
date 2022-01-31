@@ -25,13 +25,13 @@
 #ifndef SUPERPACMAN_FRUIT_H
 #define SUPERPACMAN_FRUIT_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A fruit that can be eaten by Pacman
      */
-    class Fruit : public ime::GameObject {
+    class Fruit : public ime::GridObject {
     public:
         /**
          * @brief Constrictor

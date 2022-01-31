@@ -25,14 +25,15 @@
 #ifndef SUPERPACMAN_DOOR_H
 #define SUPERPACMAN_DOOR_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 #include "Key.h"
+#include <string>
 
 namespace spm {
     /**
      * @brief A door that locks fruits and pellets away from Pacman
      */
-    class Door : public ime::GameObject {
+    class Door : public ime::GridObject {
     public:
         /**
          * @brief Orientation of the door

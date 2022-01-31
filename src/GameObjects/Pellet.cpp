@@ -28,7 +28,7 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     Pellet::Pellet(ime::Scene& scene, Type type) :
-        ime::GameObject(scene)
+        ime::GridObject(scene)
     {
         setCollisionGroup(type == Type::Power ? "powerPellets" : "superPellets");
         setTag(type == Type::Power ? "power" : "super");

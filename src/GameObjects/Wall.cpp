@@ -27,10 +27,10 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     Wall::Wall(ime::Scene& scene) :
-        ime::GameObject(scene)
+        ime::GridObject(scene)
     {
         setCollisionGroup("walls");
-        setAsObstacle(true);
+        setObstacle(true);
         getSprite().setTextureRect({0, 0, 16, 16});
     }
 

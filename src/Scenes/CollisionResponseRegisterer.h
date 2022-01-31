@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_COLLISIONRESPONSEREGISTRE_H
 #define SUPERPACMAN_COLLISIONRESPONSEREGISTRE_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace spm {
     class GameplayScene;
@@ -45,135 +45,135 @@ namespace spm {
          * @brief Register a fruit collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithFruit(ime::GameObject* gameObject);
+        void registerCollisionWithFruit(ime::GridObject* gameObject);
 
         /**
          * @brief Register a key collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithKey(ime::GameObject* gameObject);
+        void registerCollisionWithKey(ime::GridObject* gameObject);
 
         /**
          * @brief Register a door collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithDoor(ime::GameObject* gameObject);
+        void registerCollisionWithDoor(ime::GridObject* gameObject);
 
         /**
          * @brief Register a power pellet collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithPowerPellet(ime::GameObject* gameObject);
+        void registerCollisionWithPowerPellet(ime::GridObject* gameObject);
 
         /**
          * @brief Register a super pellet collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithSuperPellet(ime::GameObject* gameObject);
+        void registerCollisionWithSuperPellet(ime::GridObject* gameObject);
 
         /**
          * @brief Register a pacman collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithPacMan(ime::GameObject* gameObject);
+        void registerCollisionWithPacMan(ime::GridObject* gameObject);
 
         /**
          * @brief Register a ghost collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithGhost(ime::GameObject* gameObject);
+        void registerCollisionWithGhost(ime::GridObject* gameObject);
 
         /**
          * @brief Register a star collision handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithStar(ime::GameObject* gameObject);
+        void registerCollisionWithStar(ime::GridObject* gameObject);
 
         /**
          * @brief Register a teleportation sensor handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithTeleportationSensor(ime::GameObject* gameObject);
+        void registerCollisionWithTeleportationSensor(ime::GridObject* gameObject);
 
         /**
          * @brief Register a speed slow down sensor handler
          * @param gameObject The game object to register the collision handler on
          */
-        void registerCollisionWithSlowDownSensor(ime::GameObject* gameObject);
+        void registerCollisionWithSlowDownSensor(ime::GridObject* gameObject);
 
     private:
         /**
          * @brief Resolve a collision between a fruit object and another game object
          * @param fruit The fruit in collision with another game object
          */
-        void resolveFruitCollision(ime::GameObject* fruit);
+        void resolveFruitCollision(ime::GridObject* fruit);
 
         /**
          * @brief Resolve a collision between a key object and another game object
          * @param key The key in collision with another game object
          */
-        void resolveKeyCollision(ime::GameObject* key);
+        void resolveKeyCollision(ime::GridObject* key);
 
         /**
          * @brief Resolve a collision between a pellet object and another game object
          * @param pellet The pellet in collision with another game object
          */
-        void resolvePowerPelletCollision(ime::GameObject* pellet);
+        void resolvePowerPelletCollision(ime::GridObject* pellet);
 
         /**
          * @brief Resolve a collision between a pellet object and another game object
          * @param pellet The pellet in collision with another game object
          */
-        void resolveSuperPelletCollision(ime::GameObject* pellet);
+        void resolveSuperPelletCollision(ime::GridObject* pellet);
 
         /**
          * @brief Resolve a collision between pacman and another game object
          * @param pacman Pacman
          * @param otherGameObject The game object in collision with pacman
          */
-        void resolvePacmanCollision(ime::GameObject* pacman, ime::GameObject* otherGameObject);
+        void resolvePacmanCollision(ime::GridObject* pacman, ime::GridObject* otherGameObject);
 
         /**
          * @brief Resolve a collision between a ghost and another game object
          * @param ghost The ghost in collision with another game object
          * @param otherGameObject The game object in collision with the ghost
          */
-        void resolveGhostCollision(ime::GameObject* ghost, ime::GameObject* otherGameObject);
+        void resolveGhostCollision(ime::GridObject* ghost, ime::GridObject* otherGameObject);
 
         /**
          * @brief Resolve a collision between pacman and another game object
          * @param star The star in collision with another game object
          * @param otherGameObject The game object in collision with the star
          */
-        void resolveStarCollision(ime::GameObject* star, ime::GameObject* otherGameObject);
+        void resolveStarCollision(ime::GridObject* star, ime::GridObject* otherGameObject);
 
         /**
          * @brief Resolve a collision between a door and another game object
          * @param door The door in collision with another game object
          * @param otherGameObject The game object in collision with the door
          */
-        void resolveDoorCollision(ime::GameObject* door, ime::GameObject* otherGameObject);
+        void resolveDoorCollision(ime::GridObject* door, ime::GridObject* otherGameObject);
 
         /**
          * @brief Resolve a collision between a speed-slow-down sensor and its trigger
          * @param sensor The triggered slow down sensor
          * @param objectOnSensor The game object that triggered the sensor
          */
-        void resolveSlowDownSensorCollision(ime::GameObject* sensor, ime::GameObject* objectOnSensor);
+        void resolveSlowDownSensorCollision(ime::GridObject* sensor, ime::GridObject* objectOnSensor);
 
         /**
          * @brief Resolve a collision between a teleportation sensor and its trigger
          * @param sensor The triggered teleportation sensor
          * @param objectOnSensor The game object that triggered the sensor
          */
-        void resolveTeleportationSensorCollision(ime::GameObject* sensor, ime::GameObject* objectOnSensor);
+        void resolveTeleportationSensorCollision(ime::GridObject* sensor, ime::GridObject* objectOnSensor);
 
         /**
          * @brief Convert the eaten ghost and the object that ate it into a single score texture
          * @param ghost Eaten ghost
          * @param otherGameObject Game object that ate the ghost
          */
-        void replaceWithScoreTexture(ime::GameObject* ghost, ime::GameObject* otherGameObject) const;
+        void replaceWithScoreTexture(ime::GridObject* ghost, ime::GridObject* otherGameObject) const;
 
         /**
          * @brief Freeze or unfreeze pacman and the ghosts

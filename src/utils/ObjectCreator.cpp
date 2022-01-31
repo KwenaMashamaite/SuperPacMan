@@ -29,7 +29,7 @@
 namespace spm {
     namespace {
         ///////////////////////////////////////////////////////////////
-        ime::GameObject::Ptr createDoor(const ime::Tile& tile, ime::Scene& scene) {
+        ime::GridObject::Ptr createDoor(const ime::Tile& tile, ime::Scene& scene) {
             auto door = std::make_unique<Door>(scene);
 
             if (tile.getIndex().row % 2 == 0)
@@ -44,7 +44,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void ObjectCreator::createObjects(Grid &grid) {
         grid.forEachCell([&grid, slowDownSensorCount = 0](const ime::Tile& tile) mutable {
-            ime::GameObject::Ptr gameObject;
+            ime::GridObject::Ptr gameObject;
 
             if (tile.getId() == 'X') {
                 gameObject = std::make_unique<PacMan>(grid.getScene());
@@ -79,7 +79,7 @@ namespace spm {
                 if (tile.getId() == 'N')
                     gameObject->setCollisionGroup("hiddenWall");
             } else if (tile.getId() == '?') {
-                gameObject = ime::GameObject::create(grid.getScene());
+                gameObject = ime::GridObject::create(grid.getScene());
                 ime::Animation::Ptr fruitSlideAnim = FruitAnimation().getAnimation();
 
                 if (tile.getIndex().colm == 11) {

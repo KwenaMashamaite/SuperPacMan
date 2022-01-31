@@ -25,13 +25,13 @@
 #ifndef SUPERPACMAN_WALL_H
 #define SUPERPACMAN_WALL_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A wall object
      */
-    class Wall : public ime::GameObject {
+    class Wall : public ime::GridObject {
     public:
         using Ptr = std::shared_ptr<Wall>; //!< Shared actor pointer
 

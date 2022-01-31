@@ -30,7 +30,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     Key::Key(ime::Scene& scene) :
-        ime::GameObject(scene),
+        ime::GridObject(scene),
         id_{++counter}
     {
         getSprite().setTexture("spritesheet.png");
@@ -53,5 +53,4 @@ namespace spm {
     std::string Key::getClassName() const {
         return "Key";
     }
-
 }

@@ -25,13 +25,13 @@
 #ifndef SUPERPACMAN_KEY_H
 #define SUPERPACMAN_KEY_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A key that can lock or unlock a Door
      */
-    class Key : public ime::GameObject {
+    class Key : public ime::GridObject {
     public:
         /**
          * @brief Construct the key

@@ -53,7 +53,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     Door::Door(ime::Scene& scene) :
-        ime::GameObject(scene),
+        ime::GridObject(scene),
         id_{++counter},
         isLocked_{false},
         orientation_(Orientation::Vertical),
@@ -86,7 +86,7 @@ namespace spm {
     void Door::lock() {
         if (!isLocked_) {
             isLocked_ = true;
-            setAsObstacle(true);
+            setObstacle(true);
             setCollisionId(0); // Enable collisions with other game objects
 
             if (orientation_ == Orientation::Horizontal)
@@ -100,7 +100,7 @@ namespace spm {
     void Door::unlock(const Key &key) {
         if (isLocked_ && isValidKey(key, id_)) {
             isLocked_ = false;
-            setAsObstacle(false);
+            setObstacle(false);
             setCollisionId(-1); // Disable collisions with other game objects
             setDoorTexture("unlocked_door");
         }
@@ -113,7 +113,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void Door::burst() {
-        setAsObstacle(false);
+        setObstacle(false);
         setCollisionId(-1); // Disable collisions with other game objects
 
         if (orientation_ == Orientation::Horizontal)

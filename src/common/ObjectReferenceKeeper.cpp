@@ -28,13 +28,13 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    void ObjectReferenceKeeper::registerGameObject(ime::GameObject *gameObject) {
+    void ObjectReferenceKeeper::registerGameObject(ime::GridObject *gameObject) {
         assert(gameObject);
         gameObjects_.insert({gameObject->getTag(), gameObject});
     }
 
     ///////////////////////////////////////////////////////////////
-    void ObjectReferenceKeeper::deregisterGameObject(ime::GameObject *gameObject) {
+    void ObjectReferenceKeeper::deregisterGameObject(ime::GridObject *gameObject) {
         assert(gameObject);
         auto found = std::find_if(gameObjects_.begin(), gameObjects_.end(), [gameObject](auto& pair) {
             return pair.second->getObjectId() == gameObject->getObjectId();
@@ -45,7 +45,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::GameObject* ObjectReferenceKeeper::getActor(const std::string &tag) {
+    ime::GridObject* ObjectReferenceKeeper::getActor(const std::string &tag) {
         auto found = gameObjects_.find(tag);
         return found != gameObjects_.end() ? found->second : nullptr;
     }

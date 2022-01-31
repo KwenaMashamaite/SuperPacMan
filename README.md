@@ -55,7 +55,7 @@ of the original Pac-Man game.
 ###### *Read this section if you want to build the game yourself, otherwise you may skip it.*
 
 This project is a CMake project, therefore you must download and install [CMake](https://cmake.org/). 
-You also need to download [Infinite Motion Engine v2.6.0](https://github.com/KwenaMashamaite/IME/releases/tag/v2.6.0). 
+You also need to download [Infinite Motion Engine v3.0.0](https://github.com/KwenaMashamaite/IME/releases/tag/v3.0.0). 
 Then:
 
 1. Clone the repository

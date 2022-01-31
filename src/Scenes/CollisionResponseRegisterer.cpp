@@ -39,57 +39,57 @@ namespace spm {
     {}
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithFruit(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveFruitCollision, this, std::placeholders::_2));
+    void CollisionResponseRegisterer::registerCollisionWithFruit(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveFruitCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithKey(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveKeyCollision, this, std::placeholders::_2));
+    void CollisionResponseRegisterer::registerCollisionWithKey(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveKeyCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithDoor(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveDoorCollision, this, std::placeholders::_2, std::placeholders::_1));
+    void CollisionResponseRegisterer::registerCollisionWithDoor(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveDoorCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithPowerPellet(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolvePowerPelletCollision, this, std::placeholders::_2));
+    void CollisionResponseRegisterer::registerCollisionWithPowerPellet(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolvePowerPelletCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithSuperPellet(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveSuperPelletCollision, this, std::placeholders::_2));
+    void CollisionResponseRegisterer::registerCollisionWithSuperPellet(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveSuperPelletCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithPacMan(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolvePacmanCollision, this, std::placeholders::_2, std::placeholders::_1));
+    void CollisionResponseRegisterer::registerCollisionWithPacMan(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolvePacmanCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithGhost(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveGhostCollision, this, std::placeholders::_2, std::placeholders::_1));
+    void CollisionResponseRegisterer::registerCollisionWithGhost(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveGhostCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithStar(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveStarCollision, this, std::placeholders::_2, std::placeholders::_1));
+    void CollisionResponseRegisterer::registerCollisionWithStar(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveStarCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithTeleportationSensor(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveTeleportationSensorCollision, this, std::placeholders::_2, std::placeholders::_1));
+    void CollisionResponseRegisterer::registerCollisionWithTeleportationSensor(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveTeleportationSensorCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithSlowDownSensor(ime::GameObject *gameObject) {
-        gameObject->onCollision(std::bind(&CollisionResponseRegisterer::resolveSlowDownSensorCollision, this, std::placeholders::_2, std::placeholders::_1));
+    void CollisionResponseRegisterer::registerCollisionWithSlowDownSensor(ime::GridObject *gameObject) {
+        gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveSlowDownSensorCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveFruitCollision(ime::GameObject* fruit) {
+    void CollisionResponseRegisterer::resolveFruitCollision(ime::GridObject* fruit) {
         if (fruit->getClassName() != "Fruit")
             return;
 
@@ -100,7 +100,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveKeyCollision(ime::GameObject *key) {
+    void CollisionResponseRegisterer::resolveKeyCollision(ime::GridObject *key) {
         if (key->getClassName() == "Key") {
             // Attempt to unlock a door with the collected key
             game_.getGameObjects().forEachInGroup("Door",[key](ime::GameObject* gameObject) {
@@ -118,7 +118,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolvePowerPelletCollision(ime::GameObject *pellet) {
+    void CollisionResponseRegisterer::resolvePowerPelletCollision(ime::GridObject *pellet) {
         if (pellet->getClassName() == "Pellet" && pellet->getTag() == "power") {
             pellet->setActive(false);
 
@@ -155,7 +155,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveSuperPelletCollision(ime::GameObject *pellet) {
+    void CollisionResponseRegisterer::resolveSuperPelletCollision(ime::GridObject *pellet) {
         if (pellet->getClassName() == "Pellet" && pellet->getTag() == "super") {
             pellet->setActive(false);
 
@@ -176,7 +176,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolvePacmanCollision(ime::GameObject* pacman, ime::GameObject* otherGameObject) {
+    void CollisionResponseRegisterer::resolvePacmanCollision(ime::GridObject* pacman, ime::GridObject* otherGameObject) {
         if (pacman->getClassName() == "PacMan" && static_cast<PacMan*>(pacman)->getState() != PacMan::State::Super) {
             auto* ghost = dynamic_cast<Ghost*>(otherGameObject);
             if (ghost && (ghost->getState() == Ghost::State::Frightened || ghost->getState() == Ghost::State::Eaten))
@@ -185,6 +185,7 @@ namespace spm {
             game_.despawnStar();
             game_.getAudio().stopAll();
             game_.stopAllTimers();
+            game_.getInput().setAllInputEnable(false);
 
             auto pac = static_cast<PacMan*>(pacman);
             pac->setState(PacMan::State::Dying);
@@ -195,7 +196,7 @@ namespace spm {
 
             game_.getGameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
                 ghost->getSprite().setVisible(false);
-                ghost->getGridMover()->setMovementFreeze(true);
+                static_cast<Ghost*>(ghost)->getGridMover()->setMovementFreeze(true);
             });
 
             auto deathAnimDuration = pacman->getSprite().getAnimator().getAnimation("dying")->getDuration();
@@ -212,7 +213,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveGhostCollision(ime::GameObject *ghost, ime::GameObject *otherGameObject) {
+    void CollisionResponseRegisterer::resolveGhostCollision(ime::GridObject *ghost, ime::GridObject *otherGameObject) {
         if (ghost->getClassName() == "Ghost" && static_cast<Ghost*>(ghost)->getState() == Ghost::State::Frightened) {
             game_.powerModeTimer_.pause();
 
@@ -252,7 +253,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveStarCollision(ime::GameObject *star, ime::GameObject *otherGameObject) {
+    void CollisionResponseRegisterer::resolveStarCollision(ime::GridObject *star, ime::GridObject *otherGameObject) {
         if (star->getClassName() == "Star") {
             game_.starTimer_.stop();
 
@@ -331,7 +332,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveDoorCollision(ime::GameObject *door, ime::GameObject *otherGameObject) {
+    void CollisionResponseRegisterer::resolveDoorCollision(ime::GridObject *door, ime::GridObject *otherGameObject) {
         if (door->getClassName() == "Door") {
             auto* pacman = dynamic_cast<PacMan*>(otherGameObject);
             if (pacman && pacman->getState() == PacMan::State::Super) {
@@ -344,7 +345,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveSlowDownSensorCollision(ime::GameObject *sensor, ime::GameObject *objectOnSensor) {
+    void CollisionResponseRegisterer::resolveSlowDownSensorCollision(ime::GridObject *sensor, ime::GridObject *objectOnSensor) {
         if (sensor->getClassName() == "Sensor" && sensor->getTag().find("slowDownSensor") != std::string::npos) {
             float speedMultiplier;
             if (game_.currentLevel_ == 1)
@@ -369,10 +370,10 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveTeleportationSensorCollision(ime::GameObject* sensor, ime::GameObject* objectOnSensor) {
+    void CollisionResponseRegisterer::resolveTeleportationSensorCollision(ime::GridObject* sensor, ime::GridObject* objectOnSensor) {
         if (sensor->getClassName() == "Sensor" && sensor->getTag() == "teleportationSensor") {
             ime::GridMover* gridMover = objectOnSensor->getGridMover();
-            ime::TileMap& grid = gridMover->getGrid();
+            ime::Grid2D& grid = gridMover->getGrid();
             const ime::Tile& currentTile = grid.getTileOccupiedByChild(objectOnSensor);
             grid.removeChild(objectOnSensor);
 
@@ -387,7 +388,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::replaceWithScoreTexture(ime::GameObject* ghost, ime::GameObject* otherGameObject) const {
+    void CollisionResponseRegisterer::replaceWithScoreTexture(ime::GridObject* ghost, ime::GridObject* otherGameObject) const {
         otherGameObject->getSprite().setVisible(false);
         static const ime::SpriteSheet numbers{"spritesheet.png", ime::Vector2u{16, 16}, ime::Vector2u{1, 1}, ime::UIntRect{306, 141, 69, 18}};
         ghost->getSprite().setTexture(numbers.getTexture());
@@ -403,11 +404,17 @@ namespace spm {
     }
 
     void CollisionResponseRegisterer::setMovementFreeze(bool freeze) {
-        game_.grid_->forEachGameObject([freeze](ime::GameObject* gameObject) {
+        static auto freezeMovement = [](ime::GridObject* gameObject, bool freeze) {
             if (gameObject->getGridMover()) { // Movable object
                 gameObject->getSprite().getAnimator().setTimescale(freeze ? 0.0f : 1.0f);
                 gameObject->getGridMover()->setMovementFreeze(freeze);
             }
+        };
+
+        freezeMovement(game_.getGameObjects().findByTag<PacMan>("pacman"), freeze);
+
+        game_.getGameObjects().forEachInGroup("Ghost", [freeze](ime::GameObject* gameObject) {
+            freezeMovement(static_cast<ime::GridObject*>(gameObject), freeze);
         });
     }
 }

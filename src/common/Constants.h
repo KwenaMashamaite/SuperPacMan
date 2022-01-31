@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_CONSTANTS_H
 #define SUPERPACMAN_CONSTANTS_H
 
-#include <IME/core/tilemap/Index.h>
+#include <IME/core/grid/Index.h>
 
 namespace spm {
     /**

@@ -25,13 +25,13 @@
 #ifndef SUPERPACMAN_STAR_H
 #define SUPERPACMAN_STAR_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A star game object
      */
-    class Star : public ime::GameObject {
+    class Star : public ime::GridObject {
     public:
         /**
          * @brief Constrictor

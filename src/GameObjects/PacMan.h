@@ -26,13 +26,13 @@
 #define SUPERPACMAN_PACMAN_H
 
 #include "AI/IActorState.h"
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief Player controlled actor
      */
-    class PacMan : public ime::GameObject {
+    class PacMan : public ime::GridObject {
     public:
         using Ptr = std::shared_ptr<PacMan>; //!< Shared actor pointer
 
@@ -101,21 +101,6 @@ namespace spm {
         bool isFlashing() const;
 
         /**
-         * @brief Set current direction
-         * @param direction New direction
-         *
-         * This function changes pacmans current animation to the one
-         * corresponding to @a direction
-         */
-        void setDirection(const ime::Vector2i& direction);
-
-        /**
-         * @brief Get the current direction
-         * @return The current direction
-         */
-        ime::Vector2i getDirection() const;
-
-        /**
          * @brief Handle a game event
          * @param event The event to be handled
          * @param args Arguments associated with the event
@@ -141,7 +126,6 @@ namespace spm {
 
     private:
         int livesCount_;             //!< The actors current number of lives
-        ime::Vector2i direction_;    //!< Pacmans current direction
     };
 }
 

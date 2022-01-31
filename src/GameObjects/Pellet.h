@@ -25,16 +25,14 @@
 #ifndef SUPERPACMAN_PELLET_H
 #define SUPERPACMAN_PELLET_H
 
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A pellet that can be eaten by Pacman
      */
-    class Pellet : public ime::GameObject {
+    class Pellet : public ime::GridObject {
     public:
-        using Ptr = std::shared_ptr<Pellet>; //!< Shared actor pointer
-
         /**
          * @brief Pellet type
          */

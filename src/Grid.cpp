@@ -25,17 +25,36 @@
 #include "Grid.h"
 #include "Animations/GridAnimation.h"
 #include "Utils/ObjectCreator.h"
-#include <IME/core/tilemap/TileMap.h>
+#include <IME/core/scene/Scene.h>
 #include <cassert>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    Grid::Grid(ime::TileMap &tileMap, ime::Scene& scene, ime::GameObjectContainer& objects) :
-        grid_{tileMap},
-        scene_{scene},
-        actors_{objects},
+    Grid::Grid(ime::Grid2D &grid) :
+        grid_{grid},
         spriteSheet_{"spritesheet.png", {224, 244}, {1, 1}, {0, 237, 901, 491}}
     {
+        // Set up render layers
+        ime::RenderLayerContainer& renderLayers = grid.getScene().getRenderLayers();
+        renderLayers.removeByName("default"); // This layer is replaced by the background layer
+
+        // Instead of creating the visual grid ourselves, we use a pre-made
+        // one from an image file and render game objects on top of it
+        renderLayers.create("background");
+        renderLayers.add(background_, 0, "background");
+
+        renderLayers.create("Walls");
+        renderLayers.create("Sensors");
+        renderLayers.create("Doors");
+        renderLayers.create("Keys");
+        renderLayers.create("Fruits");
+        renderLayers.create("Pellets");
+        renderLayers.create("Stars");
+        renderLayers.create("GridObjects");
+        renderLayers.create("Ghosts");
+        renderLayers.create("PacMans");
+        
+        // Set textures for different levels
         spriteSheet_.assignAlias({0, 1}, "intro_grid");
         spriteSheet_.assignAlias({0, 2}, "level_1_to_4_grid");
         spriteSheet_.assignAlias({1, 0}, "level_5_to_8_grid");
@@ -43,28 +62,9 @@ namespace spm {
         spriteSheet_.assignAlias({1, 2}, "level_13_to_16_grid");
         spriteSheet_.assignAlias({1, 3}, "level_17_to_20_grid");
 
-        // Set render layers for different game object. Note that by default, IME sorts
-        // layers by the order in which they are created so there is no need to reorder 
-        // if the creation order matches the render order
-        grid_.renderLayers().removeByName("default"); // This layer is replaced by the background layer
-        grid_.renderLayers().create("background");
-        grid_.renderLayers().create("Walls");
-        grid_.renderLayers().create("Sensors");
-        grid_.renderLayers().create("Doors");
-        grid_.renderLayers().create("Keys");
-        grid_.renderLayers().create("Fruits");
-        grid_.renderLayers().create("Pellets");
-        grid_.renderLayers().create("Stars");
-        grid_.renderLayers().create("GameObjects");
-        grid_.renderLayers().create("Ghosts");
-        grid_.renderLayers().create("PacMans");
-
-        // Create the grid background - Instead of creating the visual grid ourself
-        // we will use a pre-made one from an image file and render our game objects on
-        // top of it
-        grid_.renderLayers().add(background_, 0, "background");
-
-        auto animations = GridAnimation();
+        // Set up animations
+        GridAnimation animations;
+        
         for (const auto& animation : animations.getAll())
             background_.getAnimator().addAnimation(animation);
 
@@ -110,22 +110,22 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::addGameObject(ime::GameObject::Ptr object, ime::Index index) {
+    void Grid::addGameObject(ime::GridObject::Ptr object, ime::Index index) {
         assert(object && "Object must not be a nullptr");
-        std::string renderLayer = object->getClassName() + "s";
 
         grid_.addChild(object.get(), index);
-        auto group = object->getClassName();
-        actors_.add(group, std::move(object), 0, renderLayer);
+        std::string renderLayer = object->getClassName() + "s";
+        std::string group = object->getClassName();
+        grid_.getScene().getGameObjects().add(group, std::move(object), 0, renderLayer);
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::addGameObject(ime::GameObject *object, ime::Index index) {
+    void Grid::addGameObject(ime::GridObject *object, ime::Index index) {
         grid_.addChild(object, index);
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::removeGameObject(ime::GameObject *gameObject) {
+    void Grid::removeGameObject(ime::GridObject *gameObject) {
         grid_.removeChild(gameObject);
     }
 
@@ -137,8 +137,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::forEachGameObject(const ime::Callback<ime::GameObject*> &callback) {
-        grid_.forEachChild([&callback](ime::GameObject* actor) {
+    void Grid::forEachGameObject(const ime::Callback<ime::GridObject*> &callback) {
+        grid_.forEachChild([&callback](ime::GridObject* actor) {
             callback(actor);
         });
     }
@@ -179,10 +179,11 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     ime::Scene& Grid::getScene() {
-        return scene_;
+        return grid_.getScene();
     }
 
-    Grid::operator ime::TileMap& () {
+    ///////////////////////////////////////////////////////////////
+    Grid::operator ime::Grid2D& () {
         return grid_;
     }
 

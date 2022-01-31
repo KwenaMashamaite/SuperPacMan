@@ -108,8 +108,8 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initGrid() {
-        createTilemap(20, 20);
-        grid_ = std::make_unique<Grid>(getTilemap(), *this, getGameObjects());
+        createGrid2D(20, 20);
+        grid_ = std::make_unique<Grid>(getGrid());
         grid_->create(currentLevel_);
         grid_->init();
     }
@@ -126,11 +126,11 @@ namespace spm {
                 gameObject->setTag(utils::getFruitName(currentLevel_));
             else if (gameObject->getClassName() == "Ghost") {
                 if (isBonusStage_)
-                    getGameObjects().remove(gameObject);
+                    gameObject->setActive(false);
                 else if (gameObject->getTag() == "inky" || gameObject->getTag() == "clyde")
                     static_cast<Ghost *>(gameObject)->setLockInGhostHouse(true);
             } else if (gameObject->getClassName() == "Key") {
-                keyIndexes.push_back(getTilemap().getTile(gameObject->getTransform().getPosition()).getIndex());
+                keyIndexes.push_back(getGrid().getTile(gameObject->getTransform().getPosition()).getIndex());
             }
         });
 
@@ -142,7 +142,8 @@ namespace spm {
 
             std::shuffle(keyIndexes.begin(), keyIndexes.end(), randomEngine);
 
-            getGameObjects().forEachInGroup("Key", [this, index = 0, &keyIndexes](ime::GameObject* key) mutable {
+            getGameObjects().forEachInGroup("Key", [this, index = 0, &keyIndexes](ime::GameObject* keyBase) mutable {
+                auto* key = static_cast<ime::GridObject*>(keyBase);
                 grid_->removeGameObject(key);
                 grid_->addGameObject(key, keyIndexes[index++]);
             });
@@ -164,7 +165,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initCollisions() {
-        ime::GameObject* pacman = getGameObjects().findByTag("pacman");
+        auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
         collisionResponseRegisterer_.registerCollisionWithFruit(pacman);
         collisionResponseRegisterer_.registerCollisionWithKey(pacman);
         collisionResponseRegisterer_.registerCollisionWithDoor(pacman);
@@ -174,7 +175,8 @@ namespace spm {
         collisionResponseRegisterer_.registerCollisionWithStar(pacman);
         collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(pacman);
 
-        getGameObjects().forEachInGroup("Ghost", [this] (ime::GameObject* ghost){
+        getGameObjects().forEachInGroup("Ghost", [this] (ime::GameObject* ghostBase){
+            auto* ghost = static_cast<Ghost*>(ghostBase);
             collisionResponseRegisterer_.registerCollisionWithPacMan(ghost);
             collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(ghost);
             collisionResponseRegisterer_.registerCollisionWithSlowDownSensor(ghost);
@@ -191,7 +193,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::spawnStar() {
-        ime::GameObject::Ptr star = std::make_unique<Star>(*this);
+        ime::GridObject::Ptr star = std::make_unique<Star>(*this);
         grid_->addGameObject(std::move(star), ime::Index{15, 13});
 
         ime::GameObject* leftFruit = getGameObjects().findByTag("leftBonusFruit");
@@ -292,7 +294,7 @@ namespace spm {
             despawnStar();
             getGameObjects().getGroup("Ghost").removeAll();
 
-            auto* pacman = getGameObjects().findByTag("pacman");
+            auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
             pacman->getSprite().getAnimator().complete();
             pacman->getGridMover()->setMovementFreeze(true);
 
@@ -507,7 +509,8 @@ namespace spm {
         grid_->removeGameObject(pacman);
         grid_->addGameObject(pacman, Constants::PacManSpawnTile);
 
-        getGameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghost) {
+        getGameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
+            auto* ghost = static_cast<ime::GridObject*>(ghostBase);
             grid_->removeGameObject(ghost);
 
             if (ghost->getTag() == "blinky")

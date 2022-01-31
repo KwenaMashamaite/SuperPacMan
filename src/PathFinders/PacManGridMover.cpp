@@ -29,7 +29,7 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    PacManGridMover::PacManGridMover(ime::TileMap &grid, PacMan* pacman) :
+    PacManGridMover::PacManGridMover(ime::Grid2D &grid, PacMan* pacman) :
         ime::KeyboardGridMover(grid, pacman),
         pacmanStateChangeId_{-1},
         pendingDirection_{ime::Unknown}
@@ -44,7 +44,7 @@ namespace spm {
         auto* pacman = static_cast<PacMan*>(getTarget());
 
         // Keep pacman moving until he collides with a wall
-        onAdjacentMoveEnd([this, pacman](ime::Index) {
+        onMoveEnd([this, pacman](ime::Index) {
             if (pendingDirection_ != ime::Unknown) {
                 auto [isBlocked, obstacle] = isBlockedInDirection(pendingDirection_);
                 if (!isBlocked || (pacman->getState() == PacMan::State::Super && obstacle && obstacle->getClassName() == "Door")) {
@@ -91,15 +91,11 @@ namespace spm {
                 case PacMan::State::Dying:      setSpeedMultiplier(0.0f);   break;
             }
         });
-
-        onDirectionChange([pacman](ime::Direction newDir) {
-            pacman->setDirection(newDir);
-        });
     }
 
     ///////////////////////////////////////////////////////////////
     PacManGridMover::~PacManGridMover() {
         if (getTarget())
-            getTarget()->unsubscribe("state", pacmanStateChangeId_);
+            getTarget()->removeEventListener("state", pacmanStateChangeId_);
     }
 }

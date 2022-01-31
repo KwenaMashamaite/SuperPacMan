@@ -40,15 +40,15 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    bool isInGhostHouse(ime::GameObject* gameObject) {
+    bool isInGhostHouse(ime::GridObject* gameObject) {
         assert(gameObject);
         ime::Index curIndex = gameObject->getGridMover()->getCurrentTileIndex();
         return curIndex.row >= 9 && curIndex.row <= 11 && curIndex.colm >= 11 && curIndex.colm <= 15;
     }
 
     ///////////////////////////////////////////////////////////////
-    GhostGridMover::GhostGridMover(ime::TileMap& tileMap, Ghost* ghost) :
-        ime::GridMover(tileMap, ghost),
+    GhostGridMover::GhostGridMover(ime::Grid2D& grid, Ghost* ghost) :
+        ime::GridMover(grid, ghost),
         ghost_{ghost},
         movementStarted_{false},
         forceDirReversal_{false},
@@ -56,12 +56,7 @@ namespace spm {
         targetTile_{0, 0}
     {
         assert(ghost_ && "spm::GhostGridMover target must not be a nullptr");
-
-        onDirectionChange([ghost](ime::Direction newDir) {
-            ghost->setDirection(newDir);
-        });
-
-        onAdjacentMoveEnd(std::bind(&GhostGridMover::move, this));
+        onMoveEnd(std::bind(&GhostGridMover::move, this));
         setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
         setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
     }

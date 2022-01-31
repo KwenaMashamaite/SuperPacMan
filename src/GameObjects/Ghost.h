@@ -27,14 +27,14 @@
 
 #include "AI/IActorState.h"
 #include "Common/Events.h"
-#include <IME/core/game_object/GameObject.h>
+#include <IME/core/object/GridObject.h>
 #include <memory>
 
 namespace spm {
     /**
      * @brief Ghost actor
      */
-    class Ghost : public ime::GameObject {
+    class Ghost : public ime::GridObject {
     public:
         /**
          * @brief The colour of the ghost
@@ -95,12 +95,6 @@ namespace spm {
         State getState() const;
 
         /**
-         * @brief Get the current direction
-         * @return The current direction
-         */
-        ime::Vector2i getDirection() const;
-
-        /**
          * @brief Lock or unlock the ghost from the ghost house
          * @param lock True to lock the ghost or false to unlock the ghost
          *
@@ -144,12 +138,6 @@ namespace spm {
         bool isFlat() const;
 
         /**
-         * @brief Set the direction of the ghost
-         * @param dir The new direction of the ghost
-         */
-        void setDirection(ime::Vector2i dir);
-
-        /**
          * @brief Update the ghost
          * @param deltaTime Time passed since last update
          */
@@ -175,7 +163,6 @@ namespace spm {
 
     private:
         IActorState::Ptr state_;   //!< The current state of the ghost
-        ime::Vector2i direction_;  //!< The direction of the ghost
         bool isLockedInHouse_;     //!< A flag indicating whether or not the ghost is locked in the ghost pen
         bool isFlat_;              //!< A flag indicating whether or not the ghost is flat
     };

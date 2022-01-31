@@ -44,7 +44,7 @@ namespace spm {
         // Initialize the game engine_
         engine_.initialize();
 
-        engine_.setFixedUpdateFrameRate(120);
+        engine_.setPhysicsUpdateFrameRate(120);
 
         // Initialize data that should be accessible in all states
         auto scoreboard = std::make_shared<Scoreboard>("res/TextFiles/Highscores.txt");

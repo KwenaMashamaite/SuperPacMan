@@ -31,7 +31,7 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     PacMan::PacMan(ime::Scene& scene) :
-        ime::GameObject(scene),
+        ime::GridObject(scene),
         livesCount_{Constants::PacManLives}
     {
         setTag("pacman");
@@ -76,8 +76,8 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void PacMan::setState(PacMan::State state) {
         ime::GameObject::setState(static_cast<int>(state));
-        switchAnimation(direction_ * -1);
-        switchAnimation(direction_);
+        switchAnimation(getDirection() * -1);
+        switchAnimation(getDirection());
     }
 
     ///////////////////////////////////////////////////////////////
@@ -89,28 +89,15 @@ namespace spm {
     void PacMan::setFlash(bool flash) {
         if (isFlashing() != flash && getState() == State::Super) {
             if (flash)
-                getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_) + "Flashing");
+                getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()) + "Flashing");
             else
-                getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_) + "Super");
+                getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()) + "Super");
         }
     }
 
     ///////////////////////////////////////////////////////////////
     bool PacMan::isFlashing() const {
         return getSprite().getAnimator().getActiveAnimation()->getName().find("Flashing") != std::string::npos;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void PacMan::setDirection(const ime::Vector2i &direction) {
-        if (direction_ != direction && getState() != State::Dying) {
-            direction_ = direction;
-            switchAnimation(direction_);
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    ime::Vector2i PacMan::getDirection() const {
-        return direction_;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -135,6 +122,11 @@ namespace spm {
             getSprite().getAnimator().addAnimation(animation);
 
         getTransform().scale(2.0f, 2.0f);
+
+        // Automatically switch animations when the direction changes
+        onPropertyChange("direction", [this](const ime::Property& property) {
+            switchAnimation(property.getValue<ime::Direction>());
+        });
     }
 
     ///////////////////////////////////////////////////////////////

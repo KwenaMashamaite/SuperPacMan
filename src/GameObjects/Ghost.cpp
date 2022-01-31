@@ -33,18 +33,19 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     Ghost::Ghost(ime::Scene& scene, Colour colour) :
-        ime::GameObject(scene),
-        direction_{ime::Right},
+        ime::GridObject(scene),
         isLockedInHouse_{false},
         isFlat_{false}
     {
+        setDirection(ime::Right);
+
         if (colour == Colour::Red)
             setTag("blinky");
         else if (colour == Colour::Pink)
             setTag("pinky");
         else if (colour == Colour::Cyan) {
             setTag("inky");
-            direction_ = ime::Left;
+            setDirection(ime::Left);
         } else if (colour == Colour::Orange)
             setTag("clyde");
 
@@ -84,11 +85,6 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Vector2i Ghost::getDirection() const {
-        return direction_;
-    }
-
-    ///////////////////////////////////////////////////////////////
     void Ghost::setLockInGhostHouse(bool lock) {
         isLockedInHouse_ = lock;
     }
@@ -120,9 +116,9 @@ namespace spm {
 
             if (getState() != State::Eaten) {
                 if (flatten)
-                    getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_) + "Flat");
+                    getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()) + "Flat");
                 else
-                    getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_));
+                    getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()));
             }
         }
     }
@@ -130,28 +126,6 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     bool Ghost::isFlat() const {
         return isFlat_;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void Ghost::setDirection(ime::Vector2i dir) {
-        if (direction_ != dir) {
-            direction_ = dir;
-
-            // Evade/frightened animation is the same in all directions
-            if (getState() == State::Frightened)
-                return;
-
-            auto newAnimation = "going" + utils::convertToString(direction_);
-
-            if (getState() == State::Eaten)
-                newAnimation += "Eaten";
-            else if (isFlat_)
-                newAnimation += "Flat";
-
-            auto& animator = getSprite().getAnimator();
-            if (animator.getActiveAnimation()->getName() != newAnimation)
-                animator.startAnimation(newAnimation);
-        }
     }
 
     ///////////////////////////////////////////////////////////////
@@ -173,12 +147,31 @@ namespace spm {
 
         int spriteSheetRow = getTag() == "blinky" ? 0 : (getTag() == "pinky" ? 1 : (getTag() == "inky" ? 2 : 3));
         getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{spriteSheetRow, 0});
+
         for (const auto& animation : animations.getAll())
             getSprite().getAnimator().addAnimation(animation);
 
         getSprite().scale(2.0f, 2.0f);
         resetSpriteOrigin();
-        getSprite().getAnimator().startAnimation("going" + utils::convertToString(direction_));
+        getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()));
+
+        // Automatically change the animation when the direction changes
+        onPropertyChange("direction", [this](const ime::Property& property) {
+            // Evade/frightened animation is the same in all directions
+            if (getState() == State::Frightened)
+                return;
+
+            std::string newAnimation = "going" + utils::convertToString(property.getValue<ime::Direction>());
+
+            if (getState() == State::Eaten)
+                newAnimation += "Eaten";
+            else if (isFlat_)
+                newAnimation += "Flat";
+
+            ime::Animator& animator = getSprite().getAnimator();
+            if (animator.getActiveAnimation()->getName() != newAnimation)
+                animator.startAnimation(newAnimation);
+        });
     }
 
     ///////////////////////////////////////////////////////////////

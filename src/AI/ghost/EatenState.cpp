@@ -51,7 +51,7 @@ namespace spm {
         gridMover_->setTargetTile(Constants::EatenGhostRespawnTile);
         gridMover_->startMovement();
 
-        destFoundHandler_ = gridMover_->onAdjacentMoveEnd([this](ime::Index index) {
+        destFoundHandler_ = gridMover_->onMoveEnd([this](ime::Index index) {
             if (index == Constants::EatenGhostRespawnTile) {
                 if (nextState_ == Ghost::State::Chase)
                     ghost_->setState(std::make_unique<ChaseState>());
@@ -82,7 +82,7 @@ namespace spm {
     void EatenState::onExit() {
         ghost_->getCollisionExcludeList().remove("sensors");
         ghost_->getCollisionExcludeList().remove("doors");
-        gridMover_->unsubscribe(destFoundHandler_);
+        gridMover_->removeEventListener(destFoundHandler_);
     }
 
 } // namespace pm

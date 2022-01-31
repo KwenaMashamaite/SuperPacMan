@@ -26,7 +26,8 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    Star::Star(ime::Scene &scene) : GameObject(scene)
+    Star::Star(ime::Scene &scene) :
+        GridObject(scene)
     {
         setTag("star");
 
