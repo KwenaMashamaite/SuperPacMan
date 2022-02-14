@@ -12,6 +12,8 @@ of the original Pac-Man game.
 3. Run _SuperPacMan.exe_
 4. Enjoy :video_game:
 
+###### Watch the gameplay on [Youtube](https://youtu.be/TtjpNSaZla8)
+
 ## Screenshots
 
 1. First time boot screen
