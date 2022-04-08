@@ -45,12 +45,13 @@ namespace spm {
         lblPoweredBy->setPosition("50%", ime::bindTop(picLEngineLogo));
         pnlContainer->addWidget(std::move(lblPoweredBy), "lblPoweredBy");
 
-        auto pbrAssetLoading = pnlContainer->addWidget<ProgressBar>(ProgressBar::create("loading fonts..."), "pbrAssetLoading");;
+        auto pbrAssetLoading = pnlContainer->addWidget<ProgressBar>(ProgressBar::create(""), "pbrAssetLoading");;
         pbrAssetLoading->getRenderer()->setBorderColour({0, 230, 64, 135});
         pbrAssetLoading->getRenderer()->setFillColour(ime::Colour("#4d05e8"));
+        pbrAssetLoading->setMaximumValue(26);
         pbrAssetLoading->setTextSize(9);
         pbrAssetLoading->setOrigin(0.5f, 0.0f);
-        pbrAssetLoading->setSize("80%", "18");
+        pbrAssetLoading->setSize("80%", "10");
         pbrAssetLoading->setPosition("50%", "93%");
 
         auto lblLoading = Label::create("Loading resources, please wait...");

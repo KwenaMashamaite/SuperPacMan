@@ -24,119 +24,53 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "LoadingScene.h"
-#include "Views/LoadingSceneView.h"
+#include "views/LoadingSceneView.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/ProgressBar.h>
 #include <IME/ui/widgets/Label.h>
-#include <IME/ui/widgets/Panel.h>
 #include <IME/core/resources/ResourceLoader.h>
-#include <thread>
-#include <chrono>
 
 namespace spm {
-    namespace {
-        //Warning!! This number must be updated each time a new resource is added to the
-        // Number of assets to be loaded
-        const int numOfResources = 26;
-    }
-
     ///////////////////////////////////////////////////////////////
-    LoadingScene::LoadingScene() :
-        loadingFinished_{false},
-        onFrameEndId_{-1}
-    {}
-
-    ///////////////////////////////////////////////////////////////
-    void LoadingScene::onEnter() {
-        // Prevent the game window from being closed while the asset loading thread is active
-        getWindow().setDefaultOnCloseHandlerEnable(false);
-
-        LoadingSceneView::init(getGui());
-        auto pbrAssetLoading = getGui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
-        pbrAssetLoading->setMaximumValue(numOfResources);
-
-        // Update progress bar text and loading text to indicate assets loaded successfully
-        pbrAssetLoading->on("full", ime::Callback<>([this, pbrAssetLoading] {
-            getGui().getWidget<ime::ui::Label>("lblLoading")
-                ->setText("Resources loaded successfully");
-
-            pbrAssetLoading->setText("100%");
-        }));
-
-        // Transition to next scene after all assets are loaded
-        onFrameEndId_ = getEngine().onFrameEnd([this] {
-            if (loadingFinished_) {
-                getEngine().removeEventListener(onFrameEndId_);
-                getEngine().popScene();
-            }
-        });
-
-        auto pnlContainer = getGui().getWidget<ime::ui::Panel>("pnlContainer");
-        pnlContainer->showWithEffect(ime::ui::AnimationType::Fade, ime::seconds(0.5));
-
-        // Initiate asset loading thread after view animation finishes
-        pnlContainer->on("animationFinish", ime::Callback<>([this] {
-            getTimer().setTimeout(ime::milliseconds(10), [this] {
-                std::thread([this] {
-                    loadGameAssets();
-                }).detach();
-            });
-        }));
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void LoadingScene::loadGameAssets() {
-        auto loadFromFile = [this](ime::ResourceType rType, std::initializer_list<std::string> assets) {
-            auto lblLoading = getGui().getWidget<ime::ui::Label>("lblLoading");
-            switch (rType) {
-                case ime::ResourceType::Texture:
-                    lblLoading->setText("Loading textures...");
-                    break;
-                case ime::ResourceType::Font:
-                    lblLoading->setText("Loading fonts...");
-                    break;
-                case ime::ResourceType::Image:
-                    lblLoading->setText("Loading textures...");
-                    break;
-                case ime::ResourceType::SoundEffect:
-                    lblLoading->setText("Loading sound effects...");
-                    break;
-                case ime::ResourceType::Music:
-                    lblLoading->setText("Loading music...");
-                    break;
-            }
-
-            ime::ResourceLoader::loadFromFile(rType, assets, [this](const std::string& text) {
-                auto pbrAssetLoading = getGui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading");
-
-                // Resources load very fast (less than a second), so we simulate a delay between each load
-                std::this_thread::sleep_for(std::chrono::milliseconds(65));
-                pbrAssetLoading->setText("Loading " + text + "...");
-                pbrAssetLoading->incrementValue();
-            });
-        };
-
-        loadFromFile(ime::ResourceType::Font, {
+    void loadGameAssets() {
+        ime::ResourceLoader::loadFromFile(ime::ResourceType::Font, {
             "ChaletLondonNineteenSixty.ttf", "AtariClassicExtrasmooth-LxZy.ttf",
             "namco.ttf", "pacfont.ttf", "DejaVuSans.ttf"});
 
-        loadFromFile(ime::ResourceType::Texture,  {
+        ime::ResourceLoader::loadFromFile(ime::ResourceType::Texture,  {
             "icon.png", "pacman_logo.png", "spritesheet.png",
             "main_menu_background.jpg", "main_menu_background_blurred.jpg"
         });
 
-        loadFromFile(ime::ResourceType::SoundEffect, {
+        ime::ResourceLoader::loadFromFile(ime::ResourceType::SoundEffect, {
             "doorBroken.wav", "fruitEaten.wav", "ghostEaten.wav",
             "pacmanDying.wav", "powerPelletEaten.wav", "superPelletEaten.wav",
             "beginning.wav", "levelComplete.ogg", "wieu_wieu_slow.ogg", "extraLife.wav",
             "starSpawned.wav", "bonusFruitMatch.wav", "bonusFruitNotMatch.wav", "ghostsTurnedBlue.wav"
         });
 
-        loadFromFile(ime::ResourceType::Music, {
+        ime::ResourceLoader::loadFromFile(ime::ResourceType::Music, {
             "searching.ogg", "pacman_intermission.ogg"
         });
+    }
 
-        loadingFinished_ = true;
+    ///////////////////////////////////////////////////////////////
+    void LoadingScene::onEnter() {
+        getWindow().setDefaultOnCloseHandlerEnable(false);
+        LoadingSceneView::init(getGui());
+
+        getGui().getWidget("pbrAssetLoading")->on("full", ime::Callback<>([this] {
+            getGui().getWidget<ime::ui::Label>("lblLoading")->setText("Resources loaded successfully");
+            getEngine().popScene();
+        }));
+
+        getTimer().setInterval(ime::milliseconds(65), [this] {
+            getGui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading")->incrementValue();
+        });
+
+        // The progress bar and the thread are not in sync. The thread finishes
+        // almost intently and the progress bar is just for user experience
+        std::thread(&loadGameAssets).detach();
     }
 
     ///////////////////////////////////////////////////////////////

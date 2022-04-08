@@ -26,7 +26,6 @@
 #define SUPERPACMAN_LOADINGSCENE_H
 
 #include <IME/core/scene/Scene.h>
-#include <atomic>
 
 namespace spm {
     /**
@@ -40,11 +39,6 @@ namespace spm {
      */
     class LoadingScene : public ime::Scene {
     public:
-        /**
-         * @brief Constructor
-         */
-        LoadingScene();
-
         /**
          * @brief Enter the scene
          *
@@ -61,19 +55,6 @@ namespace spm {
          * parties that assets loaded successfully
          */
         void onExit() override;
-
-    private:
-        /**
-         * @brief Load assets from the disk
-         *
-         * This function will load all the textures, fonts, music and sfx
-         * required by the game from the disk
-         */
-        void loadGameAssets();
-
-    private:
-        std::atomic_bool loadingFinished_; //!< A flag indicating whether or not all assets have been loaded from the disk
-        int onFrameEndId_;                 //!< The id number of the 'onFrameEnd' event handler
     };
 }
 
