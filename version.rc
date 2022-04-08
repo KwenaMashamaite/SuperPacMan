@@ -1,6 +1,6 @@
 1 VERSIONINFO
- FILEVERSION 1,1,0,0
- PRODUCTVERSION 1,1,0,0
+ FILEVERSION 1,2,1,0
+ PRODUCTVERSION 1,2,1,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -18,13 +18,13 @@ BEGIN
             VALUE "Comments", "For educational purposes only"
             VALUE "CompanyName", ""
             VALUE "FileDescription", "Super PacMan Clone"
-            VALUE "FileVersion", "1, 1, 0, 0"
+            VALUE "FileVersion", "1, 2, 1, 0"
             VALUE "InternalName", "Super PacMan Clone"
             VALUE "LegalCopyright", "Copyright (c) 2021, Kwena Mashamaite"
             VALUE "LegalTrademarks1", "Trademark (R) 2021, Bandai Namco"
             VALUE "OriginalFilename", "SuperPacMan.exe"
             VALUE "ProductName", "Super PacMan Clone"
-            VALUE "ProductVersion", "1, 1, 0, 0"
+            VALUE "ProductVersion", "1, 2, 1, 0"
         END
     END
     BLOCK "VarFileInfo"

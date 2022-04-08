@@ -1,12 +1,11 @@
-## Overview
+# Super Pac-Man clone
 
-This project is a [Super Pac-Man](https://en.wikipedia.org/wiki/Super_Pac-Man) clone using the [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME), 
-a 2D game engine that I developed. This game uses the same core logic as my [clone](https://github.com/KwenaMashamaite/PacMan) 
-of the original Pac-Man game.
+This project is a [Super Pac-Man](https://en.wikipedia.org/wiki/Super_Pac-Man) using my 2D game engine, [Infinite Motion Engine](https://github.com/KwenaMashamaite/IME). 
+This game uses the same core logic as my [clone](https://github.com/KwenaMashamaite/PacMan) of the original Pac-Man game.
 
 ## How to play
 
-1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.2.0)
+1. [Download](https://github.com/KwenaMashamaite/SuperPacMan/releases/tag/v1.2.1)
    the latest game version
 2. Extract the zip archive
 3. Run _SuperPacMan.exe_
@@ -83,7 +82,8 @@ The executable can be found in the `bin` directory
 
 ## Platform
 
-This game only runs on the Windows platform. It was tested on Windows 10.
+This game only runs on the Windows platform. It was tested on Windows 10 but 
+should work with previous versions
 
 ## License
 
