@@ -26,7 +26,7 @@
 #include "LevelStartScene.h"
 #include "GameplayScene.h"
 #include "Scoreboard/Scoreboard.h"
-#include "Utils/Utils.h"
+#include "utils/Utils.h"
 #include <IME/core/engine/Engine.h>
 #include <IME/ui/widgets/Label.h>
 

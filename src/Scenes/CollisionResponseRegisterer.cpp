@@ -192,7 +192,7 @@ namespace spm {
             pac->getSprite().getAnimator().startAnimation("dying");
             pac->setLivesCount(pac->getLivesCount() - 1);
             game_.getCache().setValue("PLAYER_LIVES", pac->getLivesCount());
-            game_.view_.removeLife();
+            game_.view_->removeLife();
 
             game_.getGameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
                 ghost->getSprite().setVisible(false);

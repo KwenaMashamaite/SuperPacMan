@@ -310,7 +310,7 @@ namespace spm {
         int currentLevel_;              //!< Current game level
         int pointsMultiplier_;          //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)
         bool isPaused_;                 //!< A flag indicating whether or not the game is paused
-        CommonView view_;               //!< Scene view without the gameplay grid
+        CommonView* view_;               //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_;    //!< Gameplay grid view
         ime::Timer ghostAITimer_;       //!< Scatter-chase state transition timer
         ime::Timer superModeTimer_;     //!< Pacman Super mode duration counter

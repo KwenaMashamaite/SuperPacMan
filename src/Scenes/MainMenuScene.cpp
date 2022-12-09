@@ -36,12 +36,13 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     MainMenuScene::MainMenuScene() :
-        view_{getGui()}
+        view_{nullptr}
     {}
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::onEnter() {
-        view_.init();
+        view_ = new MainMenuSceneView(getGui());
+        view_->init();
         getGui().getWidget("btnResume")->setVisible(false);
         updateLeaderboard();
         initEventHandlers();
@@ -102,6 +103,10 @@ namespace spm {
     void MainMenuScene::onExit() {
         getGui().getWidget("btnResume")->setVisible(false);
         getGui().getWidget<ime::ui::Button>("btnPlay")->setText("Play");
+    }
+
+    MainMenuScene::~MainMenuScene() {
+        delete view_;
     }
 
 } // namespace pm

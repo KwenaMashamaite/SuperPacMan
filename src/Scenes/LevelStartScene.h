@@ -62,8 +62,13 @@ namespace spm {
          */
         void onUpdate(ime::Time deltaTime) override;
 
+        /**
+         * @brief Destructor
+         */
+        ~LevelStartScene() override;
+
     private:
-        LevelStartSceneView view_; //!< View for this state
+        LevelStartSceneView* view_; //!< View for this state
     };
 }
 

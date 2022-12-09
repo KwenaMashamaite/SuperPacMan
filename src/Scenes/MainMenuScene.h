@@ -68,6 +68,11 @@ namespace spm {
          */
         void onExit() override;
 
+        /**
+         * @brief Destructor
+         */
+        ~MainMenuScene() override;
+
     private:
         /**
          * @brief Replace Scoreboard placeholder text with actual player scores
@@ -80,7 +85,7 @@ namespace spm {
         void initEventHandlers();
 
     private:
-        MainMenuSceneView view_;
+        MainMenuSceneView* view_;
     };
 }
 

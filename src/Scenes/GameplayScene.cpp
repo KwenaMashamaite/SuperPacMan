@@ -47,7 +47,7 @@ namespace spm {
         currentLevel_{-1},
         pointsMultiplier_{1},
         isPaused_{false},
-        view_{getGui()},
+        view_{nullptr},
         mainAudio_{nullptr},
         starSpawnSfx_{nullptr},
         scatterWaveLevel_{0},
@@ -91,9 +91,10 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initGui() {
-        view_.init(getCache().getValue<int>("CURRENT_LEVEL"), getCache().getValue<int>("PLAYER_LIVES"));
-        view_.setHighScore(getCache().getValue<int>("HIGH_SCORE"));
-        view_.setScore(getCache().getValue<int>("CURRENT_SCORE"));
+        view_ = new CommonView(getGui()),
+        view_->init(getCache().getValue<int>("CURRENT_LEVEL"), getCache().getValue<int>("PLAYER_LIVES"));
+        view_->setHighScore(getCache().getValue<int>("HIGH_SCORE"));
+        view_->setScore(getCache().getValue<int>("CURRENT_SCORE"));
 
         if (isBonusStage_) {
             ime::ui::Label::Ptr lblRemainingTime = ime::ui::Label::create("");
@@ -239,7 +240,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::endGameplay() {
         despawnStar();
-        setOnPauseAction(ime::Scene::Show | ime::Scene::UpdateTime);
+        setVisibleOnPause(true);
         getAudio().setMute(true);
         getGui().setOpacity(0.0f);
         getEngine().pushScene(std::make_unique<GameOverScene>());
@@ -341,11 +342,11 @@ namespace spm {
     void GameplayScene::updateScore(int points) {
         auto newScore = getCache().getValue<int>("CURRENT_SCORE") + points;
         getCache().setValue("CURRENT_SCORE", newScore);
-        view_.setScore(newScore);
+        view_->setScore(newScore);
 
         if (newScore > getCache().getValue<int>("HIGH_SCORE")) {
             getCache().setValue("HIGH_SCORE", newScore);
-            view_.setHighScore(newScore);
+            view_->setHighScore(newScore);
         }
 
         auto extraLivesGiven = getCache().getValue<int>("NUM_EXTRA_LIVES_WON");
@@ -357,7 +358,7 @@ namespace spm {
             auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
             pacman->addLife();
             getCache().setValue("PLAYER_LIVES", pacman->getLivesCount());
-            view_.addLife();
+            view_->addLife();
 
             getAudio().play(ime::audio::Type::Sfx, "extraLife.wav");
         }
@@ -443,7 +444,7 @@ namespace spm {
             if (currentLevel_ == 1)
                 return ime::seconds(5.0f);
             else
-                return ime::seconds(1.0f / getEngine().getWindow().getFrameRateLimit()); // one frame
+                return ime::seconds(1.0f / getWindow().getFrameRateLimit()); // one frame
         }
     }
 
@@ -557,13 +558,13 @@ namespace spm {
 
         isPaused_ = true;
         getAudio().pauseAll();
-        setOnPauseAction(ime::Scene::OnPauseAction::Show);
+        setVisibleOnPause(true);
         getEngine().pushCachedScene("PauseMenuScene");
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::resumeGame() {
-        setOnPauseAction(ime::Scene::OnPauseAction::Default);
+        setVisibleOnPause(false);
 
         if (isPaused_) {
             isPaused_ = false;
@@ -629,7 +630,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onUpdate(ime::Time deltaTime) {
-        view_.update(deltaTime);
+        view_->update(deltaTime);
         grid_->update(deltaTime);
         ghostAITimer_.update(deltaTime);
         superModeTimer_.update(deltaTime);
@@ -666,6 +667,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     GameplayScene::~GameplayScene() {
+        delete view_;
         ObjectReferenceKeeper::clear();
         Key::resetCounter();
         Door::resetCounter();

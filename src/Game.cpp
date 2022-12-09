@@ -38,44 +38,48 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void Game::initialize() {
-        // Make game window unresizable
-        engine_.getWindow().setStyle(ime::WindowStyle::Close);
+        engine_.onInit([this] {
+            // Make game window unresizable
+            engine_.getWindow().setStyle(ime::WindowStyle::Close);
 
-        // Initialize the game engine_
+            engine_.setPhysicsUpdateFrameRate(120);
+
+            // Initialize data that should be accessible in all states
+            auto scoreboard = std::make_shared<Scoreboard>("res/TextFiles/Highscores.txt");
+            scoreboard->load();
+
+            engine_.getCache().addProperty({"SETTINGS_FILENAME", settingsFilename_});
+            engine_.getCache().addProperty({"SCOREBOARD", scoreboard});
+            engine_.getCache().addProperty({"HIGH_SCORE", scoreboard->getTopScore().getValue()});
+            engine_.getCache().addProperty({"CURRENT_LEVEL", 1});
+            engine_.getCache().addProperty({"CURRENT_SCORE", 0});
+            engine_.getCache().addProperty({"PLAYER_LIVES", Constants::PacManLives});
+            engine_.getCache().addProperty({"NUM_EXTRA_LIVES_WON", 0});
+            engine_.getCache().addProperty({"MASTER_VOLUME", 100.0f});
+            engine_.getCache().addProperty({"PLAYER_WON_GAME", false});
+            engine_.getCache().addProperty({"BONUS_STAGE", 3});
+            engine_.getCache().addProperty({"GHOSTS_FRIGHTENED_MODE_DURATION", ime::seconds(Constants::POWER_MODE_DURATION)});
+            engine_.getCache().addProperty({"PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION)});
+
+            // If not found, player will be prompted for name in StartUpScene
+            if (engine_.getConfigs().hasPref("PLAYER_NAME"))
+                engine_.getCache().addProperty({"PLAYER_NAME",engine_.getConfigs().getPref("PLAYER_NAME").getValue<std::string>()});
+
+            // Since the user can go to these scenes on demand and as many times as they like,
+            // we cache them to avoid instantiating new once's every time they are needed
+            engine_.cacheScene("MainMenuScene", std::make_unique<MainMenuScene>());
+            engine_.cacheScene("PauseMenuScene", std::make_unique<PauseMenuScene>());
+
+            // The scene the game will activate when executable is run
+            engine_.pushScene(std::make_unique<StartUpScene>());
+        });
+
+        // Initialize the game engine
         engine_.initialize();
-
-        engine_.setPhysicsUpdateFrameRate(120);
-
-        // Initialize data that should be accessible in all states
-        auto scoreboard = std::make_shared<Scoreboard>("res/TextFiles/Highscores.txt");
-        scoreboard->load();
-
-        engine_.getCache().addProperty({"SETTINGS_FILENAME", settingsFilename_});
-        engine_.getCache().addProperty({"SCOREBOARD", scoreboard});
-        engine_.getCache().addProperty({"HIGH_SCORE", scoreboard->getTopScore().getValue()});
-        engine_.getCache().addProperty({"CURRENT_LEVEL", 1});
-        engine_.getCache().addProperty({"CURRENT_SCORE", 0});
-        engine_.getCache().addProperty({"PLAYER_LIVES", Constants::PacManLives});
-        engine_.getCache().addProperty({"NUM_EXTRA_LIVES_WON", 0});
-        engine_.getCache().addProperty({"MASTER_VOLUME", 100.0f});
-        engine_.getCache().addProperty({"PLAYER_WON_GAME", false});
-        engine_.getCache().addProperty({"BONUS_STAGE", 3});
-        engine_.getCache().addProperty({"GHOSTS_FRIGHTENED_MODE_DURATION", ime::seconds(Constants::POWER_MODE_DURATION)});
-        engine_.getCache().addProperty({"PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION)});
-
-        // If not found, player will be prompted for name in StartUpScene
-        if (engine_.getConfigs().hasPref("PLAYER_NAME"))
-            engine_.getCache().addProperty({"PLAYER_NAME",engine_.getConfigs().getPref("PLAYER_NAME").getValue<std::string>()});
-
-        // Since the user can go to these scenes on demand and as many times as they like,
-        // we cache them to avoid instantiating new once's every time they are needed
-        engine_.cacheScene("MainMenuScene", std::make_unique<MainMenuScene>());
-        engine_.cacheScene("PauseMenuScene", std::make_unique<PauseMenuScene>());
     }
 
     ///////////////////////////////////////////////////////////////
     void Game::start() {
-        engine_.pushScene(std::make_unique<StartUpScene>());
         engine_.run();
     }
 

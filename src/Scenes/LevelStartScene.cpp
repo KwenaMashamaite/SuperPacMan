@@ -29,16 +29,17 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     LevelStartScene::LevelStartScene() :
-        view_{getGui()}
+        view_{nullptr}
     {}
 
     ///////////////////////////////////////////////////////////////
     void LevelStartScene::onEnter() {
+        view_ = new LevelStartSceneView(getGui());
         auto level = getCache().getValue<int>("CURRENT_LEVEL");
         auto lives = getCache().getValue<int>("PLAYER_LIVES");
         auto score = getCache().getValue<int>("CURRENT_SCORE");
         auto highScore = getCache().getValue<int>("HIGH_SCORE");
-        view_.init(level, lives, score, highScore);
+        view_->init(level, lives, score, highScore);
 
         if (level == getCache().getValue<int>("BONUS_STAGE"))
             getGui().getWidget<ime::ui::Label>("lblLevel")->setText("BONUS STAGE");
@@ -60,7 +61,12 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void LevelStartScene::onUpdate(ime::Time deltaTime) {
-        view_.update(deltaTime);
+        view_->update(deltaTime);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    LevelStartScene::~LevelStartScene() {
+        delete view_;
     }
 
 } // namespace spm

@@ -57,7 +57,7 @@ add_executable(SuperPacMan ${SRC_FILES} ${RES_FILES})
 
 # Find IME
 list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/extlibs")
-find_package(ime 3.0.0 REQUIRED)
+find_package(ime 3.2.0 REQUIRED)
 
 # Link IME
 target_link_libraries (SuperPacMan PRIVATE ime)

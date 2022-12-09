@@ -29,6 +29,7 @@
 #include <IME/ui/widgets/ProgressBar.h>
 #include <IME/ui/widgets/Label.h>
 #include <IME/core/resources/ResourceLoader.h>
+#include <thread>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
