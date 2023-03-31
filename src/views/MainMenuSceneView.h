@@ -55,13 +55,13 @@ namespace spm {
          */
         void init();
 
-    private:
         /**
          * @brief Switch to a different view within the main menu
          * @param view View to switch to
          */
         void setSubView(SubView view);
 
+    private:
         /**
          * @brief Create the main view
          *

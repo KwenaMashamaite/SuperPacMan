@@ -79,6 +79,19 @@ namespace spm {
         }));
 
         getGui().getWidget("btnPlay")->on("click", ime::Callback<>([this] {
+            view_->setSubView(SubView::NewGame);
+        }));
+
+        getGui().getWidget("btnOptions")->on("click", ime::Callback<>([this] {
+            view_->setSubView(SubView::OptionsMenu);
+        }));
+
+        getGui().getWidget("btnHighScores")->on("click", ime::Callback<>([this] {
+            view_->setSubView(SubView::HighScores);
+        }));
+
+        // Game mode selection buttons
+        getGui().getWidget("btnPlayKeyboard")->on("click", ime::Callback<>([this] {
             utils::resetCache(getCache());
             getEngine().uncacheScene("GameplayScene");
             getEngine().popScene();
@@ -92,6 +105,8 @@ namespace spm {
     }
 
     void MainMenuScene::onResumeFromCache() {
+        view_->setSubView(SubView::MainMenu);
+
         if (getEngine().isSceneCached("GameplayScene")) {
             getGui().getWidget("btnResume")->setVisible(true);
             getGui().getWidget<ime::ui::Button>("btnPlay")->setText("New Game");

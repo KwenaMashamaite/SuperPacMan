@@ -118,14 +118,6 @@ namespace spm {
             btn->getRenderer()->setFocusedBorderColour(ime::Colour::Transparent);
             vlNavButtons->addWidget(std::move(btn), buttonInfo.name);
         });
-
-        vlNavButtons->getWidget("btnOptions")->on("click", ime::Callback<>([this] {
-            setSubView(SubView::OptionsMenu);
-        }));
-
-        vlNavButtons->getWidget("btnHighScores")->on("click", ime::Callback<>([this] {
-            setSubView(SubView::HighScores);
-        }));
     }
 
     ///////////////////////////////////////////////////////////////
