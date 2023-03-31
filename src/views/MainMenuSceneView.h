@@ -34,6 +34,7 @@ namespace spm {
      */
     enum class SubView {
         MainMenu,    //!< View rendered when main menu state is rendered
+        NewGame,     //!< View rendered when new game button is clicked
         OptionsMenu, //!< View rendered when options view is clicked
         HighScores,  //!< View rendered when high scores button is clicked
     };
@@ -68,6 +69,14 @@ namespace spm {
          * also when a subview returns (when back button is clicked)
          */
         void createMainMenuView();
+
+        /**
+         * @brief Create the new game view
+         *
+         * This view is rendered when a new game is started. Giving the
+         * player an option to choose the game mode
+         */
+        void createNewGameView();
 
         /**
          * @brief Create the options view

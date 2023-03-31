@@ -50,6 +50,7 @@ namespace spm {
         gui_.addWidget(std::move(pnlBlank), "pnlBlank");
 
         createMainMenuView();
+        createNewGameView();
         createOptionsMenuView();
         createHighScoresView();
         setSubView(subView_);
@@ -125,6 +126,74 @@ namespace spm {
         vlNavButtons->getWidget("btnHighScores")->on("click", ime::Callback<>([this] {
             setSubView(SubView::HighScores);
         }));
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void MainMenuSceneView::createNewGameView() {
+        using namespace ime::ui;
+
+        // Container for all new game menu widgets
+        auto* pnlContainer = gui_.addWidget<Panel>(Panel::create(), "pnlNewGame");
+        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+
+        auto* picPacmanLogo = pnlContainer->addWidget(Picture::create("pacman_logo.png"), "picPacmanLogo");
+        picPacmanLogo->setOrigin(0.5f, 0.0f);
+        picPacmanLogo->setSize("70%", "17%");
+        picPacmanLogo->setPosition("50%", "10%");
+        picPacmanLogo->rotate(-0.8f);
+
+        // Panel background image
+        auto picBackground = Picture::create("main_menu_background_blurred.jpg");
+        picBackground->setSize("100%", "32%");
+        picBackground->setOrigin(1.0f, 1.0f);
+        picBackground->setPosition("100%", "100%");
+        pnlContainer->addWidget(std::move(picBackground), "picBckgrnd");
+
+        // Container game mode selection buttons container
+        auto* pnlInnerContainer = pnlContainer->addWidget<Panel>(Panel::create("60%", "27%"), "pnlSubContainer");
+        pnlInnerContainer->getRenderer()->setRoundedBorderRadius(10.0f);
+        pnlInnerContainer->getRenderer()->setBackgroundColour(ime::Colour("#12121259"));
+        pnlInnerContainer->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
+        pnlInnerContainer->getRenderer()->setBorderColour(ime::Colour("#FFFFFF20"));
+        pnlInnerContainer->setOrigin(0.5f, 0.5f);
+        pnlInnerContainer->setPosition("50%", "50%");
+
+        // new game heading
+        auto lblHeading = Label::create("Select Mode");
+        lblHeading->getRenderer()->setTextStyle(ime::TextStyle::Italic);
+        lblHeading->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
+        lblHeading->getRenderer()->setTextColour(ime::Colour::White);
+        lblHeading->setOrigin(0.5f, 0.0f);
+        lblHeading->setPosition("50%", "4%");
+        lblHeading->setTextSize(17.0f);
+        pnlInnerContainer->addWidget(std::move(lblHeading), "lblHeading");
+
+        // Create mode selection buttons
+        auto btnList = {std::pair{"Player vs Com", "btnPlayKeyboard"},
+                        std::pair{"Com vs Com (random pacman)", "btnPlayComRand"},
+                        std::pair{"Com vs Com (smart pacman)", "btnPlayComSmart"}};
+
+        // Container for mode selection buttons
+        auto vlBtnContainer = VerticalLayout::create("90%", "50%");
+        vlBtnContainer->setOrigin(0.5f, 0.5f);
+        vlBtnContainer->setPosition("50%", "65%");
+        vlBtnContainer->getRenderer()->setSpaceBetweenWidgets(7.0f);
+
+        for (const auto& btnData : btnList) {
+            auto btn = Button::create(btnData.first);
+            btn->setTextSize(13.0f);
+            btn->getRenderer()->setFont("DejaVuSans.ttf");
+            btn->getRenderer()->setRoundedBorderRadius(18);
+            btn->getRenderer()->setHoverTextStyle(ime::TextStyle::Italic);
+            btn->getRenderer()->setBackgroundColour(ime::Colour("#4d4dff"));
+            btn->getRenderer()->setBackgroundHoverColour(ime::Colour("#32CD32"));
+            btn->getRenderer()->setTextColour(ime::Colour("#ffffffe6"));
+            btn->getRenderer()->setTextHoverColour(ime::Colour::Black);
+            btn->getRenderer()->setFocusedBorderColour(ime::Colour::Transparent);
+            vlBtnContainer->addWidget(std::move(btn), btnData.second);
+        }
+
+        pnlInnerContainer->addWidget(std::move(vlBtnContainer), "vlNewGame");
     }
 
     ///////////////////////////////////////////////////////////////
@@ -354,6 +423,9 @@ namespace spm {
         switch (view) {
             case SubView::MainMenu:
                 gui_.moveWidgetToFront("pnlMain");
+                break;
+            case SubView::NewGame:
+                gui_.moveWidgetToFront("pnlNewGame");
                 break;
             case SubView::OptionsMenu:
                 gui_.moveWidgetToFront("pnlOptions");
