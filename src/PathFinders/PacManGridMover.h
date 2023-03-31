@@ -49,13 +49,7 @@ namespace spm {
          */
         void init();
 
-        /**
-         * @brief Destructor
-         */
-        ~PacManGridMover() override;
-
     private:
-        int pacmanStateChangeId_;         //!< State chang handler id
         ime::Direction pendingDirection_; //!< Direction pacman wishes to go in without
     };
 }

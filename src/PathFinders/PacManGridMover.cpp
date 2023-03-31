@@ -31,7 +31,6 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     PacManGridMover::PacManGridMover(ime::Grid2D &grid, PacMan* pacman) :
         ime::KeyboardGridMover(grid, pacman),
-        pacmanStateChangeId_{-1},
         pendingDirection_{ime::Unknown}
     {
         assert(pacman && "Cannot create pacman's grid mover with a nullptr");
@@ -82,20 +81,5 @@ namespace spm {
 
             return false;
         });
-
-        // Move or stop pacman depending on his current state
-        pacmanStateChangeId_ = pacman->onPropertyChange("state", [this](const ime::Property& property) {
-            switch (static_cast<PacMan::State>(property.getValue<int>())) {
-                case PacMan::State::Normal:     setSpeedMultiplier(1.0f);   break;
-                case PacMan::State::Super:      setSpeedMultiplier(4.0f);   break;
-                case PacMan::State::Dying:      setSpeedMultiplier(0.0f);   break;
-            }
-        });
-    }
-
-    ///////////////////////////////////////////////////////////////
-    PacManGridMover::~PacManGridMover() {
-        if (getTarget())
-            getTarget()->removeEventListener("state", pacmanStateChangeId_);
     }
 }

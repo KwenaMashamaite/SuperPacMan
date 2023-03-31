@@ -40,6 +40,18 @@ namespace spm {
         setDirection(ime::Left);
         setState(State::Normal);
         ObjectReferenceKeeper::registerGameObject(this);
+
+        onPropertyChange("state", [this](const ime::Property& property) {
+            auto* gridMover = getGridMover();
+
+            if (gridMover) {
+                switch (static_cast<PacMan::State>(property.getValue<int>())) {
+                    case PacMan::State::Normal:     gridMover->setSpeedMultiplier(1.0f);   break;
+                    case PacMan::State::Super:      gridMover->setSpeedMultiplier(4.0f);   break;
+                    case PacMan::State::Dying:      gridMover->setSpeedMultiplier(0.0f);   break;
+                }
+            }
+        });
     }
 
     ///////////////////////////////////////////////////////////////
