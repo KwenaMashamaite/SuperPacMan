@@ -36,6 +36,7 @@
 #include <IME/ui/widgets/Label.h>
 #include <IME/ui/widgets/HorizontalLayout.h>
 #include <IME/utility/Utils.h>
+#include <IME/core/physics/grid/RandomGridMover.h>
 #include <cassert>
 
 namespace spm {
@@ -154,10 +155,22 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initMovementControllers() {
         auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
-        auto pacmanController = std::make_unique<PacManGridMover>(*grid_, pacman);
-        pacmanController->init();
-        getGridMovers().addObject(std::move(pacmanController));
 
+        auto pacmanControllerType = getCache().getValue<std::string>("PACMAN_CONTROLLER_TYPE");
+
+        if (pacmanControllerType == "keyboard") {
+            auto pacmanController = std::make_unique<PacManGridMover>(*grid_, pacman);
+            pacmanController->init();
+
+            getGridMovers().addObject(std::move(pacmanController));
+        } else if (pacmanControllerType == "computer_random") {
+            auto pacmanController = std::make_unique<ime::RandomGridMover>(*grid_, pacman);
+            pacmanController->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
+
+            getGridMovers().addObject(std::move(pacmanController));
+        }
+
+        // Ghosts controller
         getGameObjects().forEachInGroup("Ghost", [this](ime::GameObject* gameObject) {
             auto ghostMover = std::make_unique<GhostGridMover>(*grid_, static_cast<Ghost*>(gameObject));
             getGridMovers().addObject(std::move(ghostMover));
@@ -257,10 +270,10 @@ namespace spm {
             getInput().setAllInputEnable(true);
             getWindow().suspendedEventListener(onWindowCloseId_, false);
 
+            // Replace get ready text with pacman
             getGui().getWidget("lblReady")->setVisible(false);
             auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
             pacman->getSprite().setVisible(true);
-            pacman->getGridMover()->requestMove(ime::Left);
 
             if (isBonusStage_) {
                 pacman->setState(PacMan::State::Super);
@@ -285,6 +298,14 @@ namespace spm {
                 mainAudio_ = getAudio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
                 mainAudio_->setLoop(true);
             }
+
+            // Start moving pacman
+            auto pacmanControllerType = getCache().getValue<std::string>("PACMAN_CONTROLLER_TYPE");
+
+            if (pacmanControllerType == "keyboard")
+                pacman->getGridMover()->requestMove(ime::Left);
+            else if (pacmanControllerType == "computer_random")
+                dynamic_cast<ime::RandomGridMover*>(pacman->getGridMover())->startMovement();
         }));
 
         getEventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {

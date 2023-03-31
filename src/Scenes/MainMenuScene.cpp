@@ -90,17 +90,27 @@ namespace spm {
             view_->setSubView(SubView::HighScores);
         }));
 
-        // Game mode selection buttons
-        getGui().getWidget("btnPlayKeyboard")->on("click", ime::Callback<>([this] {
-            utils::resetCache(getCache());
-            getEngine().uncacheScene("GameplayScene");
-            getEngine().popScene();
-            getEngine().pushScene(std::make_unique<GameplayScene>());
-            getEngine().pushScene(std::make_unique<LevelStartScene>());
-        }));
-
         getGui().getWidget("btnQuit")->on("click", ime::Callback<>([this] {
             getEngine().quit();
+        }));
+
+        // Game mode selection buttons
+        static auto startNewGame = [](ime::Engine& engine) {
+            utils::resetCache(engine.getCache());
+            engine.uncacheScene("GameplayScene");
+            engine.popScene();
+            engine.pushScene(std::make_unique<GameplayScene>());
+            engine.pushScene(std::make_unique<LevelStartScene>());
+        };
+
+        getGui().getWidget("btnPlayKeyboard")->on("click", ime::Callback<>([this] {
+            startNewGame(getEngine());
+            getCache().setValue("PACMAN_CONTROLLER_TYPE", std::string("keyboard"));
+        }));
+
+        getGui().getWidget("btnPlayComRand")->on("click", ime::Callback<>([this] {
+            startNewGame(getEngine());
+            getCache().setValue("PACMAN_CONTROLLER_TYPE", std::string("computer_random"));
         }));
     }
 

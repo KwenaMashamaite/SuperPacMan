@@ -60,6 +60,8 @@ namespace spm {
             engine_.getCache().addProperty({"BONUS_STAGE", 3});
             engine_.getCache().addProperty({"GHOSTS_FRIGHTENED_MODE_DURATION", ime::seconds(Constants::POWER_MODE_DURATION)});
             engine_.getCache().addProperty({"PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION)});
+            engine_.getCache().addProperty({"PACMAN_CONTROLLER_TYPE", std::string("unknown")});
+
 
             // If not found, player will be prompted for name in StartUpScene
             if (engine_.getConfigs().hasPref("PLAYER_NAME"))
