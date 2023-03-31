@@ -112,6 +112,11 @@ namespace spm {
             startNewGame(getEngine());
             getCache().setValue("PACMAN_CONTROLLER_TYPE", std::string("computer_random"));
         }));
+
+        getGui().getWidget("btnPlayComSmart")->on("click", ime::Callback<>([this] {
+            startNewGame(getEngine());
+            getCache().setValue("PACMAN_CONTROLLER_TYPE", std::string("computer_smart"));
+        }));
     }
 
     void MainMenuScene::onResumeFromCache() {

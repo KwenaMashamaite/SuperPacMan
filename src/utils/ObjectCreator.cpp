@@ -43,7 +43,8 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void ObjectCreator::createObjects(Grid &grid) {
-        grid.forEachCell([&grid, slowDownSensorCount = 0](const ime::Tile& tile) mutable {
+        int keyCount = 0;
+        grid.forEachCell([&grid, &keyCount, slowDownSensorCount = 0](const ime::Tile& tile) mutable {
             ime::GridObject::Ptr gameObject;
 
             if (tile.getId() == 'X') {
@@ -62,9 +63,10 @@ namespace spm {
                         return;
                     }
                 }
-            } else if (tile.getId() == 'K')
+            } else if (tile.getId() == 'K') {
                 gameObject = std::make_unique<Key>(grid.getScene());
-            else if (tile.getId() == 'F')
+                gameObject->getUserData().addProperty({"KEY_NUMBER", ++keyCount});
+            } else if (tile.getId() == 'F')
                 gameObject = std::make_unique<Fruit>(grid.getScene());
             else if (tile.getId() == 'E')
                 gameObject = std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Power);

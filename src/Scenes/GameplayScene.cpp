@@ -30,6 +30,7 @@
 #include "Common/Constants.h"
 #include "PathFinders/GhostGridMover.h"
 #include "PathFinders/PacManGridMover.h"
+#include "PathFinders/DistanceStrategy.h"
 #include "Common/ObjectReferenceKeeper.h"
 #include "AI/ghost/ScatterState.h"
 #include <IME/core/engine/Engine.h>
@@ -37,6 +38,7 @@
 #include <IME/ui/widgets/HorizontalLayout.h>
 #include <IME/utility/Utils.h>
 #include <IME/core/physics/grid/RandomGridMover.h>
+#include <IME/core/physics/grid/TargetGridMover.h>
 #include <cassert>
 
 namespace spm {
@@ -161,12 +163,18 @@ namespace spm {
         if (pacmanControllerType == "keyboard") {
             auto pacmanController = std::make_unique<PacManGridMover>(*grid_, pacman);
             pacmanController->init();
-
             getGridMovers().addObject(std::move(pacmanController));
         } else if (pacmanControllerType == "computer_random") {
             auto pacmanController = std::make_unique<ime::RandomGridMover>(*grid_, pacman);
             pacmanController->setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
+            getGridMovers().addObject(std::move(pacmanController));
+        } else if (pacmanControllerType == "computer_smart") {
+            auto pacmanController = std::make_unique<ime::TargetGridMover>(*grid_, pacman);
+            pacmanController->setPathFinder(std::make_unique<DistanceStrategy>(true));
 
+#ifndef NDEBUG
+            pacmanController->setPathViewEnable(true);
+#endif
             getGridMovers().addObject(std::move(pacmanController));
         }
 
@@ -306,6 +314,23 @@ namespace spm {
                 pacman->getGridMover()->requestMove(ime::Left);
             else if (pacmanControllerType == "computer_random")
                 dynamic_cast<ime::RandomGridMover*>(pacman->getGridMover())->startMovement();
+            else if (pacmanControllerType == "computer_smart") {
+                auto* gridMover = dynamic_cast<ime::TargetGridMover*>(pacman->getGridMover());
+
+                // Randomly select a key and go eat it
+                ime::Vector2f targetKeyPos;
+                int randKeyNumber = ime::utility::generateRandomNum(1, getGameObjects().getGroup("Key").getCount());
+
+                getGameObjects().forEachInGroup("Key", [&](ime::GameObject* key) {
+                    int keyNum = key->getUserData().getValue<int>("KEY_NUMBER");
+
+                    if (keyNum == randKeyNumber)
+                        targetKeyPos = key->getTransform().getPosition();
+                });
+
+                gridMover->setDestination(targetKeyPos);
+                gridMover->startMovement();
+            }
         }));
 
         getEventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {
