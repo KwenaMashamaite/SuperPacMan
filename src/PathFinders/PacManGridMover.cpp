@@ -34,7 +34,6 @@ namespace spm {
         pendingDirection_{ime::Unknown}
     {
         assert(pacman && "Cannot create pacman's grid mover with a nullptr");
-        setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
         setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
     }
 

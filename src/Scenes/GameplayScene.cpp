@@ -309,6 +309,7 @@ namespace spm {
 
             // Start moving pacman
             auto pacmanControllerType = getCache().getValue<std::string>("PACMAN_CONTROLLER_TYPE");
+            pacman->getGridMover()->setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
 
             if (pacmanControllerType == "keyboard")
                 pacman->getGridMover()->requestMove(ime::Left);
