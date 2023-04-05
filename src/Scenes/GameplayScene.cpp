@@ -48,20 +48,16 @@ namespace spm {
         pointsMultiplier_{1},
         isPaused_{false},
         view_{nullptr},
-        scatterWaveLevel_{0},
-        chaseWaveLevel_{0},
         numFruitsEaten_{0},
         numPelletsEaten_{0},
         onWindowCloseId_{-1},
         isChaseMode_{false},
         starAppeared_{false},
         isBonusStage_{false},
-        collisionResponseRegisterer_{*this}
+        collisionResponseRegisterer_{*this},
+        timerManager_(*this, audioManager_)
     {
-        // IME v2.6.0 does not allow a non-repeating timer to be restarted in
-        // its timeout callback. Since this timer is used to control two states
-        // it needs to immediately start countdown when one state terminates.
-        ghostAITimer_.setLoop(true);
+
     }
 
     ///////////////////////////////////////////////////////////////
@@ -208,18 +204,14 @@ namespace spm {
 
         getGameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().startAnimation("slide");
 
-        configureTimer(starTimer_, ime::seconds(Constants::STAR_ON_SCREEN_TIME), [this] {
-            despawnStar();
-        });
-
         audioManager_.playStarSpawnedSfx();
+        timerManager_.startStarDespawnTimer();
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::despawnStar() {
         audioManager_.stopStarSpawnedSfx();
-
-        starTimer_.stop();
+        timerManager_.stopStarDespawnTimer();
 
         ime::GameObject* leftFruit = getGameObjects().findByTag("leftBonusFruit");
         ime::GameObject* rightFruit = getGameObjects().findByTag("rightBonusFruit");
@@ -258,14 +250,7 @@ namespace spm {
 
             if (isBonusStage_) {
                 pacman->setState(PacMan::State::Super);
-
-                configureTimer(bonusStageTimer_, ime::seconds(Constants::BONUS_STAGE_DURATION), [this] {
-                    getEventEmitter().emit("levelComplete");
-                });
-
-                bonusStageTimer_.onUpdate([this](ime::Timer& timer) {
-                    getGui().getWidget<ime::ui::Label>("lblRemainingTime")->setText(std::to_string(timer.getRemainingDuration().asMilliseconds()));
-                });
+                timerManager_.startBonusStageTimer();
             } else {
                 getGameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
                     auto* ghost = static_cast<Ghost*>(gameObject);
@@ -273,8 +258,8 @@ namespace spm {
                     ghost->setState(std::make_unique<ScatterState>());
                 });
 
-                startGhostHouseArrestTimer();
-                startScatterTimer();
+                timerManager_.startGhostHouseArrestTimer();
+                timerManager_.startGhostAITimer();
 
                 audioManager_.playBackgroundMusic(1);
             }
@@ -282,9 +267,12 @@ namespace spm {
 
         getEventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {
             getWindow().suspendedEventListener(onWindowCloseId_, true);
-            updateScore(bonusStageTimer_.getRemainingDuration().asMilliseconds());
+
+            if (isBonusStage_)
+                updateScore(timerManager_.getRemainingBonusStageDuration().asMilliseconds());
+
             audioManager_.stop();
-            stopAllTimers();
+            timerManager_.stopAllTimers();
             despawnStar();
             getGameObjects().getGroup("Ghost").removeAll();
 
@@ -371,131 +359,6 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::startGhostHouseArrestTimer() {
-        auto startProbationTimer = [this](const std::string& tag, float duration) {
-            auto* ghost = getGameObjects().getGroup("Ghost").findByTag<Ghost>(tag);
-            assert(ghost && "Failed to start probation timer: Invalid ghost tag");
-
-            if (!ghost->isLockedInGhostHouse())
-                return;
-
-            float probationDuration = duration - currentLevel_;
-
-            if (probationDuration <= 0)
-                ghost->setLockInGhostHouse(false);
-            else {
-                getTimer().setTimeout(ime::seconds(probationDuration), [ghost] {
-                    ghost->setLockInGhostHouse(false);
-                });
-            }
-        };
-
-        startProbationTimer("inky", Constants::INKY_HOUSE_ARREST_DURATION);
-        startProbationTimer("clyde", Constants::CLYDE_HOUSE_ARREST_DURATION);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::startScatterTimer() {
-        ghostAITimer_.stop();
-
-        configureTimer(ghostAITimer_, getScatterModeDuration(), [this] {
-            if (chaseWaveLevel_ < 4)
-                chaseWaveLevel_++;
-
-            startChaseTimer();
-        });
-
-        isChaseMode_ = false;
-        emit(GameEvent::ScatterModeBegin);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::startChaseTimer() {
-        ghostAITimer_.stop();
-
-        configureTimer(ghostAITimer_, getChaseModeDuration(), [this] {
-            if (scatterWaveLevel_ < 4)
-                scatterWaveLevel_++;
-
-            startScatterTimer();
-        });
-
-        isChaseMode_ = true;
-        emit(GameEvent::ChaseModeBegin);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    ime::Time GameplayScene::getScatterModeDuration() const {
-        if (scatterWaveLevel_ <= 2) {
-            if (currentLevel_ < 5)
-                return ime::seconds(7.0f);
-            else
-                return ime::seconds(5.0f);
-        } else if (scatterWaveLevel_ == 3)
-            return ime::seconds(5);
-        else {
-            if (currentLevel_ == 1)
-                return ime::seconds(5.0f);
-            else
-                return ime::seconds(1.0f / getWindow().getFrameRateLimit()); // one frame
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    ime::Time GameplayScene::getChaseModeDuration() const {
-        if (chaseWaveLevel_ <= 2)
-            return ime::seconds(20.0f);
-        else if (chaseWaveLevel_ == 3) {
-            if (currentLevel_ == 1)
-                return ime::seconds(20.0f);
-            else
-                return ime::minutes(17);
-        } else
-            return ime::hours(24);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    ime::Time GameplayScene::getFrightenedModeDuration() {
-        auto duration = getCache().getValue<ime::Time>("GHOSTS_FRIGHTENED_MODE_DURATION");
-
-        if (duration < ime::Time::Zero)
-            return ime::Time::Zero;
-
-        return duration;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    ime::Time GameplayScene::getSuperModeDuration() {
-        auto duration = getCache().getValue<ime::Time>("PACMAN_SUPER_MODE_DURATION");
-
-        if (duration <= ime::Time::Zero)
-            return ime::seconds(2.0f);
-        else
-            return duration;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::pauseGhostAITimer() {
-        if (ghostAITimer_.isRunning())
-            ghostAITimer_.pause();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::resumeGhostAITimer() {
-        if (ghostAITimer_.isPaused())
-            ghostAITimer_.resume();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::stopAllTimers() {
-        ghostAITimer_.stop();
-        superModeTimer_.stop();
-        powerModeTimer_.stop();
-        starTimer_.stop();
-        bonusStageTimer_.stop();
-    }
-
-    ///////////////////////////////////////////////////////////////
     void GameplayScene::resetActors() {
         auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
         pacman->setState(PacMan::State::Normal);
@@ -530,18 +393,11 @@ namespace spm {
         getGameObjects().forEachInGroup("Ghost", [event, &args](ime::GameObject* ghost) {
             static_cast<Ghost*>(ghost)->handleEvent(event, args);
         });
-    }
 
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::configureTimer(ime::Timer &timer, ime::Time duration, ime::Callback<> timeoutCallback) {
-        if (timer.isRunning())
-            timer.setInterval(timer.getRemainingDuration() + duration);
-        else {
-            assert(timeoutCallback);
-            timer.setInterval(duration);
-            timer.onTimeout(timeoutCallback);
-            timer.start();
-        }
+        if (event == GameEvent::ChaseModeBegin)
+            isChaseMode_ = true;
+        else if (event == GameEvent::ScatterModeBegin)
+            isChaseMode_ = false;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -573,7 +429,7 @@ namespace spm {
     void GameplayScene::resetLevel() {
         despawnStar();
         audioManager_.stop();
-        stopAllTimers();
+        timerManager_.stopAllTimers();
         resetActors();
         initLevelStartCountdown();
     }
@@ -597,11 +453,11 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::updatePacmanFlashAnimation() {
-        if (superModeTimer_.isRunning()) {
+        if (timerManager_.isSuperMode()) {
             auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
-            if (!pacman->isFlashing() && superModeTimer_.getRemainingDuration() <= flashAnimCutoffTime)
+            if (!pacman->isFlashing() && timerManager_.getRemainingSuperModeDuration() <= flashAnimCutoffTime)
                 pacman->setFlash(true);
-            else if (pacman->isFlashing() && superModeTimer_.getRemainingDuration() > flashAnimCutoffTime)
+            else if (pacman->isFlashing() && timerManager_.getRemainingSuperModeDuration() > flashAnimCutoffTime)
             {
                 pacman->setFlash(false);
             }
@@ -610,12 +466,12 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::updateGhostsFlashAnimation() {
-        if (powerModeTimer_.isRunning()) {
+        if (timerManager_.isPowerMode()) {
             getGameObjects().forEachInGroup("Ghost", [this](ime::GameObject* gameObject) {
                 auto* ghost = static_cast<Ghost*>(gameObject);
-                if (!ghost->isFlashing() && powerModeTimer_.getRemainingDuration() <= flashAnimCutoffTime)
+                if (!ghost->isFlashing() && timerManager_.getRemainingPowerModeDuration() <= flashAnimCutoffTime)
                     ghost->setFlash(true);
-                else if (ghost->isFlashing() && powerModeTimer_.getRemainingDuration() > flashAnimCutoffTime)
+                else if (ghost->isFlashing() && timerManager_.getRemainingPowerModeDuration() > flashAnimCutoffTime)
                     ghost->setFlash(false);
             });
         }
@@ -625,11 +481,7 @@ namespace spm {
     void GameplayScene::onUpdate(ime::Time deltaTime) {
         view_->update(deltaTime);
         grid_->update(deltaTime);
-        ghostAITimer_.update(deltaTime);
-        superModeTimer_.update(deltaTime);
-        powerModeTimer_.update(deltaTime);
-        starTimer_.update(deltaTime);
-        bonusStageTimer_.update(deltaTime);
+        timerManager_.update(deltaTime);
         updatePacmanFlashAnimation();
         updateGhostsFlashAnimation();
     }

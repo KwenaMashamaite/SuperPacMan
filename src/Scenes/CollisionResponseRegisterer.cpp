@@ -38,6 +38,7 @@ namespace spm {
     CollisionResponseRegisterer::CollisionResponseRegisterer(GameplayScene &game) : game_{game}
     {
         audioManager_ = &game.audioManager_;
+        timerManager_ = &game.timerManager_;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -124,29 +125,16 @@ namespace spm {
         if (pellet->getClassName() == "Pellet" && pellet->getTag() == "power") {
             pellet->setActive(false);
 
-            game_.pauseGhostAITimer();
+            timerManager_->pauseGhostAITimer();
             game_.updateScore(Constants::Points::POWER_PELLET);
 
             if (!game_.isBonusStage_) {
                 audioManager_->stopBackgroundMusic();
                 audioManager_->playBackgroundMusic(2);
-
-                game_.configureTimer(game_.powerModeTimer_, game_.getFrightenedModeDuration(), [this] {
-                    game_.pointsMultiplier_ = 1;
-
-                    if (!game_.superModeTimer_.isRunning())
-                        game_.resumeGhostAITimer();
-
-                    game_.emit(GameEvent::FrightenedModeEnd);
-
-                    audioManager_->stop();
-                    audioManager_->playBackgroundMusic(1);
-                });
+                timerManager_->startPowerModeTimeout();
             }
 
-            // Extend super mode duration by power mode duration
-            if (game_.superModeTimer_.isRunning())
-                game_.superModeTimer_.setInterval(game_.superModeTimer_.getRemainingDuration() + game_.getFrightenedModeDuration());
+            timerManager_->extendSuperModeDuration();
 
             game_.numPelletsEaten_++;
             audioManager_->playPowerPelletEatenSfx();
@@ -159,15 +147,12 @@ namespace spm {
         if (pellet->getClassName() == "Pellet" && pellet->getTag() == "super") {
             pellet->setActive(false);
 
-            game_.pauseGhostAITimer();
+            timerManager_->pauseGhostAITimer();
             game_.updateScore(Constants::Points::SUPER_PELLET);
 
-            if (!game_.isBonusStage_) {
-                game_.configureTimer(game_.superModeTimer_, game_.getSuperModeDuration(), [this] {
-                    game_.emit(GameEvent::SuperModeEnd);
-                    game_.resumeGhostAITimer();
-                });
-            }
+            // Pacman remains in super mode the entire bonus stage
+            if (!game_.isBonusStage_)
+                timerManager_->startSuperModeTimeout();
 
             game_.numPelletsEaten_++;
             audioManager_->playSuperPelletEatenSfx();
@@ -184,7 +169,7 @@ namespace spm {
 
             game_.despawnStar();
             audioManager_->stop();
-            game_.stopAllTimers();
+            timerManager_->stopAllTimers();
             game_.getInput().setAllInputEnable(false);
 
             auto pac = static_cast<PacMan*>(pacman);
@@ -215,10 +200,8 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void CollisionResponseRegisterer::resolveGhostCollision(ime::GridObject *ghost, ime::GridObject *otherGameObject) {
         if (ghost->getClassName() == "Ghost" && static_cast<Ghost*>(ghost)->getState() == Ghost::State::Frightened) {
-            game_.powerModeTimer_.pause();
-
-            if (game_.superModeTimer_.isRunning())
-                game_.superModeTimer_.pause();
+            timerManager_->pausePowerModeTimeout();
+            timerManager_->pauseSuperModeTimeout();
 
             setMovementFreeze(true);
             game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
@@ -230,11 +213,12 @@ namespace spm {
                 setMovementFreeze(false);
                 otherGameObject->getSprite().setVisible(true);
 
-                if (game_.superModeTimer_.isPaused())
-                    game_.superModeTimer_.resume();
+                timerManager_->resumeSuperModeTimeout();
 
                 static_cast<Ghost*>(ghost)->setState(std::make_unique<EatenState>(game_.isChaseMode_ ? Ghost::State::Chase : Ghost::State::Scatter));
 
+                // Its possible for the player to eat all the ghosts before the power mode timeout expires,
+                // in that case we force the power mode to terminate early
                 bool isSomeGhostsBlue = false;
                 game_.getGameObjects().forEachInGroup("Ghost", [&isSomeGhostsBlue](ime::GameObject* ghost) {
                     if (static_cast<Ghost*>(ghost)->getState() == Ghost::State::Frightened)
@@ -242,9 +226,9 @@ namespace spm {
                 });
 
                 if (isSomeGhostsBlue)
-                    game_.powerModeTimer_.resume();
+                    timerManager_->resumePowerModeTimeout();
                 else
-                    game_.powerModeTimer_.forceTimeout();
+                    timerManager_->forcePowerModeTimeout();
             });
 
             audioManager_->pauseBackgroundMusic();
@@ -255,19 +239,8 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void CollisionResponseRegisterer::resolveStarCollision(ime::GridObject *star, ime::GridObject *otherGameObject) {
         if (star->getClassName() == "Star") {
-            game_.starTimer_.stop();
-
-            if (game_.ghostAITimer_.isRunning())
-                game_.ghostAITimer_.pause();
-
-            if (game_.powerModeTimer_.isRunning())
-                game_.powerModeTimer_.pause();
-
-            if (game_.superModeTimer_.isRunning())
-                game_.superModeTimer_.pause();
-
-            if (game_.bonusStageTimer_.isRunning())
-                game_.bonusStageTimer_.pause();
+            timerManager_->stopStarDespawnTimer();
+            timerManager_->pauseAllTimers();
 
             setMovementFreeze(true);
             star->getSprite().getAnimator().stop();
@@ -313,17 +286,7 @@ namespace spm {
                 if (!game_.isBonusStage_)
                     audioManager_->resumeBackgroundMusic();
 
-                if (game_.ghostAITimer_.isPaused())
-                    game_.ghostAITimer_.resume();
-
-                if (game_.powerModeTimer_.isPaused())
-                    game_.powerModeTimer_.resume();
-
-                if (game_.superModeTimer_.isPaused())
-                    game_.superModeTimer_.resume();
-
-                if (game_.bonusStageTimer_.isPaused())
-                    game_.bonusStageTimer_.resume();
+                timerManager_->resumeAllTimers();
             });
         }
     }

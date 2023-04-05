@@ -27,6 +27,7 @@
 
 #include <IME/core/object/GridObject.h>
 #include "Managers/AudioManager.h"
+#include "Managers/TimerManager.h"
 
 namespace spm {
     class GameplayScene;
@@ -189,6 +190,7 @@ namespace spm {
     private:
         GameplayScene& game_;
         AudioManager* audioManager_;
+        TimerManager* timerManager_;
     };
 }
 

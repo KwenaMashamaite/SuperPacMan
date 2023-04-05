@@ -43,7 +43,8 @@ set(SRC_FILES
         views/StartUpSceneView.cpp
         Views/PauseMenuSceneView.cpp
         Views/GameOverSceneView.cpp
-        Managers/AudioManager.cpp)
+        Managers/AudioManager.cpp
+        Managers/TimerManager.cpp)
 
 # Resource script files
 set(RES_FILES

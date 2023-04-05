@@ -30,6 +30,7 @@
 #include "Grid.h"
 #include "Views/CommonView.h"
 #include "CollisionResponseRegisterer.h"
+#include "Managers/TimerManager.h"
 
 namespace spm {
     /**
@@ -102,9 +103,24 @@ namespace spm {
         void onFrameEnd() override;
 
         /**
+         * @brief Emit a game event
+         * @param event The event to be emitted
+         */
+        void emit(GameEvent event);
+
+        int getLevel() const {return currentLevel_; }
+
+        /**
+         * @brief Despawn a star
+         */
+        void despawnStar();
+
+        /**
          * @brief Destructor
          */
         ~GameplayScene();
+
+        int pointsMultiplier_;
 
     private:
         /**
@@ -165,34 +181,9 @@ namespace spm {
         void initLevelStartCountdown();
 
         /**
-         * @brief Start the ghost house probation counter
-         *
-         * Initially, three of the four ghosts are locked inside the ghost
-         * house indefinitely. This timer controls when each ghost can leave
-         * the ghost house and enter the maze. The probation period is
-         * different for each ghost and decreases as the game level increases.
-         * If the probation period is zero the ghost is freed immediately
-         */
-        void startGhostHouseArrestTimer();
-
-        /**
          * @brief Reset pacman and the ghosts to their respective spawm tiles
          */
         void resetActors();
-
-        /**
-         * @brief Emit a game event
-         * @param event The event to be emitted
-         */
-        void emit(GameEvent event);
-
-        /**
-         * @brief Emit a game event after the timer expires
-         * @param timer The timer to configure
-         * @param duration How long the timer runs before it expires
-         * @param timeoutCallback The function to execute when the timer expires
-         */
-        void configureTimer(ime::Timer& timer, ime::Time duration, ime::Callback<> timeoutCallback);
 
         /**
          * @brief Transition game to pause menu
@@ -246,80 +237,18 @@ namespace spm {
         void spawnStar();
 
         /**
-         * @brief Despawn a star
-         */
-        void despawnStar();
-
-        /**
          * @brief End the gameplay
          *
          * This function is called when the player loses all lives
          */
         void endGameplay();
 
-        /**
-         * @brief Start the ghost scatter mode timer
-         */
-        void startScatterTimer();
-
-        /**
-         * @brief Start the ghost chase mode timer
-         */
-        void startChaseTimer();
-
-        /**
-         * @brief Get the duration of the ghosts scatter mode
-         * @return Scatter mode duration
-         */
-        ime::Time getScatterModeDuration() const;
-
-        /**
-         * @brief Get the duration of the ghosts chase mode
-         * @return Chase mode duration
-         */
-        ime::Time getChaseModeDuration() const;
-
-        /**
-         * @brief Get the ghosts frightened mode duration
-         * @return Frightened mode duration
-         */
-        ime::Time getFrightenedModeDuration();
-
-        /**
-         * @brief Get pacmans super mode duration
-         * @return Pacman super mode duration
-         */
-        ime::Time getSuperModeDuration();
-
-        /**
-         * @brief Pause the scatter-chase transition timer
-         */
-        void pauseGhostAITimer();
-
-        /**
-         * @brief Resume the scatter-chase transition timer
-         */
-        void resumeGhostAITimer();
-
-        /**
-         * @brief Stop all timers
-         */
-        void stopAllTimers();
-
     private:
         int currentLevel_;              //!< Current game level
-        int pointsMultiplier_;          //!< Ghost points multiplier when player eats ghosts in succession (in one power mode session)
         bool isPaused_;                 //!< A flag indicating whether or not the game is paused
         CommonView* view_;               //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_;    //!< Gameplay grid view
-        ime::Timer ghostAITimer_;       //!< Scatter-chase state transition timer
-        ime::Timer superModeTimer_;     //!< Pacman Super mode duration counter
-        ime::Timer powerModeTimer_;     //!< Energizer mode duration counter
-        ime::Timer starTimer_;          //!< Star appearance timer
-        ime::Timer bonusStageTimer_;    //!< Bonus stage counter
         AudioManager audioManager_;     //!< Games audio manager
-        unsigned int scatterWaveLevel_; //!< The current scatter mode level (up to 4 levels)
-        unsigned int chaseWaveLevel_;   //!< The current chase mode level (up to 5 levels)
         unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
         unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
         int onWindowCloseId_;           //!< The id number of the 'onClose' event handler
@@ -327,6 +256,7 @@ namespace spm {
         bool starAppeared_;             //!< A flag indicatinig whether or not a star has already been spawned
         bool isBonusStage_;             //!< A counter indicating whether or not the current level is a bonus stage
         CollisionResponseRegisterer collisionResponseRegisterer_;
+        TimerManager timerManager_;
 
         friend class CollisionResponseRegisterer;
     };
