@@ -31,6 +31,7 @@
 #include "Views/CommonView.h"
 #include "CollisionResponseRegisterer.h"
 #include "Managers/TimerManager.h"
+#include "Managers/GameObjectsManager.h"
 
 namespace spm {
     /**
@@ -111,17 +112,13 @@ namespace spm {
         int getLevel() const {return currentLevel_; }
 
         /**
-         * @brief Despawn a star
-         */
-        void despawnStar();
-
-        /**
          * @brief Destructor
          */
         ~GameplayScene();
 
         int pointsMultiplier_;
 
+        GameObjectsManager gameObjectsManager_;
     private:
         /**
          * @brief Initialize the gui
@@ -132,11 +129,6 @@ namespace spm {
          * @brief Create the gameplay grid
          */
         void initGrid();
-
-        /**
-         * @brief Add actors to the grid
-         */
-        void initGameObjects();
 
         /**
          * @brief Create movement controllers for pacman and ghosts
@@ -201,26 +193,6 @@ namespace spm {
         void resetLevel();
 
         /**
-         * @brief Make pacman flash or stop flashing
-         *
-         * @attention Ideally this implementation should be in @a spm::PacMan::update,
-         * However, the @a PacMan class has no knowledge of how long the super
-         * mode timer has been running. It only knows when the timer starts
-         * counting down and when it expires
-         */
-        void updatePacmanFlashAnimation();
-
-        /**
-         * @brief Make ghosts flash or stop flashing
-         *
-         * @attention Ideally, this implementation should be in @a spm::FrightenedState
-         * class, however, the class has no knowledge of how long the power
-         * mode timer has been running. It only knows when the timer starts
-         * counting down and when it expires
-         */
-        void updateGhostsFlashAnimation();
-
-        /**
          * @brief Update the ghost point multiplier
          *
          * The multiplier increases by a factor of 2 every time the player
@@ -230,11 +202,6 @@ namespace spm {
          * to 1 (default). It also resets to 1 when power mode expires
          */
         void updatePointsMultiplier();
-
-        /**
-         * @brief Spawn a start game object
-         */
-        void spawnStar();
 
         /**
          * @brief End the gameplay
@@ -259,6 +226,7 @@ namespace spm {
         TimerManager timerManager_;
 
         friend class CollisionResponseRegisterer;
+        friend class GameObjectsManager;
     };
 }
 

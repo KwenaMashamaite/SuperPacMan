@@ -192,7 +192,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startStarDespawnTimer() {
         configureTimer(starDespawnTimer_, ime::seconds(Constants::STAR_ON_SCREEN_TIME), [this] {
-            gameplayScene_.despawnStar();
+            gameplayScene_.gameObjectsManager_.despawnStar();
         });
     }
 

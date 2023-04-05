@@ -40,9 +40,6 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    auto static flashAnimCutoffTime = ime::seconds(2);
-
-    ///////////////////////////////////////////////////////////////
     GameplayScene::GameplayScene() :
         currentLevel_{-1},
         pointsMultiplier_{1},
@@ -55,7 +52,8 @@ namespace spm {
         starAppeared_{false},
         isBonusStage_{false},
         collisionResponseRegisterer_{*this},
-        timerManager_(*this, audioManager_)
+        timerManager_(*this, audioManager_),
+        gameObjectsManager_(*this)
     {
 
     }
@@ -75,7 +73,7 @@ namespace spm {
 
         initGui();
         initGrid();
-        initGameObjects();
+        gameObjectsManager_.initGameObjects();
         initMovementControllers();
         initSceneLevelEvents();
         initEngineLevelEvents();
@@ -107,42 +105,6 @@ namespace spm {
         grid_ = std::make_unique<Grid>(getGrid());
         grid_->create(currentLevel_);
         grid_->init();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::initGameObjects() {
-        std::vector<ime::Index> keyIndexes;
-        grid_->forEachGameObject([this, &keyIndexes](ime::GameObject* gameObject) {
-            if (gameObject->getClassName() == "PacMan")
-                static_cast<PacMan*>(gameObject)->setLivesCount(getCache().getValue<int>("PLAYER_LIVES"));
-            else if (gameObject->getClassName() == "Door")
-                static_cast<Door*>(gameObject)->lock();
-            else if (gameObject->getClassName() == "Fruit")
-                gameObject->setTag(utils::getFruitName(currentLevel_));
-            else if (gameObject->getClassName() == "Ghost") {
-                if (isBonusStage_)
-                    gameObject->setActive(false);
-                else if (gameObject->getTag() == "inky" || gameObject->getTag() == "clyde")
-                    static_cast<Ghost *>(gameObject)->setLockInGhostHouse(true);
-            } else if (gameObject->getClassName() == "Key") {
-                keyIndexes.push_back(getGrid().getTile(gameObject->getTransform().getPosition()).getIndex());
-            }
-        });
-
-        if (currentLevel_ >= Constants::RANDOM_KEY_POS_LEVEL) { // Randomise key positions to break pattern
-            auto static randomEngine = std::default_random_engine{std::random_device{}()};
-
-            // Seed engine with current level to ensure the randomly placed keys open the same doors on each game run
-            randomEngine.seed(currentLevel_);
-
-            std::shuffle(keyIndexes.begin(), keyIndexes.end(), randomEngine);
-
-            getGameObjects().forEachInGroup("Key", [this, index = 0, &keyIndexes](ime::GameObject* keyBase) mutable {
-                auto* key = static_cast<ime::GridObject*>(keyBase);
-                grid_->removeGameObject(key);
-                grid_->addGameObject(key, keyIndexes[index++]);
-            });
-        }
     }
 
     ///////////////////////////////////////////////////////////////
@@ -187,45 +149,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::spawnStar() {
-        ime::GridObject::Ptr star = std::make_unique<Star>(*this);
-        grid_->addGameObject(std::move(star), ime::Index{15, 13});
-
-        ime::GameObject* leftFruit = getGameObjects().findByTag("leftBonusFruit");
-        int numFrames = leftFruit->getSprite().getAnimator().getAnimation("slide")->getFrameCount();
-        auto* anim = leftFruit->getSprite().getAnimator().getAnimation("slide").get();
-        int stopFrame = ime::utility::generateRandomNum(0, numFrames - 1);
-        leftFruit->getSprite().getAnimator().getAnimation("slide")->onFrameSwitch([anim, stopFrame](ime::AnimationFrame* frame) {
-            if (frame->getIndex() == stopFrame)
-                anim->setPlaybackSpeed(0.0f);
-        });
-
-        leftFruit->getSprite().getAnimator().startAnimation("slide");
-
-        getGameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().startAnimation("slide");
-
-        audioManager_.playStarSpawnedSfx();
-        timerManager_.startStarDespawnTimer();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::despawnStar() {
-        audioManager_.stopStarSpawnedSfx();
-        timerManager_.stopStarDespawnTimer();
-
-        ime::GameObject* leftFruit = getGameObjects().findByTag("leftBonusFruit");
-        ime::GameObject* rightFruit = getGameObjects().findByTag("rightBonusFruit");
-        leftFruit->getSprite().getAnimator().stop();
-        rightFruit->getSprite().getAnimator().stop();
-        leftFruit->getSprite().setVisible(false);
-        rightFruit->getSprite().setVisible(false);
-
-        getGameObjects().removeByTag("star");
-    }
-
-    ///////////////////////////////////////////////////////////////
     void GameplayScene::endGameplay() {
-        despawnStar();
+        gameObjectsManager_.despawnStar();
         setVisibleOnPause(true);
         audioManager_.setVolume(0);
         getGui().setOpacity(0.0f);
@@ -273,7 +198,7 @@ namespace spm {
 
             audioManager_.stop();
             timerManager_.stopAllTimers();
-            despawnStar();
+            gameObjectsManager_.despawnStar();
             getGameObjects().getGroup("Ghost").removeAll();
 
             auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
@@ -360,28 +285,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::resetActors() {
-        auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
-        pacman->setState(PacMan::State::Normal);
-        pacman->setDirection(ime::Left);
-        grid_->removeGameObject(pacman);
-        grid_->addGameObject(pacman, Constants::PacManSpawnTile);
-
-        getGameObjects().forEachInGroup("Ghost", [this](ime::GameObject* ghostBase) {
-            auto* ghost = static_cast<ime::GridObject*>(ghostBase);
-            grid_->removeGameObject(ghost);
-
-            if (ghost->getTag() == "blinky")
-                grid_->addGameObject(ghost, Constants::BlinkySpawnTile);
-            else if (ghost->getTag() == "pinky")
-                grid_->addGameObject(ghost, Constants::PinkySpawnTile);
-            else if (ghost->getTag() == "inky")
-                grid_->addGameObject(ghost, Constants::InkySpawnTile);
-            else
-                grid_->addGameObject(ghost, Constants::ClydeSpawnTile);
-
-            ghost->getSprite().setVisible(true);
-        });
-
+        gameObjectsManager_.resetMovableGameObjects();
         getGridMovers().removeAll();
         initMovementControllers();
     }
@@ -427,7 +331,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::resetLevel() {
-        despawnStar();
+        gameObjectsManager_.despawnStar();
         audioManager_.stop();
         timerManager_.stopAllTimers();
         resetActors();
@@ -452,38 +356,11 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::updatePacmanFlashAnimation() {
-        if (timerManager_.isSuperMode()) {
-            auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
-            if (!pacman->isFlashing() && timerManager_.getRemainingSuperModeDuration() <= flashAnimCutoffTime)
-                pacman->setFlash(true);
-            else if (pacman->isFlashing() && timerManager_.getRemainingSuperModeDuration() > flashAnimCutoffTime)
-            {
-                pacman->setFlash(false);
-            }
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::updateGhostsFlashAnimation() {
-        if (timerManager_.isPowerMode()) {
-            getGameObjects().forEachInGroup("Ghost", [this](ime::GameObject* gameObject) {
-                auto* ghost = static_cast<Ghost*>(gameObject);
-                if (!ghost->isFlashing() && timerManager_.getRemainingPowerModeDuration() <= flashAnimCutoffTime)
-                    ghost->setFlash(true);
-                else if (ghost->isFlashing() && timerManager_.getRemainingPowerModeDuration() > flashAnimCutoffTime)
-                    ghost->setFlash(false);
-            });
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
     void GameplayScene::onUpdate(ime::Time deltaTime) {
         view_->update(deltaTime);
         grid_->update(deltaTime);
         timerManager_.update(deltaTime);
-        updatePacmanFlashAnimation();
-        updateGhostsFlashAnimation();
+        gameObjectsManager_.update();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -494,13 +371,11 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onFrameEnd() {
-        getGameObjects().removeIf([](const ime::GameObject* actor) {
-            return !actor->isActive();
-        });
+        gameObjectsManager_.destroyInactiveObjects();
 
         if (!starAppeared_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)) {
             starAppeared_ = true;
-            spawnStar();
+            gameObjectsManager_.spawnStar();
         }
 
         if ((getGameObjects().getGroup("Pellet").getCount() == 0) &&

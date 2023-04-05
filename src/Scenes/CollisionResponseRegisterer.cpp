@@ -167,7 +167,7 @@ namespace spm {
             if (ghost && (ghost->getState() == Ghost::State::Frightened || ghost->getState() == Ghost::State::Eaten))
                 return;
 
-            game_.despawnStar();
+            game_.gameObjectsManager_.despawnStar();
             audioManager_->stop();
             timerManager_->stopAllTimers();
             game_.getInput().setAllInputEnable(false);
@@ -281,7 +281,7 @@ namespace spm {
             game_.getTimer().setTimeout(freezeDuration, [this, otherGameObject] {
                 setMovementFreeze(false);
                 otherGameObject->getSprite().setVisible(true);
-                game_.despawnStar();
+                game_.gameObjectsManager_.despawnStar();
 
                 if (!game_.isBonusStage_)
                     audioManager_->resumeBackgroundMusic();
