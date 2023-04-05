@@ -48,8 +48,6 @@ namespace spm {
         pointsMultiplier_{1},
         isPaused_{false},
         view_{nullptr},
-        mainAudio_{nullptr},
-        starSpawnSfx_{nullptr},
         scatterWaveLevel_{0},
         chaseWaveLevel_{0},
         numFruitsEaten_{0},
@@ -68,7 +66,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onEnter() {
-        getAudio().setMasterVolume(getCache().getValue<float>("MASTER_VOLUME"));
+        audioManager_.setVolume(getCache().getValue<float>("MASTER_VOLUME"));
         currentLevel_ = getCache().getValue<int>("CURRENT_LEVEL");
 
         if (currentLevel_ == getCache().getValue<int>("BONUS_STAGE")) {
@@ -214,16 +212,12 @@ namespace spm {
             despawnStar();
         });
 
-        starSpawnSfx_ = getAudio().play(ime::audio::Type::Sfx, "starSpawned.wav");
-        starSpawnSfx_->setLoop(true);
+        audioManager_.playStarSpawnedSfx();
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::despawnStar() {
-        if (starSpawnSfx_) {
-            starSpawnSfx_->stop();
-            starSpawnSfx_ = nullptr;
-        }
+        audioManager_.stopStarSpawnedSfx();
 
         starTimer_.stop();
 
@@ -241,7 +235,7 @@ namespace spm {
     void GameplayScene::endGameplay() {
         despawnStar();
         setVisibleOnPause(true);
-        getAudio().setMute(true);
+        audioManager_.setVolume(0);
         getGui().setOpacity(0.0f);
         getEngine().pushScene(std::make_unique<GameOverScene>());
     }
@@ -282,15 +276,14 @@ namespace spm {
                 startGhostHouseArrestTimer();
                 startScatterTimer();
 
-                mainAudio_ = getAudio().play(ime::audio::Type::Sfx, "wieu_wieu_slow.ogg");
-                mainAudio_->setLoop(true);
+                audioManager_.playBackgroundMusic(1);
             }
         }));
 
         getEventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {
             getWindow().suspendedEventListener(onWindowCloseId_, true);
             updateScore(bonusStageTimer_.getRemainingDuration().asMilliseconds());
-            getAudio().stopAll();
+            audioManager_.stop();
             stopAllTimers();
             despawnStar();
             getGameObjects().getGroup("Ghost").removeAll();
@@ -317,7 +310,7 @@ namespace spm {
                     }
                 });
 
-                getAudio().play(ime::audio::Type::Sfx, "levelComplete.ogg");
+                audioManager_.playLevelCompleteSfx();
             });
         }));
 
@@ -360,7 +353,7 @@ namespace spm {
             getCache().setValue("PLAYER_LIVES", pacman->getLivesCount());
             view_->addLife();
 
-            getAudio().play(ime::audio::Type::Sfx, "extraLife.wav");
+            audioManager_.playOneUpSfx();
         }
     }
 
@@ -557,7 +550,7 @@ namespace spm {
             return;
 
         isPaused_ = true;
-        getAudio().pauseAll();
+        audioManager_.pause();
         setVisibleOnPause(true);
         getEngine().pushCachedScene("PauseMenuScene");
     }
@@ -568,8 +561,8 @@ namespace spm {
 
         if (isPaused_) {
             isPaused_ = false;
-            getAudio().setMasterVolume(getCache().getValue<float>("MASTER_VOLUME"));
-            getAudio().playAll();
+            audioManager_.setVolume(getCache().getValue<float>("MASTER_VOLUME"));
+            audioManager_.resume();
         } else
             resetLevel();
 
@@ -579,7 +572,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::resetLevel() {
         despawnStar();
-        getAudio().stopAll();
+        audioManager_.stop();
         stopAllTimers();
         resetActors();
         initLevelStartCountdown();
@@ -587,7 +580,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onPause() {
-        getAudio().pauseAll();
+        audioManager_.pause();
         getWindow().suspendedEventListener(onWindowCloseId_, true);
     }
 

@@ -26,6 +26,7 @@
 #define SUPERPACMAN_COLLISIONRESPONSEREGISTRE_H
 
 #include <IME/core/object/GridObject.h>
+#include "Managers/AudioManager.h"
 
 namespace spm {
     class GameplayScene;
@@ -187,6 +188,7 @@ namespace spm {
 
     private:
         GameplayScene& game_;
+        AudioManager* audioManager_;
     };
 }
 

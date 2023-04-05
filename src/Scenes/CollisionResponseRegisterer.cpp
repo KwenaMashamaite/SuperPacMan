@@ -36,7 +36,9 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     CollisionResponseRegisterer::CollisionResponseRegisterer(GameplayScene &game) : game_{game}
-    {}
+    {
+        audioManager_ = &game.audioManager_;
+    }
 
     ///////////////////////////////////////////////////////////////
     void CollisionResponseRegisterer::registerCollisionWithFruit(ime::GridObject *gameObject) {
@@ -96,7 +98,7 @@ namespace spm {
         fruit->setActive(false);
         game_.updateScore(Constants::Points::FRUIT * game_.currentLevel_);
         game_.numFruitsEaten_++;
-        game_.getAudio().play(ime::audio::Type::Sfx, "WakkaWakka.wav");
+        audioManager_->playFruitEatenSfx();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -113,7 +115,7 @@ namespace spm {
 
             key->setActive(false);
             game_.updateScore(Constants::Points::KEY);
-            game_.getAudio().play(ime::audio::Type::Sfx, "keyEaten.wav");
+            audioManager_->playKeyEatenSfx();
         }
     }
 
@@ -126,9 +128,8 @@ namespace spm {
             game_.updateScore(Constants::Points::POWER_PELLET);
 
             if (!game_.isBonusStage_) {
-                game_.mainAudio_->stop();
-                game_.mainAudio_->setSource("ghostsTurnedBlue.wav");
-                game_.mainAudio_->play();
+                audioManager_->stopBackgroundMusic();
+                audioManager_->playBackgroundMusic(2);
 
                 game_.configureTimer(game_.powerModeTimer_, game_.getFrightenedModeDuration(), [this] {
                     game_.pointsMultiplier_ = 1;
@@ -138,9 +139,8 @@ namespace spm {
 
                     game_.emit(GameEvent::FrightenedModeEnd);
 
-                    game_.mainAudio_->stop();
-                    game_.mainAudio_->setSource("wieu_wieu_slow.ogg");
-                    game_.mainAudio_->play();
+                    audioManager_->stop();
+                    audioManager_->playBackgroundMusic(1);
                 });
             }
 
@@ -149,7 +149,7 @@ namespace spm {
                 game_.superModeTimer_.setInterval(game_.superModeTimer_.getRemainingDuration() + game_.getFrightenedModeDuration());
 
             game_.numPelletsEaten_++;
-            game_.getAudio().play(ime::audio::Type::Sfx, "powerPelletEaten.wav");
+            audioManager_->playPowerPelletEatenSfx();
             game_.emit(GameEvent::FrightenedModeBegin);
         }
     }
@@ -170,7 +170,7 @@ namespace spm {
             }
 
             game_.numPelletsEaten_++;
-            game_.getAudio().play(ime::audio::Type::Sfx, "superPelletEaten.wav");
+            audioManager_->playSuperPelletEatenSfx();
             game_.emit(GameEvent::SuperModeBegin);
         }
     }
@@ -183,7 +183,7 @@ namespace spm {
                 return;
 
             game_.despawnStar();
-            game_.getAudio().stopAll();
+            audioManager_->stop();
             game_.stopAllTimers();
             game_.getInput().setAllInputEnable(false);
 
@@ -208,7 +208,7 @@ namespace spm {
                     game_.getEngine().pushScene(std::make_unique<LevelStartScene>());
             });
 
-            game_.getAudio().play(ime::audio::Type::Sfx, "pacmanDying.wav");
+            audioManager_->playPacmanDyingSfx();
         }
     }
 
@@ -226,7 +226,7 @@ namespace spm {
             game_.updatePointsMultiplier();
 
             game_.getTimer().setTimeout(ime::seconds(1), [=] {
-                game_.mainAudio_->play();
+                audioManager_->playBackgroundMusic(1);
                 setMovementFreeze(false);
                 otherGameObject->getSprite().setVisible(true);
 
@@ -247,8 +247,8 @@ namespace spm {
                     game_.powerModeTimer_.forceTimeout();
             });
 
-            game_.mainAudio_->pause();
-            game_.getAudio().play(ime::audio::Type::Sfx, "ghostEaten.wav");
+            audioManager_->pauseBackgroundMusic();
+            audioManager_->playGhostEatenSfx();
         }
     }
 
@@ -290,23 +290,20 @@ namespace spm {
 
                 star->resetSpriteOrigin();
                 freezeDuration = ime::seconds(3.3);
-                game_.getAudio().play(ime::audio::Type::Sfx, "bonusFruitMatch.wav");
+                audioManager_->playBonusFruitMatchSfx();
             } else {
                 game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
                 replaceWithScoreTexture(star, otherGameObject);
-                game_.getAudio().play(ime::audio::Type::Sfx, "bonusFruitNotMatch.wav");
+                audioManager_->playBonusFruitNotMatchSfx();
             }
 
             game_.getGameObjects().findByTag("leftBonusFruit")->getSprite().getAnimator().stop();
             game_.getGameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().stop();
 
-            if (game_.starSpawnSfx_) {
-                game_.starSpawnSfx_->stop();
-                game_.starSpawnSfx_ = nullptr;
-            }
+            audioManager_->stopStarSpawnedSfx();
 
             if (!game_.isBonusStage_)
-                game_.mainAudio_->pause();
+                audioManager_->pauseBackgroundMusic();
 
             game_.getTimer().setTimeout(freezeDuration, [this, otherGameObject] {
                 setMovementFreeze(false);
@@ -314,7 +311,7 @@ namespace spm {
                 game_.despawnStar();
 
                 if (!game_.isBonusStage_)
-                    game_.mainAudio_->play();
+                    audioManager_->resumeBackgroundMusic();
 
                 if (game_.ghostAITimer_.isPaused())
                     game_.ghostAITimer_.resume();
@@ -339,7 +336,7 @@ namespace spm {
                 static_cast<Door *>(door)->burst();
                 pacman->getGridMover()->requestMove(pacman->getDirection());
                 game_.updateScore(Constants::Points::BROKEN_DOOR);
-                game_.getAudio().play(ime::audio::Type::Sfx, "doorBroken.wav");
+                audioManager_->playDoorBrokenSfx();
             }
         }
     }
