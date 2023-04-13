@@ -67,6 +67,30 @@ namespace spm {
         void destroyInactiveObjects();
 
         /**
+         * @brief Get the number of pellets eaten by pacman in current level
+         * @return Number of pellets eaten by pacman
+         */
+        unsigned int getNumPelletsEaten() const;
+
+        /**
+         * @brief Check if all the pellets have been eaten or not
+         * @return True if all the pellets are eaten, false otherwise
+         */
+        bool isAllPelletsEaten();
+
+        /**
+         * @brief Get the number of fruits eaten by pacman in current level
+         * @return Number of eaten eaten by pacman
+         */
+        unsigned int getNumFruitsEaten() const;
+
+        /**
+         * @brief Check if all the fruits have been eaten or not
+         * @return True if all the fruits are eaten, false otherwise
+         */
+        bool isAllFruitsEaten() const;
+
+        /**
          * @brief Update game objects
          */
         void update();
@@ -94,6 +118,8 @@ namespace spm {
 
     private:
         GameplayScene& gameplayScene_;
+        unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
+        unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
     };
 }
 

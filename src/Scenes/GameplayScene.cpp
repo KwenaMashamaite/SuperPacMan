@@ -45,8 +45,6 @@ namespace spm {
         pointsMultiplier_{1},
         isPaused_{false},
         view_{nullptr},
-        numFruitsEaten_{0},
-        numPelletsEaten_{0},
         onWindowCloseId_{-1},
         isChaseMode_{false},
         starAppeared_{false},
@@ -373,13 +371,12 @@ namespace spm {
     void GameplayScene::onFrameEnd() {
         gameObjectsManager_.destroyInactiveObjects();
 
-        if (!starAppeared_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)) {
+        if (!starAppeared_ && ((gameObjectsManager_.getNumFruitsEaten() + gameObjectsManager_.getNumPelletsEaten()) == Constants::STAR_SPAWN_EATEN_ITEMS)) {
             starAppeared_ = true;
             gameObjectsManager_.spawnStar();
         }
 
-        if ((getGameObjects().getGroup("Pellet").getCount() == 0) &&
-            (getGameObjects().getGroup("Fruit").getCount() == 0))
+        if (gameObjectsManager_.isAllPelletsEaten() && gameObjectsManager_.isAllFruitsEaten())
         {
             getEventEmitter().emit("levelComplete");
         }

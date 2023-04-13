@@ -98,7 +98,6 @@ namespace spm {
 
         fruit->setActive(false);
         game_.updateScore(Constants::Points::FRUIT * game_.currentLevel_);
-        game_.numFruitsEaten_++;
         audioManager_->playFruitEatenSfx();
     }
 
@@ -135,8 +134,6 @@ namespace spm {
             }
 
             timerManager_->extendSuperModeDuration();
-
-            game_.numPelletsEaten_++;
             audioManager_->playPowerPelletEatenSfx();
             game_.emit(GameEvent::FrightenedModeBegin);
         }
@@ -154,7 +151,6 @@ namespace spm {
             if (!game_.isBonusStage_)
                 timerManager_->startSuperModeTimeout();
 
-            game_.numPelletsEaten_++;
             audioManager_->playSuperPelletEatenSfx();
             game_.emit(GameEvent::SuperModeBegin);
         }

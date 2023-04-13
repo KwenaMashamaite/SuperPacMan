@@ -36,7 +36,10 @@ namespace spm {
     auto static FLASH_ANIM_CUTOFF_TIME = ime::seconds(2);
 
     ///////////////////////////////////////////////////////////////
-    GameObjectsManager::GameObjectsManager(GameplayScene &gameplayScene) : gameplayScene_(gameplayScene)
+    GameObjectsManager::GameObjectsManager(GameplayScene &gameplayScene) :
+        gameplayScene_(gameplayScene),
+        numPelletsEaten_(0),
+        numFruitsEaten_(0)
     {
 
     }
@@ -141,9 +144,38 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::destroyInactiveObjects() {
-        gameplayScene_.getGameObjects().removeIf([](const ime::GameObject* actor) {
-            return !actor->isActive();
+        gameplayScene_.getGameObjects().removeIf([this](const ime::GameObject* actor) {
+            if (!actor->isActive()) {
+                if (actor->getClassName() == "Pellet")
+                    numPelletsEaten_++;
+                else if (actor->getClassName() == "Fruit")
+                    numFruitsEaten_++;
+
+                return true;
+            }
+
+            return false;
         });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    unsigned int GameObjectsManager::getNumPelletsEaten() const {
+        return numPelletsEaten_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    bool GameObjectsManager::isAllPelletsEaten() {
+        return gameplayScene_.getGameObjects().getGroup("Pellet").getCount() == 0;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    unsigned int GameObjectsManager::getNumFruitsEaten() const {
+        return numFruitsEaten_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    bool GameObjectsManager::isAllFruitsEaten() const {
+        return gameplayScene_.getGameObjects().getGroup("Fruit").getCount() == 0;
     }
 
     ///////////////////////////////////////////////////////////////

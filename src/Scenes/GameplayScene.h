@@ -216,8 +216,6 @@ namespace spm {
         CommonView* view_;               //!< Scene view without the gameplay grid
         std::unique_ptr<Grid> grid_;    //!< Gameplay grid view
         AudioManager audioManager_;     //!< Games audio manager
-        unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
-        unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
         int onWindowCloseId_;           //!< The id number of the 'onClose' event handler
         bool isChaseMode_;              //!< A flag indicating whether or not ghosts are in chase mode
         bool starAppeared_;             //!< A flag indicatinig whether or not a star has already been spawned
