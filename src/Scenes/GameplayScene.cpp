@@ -71,12 +71,13 @@ namespace spm {
 
         initGui();
         initGrid();
-        gameObjectsManager_.initGameObjects();
+        gameObjectsManager_.createObjects(*grid_);
+        /*gameObjectsManager_.initGameObjects();
         initMovementControllers();
         initSceneLevelEvents();
         initEngineLevelEvents();
         initCollisions();
-        initLevelStartCountdown();
+        initLevelStartCountdown();*/
     }
 
     ///////////////////////////////////////////////////////////////
@@ -102,25 +103,24 @@ namespace spm {
         createGrid2D(20, 20);
         grid_ = std::make_unique<Grid>(getGrid());
         grid_->create(currentLevel_);
-        grid_->init();
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initMovementControllers() {
-        auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
+        auto* pacman = gameObjectsManager_.getPacMan();
         auto pacmanController = std::make_unique<PacManGridMover>(*grid_, pacman);
         pacmanController->init();
         getGridMovers().addObject(std::move(pacmanController));
 
-        getGameObjects().forEachInGroup("Ghost", [this](ime::GameObject* gameObject) {
-            auto ghostMover = std::make_unique<GhostGridMover>(*grid_, static_cast<Ghost*>(gameObject));
+        gameObjectsManager_.getGhosts().forEach([this](Ghost* ghost) {
+            auto ghostMover = std::make_unique<GhostGridMover>(*grid_, ghost);
             getGridMovers().addObject(std::move(ghostMover));
         });
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initCollisions() {
-        auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
+        auto* pacman = gameObjectsManager_.getPacMan();
         collisionResponseRegisterer_.registerCollisionWithFruit(pacman);
         collisionResponseRegisterer_.registerCollisionWithKey(pacman);
         collisionResponseRegisterer_.registerCollisionWithDoor(pacman);
@@ -130,8 +130,7 @@ namespace spm {
         collisionResponseRegisterer_.registerCollisionWithStar(pacman);
         collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(pacman);
 
-        getGameObjects().forEachInGroup("Ghost", [this] (ime::GameObject* ghostBase){
-            auto* ghost = static_cast<Ghost*>(ghostBase);
+        gameObjectsManager_.getGhosts().forEach( [this] (Ghost* ghost){
             collisionResponseRegisterer_.registerCollisionWithPacMan(ghost);
             collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(ghost);
             collisionResponseRegisterer_.registerCollisionWithSlowDownSensor(ghost);
@@ -167,7 +166,7 @@ namespace spm {
             getWindow().suspendedEventListener(onWindowCloseId_, false);
 
             getGui().getWidget("lblReady")->setVisible(false);
-            auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
+            auto* pacman = gameObjectsManager_.getPacMan();
             pacman->getSprite().setVisible(true);
             pacman->getGridMover()->requestMove(ime::Left);
 
@@ -175,8 +174,7 @@ namespace spm {
                 pacman->setState(PacMan::State::Super);
                 timerManager_.startBonusStageTimer();
             } else {
-                getGameObjects().forEachInGroup("Ghost", [](ime::GameObject* gameObject) {
-                    auto* ghost = static_cast<Ghost*>(gameObject);
+                gameObjectsManager_.getGhosts().forEach( [](Ghost* ghost) {
                     ghost->clearState();
                     ghost->setState(std::make_unique<ScatterState>());
                 });
@@ -197,16 +195,17 @@ namespace spm {
             audioManager_.stop();
             timerManager_.stopAllTimers();
             gameObjectsManager_.despawnStar();
-            getGameObjects().getGroup("Ghost").removeAll();
+            gameObjectsManager_.getGhosts().removeAll();
 
-            auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
+            auto* pacman = gameObjectsManager_.getPacMan();
             pacman->getSprite().getAnimator().complete();
             pacman->getGridMover()->setMovementFreeze(true);
 
             getTimer().setTimeout(ime::seconds(0.5), [this, pacman] {
-                getGameObjects().getGroup("Pellet").removeAll();
-                getGameObjects().getGroup("Fruit").removeAll();
-                getGameObjects().getGroup("Key").removeAll();
+                gameObjectsManager_.getPellets().removeAll();
+                gameObjectsManager_.getFruits().removeAll();
+                gameObjectsManager_.getKeys().removeAll();
+
                 pacman->getSprite().setVisible(false);
                 grid_->flash(currentLevel_);
 
@@ -259,7 +258,7 @@ namespace spm {
             newScore >= Constants::THIRD_EXTRA_LIFE_MIN_SCORE && extraLivesGiven == 2)
         {
             getCache().setValue("NUM_EXTRA_LIVES_WON", extraLivesGiven + 1);
-            auto* pacman = getGameObjects().findByTag<PacMan>("pacman");
+            auto* pacman = gameObjectsManager_.getPacMan();
             pacman->addLife();
             getCache().setValue("PLAYER_LIVES", pacman->getLivesCount());
             view_->addLife();
@@ -272,7 +271,7 @@ namespace spm {
     void GameplayScene::initLevelStartCountdown() {
         getInput().setAllInputEnable(false);
         getGui().getWidget<ime::ui::Label>("lblReady")->setVisible(true);
-        getGameObjects().findByTag("pacman")->getSprite().setVisible(false);
+        gameObjectsManager_.getPacMan()->getSprite().setVisible(false);
 
         int counter = Constants::LEVEL_START_DELAY;
         getTimer().setInterval(ime::seconds(0.5f), [this, counter]() mutable {
@@ -291,9 +290,9 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::emit(GameEvent event) {
         ime::PropertyContainer args;
-        getGameObjects().findByTag<PacMan>("pacman")->handleEvent(event, args);
-        getGameObjects().forEachInGroup("Ghost", [event, &args](ime::GameObject* ghost) {
-            static_cast<Ghost*>(ghost)->handleEvent(event, args);
+        gameObjectsManager_.getPacMan()->handleEvent(event, args);
+        gameObjectsManager_.getGhosts().forEach([event, &args](Ghost* ghost) {
+            ghost->handleEvent(event, args);
         });
 
         if (event == GameEvent::ChaseModeBegin)
@@ -304,7 +303,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::pauseGame() {
-        if (isPaused_ || grid_->isFlashing() || getGameObjects().findByTag<PacMan>("pacman")->getState() == PacMan::State::Dying)
+        if (isPaused_ || grid_->isFlashing() || gameObjectsManager_.getPacMan()->getState() == PacMan::State::Dying)
             return;
 
         isPaused_ = true;
@@ -358,7 +357,7 @@ namespace spm {
         view_->update(deltaTime);
         grid_->update(deltaTime);
         timerManager_.update(deltaTime);
-        gameObjectsManager_.update();
+        gameObjectsManager_.update(deltaTime);
     }
 
     ///////////////////////////////////////////////////////////////

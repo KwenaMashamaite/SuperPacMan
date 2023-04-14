@@ -7,7 +7,6 @@ set(SRC_FILES
         AI/ghost/ChaseState.cpp
         AI/ghost/FrightenedState.cpp
         AI/ghost/EatenState.cpp
-        utils/ObjectCreator.cpp
         utils/Utils.cpp
         Animations/FruitAnimation.cpp
         Animations/GhostAnimations.cpp

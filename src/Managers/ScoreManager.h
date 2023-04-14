@@ -22,26 +22,21 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_OBJECTCREATOR_H
-#define SUPERPACMAN_OBJECTCREATOR_H
-
-#include "Grid.h"
+#ifndef SUPERPACMAN_SCOREMANAGER_H
+#define SUPERPACMAN_SCOREMANAGER_H
 
 namespace spm {
-    /**
-     * @brief Create objects in the grid
-     *
-     * This class creates objects in the grid based on the id of the grid cell
-     */
-    class ObjectCreator {
+    class ScoreManager {
     public:
-        /**
-         * @brief Create objects in the grid
-         * @param grid The grid to create objects in
-         */
-        static void createObjects(Grid& grid);
+        int updateScore();
+        int getScore() const;
+        int getHighScore() const;
+        int getPointsMultiplier() const;
+        void updatePointsMultiplier();
+    private:
+
     };
 }
 
 
-#endif //SUPERPACMAN_OBJECTCREATOR_H
+#endif //SUPERPACMAN_SCOREMANAGER_H

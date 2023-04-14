@@ -367,7 +367,7 @@ namespace spm {
             }
         };
 
-        freezeMovement(game_.getGameObjects().findByTag<PacMan>("pacman"), freeze);
+        freezeMovement(game_.gameObjectsManager_.getPacMan(), freeze);
 
         game_.getGameObjects().forEachInGroup("Ghost", [freeze](ime::GameObject* gameObject) {
             freezeMovement(static_cast<ime::GridObject*>(gameObject), freeze);

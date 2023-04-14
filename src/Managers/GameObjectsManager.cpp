@@ -27,13 +27,29 @@
 #include "GameObjects/GameObjects.h"
 #include "utils/Utils.h"
 #include "common/Constants.h"
+#include "Animations/FruitAnimation.h"
 #include <random>
 #include <algorithm>
 #include <IME/utility/Utils.h>
 
 namespace spm {
-    ///////////////////////////////////////////////////////////////
-    auto static FLASH_ANIM_CUTOFF_TIME = ime::seconds(2);
+    namespace {
+        ///////////////////////////////////////////////////////////////
+        auto FLASH_ANIM_CUTOFF_TIME = ime::seconds(2);
+
+        ///////////////////////////////////////////////////////////////
+        std::unique_ptr<Door> createDoor(const ime::Tile& tile, ime::Scene& scene) {
+            auto door = std::make_unique<Door>(scene);
+
+            if (tile.getIndex().row % 2 == 0)
+                door->setOrientation(Door::Orientation::Horizontal);
+            else
+                door->setOrientation(Door::Orientation::Vertical);
+
+            return door;
+        }
+    } // namespace anonymous
+
 
     ///////////////////////////////////////////////////////////////
     GameObjectsManager::GameObjectsManager(GameplayScene &gameplayScene) :
@@ -42,6 +58,77 @@ namespace spm {
         numFruitsEaten_(0)
     {
 
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::createObjects(Grid &grid) {
+        grid.forEachCell([&grid, slowDownSensorCount = 0, this](const ime::Tile& tile) mutable {
+            if (tile.getId() == 'X') {
+                pacman_ = std::make_unique<PacMan>(grid.getScene());
+                grid.addGameObject(pacman_.get(), tile.getIndex());
+            } else if (tile.getId() == 'T' || tile.getId() == 'H' || tile.getId() == '!' || tile.getId() == '+') { // Sensors
+                auto sensor = std::make_unique<Sensor>(grid.getScene());
+
+                if (tile.getId() == 'T')
+                    sensor->setTag("teleportationSensor");
+                if (tile.getId() == 'H' || tile.getId() == '+') {
+                    sensor->setTag("slowDownSensor" + std::to_string(++slowDownSensorCount));
+
+                    if (tile.getId() == '+') { // Sensor + Door,
+                        doors_.addObject(createDoor(tile, grid.getScene()));
+                    }
+                }
+
+                sensors_.addObject(std::move(sensor));
+            } else if (tile.getId() == 'K')
+                keys_.addObject(std::make_unique<Key>(grid.getScene()));
+            else if (tile.getId() == 'F')
+                fruits_.addObject(std::make_unique<Fruit>(grid.getScene()));
+            else if (tile.getId() == 'E')
+                pellets_.addObject(std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Power));
+            else if (tile.getId() == 'S')
+                pellets_.addObject(std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Super));
+            else if (tile.getId() == 'D')
+                doors_.addObject(createDoor(tile, grid.getScene()));
+            else if (tile.getId() == '#' || tile.getId() == '|' || tile.getId() == 'N') {// Walls
+                auto wall = std::make_unique<Wall>(grid.getScene());
+
+                // Hidden wall that only pacman can pass through
+                if (tile.getId() == 'N')
+                    wall->setCollisionGroup("hiddenWall");
+
+                walls_.addObject(std::move(wall));
+            } else if (tile.getId() == '?') {
+                /*gameObject = ime::GridObject::create(grid.getScene());
+                ime::Animation::Ptr fruitSlideAnim = FruitAnimation().getAnimation();
+
+                if (tile.getIndex().colm == 11) {
+                    gameObject->setTag("leftBonusFruit");
+                    fruitSlideAnim->setLoop(false);
+                    fruitSlideAnim->setPlaybackSpeed(2.0f);
+                } else
+                    gameObject->setTag("rightBonusFruit");
+
+                gameObject->getSprite().getAnimator().addAnimation(std::move(fruitSlideAnim));
+                gameObject->getSprite().setScale(2.0f, 2.0f);
+                gameObject->getSprite().setOrigin(8, 8);*/
+            }else {
+                std::unique_ptr<Ghost> ghost;
+
+                if (tile.getId() == 'B')
+                    ghost = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Red);
+                else if (tile.getId() == 'P')
+                    ghost = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Pink);
+                else if (tile.getId() == 'I')
+                    ghost = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Cyan);
+                else if (tile.getId() == 'C')
+                    ghost = std::make_unique<Ghost>(grid.getScene(), Ghost::Colour::Orange);
+                else
+                    return;
+
+                ghosts_.addObject(std::move(ghost));
+            }
+        });
     }
 
     ///////////////////////////////////////////////////////////////
@@ -82,7 +169,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::resetMovableGameObjects() {
-        auto* pacman = gameplayScene_.getGameObjects().findByTag<PacMan>("pacman");
+        auto* pacman = gameplayScene_.gameObjectsManager_.getPacMan();
         pacman->setState(PacMan::State::Normal);
         pacman->setDirection(ime::Left);
         gameplayScene_.grid_->removeGameObject(pacman);
@@ -108,7 +195,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::spawnStar() {
         ime::GridObject::Ptr star = std::make_unique<Star>(gameplayScene_);
-        gameplayScene_.grid_->addGameObject(std::move(star), ime::Index{15, 13});
+        gameplayScene_.grid_->addGameObject(star.get(), ime::Index{15, 13});
 
         ime::GameObject* leftFruit = gameplayScene_.getGameObjects().findByTag("leftBonusFruit");
         int numFrames = leftFruit->getSprite().getAnimator().getAnimation("slide")->getFrameCount();
@@ -165,7 +252,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     bool GameObjectsManager::isAllPelletsEaten() {
-        return gameplayScene_.getGameObjects().getGroup("Pellet").getCount() == 0;
+        return pellets_.getCount() == 0;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -175,19 +262,45 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     bool GameObjectsManager::isAllFruitsEaten() const {
-        return gameplayScene_.getGameObjects().getGroup("Fruit").getCount() == 0;
+        return fruits_.getCount() == 0;
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameObjectsManager::update() {
-        updatePacmanFlashAnimation();
-        updateGhostsFlashAnimation();
+    PacMan *GameObjectsManager::getPacMan() const {
+        return pacman_.get();
+    }
+
+    ///////////////////////////////////////////////////////////////
+    ime::ObjectContainer<Ghost>& GameObjectsManager::getGhosts() {
+        return ghosts_;
+    }
+
+    ime::ObjectContainer<Pellet>& GameObjectsManager::getPellets() {
+        return pellets_;
+    }
+
+    ime::ObjectContainer<Key>& GameObjectsManager::getKeys() {
+        return keys_;
+    }
+
+    ime::ObjectContainer<Fruit>& GameObjectsManager::getFruits() {
+        return fruits_;
+    }
+
+    ime::ObjectContainer<Door> &GameObjectsManager::getDoors() {
+        return doors_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::update(ime::Time deltaTime) {
+        //updatePacmanFlashAnimation();
+        //updateGhostsFlashAnimation();
     }
 
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::updatePacmanFlashAnimation() {
         if (gameplayScene_.timerManager_.isSuperMode()) {
-            auto* pacman = gameplayScene_.getGameObjects().findByTag<PacMan>("pacman");
+            auto* pacman = gameplayScene_.gameObjectsManager_.getPacMan();
             if (!pacman->isFlashing() && gameplayScene_.timerManager_.getRemainingSuperModeDuration() <= FLASH_ANIM_CUTOFF_TIME)
                 pacman->setFlash(true);
             else if (pacman->isFlashing() && gameplayScene_.timerManager_.getRemainingSuperModeDuration() > FLASH_ANIM_CUTOFF_TIME)

@@ -24,7 +24,6 @@
 
 #include "Grid.h"
 #include "Animations/GridAnimation.h"
-#include "Utils/ObjectCreator.h"
 #include <IME/core/scene/Scene.h>
 #include <cassert>
 
@@ -72,11 +71,6 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::init() {
-        ObjectCreator::createObjects(*this);
-    }
-
-    ///////////////////////////////////////////////////////////////
     void Grid::create(int level) {
         grid_.loadFromFile("res/TextFiles/Mazes/GameplayMaze.txt");
         grid_.setPosition(-42, 0);
@@ -110,17 +104,11 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::addGameObject(ime::GridObject::Ptr object, ime::Index index) {
-        assert(object && "Object must not be a nullptr");
-
-        grid_.addChild(object.get(), index);
-        std::string renderLayer = object->getClassName() + "s";
-        std::string group = object->getClassName();
-        grid_.getScene().getGameObjects().add(group, std::move(object), 0, renderLayer);
-    }
-
-    ///////////////////////////////////////////////////////////////
     void Grid::addGameObject(ime::GridObject *object, ime::Index index) {
+        std::string renderLayer = object->getClassName() + "s";
+        const static int renderOrder = 0;
+
+        grid_.getScene().getRenderLayers().add(object->getSprite(), renderOrder, renderLayer);
         grid_.addChild(object, index);
     }
 

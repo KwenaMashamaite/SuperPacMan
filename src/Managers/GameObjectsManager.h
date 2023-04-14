@@ -25,6 +25,17 @@
 #ifndef SUPERPACMAN_GAMEOBJECTSMANAGER_H
 #define SUPERPACMAN_GAMEOBJECTSMANAGER_H
 
+#include "GameObjects/PacMan.h"
+#include "GameObjects/Ghost.h"
+#include "GameObjects/Fruit.h"
+#include "GameObjects/Pellet.h"
+#include "GameObjects/Key.h"
+#include "GameObjects/Door.h"
+#include "GameObjects/Star.h"
+#include "GameObjects/Sensor.h"
+#include "GameObjects/Wall.h"
+#include "Grid.h"
+
 namespace spm {
     class GameplayScene;
 
@@ -38,6 +49,12 @@ namespace spm {
          * @param gameplayScene The gameplay scene
          */
         explicit GameObjectsManager(GameplayScene& gameplayScene);
+
+        /**
+         * @brief Create the game objects
+         * @param grid
+         */
+        void createObjects(Grid& grid);
 
         /**
          * @brief Initialize the game objects
@@ -91,9 +108,25 @@ namespace spm {
         bool isAllFruitsEaten() const;
 
         /**
+         * @brief Get Pacman
+         * @return Pacman
+         */
+        PacMan* getPacMan() const;
+
+        /**
+         * @brief Get all the ghosts
+         * @return All the ghosts
+         */
+        ime::ObjectContainer<Ghost>& getGhosts();
+        ime::ObjectContainer<Pellet>& getPellets();
+        ime::ObjectContainer<Key>& getKeys();
+        ime::ObjectContainer<Fruit>& getFruits();
+        ime::ObjectContainer<Door>& getDoors();
+
+        /**
          * @brief Update game objects
          */
-        void update();
+        void update(ime::Time deltaTime);
 
     private:
         /**
@@ -118,6 +151,17 @@ namespace spm {
 
     private:
         GameplayScene& gameplayScene_;
+        std::unique_ptr<PacMan> pacman_;
+        std::unique_ptr<Star> star_;
+        std::unique_ptr<Fruit> leftSideStarFruit_;
+        std::unique_ptr<Fruit> rightSideStarFruit_;
+        ime::ObjectContainer<Ghost> ghosts_;
+        ime::ObjectContainer<Fruit> fruits_;
+        ime::ObjectContainer<Pellet> pellets_;
+        ime::ObjectContainer<Key> keys_;
+        ime::ObjectContainer<Door> doors_;
+        ime::ObjectContainer<Sensor> sensors_;
+        ime::ObjectContainer<Wall> walls_;
         unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
         unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
     };

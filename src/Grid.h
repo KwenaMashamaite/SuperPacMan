@@ -47,18 +47,6 @@ namespace spm {
         void create(int level);
 
         /**
-         * @brief Initialize the grid
-         */
-        void init();
-
-        /**
-         * @brief Add an actor to the grid
-         * @param object The actor to be added to the grid
-         * @param index The index of the cell to add the actor to
-         */
-        void addGameObject(ime::GridObject::Ptr object, ime::Index index);
-
-        /**
          * @brief Add an actor to the grid
          * @param object The actor to be added to the grid
          * @param index The index of the cell to add the actor to
