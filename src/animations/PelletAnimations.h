@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_PELLETANIMATIONS_H
 #define SUPERPACMAN_PELLETANIMATIONS_H
 
-#include <IME/core/animation/Animation.h>
+#include <Mighter2d/core/animation/Animation.h>
 #include <vector>
 
 namespace spm {
@@ -53,11 +53,11 @@ namespace spm {
          * @brief Get all of the created animations
          * @return A list of all the created animations
          */
-        const std::vector<ime::Animation::Ptr>& getAll() const;
+        const std::vector<mighter2d::Animation::Ptr>& getAll() const;
 
     private:
-        std::vector<ime::Animation::Ptr> animations_;
-        ime::SpriteSheet spritesheet_;
+        std::vector<mighter2d::Animation::Ptr> animations_;
+        mighter2d::SpriteSheet spritesheet_;
     };
 }
 

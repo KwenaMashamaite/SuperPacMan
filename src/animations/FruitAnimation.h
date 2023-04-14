@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_FRUITANIMATION_H
 #define SUPERPACMAN_FRUITANIMATION_H
 
-#include <IME/core/animation/Animation.h>
+#include <Mighter2d/core/animation/Animation.h>
 #include <memory>
 
 namespace spm {
@@ -46,11 +46,11 @@ namespace spm {
          * @brief Get the fruit animation
          * @return The fruit animation
          */
-        ime::Animation::Ptr getAnimation();
+        mighter2d::Animation::Ptr getAnimation();
 
     private:
-        ime::Animation::Ptr animation_; //!< The fruit animation
-        ime::SpriteSheet spritesheet_;  //!< Spritesheet used by the animation
+        mighter2d::Animation::Ptr animation_; //!< The fruit animation
+        mighter2d::SpriteSheet spritesheet_;  //!< Spritesheet used by the animation
     };
 }
 

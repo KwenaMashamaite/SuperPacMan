@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_TIMERMANAGER_H
 #define SUPERPACMAN_TIMERMANAGER_H
 
-#include <IME/core/time/Timer.h>
+#include <Mighter2d/core/time/Timer.h>
 
 namespace spm {
     // Forward declarations
@@ -85,7 +85,7 @@ namespace spm {
          * @brief Get the time remaining before the super mode timer timeouts
          * @return The time remaining before the super mode timer expires
          */
-        ime::Time getRemainingSuperModeDuration() const;
+        mighter2d::Time getRemainingSuperModeDuration() const;
 
         /**
          * @brief Check if the super mode timer is running
@@ -124,7 +124,7 @@ namespace spm {
          * @brief Get the time remaining before the power mode timer timeouts
          * @return The time remaining before the power mode timer expires
          */
-        ime::Time getRemainingPowerModeDuration() const;
+        mighter2d::Time getRemainingPowerModeDuration() const;
 
         /**
          * @brief Check if the power mode timer is running or not
@@ -161,7 +161,7 @@ namespace spm {
          * @brief Get the time remaining before the bonus stage timer timeouts
          * @return The time remaining before the bonus stage timer expires
          */
-        ime::Time getRemainingBonusStageDuration() const;
+        mighter2d::Time getRemainingBonusStageDuration() const;
 
         /**
         * @brief Start the star object despawn timer
@@ -193,7 +193,7 @@ namespace spm {
          * @brief Update all timers
          * @param deltaTime The time passed since the last update
          */
-        void update(ime::Time deltaTime);
+        void update(mighter2d::Time deltaTime);
 
     private:
         /**
@@ -213,25 +213,25 @@ namespace spm {
          * @brief Get the duration of the ghosts scatter mode
          * @return Scatter mode duration
          */
-        ime::Time getScatterModeDuration() const;
+        mighter2d::Time getScatterModeDuration() const;
 
         /**
          * @brief Get the duration of the ghosts chase mode
          * @return Chase mode duration
          */
-        ime::Time getChaseModeDuration() const;
+        mighter2d::Time getChaseModeDuration() const;
 
         /**
          * @brief Get the ghosts frightened mode duration
          * @return Frightened mode duration
          */
-        ime::Time getFrightenedModeDuration();
+        mighter2d::Time getFrightenedModeDuration();
 
         /**
          * @brief Get pacmans super mode duration
          * @return Pacman super mode duration
          */
-        ime::Time getSuperModeDuration();
+        mighter2d::Time getSuperModeDuration();
 
     private:
         GameplayScene& gameplayScene_;  //!< The gameplay scene
@@ -239,11 +239,11 @@ namespace spm {
         int currentLevel_;              //!< The current game level
         unsigned int scatterWaveLevel_; //!< The current scatter mode level (up to 4 levels)
         unsigned int chaseWaveLevel_;   //!< The current chase mode level (up to 5 levels)
-        ime::Timer ghostAITimer_;       //!< Scatter-chase state transition timer
-        ime::Timer superModeTimer_;     //!< Pacman Super mode duration counter
-        ime::Timer powerModeTimer_;     //!< Energizer mode duration counter
-        ime::Timer starDespawnTimer_;   //!< Star appearance counter
-        ime::Timer bonusStageTimer_;    //!< Bonus stage duration counter
+        mighter2d::Timer ghostAITimer_;       //!< Scatter-chase state transition timer
+        mighter2d::Timer superModeTimer_;     //!< Pacman Super mode duration counter
+        mighter2d::Timer powerModeTimer_;     //!< Energizer mode duration counter
+        mighter2d::Timer starDespawnTimer_;   //!< Star appearance counter
+        mighter2d::Timer bonusStageTimer_;    //!< Bonus stage duration counter
     };
 }
 

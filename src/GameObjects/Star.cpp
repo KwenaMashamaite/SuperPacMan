@@ -26,21 +26,20 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    Star::Star(ime::Scene &scene) :
+    Star::Star(mighter2d::Scene &scene) :
         GridObject(scene)
     {
         setTag("star");
 
-        ime::SpriteSheet spriteSheet{"spritesheet.png", ime::Vector2u{16, 16}, {1, 1}, {289, 209, 35, 18}};
-        getSprite() = spriteSheet.getSprite(ime::Index{0, 0});
+        mighter2d::SpriteSheet spriteSheet{"spritesheet.png", mighter2d::Vector2u{16, 16}, {1, 1}, {289, 209, 35, 18}};
+        getSprite() = spriteSheet.getSprite(getScene(), mighter2d::Index{0, 0});
 
-        ime::Animation::Ptr blinkAnim = ime::Animation::create("blink", spriteSheet, ime::seconds(0.27));
-        blinkAnim->addFrames(ime::Index{0, 0}, 2);
+        mighter2d::Animation::Ptr blinkAnim = mighter2d::Animation::create("blink", spriteSheet, mighter2d::seconds(0.27));
+        blinkAnim->addFrames(mighter2d::Index{0, 0}, 2);
         blinkAnim->setLoop(true);
         getSprite().getAnimator().addAnimation(std::move(blinkAnim));
 
         getSprite().scale(2.0f, 2.0f);
-        resetSpriteOrigin();
         getSprite().getAnimator().startAnimation("blink");
     }
 

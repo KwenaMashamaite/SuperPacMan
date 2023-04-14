@@ -14,7 +14,7 @@ namespace spm {
         collisionResponseRegisterer_.registerCollisionWithStar(pacman);
         collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(pacman);
 
-        gameplayScene.getGameObjects().forEachInGroup("Ghost", [this] (ime::GameObject* ghostBase){
+        gameplayScene.getGameObjects().forEachInGroup("Ghost", [this] (mighter2d::GameObject* ghostBase){
             auto* ghost = static_cast<Ghost*>(ghostBase);
             collisionResponseRegisterer_.registerCollisionWithPacMan(ghost);
             collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(ghost);
@@ -24,39 +24,39 @@ namespace spm {
 
     // Collision Resolver class
 
-    void CollisionManager::CollisionResolver::resolveFruitCollision(ime::GridObject *fruit) {
+    void CollisionManager::CollisionResolver::resolveFruitCollision(mighter2d::GridObject *fruit) {
 
     }
 
-    void CollisionManager::CollisionResolver::resolveKeyCollision(ime::GridObject *key) {
+    void CollisionManager::CollisionResolver::resolveKeyCollision(mighter2d::GridObject *key) {
 
     }
 
-    void CollisionManager::CollisionResolver::resolvePowerPelletCollision(ime::GridObject *pellet) {
+    void CollisionManager::CollisionResolver::resolvePowerPelletCollision(mighter2d::GridObject *pellet) {
 
     }
 
-    void CollisionManager::CollisionResolver::resolveSuperPelletCollision(ime::GridObject *pellet) {
+    void CollisionManager::CollisionResolver::resolveSuperPelletCollision(mighter2d::GridObject *pellet) {
 
     }
 
-    void CollisionManager::CollisionResolver::resolvePacmanCollision(ime::GridObject *pacman, ime::GridObject *otherGameObject) {
+    void CollisionManager::CollisionResolver::resolvePacmanCollision(mighter2d::GridObject *pacman, mighter2d::GridObject *otherGameObject) {
 
     }
 
-    void CollisionManager::CollisionResolver::resolveGhostCollision(ime::GridObject *ghost, ime::GridObject *otherGameObject) {
+    void CollisionManager::CollisionResolver::resolveGhostCollision(mighter2d::GridObject *ghost, mighter2d::GridObject *otherGameObject) {
 
     }
 
-    void CollisionManager::CollisionResolver::resolveStarCollision(ime::GridObject *star, ime::GridObject *otherGameObject) {
+    void CollisionManager::CollisionResolver::resolveStarCollision(mighter2d::GridObject *star, mighter2d::GridObject *otherGameObject) {
 
     }
 
-    void CollisionManager::CollisionResolver::resolveDoorCollision(ime::GridObject *door, ime::GridObject *otherGameObject) {
+    void CollisionManager::CollisionResolver::resolveDoorCollision(mighter2d::GridObject *door, mighter2d::GridObject *otherGameObject) {
 
     }
 
-    void CollisionManager::CollisionResolver::resolveSlowDownSensorCollision(ime::GridObject *sensor, ime::GridObject *objectOnSensor) {
+    void CollisionManager::CollisionResolver::resolveSlowDownSensorCollision(mighter2d::GridObject *sensor, mighter2d::GridObject *objectOnSensor) {
 
     }
 }

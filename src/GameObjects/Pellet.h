@@ -25,13 +25,13 @@
 #ifndef SUPERPACMAN_PELLET_H
 #define SUPERPACMAN_PELLET_H
 
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A pellet that can be eaten by Pacman
      */
-    class Pellet : public ime::GridObject {
+    class Pellet : public mighter2d::GridObject {
     public:
         /**
          * @brief Pellet type
@@ -46,7 +46,7 @@ namespace spm {
          * @param scene The scene the object is in
          * @param type The type of the pellet
          */
-        Pellet(ime::Scene& scene, Type type);
+        Pellet(mighter2d::Scene& scene, Type type);
 
         /**
          * @brief Get the class type

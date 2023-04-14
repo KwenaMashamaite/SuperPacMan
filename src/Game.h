@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_GAME_H
 #define SUPERPACMAN_GAME_H
 
-#include <IME/core/engine/Engine.h>
+#include <Mighter2d/core/engine/Engine.h>
 
 namespace spm {
     /**
@@ -50,7 +50,7 @@ namespace spm {
 
     private:
         std::string settingsFilename_; //!< The name of the file with the engine settings
-        ime::Engine engine_;           //!< Runs the main game loop
+        mighter2d::Engine engine_;           //!< Runs the main game loop
     };
 }
 

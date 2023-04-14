@@ -29,14 +29,14 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    PacManGridMover::PacManGridMover(ime::Grid2D &grid, PacMan* pacman) :
-        ime::KeyboardGridMover(grid, pacman),
+    PacManGridMover::PacManGridMover(mighter2d::Grid &grid, PacMan* pacman) :
+        mighter2d::KeyboardGridMover(grid, pacman),
         pacmanStateChangeId_{-1},
-        pendingDirection_{ime::Unknown}
+        pendingDirection_{mighter2d::Unknown}
     {
         assert(pacman && "Cannot create pacman's grid mover with a nullptr");
-        setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
-        setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
+        setSpeed(mighter2d::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
+        setMovementRestriction(mighter2d::GridMover::MoveRestriction::NonDiagonal);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -44,12 +44,12 @@ namespace spm {
         auto* pacman = static_cast<PacMan*>(getTarget());
 
         // Keep pacman moving until he collides with a wall
-        onMoveEnd([this, pacman](ime::Index) {
-            if (pendingDirection_ != ime::Unknown) {
+        onMoveEnd([this, pacman](mighter2d::Index) {
+            if (pendingDirection_ != mighter2d::Unknown) {
                 auto [isBlocked, obstacle] = isBlockedInDirection(pendingDirection_);
                 if (!isBlocked || (pacman->getState() == PacMan::State::Super && obstacle && obstacle->getClassName() == "Door")) {
                     requestMove(pendingDirection_);
-                    pendingDirection_ = ime::Unknown;
+                    pendingDirection_ = mighter2d::Unknown;
                     return;
                 }
             }
@@ -58,24 +58,24 @@ namespace spm {
         });
 
         // Prevent pacman from turning into a direction that causes a collision with an obstacle
-        onInput([this, pacman](ime::Keyboard::Key key) {
+        onInput([this, pacman](mighter2d::Keyboard::Key key) {
             if (pacman->getState() == PacMan::State::Dying)
                 return false;
 
-            ime::Direction newDir;
+            mighter2d::Direction newDir;
 
             if (key == getTriggerKeys().rightKey)
-                newDir = ime::Right;
+                newDir = mighter2d::Right;
             else if (key == getTriggerKeys().leftKey)
-                newDir = ime::Left;
+                newDir = mighter2d::Left;
             else if (key == getTriggerKeys().upKey)
-                newDir = ime::Up;
+                newDir = mighter2d::Up;
             else
-                newDir = ime::Down;
+                newDir = mighter2d::Down;
 
             auto [isBlocked, obstacle] = isBlockedInDirection(newDir);
             if (!isTargetMoving() && (!isBlocked || (pacman->getState() == PacMan::State::Super && obstacle && obstacle->getClassName() == "Door"))) {
-                pendingDirection_ = ime::Unknown;
+                pendingDirection_ = mighter2d::Unknown;
                 return true;
             } else
                 pendingDirection_ = newDir;
@@ -84,7 +84,7 @@ namespace spm {
         });
 
         // Move or stop pacman depending on his current state
-        pacmanStateChangeId_ = pacman->onPropertyChange("state", [this](const ime::Property& property) {
+        pacmanStateChangeId_ = pacman->onPropertyChange("state", [this](const mighter2d::Property& property) {
             switch (static_cast<PacMan::State>(property.getValue<int>())) {
                 case PacMan::State::Normal:     setSpeedMultiplier(1.0f);   break;
                 case PacMan::State::Super:      setSpeedMultiplier(4.0f);   break;

@@ -27,21 +27,20 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    Pellet::Pellet(ime::Scene& scene, Type type) :
-        ime::GridObject(scene)
+    Pellet::Pellet(mighter2d::Scene& scene, Type type) :
+        mighter2d::GridObject(scene)
     {
         setCollisionGroup(type == Type::Power ? "powerPellets" : "superPellets");
         setTag(type == Type::Power ? "power" : "super");
 
         auto animations = PelletAnimations();
         animations.createAnimationFor((type == Type::Power ? "powerPellet" : "superPellet"));
-        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{0, 0});
+        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(getScene(), mighter2d::Index{0, 0});
         for (const auto& animation : animations.getAll())
             getSprite().getAnimator().addAnimation(animation);
 
         getSprite().getAnimator().startAnimation("blink");
         getSprite().scale(2.0f, 2.0f);
-        resetSpriteOrigin(); // Set sprite origin as the centre
     }
 
     ///////////////////////////////////////////////////////////////

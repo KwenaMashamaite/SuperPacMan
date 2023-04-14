@@ -57,18 +57,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 # Create executable project source files
 add_executable(SuperPacMan ${SRC_FILES} ${RES_FILES})
 
-# Find IME
+# Find Mighter2d
 list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/extlibs")
-find_package(ime 3.2.0 REQUIRED)
+find_package(mighter2d 0.1.0 REQUIRED)
 
-# Link IME
-target_link_libraries (SuperPacMan PRIVATE ime)
+# Link Mighter2d
+target_link_libraries (SuperPacMan PRIVATE mighter2d)
 
 # Add <project>/src folder as include directory
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 # Copy runtime dependencies to the executable output folder
-set(IME_BIN_DIR "${PROJECT_SOURCE_DIR}/extlibs/IME-${ime_VERSION}/bin")
+set(IME_BIN_DIR "${PROJECT_SOURCE_DIR}/extlibs/MIGHTER2D-${mighter2d_VERSION}/bin")
 
 # Copy runtime dependencies to the executable output folder
 add_custom_command(TARGET SuperPacMan PRE_BUILD

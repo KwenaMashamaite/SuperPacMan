@@ -25,8 +25,8 @@
 #ifndef SUPERPACMAN_OBJECTREFERENCEKEEPER_H
 #define SUPERPACMAN_OBJECTREFERENCEKEEPER_H
 
-#include <IME/core/object/GridObject.h>
-#include <IME/common/Vector2.h>
+#include <Mighter2d/core/object/GridObject.h>
+#include <Mighter2d/common/Vector2.h>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -43,20 +43,20 @@ namespace spm {
          *
          * @warning @a gameObject must not be @a nullptr
          */
-        static void registerGameObject(ime::GridObject* gameObject);
+        static void registerGameObject(mighter2d::GridObject* gameObject);
 
         /**
          * @brief Remove a game object from global access
          * @param gameObject The game object to be removed
          */
-        static void deregisterGameObject(ime::GridObject* gameObject);
+        static void deregisterGameObject(mighter2d::GridObject* gameObject);
 
         /**
          * @brief Get access to an actor
          * @param tag The tag of the game ob
          * @return A pointer to the actor if it exists otherwise a nullptr
          */
-        static ime::GridObject* getActor(const std::string& tag);
+        static mighter2d::GridObject* getActor(const std::string& tag);
 
         /**
          * @brief Clear the records
@@ -64,7 +64,7 @@ namespace spm {
         static void clear();
 
     private:
-        inline static std::unordered_map<std::string, ime::GridObject*> gameObjects_{};
+        inline static std::unordered_map<std::string, mighter2d::GridObject*> gameObjects_{};
     };
 }
 

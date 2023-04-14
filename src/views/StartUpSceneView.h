@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_STARTUPSCENEVIEW_H
 #define SUPERPACMAN_STARTUPSCENEVIEW_H
 
-#include <IME/ui/GuiContainer.h>
+#include <Mighter2d/ui/GuiContainer.h>
 
 namespace spm {
     /**
@@ -40,14 +40,14 @@ namespace spm {
          * @brief Initialize the view
          * @param gui Container for all UI controls in the view
          */
-        void init(ime::ui::GuiContainer& gui);
+        void init(mighter2d::ui::GuiContainer& gui);
 
     private:
         /**
          * @brief Create name prompt sub view
          * @param gui The container for sub menu widgets
          */
-        void createNamePrompt(ime::ui::GuiContainer& gui);
+        void createNamePrompt(mighter2d::ui::GuiContainer& gui);
     };
 }
 

@@ -49,24 +49,24 @@ namespace spm {
         createAnimation("goingRightFlashing", {2, 3}, true);
         createAnimation("goingDownFlashing", {3, 3}, true);
 
-        auto deathAnimation = ime::Animation::create("dying", deathSpritesheet_, ime::seconds(2));
+        auto deathAnimation = mighter2d::Animation::create("dying", deathSpritesheet_, mighter2d::seconds(2));
         deathAnimation->addFrames({0, 0}, 14);
         animations_.push_back(std::move(deathAnimation));
     }
 
     ///////////////////////////////////////////////////////////////
-    const std::vector<ime::Animation::Ptr> &PacManAnimations::getAll() const {
+    const std::vector<mighter2d::Animation::Ptr> &PacManAnimations::getAll() const {
         return animations_;
     }
 
     ///////////////////////////////////////////////////////////////
-    void PacManAnimations::createAnimation(const std::string &name, ime::Index index, bool super) {
-        auto movementAnimDuration = ime::milliseconds(120);
-        ime::Animation::Ptr animation;
+    void PacManAnimations::createAnimation(const std::string &name, mighter2d::Index index, bool super) {
+        auto movementAnimDuration = mighter2d::milliseconds(120);
+        mighter2d::Animation::Ptr animation;
         if (super)
-            animation = ime::Animation::create(name, superSizeSpritesheet_, movementAnimDuration);
+            animation = mighter2d::Animation::create(name, superSizeSpritesheet_, movementAnimDuration);
         else
-            animation = ime::Animation::create(name, normalSizeSpritesheet_, movementAnimDuration);
+            animation = mighter2d::Animation::create(name, normalSizeSpritesheet_, movementAnimDuration);
 
         animation->addFrames(index, 3);
         animation->setLoop(true);

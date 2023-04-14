@@ -23,8 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "LevelStartScene.h"
-#include <IME/ui/widgets/Label.h>
-#include <IME/core/engine/Engine.h>
+#include <Mighter2d/ui/widgets/Label.h>
+#include <Mighter2d/core/engine/Engine.h>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
@@ -42,26 +42,21 @@ namespace spm {
         view_->init(level, lives, score, highScore);
 
         if (level == getCache().getValue<int>("BONUS_STAGE"))
-            getGui().getWidget<ime::ui::Label>("lblLevel")->setText("BONUS STAGE");
+            getGui().getWidget<mighter2d::ui::Label>("lblLevel")->setText("BONUS STAGE");
 
-        ime::Time sceneDuration = ime::seconds(2);
+        mighter2d::Time sceneDuration = mighter2d::seconds(2);
 
         static bool playedAudio = false;
         if (level == 1 && !playedAudio) {
             playedAudio = true;
             getAudio().setMasterVolume(getCache().getValue<float>("MASTER_VOLUME"));
-            getAudio().play(ime::audio::Type::Sfx, "beginning.wav");
-            sceneDuration = ime::seconds(4.2);
+            getAudio().play(mighter2d::audio::Type::Sfx, "beginning.wav");
+            sceneDuration = mighter2d::seconds(4.2);
         }
 
         getTimer().setTimeout(sceneDuration, [this] {
             getEngine().popScene();
         });
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void LevelStartScene::onUpdate(ime::Time deltaTime) {
-        view_->update(deltaTime);
     }
 
     ///////////////////////////////////////////////////////////////

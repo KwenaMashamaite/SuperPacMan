@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_LOADINGSCENE_H
 #define SUPERPACMAN_LOADINGSCENE_H
 
-#include <IME/core/scene/Scene.h>
+#include <Mighter2d/core/scene/Scene.h>
 
 namespace spm {
     /**
@@ -37,7 +37,7 @@ namespace spm {
      *
      * Note that the game cannot be exited while in this state
      */
-    class LoadingScene : public ime::Scene {
+    class LoadingScene : public mighter2d::Scene {
     public:
         /**
          * @brief Enter the scene

@@ -30,14 +30,14 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    PacMan::PacMan(ime::Scene& scene) :
-        ime::GridObject(scene),
+    PacMan::PacMan(mighter2d::Scene& scene) :
+        mighter2d::GridObject(scene),
         livesCount_{Constants::PacManLives}
     {
         setTag("pacman");
         getCollisionExcludeList().add("hiddenWall"); // Make pacman able to pass through a special hidden wall
         initAnimations();
-        setDirection(ime::Left);
+        setDirection(mighter2d::Left);
         setState(State::Normal);
         ObjectReferenceKeeper::registerGameObject(this);
     }
@@ -45,7 +45,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void PacMan::setLivesCount(int numOfLives) {
         livesCount_ = numOfLives;
-        emitChange(ime::Property{"livesCount", livesCount_});
+        emitChange(mighter2d::Property{"livesCount", livesCount_});
     }
 
     ///////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void PacMan::switchAnimation(ime::Vector2i dir) {
+    void PacMan::switchAnimation(mighter2d::Vector2i dir) {
         auto strDir = utils::convertToString(dir);
         auto& animator = getSprite().getAnimator();
 
@@ -69,20 +69,18 @@ namespace spm {
             animator.startAnimation("going" + strDir + "Flashing");
         else
             animator.startAnimation("going" + strDir + "Super");
-
-        resetSpriteOrigin();
     }
 
     ///////////////////////////////////////////////////////////////
     void PacMan::setState(PacMan::State state) {
-        ime::GameObject::setState(static_cast<int>(state));
+        mighter2d::GameObject::setState(static_cast<int>(state));
         switchAnimation(getDirection() * -1);
         switchAnimation(getDirection());
     }
 
     ///////////////////////////////////////////////////////////////
     PacMan::State PacMan::getState() const {
-        return static_cast<State>(ime::GameObject::getState());
+        return static_cast<State>(mighter2d::GameObject::getState());
     }
 
     ///////////////////////////////////////////////////////////////
@@ -101,7 +99,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void PacMan::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+    void PacMan::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
         if (event == GameEvent::SuperModeBegin)
             setState(State::Super);
         else if (event == GameEvent::SuperModeEnd)
@@ -117,15 +115,15 @@ namespace spm {
     void PacMan::initAnimations() {
         auto animations = PacManAnimations();
         animations.create();
-        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{0, 0});
+        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(getScene(), mighter2d::Index{0, 0});
         for (const auto& animation : animations.getAll())
             getSprite().getAnimator().addAnimation(animation);
 
         getTransform().scale(2.0f, 2.0f);
 
         // Automatically switch animations when the direction changes
-        onPropertyChange("direction", [this](const ime::Property& property) {
-            switchAnimation(property.getValue<ime::Direction>());
+        onPropertyChange("direction", [this](const mighter2d::Property& property) {
+            switchAnimation(property.getValue<mighter2d::Direction>());
         });
     }
 

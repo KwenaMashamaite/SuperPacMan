@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_GRIDANIMATION_H
 #define SUPERPACMAN_GRIDANIMATION_H
 
-#include <IME/core/animation/Animation.h>
+#include <Mighter2d/core/animation/Animation.h>
 #include <vector>
 
 namespace spm {
@@ -46,7 +46,7 @@ namespace spm {
          * @brief Get all the grid animations
          * @return All grid animations
          */
-        const std::vector<ime::Animation::Ptr>& getAll();
+        const std::vector<mighter2d::Animation::Ptr>& getAll();
 
     private:
         /**
@@ -54,11 +54,11 @@ namespace spm {
          * @param gridColour Colour of the grid in lower case
          * @param gridFrame Index of the grid frame on the spritesheet
          */
-        void createFlashAnimation(const std::string& gridColour, ime::Index gridFrame);
+        void createFlashAnimation(const std::string& gridColour, mighter2d::Index gridFrame);
 
     private:
-        std::vector<ime::Animation::Ptr> animations_;
-        ime::SpriteSheet spritesheet_;
+        std::vector<mighter2d::Animation::Ptr> animations_;
+        mighter2d::SpriteSheet spritesheet_;
     };
 }
 

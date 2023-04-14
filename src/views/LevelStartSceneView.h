@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_LEVELSTARTSCENEVIEW_H
 #define SUPERPACMAN_LEVELSTARTSCENEVIEW_H
 
-#include <IME/core/time/Time.h>
+#include <Mighter2d/core/time/Time.h>
 #include "Views/CommonView.h"
 
 namespace spm {
@@ -42,7 +42,7 @@ namespace spm {
          * @brief Constructor
          * @param gui Container for all UI controls in the view
          */
-        explicit LevelStartSceneView(ime::ui::GuiContainer& gui);
+        explicit LevelStartSceneView(mighter2d::ui::GuiContainer& gui);
 
         /**
          * @brief Initialize the view
@@ -53,14 +53,8 @@ namespace spm {
          */
         void init(int level, int lives, int score, int highScore);
 
-        /**
-         * @brief Update view
-         * @param deltaTime Time passed since view was last updated
-         */
-        void update(ime::Time deltaTime);
-
     private:
-        ime::ui::GuiContainer& gui_; //!< Container for all widgets in this view
+        mighter2d::ui::GuiContainer& gui_; //!< Container for all widgets in this view
         CommonView commonView_;      //!< View displayed across all scenes
     };
 }

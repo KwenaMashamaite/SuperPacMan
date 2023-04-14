@@ -27,14 +27,14 @@
 
 #include "AI/IActorState.h"
 #include "Common/Events.h"
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/object/GridObject.h>
 #include <memory>
 
 namespace spm {
     /**
      * @brief Ghost actor
      */
-    class Ghost : public ime::GridObject {
+    class Ghost : public mighter2d::GridObject {
     public:
         /**
          * @brief The colour of the ghost
@@ -62,7 +62,7 @@ namespace spm {
          * @param scene The scene that the actor is in
          * @param colour The colour of the ghost
          */
-        Ghost(ime::Scene& scene, Colour colour);
+        Ghost(mighter2d::Scene& scene, Colour colour);
 
         /**
          * @brief Get the name of this class
@@ -141,14 +141,14 @@ namespace spm {
          * @brief Update the ghost
          * @param deltaTime Time passed since last update
          */
-        void update(ime::Time deltaTime) override;
+        void update(mighter2d::Time deltaTime) override;
 
         /**
          * @brief Handle a game event
          * @param event The event to be handled
          * @param args Arguments associated with the event
          */
-        virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args);
+        virtual void handleEvent(GameEvent event, const mighter2d::PropertyContainer& args);
 
         /**
          * @brief Destructor

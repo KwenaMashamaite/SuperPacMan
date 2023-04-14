@@ -26,8 +26,8 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    Sensor::Sensor(ime::Scene &scene) :
-        ime::GridObject(scene)
+    Sensor::Sensor(mighter2d::Scene &scene) :
+        mighter2d::GridObject(scene)
     {
         setCollisionGroup("sensors");
     }

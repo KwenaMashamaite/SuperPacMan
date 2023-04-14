@@ -29,10 +29,10 @@ namespace spm {
     FruitAnimation::FruitAnimation() :
         spritesheet_{"spritesheet.png", {16, 16}, {1, 1}, {0, 141, 290, 18}}
     {
-        animation_ = ime::Animation::create("slide", spritesheet_);
+        animation_ = mighter2d::Animation::create("slide", spritesheet_);
         animation_->setFrameRate(3);
         animation_->showTargetOnStart(true);
-        animation_->addFrames(ime::Index{0, 0}, 16);
+        animation_->addFrames(mighter2d::Index{0, 0}, 16);
         animation_->setCurrentFrameResetOnInterrupt(false);
         animation_->setLoop(true);
 
@@ -46,7 +46,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    std::shared_ptr<ime::Animation> FruitAnimation::getAnimation() {
+    std::shared_ptr<mighter2d::Animation> FruitAnimation::getAnimation() {
         return animation_;
     }
 

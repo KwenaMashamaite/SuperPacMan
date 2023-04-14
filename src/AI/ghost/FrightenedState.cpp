@@ -38,7 +38,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void FrightenedState::onEntry() {
-        ghost_->ime::GameObject::setState(static_cast<int>(Ghost::State::Frightened));
+        ghost_->mighter2d::GameObject::setState(static_cast<int>(Ghost::State::Frightened));
         ghost_->getCollisionExcludeList().add("sensors");
         GhostState::onEntry();
 
@@ -48,7 +48,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void FrightenedState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+    void FrightenedState::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
         GhostState::handleEvent(event, args);
 
         if (event == GameEvent::FrightenedModeEnd) {

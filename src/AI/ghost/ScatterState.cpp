@@ -32,7 +32,7 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     void ScatterState::onEntry() {
-        ghost_->ime::GameObject::setState(static_cast<int>(Ghost::State::Scatter));
+        ghost_->mighter2d::GameObject::setState(static_cast<int>(Ghost::State::Scatter));
         GhostState::onEntry();
 
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()) + (ghost_->isFlat() ? "Flat" : ""));
@@ -53,7 +53,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void ScatterState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+    void ScatterState::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
         GhostState::handleEvent(event, args);
 
         if (event == GameEvent::SuperModeBegin)

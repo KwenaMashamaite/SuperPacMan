@@ -26,7 +26,7 @@
 #define SUPERPACMAN_GAMEOVERSCENE_H
 
 #include "Views/GameOverSceneView.h"
-#include <IME/core/scene/Scene.h>
+#include <Mighter2d/core/scene/Scene.h>
 
 namespace spm {
     /**
@@ -37,7 +37,7 @@ namespace spm {
      * In addition, the player is presented with their score, the level they
      * managed to reach and the games highest score
      */
-    class GameOverScene : public ime::Scene {
+    class GameOverScene : public mighter2d::Scene {
     public:
         /**
          * @brief Enter the scene

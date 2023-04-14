@@ -27,13 +27,12 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    Fruit::Fruit(ime::Scene& scene) :
-        ime::GridObject(scene)
+    Fruit::Fruit(mighter2d::Scene& scene) :
+        mighter2d::GridObject(scene)
     {
         auto animation = FruitAnimation();
         getSprite().getAnimator().addAnimation(animation.getAnimation());
-        getSprite() = animation.getAnimation()->getSpriteSheet().getSprite(ime::Index{0, 0});
-        resetSpriteOrigin();
+        getSprite() = animation.getAnimation()->getSpriteSheet().getSprite(getScene(), mighter2d::Index{0, 0});
         getSprite().scale(2.0f, 2.0f);
 
         // When the tag of the object is set to any of the following, its sprite
@@ -48,8 +47,8 @@ namespace spm {
             spritesheet.assignAlias({0, colm}, tags.at(colm));
 
         // Change the sprite texture every time its tag changes to an appropriate image
-        onPropertyChange("tag", [this, spritesheet = std::move(spritesheet)](const ime::Property& tag) {
-            getSprite().setTextureRect(spritesheet.getSprite(tag.getValue<std::string>()).getTextureRect());
+        onPropertyChange("tag", [this, spritesheet = std::move(spritesheet)](const mighter2d::Property& tag) {
+            getSprite().setTextureRect(spritesheet.getSprite(getScene(), tag.getValue<std::string>()).getTextureRect());
         });
 
         setTag("apple"); // Set apple texture by default

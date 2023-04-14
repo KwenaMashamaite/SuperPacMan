@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_PACMANGRIDMOVER_H
 #define SUPERPACMAN_PACMANGRIDMOVER_H
 
-#include <IME/core/physics/grid/KeyboardGridMover.h>
+#include <Mighter2d/core/physics/KeyboardGridMover.h>
 
 namespace spm {
     class PacMan;
@@ -33,7 +33,7 @@ namespace spm {
     /**
      * @brief Controls the PathFinders of pacman in the grid using the keyboard
      */
-    class PacManGridMover : public ime::KeyboardGridMover {
+    class PacManGridMover : public mighter2d::KeyboardGridMover {
     public:
         /**
          * @brief Constructor
@@ -42,7 +42,7 @@ namespace spm {
          *
          * @warning @a pacman must not be a nullptr
          */
-        PacManGridMover(ime::Grid2D& grid, PacMan* pacman);
+        PacManGridMover(mighter2d::Grid& grid, PacMan* pacman);
 
         /**
          * @brief Initialize the grid mover
@@ -56,7 +56,7 @@ namespace spm {
 
     private:
         int pacmanStateChangeId_;         //!< State chang handler id
-        ime::Direction pendingDirection_; //!< Direction pacman wishes to go in without
+        mighter2d::Direction pendingDirection_; //!< Direction pacman wishes to go in without
     };
 }
 

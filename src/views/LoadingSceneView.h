@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_LOADINGSCENEVIEW_H
 #define SUPERPACMAN_LOADINGSCENEVIEW_H
 
-#include <IME/ui/GuiContainer.h>
+#include <Mighter2d/ui/GuiContainer.h>
 
 namespace spm {
     /**
@@ -40,7 +40,7 @@ namespace spm {
          * @brief Add controls to the gui
          * @param gui Container for UI controls
          */
-        static void init(ime::ui::GuiContainer& gui);
+        static void init(mighter2d::ui::GuiContainer& gui);
     };
 }
 

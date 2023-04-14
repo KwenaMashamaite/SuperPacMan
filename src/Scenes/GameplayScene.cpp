@@ -32,10 +32,10 @@
 #include "PathFinders/PacManGridMover.h"
 #include "Common/ObjectReferenceKeeper.h"
 #include "AI/ghost/ScatterState.h"
-#include <IME/core/engine/Engine.h>
-#include <IME/ui/widgets/Label.h>
-#include <IME/ui/widgets/HorizontalLayout.h>
-#include <IME/utility/Utils.h>
+#include <Mighter2d/core/engine/Engine.h>
+#include <Mighter2d/ui/widgets/Label.h>
+#include <Mighter2d/ui/widgets/HorizontalLayout.h>
+#include <Mighter2d/utility/Utils.h>
 #include <cassert>
 
 namespace spm {
@@ -66,12 +66,12 @@ namespace spm {
             isBonusStage_ = true;
         }
 
-        getCache().setValue("GHOSTS_FRIGHTENED_MODE_DURATION", getCache().getValue<ime::Time>("GHOSTS_FRIGHTENED_MODE_DURATION") - ime::seconds(1));
-        getCache().setValue("PACMAN_SUPER_MODE_DURATION", getCache().getValue<ime::Time>("PACMAN_SUPER_MODE_DURATION") - ime::seconds(1));
+        getCache().setValue("GHOSTS_FRIGHTENED_MODE_DURATION", getCache().getValue<mighter2d::Time>("GHOSTS_FRIGHTENED_MODE_DURATION") - mighter2d::seconds(1));
+        getCache().setValue("PACMAN_SUPER_MODE_DURATION", getCache().getValue<mighter2d::Time>("PACMAN_SUPER_MODE_DURATION") - mighter2d::seconds(1));
 
         initGui();
         initGrid();
-        gameObjectsManager_.createObjects(*grid_);
+        //gameObjectsManager_.createObjects(*grid_);
         /*gameObjectsManager_.initGameObjects();
         initMovementControllers();
         initSceneLevelEvents();
@@ -88,10 +88,10 @@ namespace spm {
         view_->setScore(getCache().getValue<int>("CURRENT_SCORE"));
 
         if (isBonusStage_) {
-            ime::ui::Label::Ptr lblRemainingTime = ime::ui::Label::create("");
+            mighter2d::ui::Label::Ptr lblRemainingTime = mighter2d::ui::Label::create("");
             lblRemainingTime->setName("lblRemainingTime");
             lblRemainingTime->setTextSize(15);
-            lblRemainingTime->getRenderer()->setTextColour(ime::Colour::White);
+            lblRemainingTime->getRenderer()->setTextColour(mighter2d::Colour::White);
             lblRemainingTime->setOrigin(0.5f, 0.5f);
             lblRemainingTime->setPosition(242, 221);
             getGui().addWidget(std::move(lblRemainingTime));
@@ -156,19 +156,19 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initSceneLevelEvents() {
-        getInput().onKeyUp([this](ime::Key key) {
-            if ((key == ime::Key::P || key == ime::Key::Escape))
+        getInput().onKeyUp([this](mighter2d::Key key) {
+            if ((key == mighter2d::Key::P || key == mighter2d::Key::Escape))
                 pauseGame();
         });
 
-        getEventEmitter().on("levelStartCountdownComplete", ime::Callback<>([this] {
+        on("levelStartCountdownComplete", mighter2d::Callback<>([this] {
             getInput().setAllInputEnable(true);
             getWindow().suspendedEventListener(onWindowCloseId_, false);
 
             getGui().getWidget("lblReady")->setVisible(false);
             auto* pacman = gameObjectsManager_.getPacMan();
             pacman->getSprite().setVisible(true);
-            pacman->getGridMover()->requestMove(ime::Left);
+            pacman->getGridMover()->requestMove(mighter2d::Left);
 
             if (isBonusStage_) {
                 pacman->setState(PacMan::State::Super);
@@ -186,7 +186,7 @@ namespace spm {
             }
         }));
 
-        getEventEmitter().addOnceEventListener("levelComplete", ime::Callback<>([this] {
+        addOnceEventListener("levelComplete", mighter2d::Callback<>([this] {
             getWindow().suspendedEventListener(onWindowCloseId_, true);
 
             if (isBonusStage_)
@@ -201,7 +201,7 @@ namespace spm {
             pacman->getSprite().getAnimator().complete();
             pacman->getGridMover()->setMovementFreeze(true);
 
-            getTimer().setTimeout(ime::seconds(0.5), [this, pacman] {
+            getTimer().setTimeout(mighter2d::seconds(0.5), [this, pacman] {
                 gameObjectsManager_.getPellets().removeAll();
                 gameObjectsManager_.getFruits().removeAll();
                 gameObjectsManager_.getKeys().removeAll();
@@ -214,8 +214,8 @@ namespace spm {
                         getCache().setValue("PLAYER_WON_GAME", true);
                         endGameplay();
                     } else {
-                        getTimer().setTimeout(ime::seconds(1), [this] {
-                            getEventEmitter().emit("startNewLevel");
+                        getTimer().setTimeout(mighter2d::seconds(1), [this] {
+                            emit("startNewLevel");
                         });
                     }
                 });
@@ -224,7 +224,7 @@ namespace spm {
             });
         }));
 
-        getEventEmitter().on("startNewLevel", ime::Callback<>([this] {
+        on("startNewLevel", mighter2d::Callback<>([this] {
             getCache().setValue("CURRENT_LEVEL", currentLevel_ + 1);
             getEngine().popScene();
             getEngine().pushScene(std::make_unique<GameplayScene>());
@@ -270,13 +270,13 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initLevelStartCountdown() {
         getInput().setAllInputEnable(false);
-        getGui().getWidget<ime::ui::Label>("lblReady")->setVisible(true);
+        getGui().getWidget<mighter2d::ui::Label>("lblReady")->setVisible(true);
         gameObjectsManager_.getPacMan()->getSprite().setVisible(false);
 
         int counter = Constants::LEVEL_START_DELAY;
-        getTimer().setInterval(ime::seconds(0.5f), [this, counter]() mutable {
+        getTimer().setInterval(mighter2d::seconds(0.5f), [this, counter]() mutable {
             if (counter-- == 0)
-                getEventEmitter().emit("levelStartCountdownComplete");
+                emit("levelStartCountdownComplete");
         }, counter);
     }
 
@@ -288,8 +288,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::emit(GameEvent event) {
-        ime::PropertyContainer args;
+    void GameplayScene::emitGE(GameEvent event) {
+        mighter2d::PropertyContainer args;
         gameObjectsManager_.getPacMan()->handleEvent(event, args);
         gameObjectsManager_.getGhosts().forEach([event, &args](Ghost* ghost) {
             ghost->handleEvent(event, args);
@@ -353,8 +353,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::onUpdate(ime::Time deltaTime) {
-        view_->update(deltaTime);
+    void GameplayScene::onUpdate(mighter2d::Time deltaTime) {
         grid_->update(deltaTime);
         timerManager_.update(deltaTime);
         gameObjectsManager_.update(deltaTime);
@@ -377,7 +376,7 @@ namespace spm {
 
         if (gameObjectsManager_.isAllPelletsEaten() && gameObjectsManager_.isAllFruitsEaten())
         {
-            getEventEmitter().emit("levelComplete");
+            emit("levelComplete");
         }
     }
 

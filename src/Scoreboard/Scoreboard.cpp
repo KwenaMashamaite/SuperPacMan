@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Scoreboard.h"
-#include <IME/utility/DiskFileReader.h>
+#include <Mighter2d/utility/DiskFileReader.h>
 #include <algorithm>
 
 namespace spm {
@@ -35,7 +35,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void Scoreboard::load() {
         auto highScores = std::stringstream();
-        ime::utility::DiskFileReader().readFileInto(highScoresFile_, highScores);
+        mighter2d::utility::DiskFileReader().readFileInto(highScoresFile_, highScores);
         auto line = std::string();
         while (std::getline(highScores, line)) {
             auto posOfSpaceBetweenNameAndScore = line.find_first_of(':');
@@ -73,7 +73,7 @@ namespace spm {
             newHighscoreList << "\n" + score.getOwner() + ":" + std::to_string(score.getValue()) + " " + std::to_string(score.getLevel());
         });
 
-        ime::utility::DiskFileReader().writeToFile(newHighscoreList, highScoresFile_);
+        mighter2d::utility::DiskFileReader().writeToFile(newHighscoreList, highScoresFile_);
     }
 
     ///////////////////////////////////////////////////////////////

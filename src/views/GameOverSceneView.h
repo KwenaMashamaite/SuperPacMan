@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_GAMEOVERSCENEVIEW_H
 #define SUPERPACMAN_GAMEOVERSCENEVIEW_H
 
-#include <IME/ui/GuiContainer.h>
+#include <Mighter2d/ui/GuiContainer.h>
 
 namespace spm {
     /**
@@ -38,7 +38,7 @@ namespace spm {
          * @param gui Container for all ui widgets in the view
          * @param wonGame True if player won the game, or false if player lost
          */
-        void init(ime::ui::GuiContainer& gui, bool wonGame);
+        void init(mighter2d::ui::GuiContainer& gui, bool wonGame);
 
     private:
         /**
@@ -46,14 +46,14 @@ namespace spm {
          * @param gui Container for gui widgets
          * @param wonGame True if player won the game or false if player lost
          */
-        void createPreSaveMenu(ime::ui::GuiContainer& gui, bool wonGame);
+        void createPreSaveMenu(mighter2d::ui::GuiContainer& gui, bool wonGame);
 
         /**
          * @brief Create menu displayed after user saves their data
          * @param gui Container for gui widgets
          * @param wonGame True if player won the game or false if player lost
          */
-        void createNavButtons(ime::ui::GuiContainer& gui, bool wonGame);
+        void createNavButtons(mighter2d::ui::GuiContainer& gui, bool wonGame);
     };
 }
 

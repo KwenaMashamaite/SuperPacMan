@@ -23,20 +23,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "StartUpSceneView.h"
-#include <IME/ui/widgets/Picture.h>
-#include <IME/ui/widgets/Panel.h>
-#include <IME/ui/widgets/Label.h>
-#include <IME/ui/widgets/VerticalLayout.h>
-#include <IME/ui/widgets/EditBox.h>
-#include <IME/ui/widgets/Button.h>
+#include <Mighter2d/ui/widgets/Picture.h>
+#include <Mighter2d/ui/widgets/Panel.h>
+#include <Mighter2d/ui/widgets/Label.h>
+#include <Mighter2d/ui/widgets/VerticalLayout.h>
+#include <Mighter2d/ui/widgets/EditBox.h>
+#include <Mighter2d/ui/widgets/Button.h>
 
-using namespace ime::ui;
+using namespace mighter2d::ui;
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    void StartUpSceneView::init(ime::ui::GuiContainer& gui) {
+    void StartUpSceneView::init(mighter2d::ui::GuiContainer& gui) {
         auto* pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
-        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        pnlContainer->getRenderer()->setBackgroundColour(mighter2d::Colour::Transparent);
 
         // Create game logo
         auto picPacmanLogo = Picture::create("pacman_logo.png");
@@ -47,7 +47,7 @@ namespace spm {
         pnlContainer->addWidget(std::move(picPacmanLogo), "picPacmanLogo");
 
         auto* pnlCenterPanel = pnlContainer->addWidget<Panel>(Panel::create("85%", "32%"));
-        pnlCenterPanel->getRenderer()->setBackgroundColour(ime::Colour("#121212cc"));
+        pnlCenterPanel->getRenderer()->setBackgroundColour(mighter2d::Colour("#121212cc"));
         pnlCenterPanel->getRenderer()->setRoundedBorderRadius(15);
         pnlCenterPanel->setOrigin(0.5f, 0.5f);
         pnlCenterPanel->setPosition("50%", "55%");
@@ -55,27 +55,27 @@ namespace spm {
         auto* lblDisclaimer = pnlCenterPanel->addWidget<Label>(Label::create(), "lblDisclaimer");
         lblDisclaimer->setText(
             "This game is a demo for my game engine, Infinite Motion Engine "
-            "which can be found here - github.com/KwenaMashamaite/IME \n\n"
+            "which can be found here - github.com/KwenaMashamaite/Mighter2d \n\n"
             "I do not own nor do I claim the idea for this game. The game is a "
             "clone of the original Pac-Man game from Bandai Namco Entertainment. "
             "All third party content, brands, names, and logos are used under license "
             "and remain property of their respective owners.");
 
-        lblDisclaimer->getRenderer()->setTextColour(ime::Colour::White);
-        lblDisclaimer->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Center);
-        lblDisclaimer->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
+        lblDisclaimer->getRenderer()->setTextColour(mighter2d::Colour::White);
+        lblDisclaimer->setHorizontalAlignment(mighter2d::ui::Label::HorizontalAlignment::Center);
+        lblDisclaimer->setVerticalAlignment(mighter2d::ui::Label::VerticalAlignment::Center);
         lblDisclaimer->setSize("90%", "75%");
-        lblDisclaimer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        lblDisclaimer->getRenderer()->setBackgroundColour(mighter2d::Colour::Transparent);
         lblDisclaimer->getRenderer()->setBorderColour({192, 192, 192});
         lblDisclaimer->setOrigin(0.5f, 0.0f);
         lblDisclaimer->setPosition("50%", "22%");
 
-        auto lblDisclaimerHeading = ime::ui::Label::create("DISCLAIMER");
+        auto lblDisclaimerHeading = mighter2d::ui::Label::create("DISCLAIMER");
         lblDisclaimerHeading->setTextSize(18);
-        lblDisclaimerHeading->getRenderer()->setTextColour(ime::Colour::Red);
-        lblDisclaimerHeading->getRenderer()->setTextStyle(ime::TextStyle::Bold);
+        lblDisclaimerHeading->getRenderer()->setTextColour(mighter2d::Colour::Red);
+        lblDisclaimerHeading->getRenderer()->setTextStyle(mighter2d::TextStyle::Bold);
         lblDisclaimerHeading->setOrigin(0.5f, 1.0f);
-        lblDisclaimerHeading->setPosition("50%", ime::bindTop(lblDisclaimer).append("-1%"));
+        lblDisclaimerHeading->setPosition("50%", mighter2d::bindTop(lblDisclaimer).append("-1%"));
         pnlCenterPanel->addWidget(std::move(lblDisclaimerHeading), "dlbDisclaimerHeading");
 
         auto lblCopyright = Label::create("Copyright \xa9 2021 Kwena Mashamaite");
@@ -88,18 +88,18 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void StartUpSceneView::createNamePrompt(ime::ui::GuiContainer &gui) {
+    void StartUpSceneView::createNamePrompt(mighter2d::ui::GuiContainer &gui) {
         // Name prompt panel
         auto pnlParentContainer = Panel::create();
-        pnlParentContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        pnlParentContainer->getRenderer()->setBackgroundColour(mighter2d::Colour::Transparent);
         pnlParentContainer->getRenderer()->setBackgroundTexture("namePromptBackground.jpeg");
         pnlParentContainer->setVisible(false);
 
         auto pnlSecondaryContainer = Panel::create("80%", "28%");
         pnlSecondaryContainer->getRenderer()->setRoundedBorderRadius(15.0f);
-        pnlSecondaryContainer->getRenderer()->setBackgroundColour(ime::Colour("#27293dCC"));
+        pnlSecondaryContainer->getRenderer()->setBackgroundColour(mighter2d::Colour("#27293dCC"));
         pnlSecondaryContainer->getRenderer()->setBorders({1.0f, 1.0f, 1.0f, 1.0f});
-        pnlSecondaryContainer->getRenderer()->setBorderColour(ime::Colour(128, 128, 128, 60));
+        pnlSecondaryContainer->getRenderer()->setBorderColour(mighter2d::Colour(128, 128, 128, 60));
         pnlSecondaryContainer->setOrigin(0.5f, 0.5f);
         pnlSecondaryContainer->setPosition("50%", "50%");
         auto vlCentreContainer = VerticalLayout::create();
@@ -107,7 +107,7 @@ namespace spm {
         // Create name prompt heading
         auto* lblHeading = pnlSecondaryContainer->addWidget<Label>(Label::create(), "lblNameHeading");
         lblHeading->setText("Player Name");
-        lblHeading->getRenderer()->setTextColour(ime::Colour::White);
+        lblHeading->getRenderer()->setTextColour(mighter2d::Colour::White);
         lblHeading->setTextSize(16);
         lblHeading->setOrigin(0.5f, 0.0f);
         lblHeading->setPosition("50%", "10%");
@@ -117,14 +117,14 @@ namespace spm {
         txtName->setDefaultText("Enter your name");
         txtName->setMaximumCharacters(15);
         txtName->getRenderer()->setFont("ChaletLondonNineteenSixty.ttf");
-        txtName->getRenderer()->setTextStyle(ime::TextStyle::Bold);
-        txtName->setMouseCursor(ime::CursorType::Text);
-        txtName->getRenderer()->setBackgroundColour(ime::Colour::White);
-        txtName->getRenderer()->setBackgroundHoverColour(ime::Colour::White);
+        txtName->getRenderer()->setTextStyle(mighter2d::TextStyle::Bold);
+        txtName->setMouseCursor(mighter2d::CursorType::Text);
+        txtName->getRenderer()->setBackgroundColour(mighter2d::Colour::White);
+        txtName->getRenderer()->setBackgroundHoverColour(mighter2d::Colour::White);
         txtName->getRenderer()->setBorders({2.0f, 2.0f, 2.0f, 2.0f});
-        txtName->getRenderer()->setBorderColour(ime::Colour("#5427d880"));
-        txtName->getRenderer()->setFocusedBorderColour(ime::Colour("#4000ff"));
-        txtName->getRenderer()->setBorderHoverColour(ime::Colour("#450af5"));
+        txtName->getRenderer()->setBorderColour(mighter2d::Colour("#5427d880"));
+        txtName->getRenderer()->setFocusedBorderColour(mighter2d::Colour("#4000ff"));
+        txtName->getRenderer()->setBorderHoverColour(mighter2d::Colour("#450af5"));
         txtName->setTextSize(20);
         txtName->setSize("70%","20%");
         txtName->setOrigin(0.5f, 0.5f);
@@ -136,12 +136,12 @@ namespace spm {
         btnContinue->setOrigin(0.5f, 1.0f);
         btnContinue->setPosition("50%", "95%");
         btnContinue->getRenderer()->setRoundedBorderRadius(10.0f);
-        btnContinue->getRenderer()->setBackgroundColour(ime::Colour("#4d4dff"));
-        btnContinue->getRenderer()->setBorderColour(ime::Colour::Transparent);
+        btnContinue->getRenderer()->setBackgroundColour(mighter2d::Colour("#4d4dff"));
+        btnContinue->getRenderer()->setBorderColour(mighter2d::Colour::Transparent);
         btnContinue->getRenderer()->setBackgroundHoverColour({36, 92, 8});
-        btnContinue->getRenderer()->setTextHoverColour(ime::Colour::White);
-        btnContinue->getRenderer()->setTextColour(ime::Colour::White);
-        btnContinue->getRenderer()->setDisabledBackgroundColour(ime::Colour("#5a5a5ae6"));
+        btnContinue->getRenderer()->setTextHoverColour(mighter2d::Colour::White);
+        btnContinue->getRenderer()->setTextColour(mighter2d::Colour::White);
+        btnContinue->getRenderer()->setDisabledBackgroundColour(mighter2d::Colour("#5a5a5ae6"));
         btnContinue->setEnabled(false);
         pnlSecondaryContainer->addWidget(std::move(btnContinue), "btnContinue");
 

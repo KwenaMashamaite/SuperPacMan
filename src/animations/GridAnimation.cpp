@@ -37,13 +37,13 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    const std::vector<ime::Animation::Ptr> & GridAnimation::getAll() {
+    const std::vector<mighter2d::Animation::Ptr> & GridAnimation::getAll() {
         return animations_;
     }
 
     ///////////////////////////////////////////////////////////////
-    void GridAnimation::createFlashAnimation(const std::string& gridColour, ime::Index gridFrame) {
-        auto animation = ime::Animation::create("flash" + gridColour, spritesheet_, ime::seconds(2.0f));
+    void GridAnimation::createFlashAnimation(const std::string& gridColour, mighter2d::Index gridFrame) {
+        auto animation = mighter2d::Animation::create("flash" + gridColour, spritesheet_, mighter2d::seconds(2.0f));
         const int MAX_NUM_OF_FRAMES = 10;
         for (auto i = 0; i <= MAX_NUM_OF_FRAMES; ++i) {
             animation->addFrame(gridFrame);

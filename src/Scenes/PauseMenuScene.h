@@ -25,13 +25,13 @@
 #ifndef SUPERPACMAN_PAUSEMENUSCENE_H
 #define SUPERPACMAN_PAUSEMENUSCENE_H
 
-#include <IME/core/scene/Scene.h>
+#include <Mighter2d/core/scene/Scene.h>
 
 namespace spm {
     /**
      * @brief Defines the pause state of the game
      */
-    class PauseMenuScene : public ime::Scene {
+    class PauseMenuScene : public mighter2d::Scene {
     public:
         /**
          * @brief Enter the scene

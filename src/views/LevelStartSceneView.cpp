@@ -23,13 +23,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "LevelStartSceneView.h"
-#include <IME/ui/widgets/Label.h>
-#include <IME/ui/widgets/Picture.h>
-#include <IME/ui/widgets/Panel.h>
+#include <Mighter2d/ui/widgets/Label.h>
+#include <Mighter2d/ui/widgets/Picture.h>
+#include <Mighter2d/ui/widgets/Panel.h>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    LevelStartSceneView::LevelStartSceneView(ime::ui::GuiContainer& gui) :
+    LevelStartSceneView::LevelStartSceneView(mighter2d::ui::GuiContainer& gui) :
         gui_{gui},
         commonView_{gui}
     {
@@ -43,31 +43,26 @@ namespace spm {
         commonView_.setScore(score);
         commonView_.setHighScore(highScore);
 
-        using namespace ime::ui;
+        using namespace mighter2d::ui;
         auto pnlContainer = gui_.getWidget<Panel>("pnlContainer");
 
         auto* lblLevel = pnlContainer->addWidget<Label>(Label::create("STAGE  " + std::to_string(level)), "lblLevel");
-        lblLevel->getRenderer()->setTextColour(ime::Colour::White);
+        lblLevel->getRenderer()->setTextColour(mighter2d::Colour::White);
         lblLevel->setOrigin(0.5f, 0.5f);
         lblLevel->setPosition("50%", "50%");
 
-        auto frameSize = ime::Vector2u{16, 16};
-        auto startPos = ime::Vector2u{level * frameSize.x + (level - frameSize.x), 142}; //Top-left position of the fruit texture on the spritesheet
+        auto frameSize = mighter2d::Vector2u{16, 16};
+        auto startPos = mighter2d::Vector2u{level * frameSize.x + (level - frameSize.x), 142}; //Top-left position of the fruit texture on the spritesheet
         auto picFruit = pnlContainer->addWidget<Picture>(Picture::create("spritesheet.png", {startPos.x, startPos.y, frameSize.x, frameSize.y}), "picFruit");
         picFruit->scale(0.5f, 0.5f);
         picFruit->setPosition(lblLevel->getPosition().x - lblLevel->getSize().x / 2.0f,
                               lblLevel->getPosition().y + lblLevel->getSize().y * 2);
 
-        auto lblPoints = ime::ui::Label::create(std::to_string(level * 10) + " PTS");
-        lblPoints->getRenderer()->setTextColour(ime::Colour::White);
+        auto lblPoints = mighter2d::ui::Label::create(std::to_string(level * 10) + " PTS");
+        lblPoints->getRenderer()->setTextColour(mighter2d::Colour::White);
         lblPoints->setPosition(picFruit->getPosition().x + (picFruit->getSize().x * 2),
             picFruit->getPosition().y + 6.0f);
         gui_.addWidget(std::move(lblPoints), "lblPoints");
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void LevelStartSceneView::update(ime::Time deltaTime) {
-        commonView_.update(deltaTime);
     }
 
 } // namespace spm

@@ -25,32 +25,32 @@
 
 #include "LoadingScene.h"
 #include "views/LoadingSceneView.h"
-#include <IME/core/engine/Engine.h>
-#include <IME/ui/widgets/ProgressBar.h>
-#include <IME/ui/widgets/Label.h>
-#include <IME/core/resources/ResourceLoader.h>
+#include <Mighter2d/core/engine/Engine.h>
+#include <Mighter2d/ui/widgets/ProgressBar.h>
+#include <Mighter2d/ui/widgets/Label.h>
+#include <Mighter2d/core/resources/ResourceLoader.h>
 #include <thread>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
     void loadGameAssets() {
-        ime::ResourceLoader::loadFromFile(ime::ResourceType::Font, {
+        mighter2d::ResourceLoader::loadFromFile(mighter2d::ResourceType::Font, {
             "ChaletLondonNineteenSixty.ttf", "AtariClassicExtrasmooth-LxZy.ttf",
             "namco.ttf", "pacfont.ttf", "DejaVuSans.ttf"});
 
-        ime::ResourceLoader::loadFromFile(ime::ResourceType::Texture,  {
+        mighter2d::ResourceLoader::loadFromFile(mighter2d::ResourceType::Texture,  {
             "icon.png", "pacman_logo.png", "spritesheet.png",
             "main_menu_background.jpg", "main_menu_background_blurred.jpg"
         });
 
-        ime::ResourceLoader::loadFromFile(ime::ResourceType::SoundEffect, {
+        mighter2d::ResourceLoader::loadFromFile(mighter2d::ResourceType::SoundEffect, {
             "doorBroken.wav", "fruitEaten.wav", "ghostEaten.wav",
             "pacmanDying.wav", "powerPelletEaten.wav", "superPelletEaten.wav",
             "beginning.wav", "levelComplete.ogg", "wieu_wieu_slow.ogg", "extraLife.wav",
             "starSpawned.wav", "bonusFruitMatch.wav", "bonusFruitNotMatch.wav", "ghostsTurnedBlue.wav"
         });
 
-        ime::ResourceLoader::loadFromFile(ime::ResourceType::Music, {
+        mighter2d::ResourceLoader::loadFromFile(mighter2d::ResourceType::Music, {
             "searching.ogg", "pacman_intermission.ogg"
         });
     }
@@ -60,13 +60,13 @@ namespace spm {
         getWindow().setDefaultOnCloseHandlerEnable(false);
         LoadingSceneView::init(getGui());
 
-        getGui().getWidget("pbrAssetLoading")->on("full", ime::Callback<>([this] {
-            getGui().getWidget<ime::ui::Label>("lblLoading")->setText("Resources loaded successfully");
+        getGui().getWidget("pbrAssetLoading")->on("full", mighter2d::Callback<>([this] {
+            getGui().getWidget<mighter2d::ui::Label>("lblLoading")->setText("Resources loaded successfully");
             getEngine().popScene();
         }));
 
-        getTimer().setInterval(ime::milliseconds(65), [this] {
-            getGui().getWidget<ime::ui::ProgressBar>("pbrAssetLoading")->incrementValue();
+        getTimer().setInterval(mighter2d::milliseconds(65), [this] {
+            getGui().getWidget<mighter2d::ui::ProgressBar>("pbrAssetLoading")->incrementValue();
         });
 
         // The progress bar and the thread are not in sync. The thread finishes

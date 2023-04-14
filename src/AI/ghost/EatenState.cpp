@@ -42,7 +42,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void EatenState::onEntry() {
-        ghost_->ime::GameObject::setState(static_cast<int>(Ghost::State::Eaten));
+        ghost_->mighter2d::GameObject::setState(static_cast<int>(Ghost::State::Eaten));
         ghost_->getCollisionExcludeList().add("sensors");
         ghost_->getCollisionExcludeList().add("doors");
         GhostState::onEntry();
@@ -51,7 +51,7 @@ namespace spm {
         gridMover_->setTargetTile(Constants::EatenGhostRespawnTile);
         gridMover_->startMovement();
 
-        destFoundHandler_ = gridMover_->onMoveEnd([this](ime::Index index) {
+        destFoundHandler_ = gridMover_->onMoveEnd([this](mighter2d::Index index) {
             if (index == Constants::EatenGhostRespawnTile) {
                 if (nextState_ == Ghost::State::Chase)
                     ghost_->setState(std::make_unique<ChaseState>());
@@ -65,7 +65,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void EatenState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+    void EatenState::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
         GhostState::handleEvent(event, args);
 
         if (event == GameEvent::SuperModeEnd)

@@ -58,7 +58,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GhostState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+    void GhostState::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
         switch (ghost_->getState()) {
             case Ghost::State::Scatter:
             case Ghost::State::Chase:

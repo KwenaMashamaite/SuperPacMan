@@ -25,8 +25,8 @@
 #ifndef SUPERPACMAN_MAINMENUSCENEVIEW_H
 #define SUPERPACMAN_MAINMENUSCENEVIEW_H
 
-#include <IME/graphics/Sprite.h>
-#include <IME/ui/GuiContainer.h>
+#include <Mighter2d/graphics/Sprite.h>
+#include <Mighter2d/ui/GuiContainer.h>
 
 namespace spm {
     /**
@@ -47,7 +47,7 @@ namespace spm {
          * @brief Construct view
          * @param gui Container for all UI widgets
          */
-        explicit MainMenuSceneView(ime::ui::GuiContainer& gui);
+        explicit MainMenuSceneView(mighter2d::ui::GuiContainer& gui);
 
         /**
          * @brief Initialize the view
@@ -90,10 +90,10 @@ namespace spm {
          * @brief Create a button that returns to the main subview when clicked
          * @return Back button widget
          */
-        ime::ui::Widget::Ptr createBackBtn();
+        mighter2d::ui::Widget::Ptr createBackBtn();
 
     private:
-        ime::ui::GuiContainer& gui_;   //!< Container for all main menu widgets
+        mighter2d::ui::GuiContainer& gui_;   //!< Container for all main menu widgets
         SubView subView_;              //!< View that is currently rendered
     };
 }

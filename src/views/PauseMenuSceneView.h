@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_PAUSEMENUSCENEVIEW_H
 #define SUPERPACMAN_PAUSEMENUSCENEVIEW_H
 
-#include <IME/ui/GuiContainer.h>
+#include <Mighter2d/ui/GuiContainer.h>
 
 namespace spm {
     /**
@@ -37,7 +37,7 @@ namespace spm {
          * @brief Initialise the pause menu gui
          * @param gui Container for all pause menu widgets
          */
-        static void init(ime::ui::GuiContainer& gui);
+        static void init(mighter2d::ui::GuiContainer& gui);
     };
 }
 

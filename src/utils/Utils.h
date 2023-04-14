@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_UTILS_H
 #define SUPERPACMAN_UTILS_H
 
-#include <IME/core/physics/grid/GridMover.h>
+#include <Mighter2d/core/physics/GridMover.h>
 #include <string>
 
 /**
@@ -34,11 +34,11 @@
 namespace spm {
     namespace utils {
         /**
-         * @brief Get a string representation of ime::Direction
+         * @brief Get a string representation of mighter2d::Direction
          * @param direction Direction to get the string version of
-         * @return A string version of ime::Direction
+         * @return A string version of mighter2d::Direction
          */
-        extern std::string convertToString(ime::Direction direction);
+        extern std::string convertToString(mighter2d::Direction direction);
 
         /**
          * @brief Get the name of the fruit that pacman eats on the current level
@@ -51,7 +51,7 @@ namespace spm {
          * @brief Reset the cache to default values
          * @param cache The cache to be reset
          */
-        extern void resetCache(ime::PropertyContainer& cache);
+        extern void resetCache(mighter2d::PropertyContainer& cache);
     }
 }
 

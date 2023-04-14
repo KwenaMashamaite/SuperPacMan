@@ -33,22 +33,22 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    bool isSpecialTile(const ime::Index& index) {
+    bool isSpecialTile(const mighter2d::Index& index) {
         // A ghost cannot move downwards when on a special tile
-        const static auto specialTile = ime::Index{13, 13};
+        const static auto specialTile = mighter2d::Index{13, 13};
         return index == specialTile;
     }
 
     ///////////////////////////////////////////////////////////////
-    bool isInGhostHouse(ime::GridObject* gameObject) {
+    bool isInGhostHouse(mighter2d::GridObject* gameObject) {
         assert(gameObject);
-        ime::Index curIndex = gameObject->getGridMover()->getCurrentTileIndex();
+        mighter2d::Index curIndex = gameObject->getGridMover()->getCurrentTileIndex();
         return curIndex.row >= 9 && curIndex.row <= 11 && curIndex.colm >= 11 && curIndex.colm <= 15;
     }
 
     ///////////////////////////////////////////////////////////////
-    GhostGridMover::GhostGridMover(ime::Grid2D& grid, Ghost* ghost) :
-        ime::GridMover(grid, ghost),
+    GhostGridMover::GhostGridMover(mighter2d::Grid& grid, Ghost* ghost) :
+        mighter2d::GridMover(grid, ghost),
         ghost_{ghost},
         movementStarted_{false},
         forceDirReversal_{false},
@@ -57,13 +57,13 @@ namespace spm {
     {
         assert(ghost_ && "spm::GhostGridMover target must not be a nullptr");
         onMoveEnd(std::bind(&GhostGridMover::move, this));
-        setSpeed(ime::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
-        setMovementRestriction(ime::GridMover::MoveRestriction::NonDiagonal);
+        setSpeed(mighter2d::Vector2f{Constants::PacManNormalSpeed, Constants::PacManNormalSpeed});
+        setMovementRestriction(mighter2d::GridMover::MoveRestriction::NonDiagonal);
     }
 
     ///////////////////////////////////////////////////////////////
     void GhostGridMover::move() {
-        ime::Direction reverseGhostDir = ghost_->getDirection() * -1;
+        mighter2d::Direction reverseGhostDir = ghost_->getDirection() * -1;
 
         if (forceDirReversal_) {
             forceDirReversal_ = false;
@@ -99,7 +99,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GhostGridMover::setTargetTile(ime::Index index) {
+    void GhostGridMover::setTargetTile(mighter2d::Index index) {
         targetTile_ = index;
     }
 
@@ -117,14 +117,14 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GhostGridMover::initPossibleDirections(const ime::Direction& reverseGhostDir) {
-        static const auto allowedDirections = {ime::Up, ime::Left, ime::Down, ime::Right};
+    void GhostGridMover::initPossibleDirections(const mighter2d::Direction& reverseGhostDir) {
+        static const auto allowedDirections = {mighter2d::Up, mighter2d::Left, mighter2d::Down, mighter2d::Right};
         bool preventGoingDown = isSpecialTile(getCurrentTileIndex()) || (getCurrentTileIndex() == Constants::BlinkySpawnTile && !isAllowedToBeInGhostHouse());
 
         for (const auto& dir : allowedDirections) {
             if (dir == reverseGhostDir ||
                 isBlockedInDirection(dir).first ||
-                preventGoingDown && dir == ime::Down)
+                preventGoingDown && dir == mighter2d::Down)
             {
                 continue;
             }
@@ -134,18 +134,18 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Direction GhostGridMover::getRandomDirection() {
+    mighter2d::Direction GhostGridMover::getRandomDirection() {
         auto static randomEngine = std::default_random_engine{std::random_device{}()};
         std::shuffle(possibleDirections_.begin(), possibleDirections_.end(), randomEngine);
         return possibleDirections_.front();
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Direction GhostGridMover::getMinDistanceDirection(const ime::Index &targetTile) const {
+    mighter2d::Direction GhostGridMover::getMinDistanceDirection(const mighter2d::Index &targetTile) const {
         std::vector<double> weights;
 
         for (const auto& dir : possibleDirections_) {
-            ime::Index adjTileIndex = ime::Index{getCurrentTileIndex().row + dir.y, getCurrentTileIndex().colm + dir.x};
+            mighter2d::Index adjTileIndex = mighter2d::Index{getCurrentTileIndex().row + dir.y, getCurrentTileIndex().colm + dir.x};
             weights.push_back(std::sqrt(std::pow( targetTile.row - adjTileIndex.row, 2.0) + std::pow( targetTile.colm - adjTileIndex.colm, 2.0)));
         }
 

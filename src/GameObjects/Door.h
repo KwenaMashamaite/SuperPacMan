@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_DOOR_H
 #define SUPERPACMAN_DOOR_H
 
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/object/GridObject.h>
 #include "Key.h"
 #include <string>
 
@@ -33,7 +33,7 @@ namespace spm {
     /**
      * @brief A door that locks fruits and pellets away from Pacman
      */
-    class Door : public ime::GridObject {
+    class Door : public mighter2d::GridObject {
     public:
         /**
          * @brief Orientation of the door
@@ -47,7 +47,7 @@ namespace spm {
          * @brief Constructor
          * @param scene The scene the object belongs to
          */
-        explicit Door(ime::Scene& scene);
+        explicit Door(mighter2d::Scene& scene);
 
         /**
          * @brief Reset the instance counter
@@ -107,7 +107,7 @@ namespace spm {
         int id_;                       //!< The lockers id
         bool isLocked_;                //!< A flag indicating whether or not the door is locked
         Orientation orientation_;      //!< The current orientation of the door
-        ime::SpriteSheet spriteSheet_; //!< Stores the different door state textures
+        mighter2d::SpriteSheet spriteSheet_; //!< Stores the different door state textures
     };
 }
 

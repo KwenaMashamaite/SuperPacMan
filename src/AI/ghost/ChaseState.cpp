@@ -39,7 +39,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::onEntry() {
-        ghost_->ime::GameObject::setState(static_cast<int>(Ghost::State::Chase));
+        ghost_->mighter2d::GameObject::setState(static_cast<int>(Ghost::State::Chase));
         GhostState::onEntry();
 
         ghost_->getSprite().getAnimator().startAnimation("going" + utils::convertToString(ghost_->getDirection()) + (ghost_->isFlat() ? "Flat" : ""));
@@ -54,43 +54,43 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void ChaseState::chasePacman() {
-        ime::GridObject* pacman = ObjectReferenceKeeper::getActor("pacman");
-        ime::Index pacmanTile = pacman->getGridMover()->getCurrentTileIndex();
-        ime::Vector2i pacmanDir = pacman->getGridMover()->getDirection();
+        mighter2d::GridObject* pacman = ObjectReferenceKeeper::getActor("pacman");
+        mighter2d::Index pacmanTile = pacman->getGridMover()->getCurrentTileIndex();
+        mighter2d::Vector2i pacmanDir = pacman->getGridMover()->getDirection();
 
         if (ghost_->getTag() == "blinky")
             gridMover_->setTargetTile(pacmanTile);
         else if (ghost_->getTag() == "pinky") {
-            auto targetTile = ime::Index{pacmanTile.row + 4 * pacmanDir.y, pacmanTile.colm + 4 * pacmanDir.x};
+            auto targetTile = mighter2d::Index{pacmanTile.row + 4 * pacmanDir.y, pacmanTile.colm + 4 * pacmanDir.x};
 
             // Mimic the overflow error
-            if (pacmanDir == ime::Up)
+            if (pacmanDir == mighter2d::Up)
                 targetTile.colm -= 4;
 
             gridMover_->setTargetTile(targetTile);
         } else if (ghost_->getTag() == "inky") {
-            ime::GridObject* blinky = ObjectReferenceKeeper::getActor("blinky");
+            mighter2d::GridObject* blinky = ObjectReferenceKeeper::getActor("blinky");
             assert(blinky && "Inky cannot enter chase state without blinky in the maze");
-            ime::Index blinkyTile = blinky->getGridMover()->getCurrentTileIndex();
+            mighter2d::Index blinkyTile = blinky->getGridMover()->getCurrentTileIndex();
 
             // Choose a position two tiles in front of pacman
-            ime::Index pacmanTileOffset = ime::Index{pacmanTile.row + 2 * pacmanDir.y, pacmanTile.colm + 2 * pacmanDir.x};
+            mighter2d::Index pacmanTileOffset = mighter2d::Index{pacmanTile.row + 2 * pacmanDir.y, pacmanTile.colm + 2 * pacmanDir.x};
 
             // Mimic the overflow error
-            if (pacmanDir == ime::Up)
+            if (pacmanDir == mighter2d::Up)
                 pacmanTileOffset.colm -= 2;
 
             // Create a vector from chosen position to blinky's tile
-            ime::Index pacmanTileOffsetToBlinkyVector = ime::Index{-1 * (pacmanTileOffset.row - blinkyTile.row), -1 * (pacmanTileOffset.colm - blinkyTile.colm)};
+            mighter2d::Index pacmanTileOffsetToBlinkyVector = mighter2d::Index{-1 * (pacmanTileOffset.row - blinkyTile.row), -1 * (pacmanTileOffset.colm - blinkyTile.colm)};
 
             // Flip vector 180 degrees
-            ime::Index inkyTargetTile = ime::Index{pacmanTileOffset.row - pacmanTileOffsetToBlinkyVector.row, pacmanTileOffset.colm - pacmanTileOffsetToBlinkyVector.colm};
+            mighter2d::Index inkyTargetTile = mighter2d::Index{pacmanTileOffset.row - pacmanTileOffsetToBlinkyVector.row, pacmanTileOffset.colm - pacmanTileOffsetToBlinkyVector.colm};
 
             gridMover_->setTargetTile(inkyTargetTile);
 
         } else if (ghost_->getTag() == "clyde") {
             const static int CLYDE_SHYNESS_DISTANCE = 8; // Distance in tiles not pixels
-            ime::Index clydeTile = ghost_->getGridMover()->getCurrentTileIndex();
+            mighter2d::Index clydeTile = ghost_->getGridMover()->getCurrentTileIndex();
 
             if (std::sqrt(std::pow(pacmanTile.row - clydeTile.row, 2.0) + std::pow(pacmanTile.colm - clydeTile.colm, 2.0)) > CLYDE_SHYNESS_DISTANCE)
                 gridMover_->setTargetTile(pacmanTile);
@@ -102,7 +102,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void ChaseState::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+    void ChaseState::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
         GhostState::handleEvent(event, args);
 
         if (event == GameEvent::SuperModeBegin) {

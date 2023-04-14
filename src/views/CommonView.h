@@ -25,8 +25,8 @@
 #ifndef SUPERPACMAN_COMMONVIEW_H
 #define SUPERPACMAN_COMMONVIEW_H
 
-#include <IME/ui/GuiContainer.h>
-#include <IME/core/time/Timer.h>
+#include <Mighter2d/ui/GuiContainer.h>
+#include <Mighter2d/core/time/Timer.h>
 
 namespace spm {
     /**
@@ -45,7 +45,7 @@ namespace spm {
          * @brief Constructor
          * @param gui Container for all UI widgets in the view
          */
-        explicit CommonView(ime::ui::GuiContainer& gui);
+        explicit CommonView(mighter2d::ui::GuiContainer& gui);
 
         /**
          * @brief Initialize the view
@@ -77,12 +77,6 @@ namespace spm {
         void setHighScore(int highScore);
 
         /**
-         * @brief Update the view
-         * @param deltaTime Time passed since view was last updated
-         */
-        void update(ime::Time deltaTime);
-
-        /**
          * @brief Remove last added player lives depiction image
          */
         void removeLife();
@@ -111,8 +105,8 @@ namespace spm {
         void createPlayerLivesIndicatorSprites(unsigned int lives);
 
     private:
-        ime::ui::GuiContainer& gui_;  //!< Container for all widgets
-        ime::Timer::Ptr timer_;       //!< One up text flash Timer
+        mighter2d::ui::GuiContainer& gui_;  //!< Container for all widgets
+        mighter2d::Timer::Ptr timer_;       //!< One up text flash Timer
         unsigned int pacmanLives_;    //!< Records the number of pacman lives after a lives update
     };
 }

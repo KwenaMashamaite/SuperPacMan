@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_CONSTANTS_H
 #define SUPERPACMAN_CONSTANTS_H
 
-#include <IME/core/grid/Index.h>
+#include <Mighter2d/core/grid/Index.h>
 
 namespace spm {
     /**
@@ -33,16 +33,16 @@ namespace spm {
      */
     struct Constants {
         // 1. Spawn positions in the grid
-        static inline auto PacManSpawnTile = ime::Index{13, 13};        //!< Pacman's spawn position when a level starts or restarts
-        static inline auto BlinkySpawnTile = ime::Index{7, 13};         //!< Blinky's spawn position when a level starts or restarts
-        static inline auto PinkySpawnTile = ime::Index{9, 11};          //!< Pinky's spawn position when a level starts or restarts
-        static inline auto InkySpawnTile = ime::Index{9, 15};           //!< Inky's spawn position when a level starts or restarts
-        static inline auto ClydeSpawnTile = ime::Index{11, 13};         //!< Clyde's spawn position when a level starts or restarts
-        static inline auto EatenGhostRespawnTile = ime::Index{11, 13};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
-        static inline const auto PINKY_SCATTER_TARGET_TILE = ime::Index{0, 2};   //!< The tile the pink ghost targets when in scatter state
-        static inline const auto BLINKY_SCATTER_TARGET_TILE = ime::Index{0, 24}; //!< The tile the red ghost targets when in scatter state
-        static inline const auto INKY_SCATTER_TARGET_TILE = ime::Index{28, 24};  //!< The tile blue ghost targets when in scatter state
-        static inline const auto CLYDE_SCATTER_TARGET_TILE = ime::Index{28, 2};  //!< The tile the orange ghost targets when in scatter state
+        static inline auto PacManSpawnTile = mighter2d::Index{13, 13};        //!< Pacman's spawn position when a level starts or restarts
+        static inline auto BlinkySpawnTile = mighter2d::Index{7, 13};         //!< Blinky's spawn position when a level starts or restarts
+        static inline auto PinkySpawnTile = mighter2d::Index{9, 11};          //!< Pinky's spawn position when a level starts or restarts
+        static inline auto InkySpawnTile = mighter2d::Index{9, 15};           //!< Inky's spawn position when a level starts or restarts
+        static inline auto ClydeSpawnTile = mighter2d::Index{11, 13};         //!< Clyde's spawn position when a level starts or restarts
+        static inline auto EatenGhostRespawnTile = mighter2d::Index{11, 13};  //!< The tile a ghost targets after it is eaten (Once it reaches this tile, it gets revived)
+        static inline const auto PINKY_SCATTER_TARGET_TILE = mighter2d::Index{0, 2};   //!< The tile the pink ghost targets when in scatter state
+        static inline const auto BLINKY_SCATTER_TARGET_TILE = mighter2d::Index{0, 24}; //!< The tile the red ghost targets when in scatter state
+        static inline const auto INKY_SCATTER_TARGET_TILE = mighter2d::Index{28, 24};  //!< The tile blue ghost targets when in scatter state
+        static inline const auto CLYDE_SCATTER_TARGET_TILE = mighter2d::Index{28, 2};  //!< The tile the orange ghost targets when in scatter state
 
         // 2. Actor speeds (pixels/second)
         static constexpr auto PacManNormalSpeed = 120.0f;              //!< Pacman's speed when not in super mode

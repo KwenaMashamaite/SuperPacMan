@@ -25,19 +25,19 @@
 #ifndef SUPERPACMAN_KEY_H
 #define SUPERPACMAN_KEY_H
 
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A key that can lock or unlock a Door
      */
-    class Key : public ime::GridObject {
+    class Key : public mighter2d::GridObject {
     public:
         /**
          * @brief Construct the key
          * @param scene The scene the object belongs to
          */
-        explicit Key(ime::Scene& scene);
+        explicit Key(mighter2d::Scene& scene);
 
         /**
          * @brief Reset the instance counter

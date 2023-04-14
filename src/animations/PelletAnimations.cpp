@@ -32,13 +32,13 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void PelletAnimations::createAnimationFor(const std::string& tag) {
-        auto blinkAnimation = ime::Animation::create("blink", spritesheet_, ime::milliseconds(300));
+        auto blinkAnimation = mighter2d::Animation::create("blink", spritesheet_, mighter2d::milliseconds(300));
         blinkAnimation->setLoop(true);
 
         if (tag == "powerPellet")
             blinkAnimation->addFrames({0, 0}, 2);
         else if (tag == "superPellet") {
-            blinkAnimation->setDuration(ime::seconds(1));
+            blinkAnimation->setDuration(mighter2d::seconds(1));
             blinkAnimation->addFrames({0, 1}, 6);
         } else
             return;
@@ -47,7 +47,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    const std::vector<ime::Animation::Ptr> & PelletAnimations::getAll() const {
+    const std::vector<mighter2d::Animation::Ptr> & PelletAnimations::getAll() const {
         return animations_;
     }
 

@@ -26,8 +26,8 @@
 #include "common/Constants.h"
 #include "GameObjects/Ghost.h"
 #include "Scenes/GameplayScene.h"
-#include <IME/ui/widgets/Label.h>
-#include <IME/graphics/Window.h>
+#include <Mighter2d/ui/widgets/Label.h>
+#include <Mighter2d/graphics/Window.h>
 
 namespace spm {
     /**
@@ -36,7 +36,7 @@ namespace spm {
      * @param duration The duration of the timer
      * @param timeoutCallback The function to execute when the timer countdown finishes
      */
-    void configureTimer(ime::Timer &timer, ime::Time duration, ime::Callback<> timeoutCallback) {
+    void configureTimer(mighter2d::Timer &timer, mighter2d::Time duration, mighter2d::Callback<> timeoutCallback) {
         if (timer.isRunning())
             timer.setInterval(timer.getRemainingDuration() + duration);
         else {
@@ -52,9 +52,14 @@ namespace spm {
         audioManager_(audioManager),
         currentLevel_(gameplayScene.getLevel()),
         scatterWaveLevel_{0},
-        chaseWaveLevel_{0}
+        chaseWaveLevel_{0},
+        ghostAITimer_(gameplayScene),
+        superModeTimer_(gameplayScene),
+        powerModeTimer_(gameplayScene),
+        bonusStageTimer_(gameplayScene),
+        starDespawnTimer_(gameplayScene)
     {
-        // IME v3.2.0 does not allow a non-repeating timer to be restarted in
+        // Mighter2d v0.1.0 does not allow a non-repeating timer to be restarted in
         // its timeout callback. Since this timer is used to control two states
         // it needs to immediately start countdown when one state terminates.
         ghostAITimer_.setLoop(true);
@@ -74,7 +79,7 @@ namespace spm {
             if (probationDuration <= 0)
                 ghost->setLockInGhostHouse(false);
             else {
-                gameplayScene_.getTimer().setTimeout(ime::seconds(probationDuration), [ghost] {
+                gameplayScene_.getTimer().setTimeout(mighter2d::seconds(probationDuration), [ghost] {
                     ghost->setLockInGhostHouse(false);
                 });
             }
@@ -102,13 +107,13 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startSuperModeTimeout() {
         configureTimer(superModeTimer_, getSuperModeDuration(), [this] {
-            gameplayScene_.emit(GameEvent::SuperModeEnd);
+            gameplayScene_.emitGE(GameEvent::SuperModeEnd);
             resumeGhostAITimer();
         });
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Time TimerManager::getRemainingSuperModeDuration() const {
+    mighter2d::Time TimerManager::getRemainingSuperModeDuration() const {
         return superModeTimer_.getRemainingDuration();
     }
 
@@ -141,7 +146,7 @@ namespace spm {
             if (!isSuperMode())
                 resumeGhostAITimer();
 
-            gameplayScene_.emit(GameEvent::FrightenedModeEnd);
+            gameplayScene_.emitGE(GameEvent::FrightenedModeEnd);
 
             audioManager_.stop();
             audioManager_.playBackgroundMusic(1);
@@ -149,7 +154,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Time TimerManager::getRemainingPowerModeDuration() const {
+    mighter2d::Time TimerManager::getRemainingPowerModeDuration() const {
         return powerModeTimer_.getRemainingDuration();
     }
 
@@ -175,23 +180,23 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void TimerManager::startBonusStageTimer() {
-        configureTimer(bonusStageTimer_, ime::seconds(Constants::BONUS_STAGE_DURATION), [this] {
-            gameplayScene_.getEventEmitter().emit("levelComplete");
+        configureTimer(bonusStageTimer_, mighter2d::seconds(Constants::BONUS_STAGE_DURATION), [this] {
+            gameplayScene_.emit("levelComplete");
         });
 
-        bonusStageTimer_.onUpdate([this](ime::Timer& timer) {
-            gameplayScene_.getGui().getWidget<ime::ui::Label>("lblRemainingTime")->setText(std::to_string(timer.getRemainingDuration().asMilliseconds()));
+        bonusStageTimer_.onUpdate([this](mighter2d::Timer& timer) {
+            gameplayScene_.getGui().getWidget<mighter2d::ui::Label>("lblRemainingTime")->setText(std::to_string(timer.getRemainingDuration().asMilliseconds()));
         });
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Time TimerManager::getRemainingBonusStageDuration() const {
+    mighter2d::Time TimerManager::getRemainingBonusStageDuration() const {
         return bonusStageTimer_.getRemainingDuration();
     }
 
     ///////////////////////////////////////////////////////////////
     void TimerManager::startStarDespawnTimer() {
-        configureTimer(starDespawnTimer_, ime::seconds(Constants::STAR_ON_SCREEN_TIME), [this] {
+        configureTimer(starDespawnTimer_, mighter2d::seconds(Constants::STAR_ON_SCREEN_TIME), [this] {
             gameplayScene_.gameObjectsManager_.despawnStar();
         });
     }
@@ -229,7 +234,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void TimerManager::update(ime::Time deltaTime) {
+    void TimerManager::update(mighter2d::Time deltaTime) {
         ghostAITimer_.update(deltaTime);
         superModeTimer_.update(deltaTime);
         powerModeTimer_.update(deltaTime);
@@ -248,7 +253,7 @@ namespace spm {
             startChaseModeTimer();
         });
 
-        gameplayScene_.emit(GameEvent::ScatterModeBegin);
+        gameplayScene_.emitGE(GameEvent::ScatterModeBegin);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -262,55 +267,55 @@ namespace spm {
             startScatterModeTimer();
         });
 
-        gameplayScene_.emit(GameEvent::ChaseModeBegin);
+        gameplayScene_.emitGE(GameEvent::ChaseModeBegin);
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Time TimerManager::getScatterModeDuration() const {
+    mighter2d::Time TimerManager::getScatterModeDuration() const {
         if (scatterWaveLevel_ <= 2) {
             if (currentLevel_ < 5)
-                return ime::seconds(7.0f);
+                return mighter2d::seconds(7.0f);
             else
-                return ime::seconds(5.0f);
+                return mighter2d::seconds(5.0f);
         } else if (scatterWaveLevel_ == 3)
-            return ime::seconds(5);
+            return mighter2d::seconds(5);
         else {
             if (currentLevel_ == 1)
-                return ime::seconds(5.0f);
+                return mighter2d::seconds(5.0f);
             else
-                return ime::seconds(1.0f / gameplayScene_.getWindow().getFrameRateLimit()); // one frame
+                return mighter2d::seconds(1.0f / gameplayScene_.getWindow().getFrameRateLimit()); // one frame
         }
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Time TimerManager::getChaseModeDuration() const {
+    mighter2d::Time TimerManager::getChaseModeDuration() const {
         if (chaseWaveLevel_ <= 2)
-            return ime::seconds(20.0f);
+            return mighter2d::seconds(20.0f);
         else if (chaseWaveLevel_ == 3) {
             if (currentLevel_ == 1)
-                return ime::seconds(20.0f);
+                return mighter2d::seconds(20.0f);
             else
-                return ime::minutes(17);
+                return mighter2d::minutes(17);
         } else
-            return ime::hours(24);
+            return mighter2d::hours(24);
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Time TimerManager::getFrightenedModeDuration() {
-        auto duration = gameplayScene_.getCache().getValue<ime::Time>("GHOSTS_FRIGHTENED_MODE_DURATION");
+    mighter2d::Time TimerManager::getFrightenedModeDuration() {
+        auto duration = gameplayScene_.getCache().getValue<mighter2d::Time>("GHOSTS_FRIGHTENED_MODE_DURATION");
 
-        if (duration < ime::Time::Zero)
-            return ime::Time::Zero;
+        if (duration < mighter2d::Time::Zero)
+            return mighter2d::Time::Zero;
 
         return duration;
     }
 
     ///////////////////////////////////////////////////////////////
-    ime::Time TimerManager::getSuperModeDuration() {
-        auto duration = gameplayScene_.getCache().getValue<ime::Time>("PACMAN_SUPER_MODE_DURATION");
+    mighter2d::Time TimerManager::getSuperModeDuration() {
+        auto duration = gameplayScene_.getCache().getValue<mighter2d::Time>("PACMAN_SUPER_MODE_DURATION");
 
-        if (duration <= ime::Time::Zero)
-            return ime::seconds(2.0f);
+        if (duration <= mighter2d::Time::Zero)
+            return mighter2d::seconds(2.0f);
         else
             return duration;
     }

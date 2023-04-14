@@ -28,14 +28,14 @@
 
 namespace spm::utils {
     ///////////////////////////////////////////////////////////////
-    std::string convertToString(ime::Direction direction) {
-        if (direction == ime::Left)
+    std::string convertToString(mighter2d::Direction direction) {
+        if (direction == mighter2d::Left)
             return "Left";
-        else if (direction == ime::Right)
+        else if (direction == mighter2d::Right)
             return "Right";
-        else if (direction == ime::Up)
+        else if (direction == mighter2d::Up)
             return "Up";
-        else if (direction == ime::Down)
+        else if (direction == mighter2d::Down)
             return "Down";
         else
             return "Unknown";
@@ -56,15 +56,15 @@ namespace spm::utils {
     }
 
     ///////////////////////////////////////////////////////////////
-    void resetCache(ime::PropertyContainer &cache) {
+    void resetCache(mighter2d::PropertyContainer &cache) {
         cache.setValue("CURRENT_LEVEL", 1);
         cache.setValue("CURRENT_SCORE", 0);
         cache.setValue("PLAYER_LIVES", Constants::PacManLives);
         cache.setValue("NUM_EXTRA_LIVES_WON", 0);
         cache.setValue("BONUS_STAGE", 3);
         cache.setValue("PLAYER_WON_GAME", false);
-        cache.setValue("GHOSTS_FRIGHTENED_MODE_DURATION", ime::seconds(Constants::POWER_MODE_DURATION));
-        cache.setValue("PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION));
+        cache.setValue("GHOSTS_FRIGHTENED_MODE_DURATION", mighter2d::seconds(Constants::POWER_MODE_DURATION));
+        cache.setValue("PACMAN_SUPER_MODE_DURATION", mighter2d::seconds(Constants::SUPER_MODE_DURATION));
     }
 
 } // namespace spm

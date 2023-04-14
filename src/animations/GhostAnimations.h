@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_GHOSTANIMATIONS_H
 #define SUPERPACMAN_GHOSTANIMATIONS_H
 
-#include <IME/core/animation/Animation.h>
+#include <Mighter2d/core/animation/Animation.h>
 #include <vector>
 
 namespace spm {
@@ -55,7 +55,7 @@ namespace spm {
          * @brief Get all of the created animations
          * @return A list of all the ghost animations
          */
-        const std::vector<ime::Animation::Ptr>& getAll() const;
+        const std::vector<mighter2d::Animation::Ptr>& getAll() const;
 
     private:
         /**
@@ -63,7 +63,7 @@ namespace spm {
          * @param name Name of the animation
          * @param startPos Starting position of the frame on the spritesheet
          */
-        void createAnimation(const std::string& name, ime::Index startPos);
+        void createAnimation(const std::string& name, mighter2d::Index startPos);
 
         /**
          * @brief Create normal and flat movement animations
@@ -82,8 +82,8 @@ namespace spm {
         void createEatenAnimations();
 
     private:
-        std::vector<ime::Animation::Ptr> animations_;
-        ime::SpriteSheet spritesheet_;
+        std::vector<mighter2d::Animation::Ptr> animations_;
+        mighter2d::SpriteSheet spritesheet_;
     };
 }
 

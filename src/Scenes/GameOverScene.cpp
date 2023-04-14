@@ -27,10 +27,10 @@
 #include "GameplayScene.h"
 #include "Scoreboard/Scoreboard.h"
 #include "utils/Utils.h"
-#include <IME/core/engine/Engine.h>
-#include <IME/ui/widgets/Label.h>
+#include <Mighter2d/core/engine/Engine.h>
+#include <Mighter2d/ui/widgets/Label.h>
 
-using namespace ime::ui;
+using namespace mighter2d::ui;
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::initButtonEvents() {
-        getGui().getWidget("btnRetry")->on("click", ime::Callback<>([this] {
+        getGui().getWidget("btnRetry")->on("click", mighter2d::Callback<>([this] {
             utils::resetCache(getCache());
             getEngine().removeAllScenesExceptActive();
             getEngine().popScene(); // Destroy this scene
@@ -75,14 +75,14 @@ namespace spm {
         }));
 
         // Exit to the games main menu when "Exit to Main Menu" is clicked
-        getGui().getWidget("btnExitMainMenu")->on("click", ime::Callback<>([this] {
+        getGui().getWidget("btnExitMainMenu")->on("click", mighter2d::Callback<>([this] {
             getEngine().removeAllScenesExceptActive();
             getEngine().popScene();
             getEngine().pushCachedScene("MainMenuScene");
         }));
 
         // Exit to desktop when "Exit Game" button is clicked
-        getGui().getWidget("btnExitGame")->on("click", ime::Callback<>([this] {
+        getGui().getWidget("btnExitGame")->on("click", mighter2d::Callback<>([this] {
             getEngine().quit();
         }));
     }

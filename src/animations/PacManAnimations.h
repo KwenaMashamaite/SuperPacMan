@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_PACMANANIMATIONS_H
 #define SUPERPACMAN_PACMANANIMATIONS_H
 
-#include <IME/core/animation/Animation.h>
+#include <Mighter2d/core/animation/Animation.h>
 #include <vector>
 
 namespace spm {
@@ -48,7 +48,7 @@ namespace spm {
          * @brief Get all of the created animations
          * @return A list of all the pacman animations
          */
-        const std::vector<ime::Animation::Ptr>& getAll() const;
+        const std::vector<mighter2d::Animation::Ptr>& getAll() const;
 
     private:
         /**
@@ -58,13 +58,13 @@ namespace spm {
          * @param super True to use super size spritesheet or false  to use
          *              normal size spritesheet
          */
-        void createAnimation(const std::string& name, ime::Index index, bool super = false);
+        void createAnimation(const std::string& name, mighter2d::Index index, bool super = false);
 
     private:
-        std::vector<ime::Animation::Ptr> animations_;
-        ime::SpriteSheet normalSizeSpritesheet_;
-        ime::SpriteSheet superSizeSpritesheet_;
-        ime::SpriteSheet deathSpritesheet_;
+        std::vector<mighter2d::Animation::Ptr> animations_;
+        mighter2d::SpriteSheet normalSizeSpritesheet_;
+        mighter2d::SpriteSheet superSizeSpritesheet_;
+        mighter2d::SpriteSheet deathSpritesheet_;
     };
 }
 

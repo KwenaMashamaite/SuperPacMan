@@ -27,8 +27,8 @@
 
 #include "AI/IActorState.h"
 #include "PathFinders/GhostGridMover.h"
-#include <IME/core/time/Timer.h>
-#include <IME/core/physics/grid/GridMover.h>
+#include <Mighter2d/core/time/Timer.h>
+#include <Mighter2d/core/physics/GridMover.h>
 
 namespace spm {
     class Ghost;
@@ -62,14 +62,14 @@ namespace spm {
          * @brief Update the state
          * @param deltaTime Time passed since last update
          */
-        void update(ime::Time deltaTime) override {}
+        void update(mighter2d::Time deltaTime) override {}
 
         /**
          * @brief Handle an event
          * @param event The event to be handled
          * @param args Event arguments
          */
-        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
+        void handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) override;
 
         /**
          * @brief Exit the state

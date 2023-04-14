@@ -25,8 +25,8 @@
 #ifndef SUPERPACMAN_GRID_H
 #define SUPERPACMAN_GRID_H
 
-#include <IME/core/grid/Grid2D.h>
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/grid/Grid.h>
+#include <Mighter2d/core/object/GridObject.h>
 
 namespace spm {
     /**
@@ -38,7 +38,7 @@ namespace spm {
          * @brief Constructor
          * @param grid Third party grid
          */
-        explicit Grid(ime::Grid2D& grid);
+        explicit Grid(mighter2d::Grid& grid);
 
         /**
          * @brief Create the grid
@@ -51,25 +51,25 @@ namespace spm {
          * @param object The actor to be added to the grid
          * @param index The index of the cell to add the actor to
          */
-        void addGameObject(ime::GridObject* object, ime::Index index);
+        void addGameObject(mighter2d::GridObject* object, mighter2d::Index index);
 
         /**
          * @brief Remove an game object from the grid
          * @param gameObject The game object to be removed
          */
-        void removeGameObject(ime::GridObject *gameObject);
+        void removeGameObject(mighter2d::GridObject *gameObject);
 
         /**
          * @brief Apply a callback to each cell of the grid
          * @param callback The function to be applied
          */
-        void forEachCell(const ime::Callback<const ime::Tile&>& callback);
+        void forEachCell(const mighter2d::Callback<const mighter2d::Tile&>& callback);
 
         /**
          * @brief Apply a callback to each actor in the grid
          * @param callback The function to be applied
          */
-        void forEachGameObject(const ime::Callback<ime::GridObject*>& callback);
+        void forEachGameObject(const mighter2d::Callback<mighter2d::GridObject*>& callback);
 
         /**
          * @brief Flash the grid
@@ -90,7 +90,7 @@ namespace spm {
          * By default, there is no callback assigned to this event.
          * To remove the callback pass a nullptr
          */
-        void onFlashStop(ime::Callback<> callback);
+        void onFlashStop(mighter2d::Callback<> callback);
 
         /**
          * @brief Check if the grid flash animation is playing or not
@@ -99,21 +99,15 @@ namespace spm {
         bool isFlashing();
 
         /**
-         * @brief Update the grid
-         * @param deltaTime Time passed since ;ast scene update
-         */
-        void update(ime::Time deltaTime);
-
-        /**
          * @brief Get the scene the grid is in
          * @return The scene the grid is in
          */
-        ime::Scene& getScene();
+        mighter2d::Scene& getScene();
 
         /**
          * @brief Implicit conversion operator
          */
-        operator ime::Grid2D& ();
+        operator mighter2d::Grid& ();
 
     private:
         /**
@@ -125,9 +119,9 @@ namespace spm {
         void setBackground(int level);
 
     private:
-        ime::Grid2D& grid_;
-        ime::SpriteSheet spriteSheet_;
-        ime::Sprite background_;
+        mighter2d::Grid& grid_;
+        mighter2d::SpriteSheet spriteSheet_;
+        mighter2d::Sprite background_;
     };
 }
 

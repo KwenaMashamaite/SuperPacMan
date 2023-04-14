@@ -25,19 +25,19 @@
 #ifndef SUPERPACMAN_FRUIT_H
 #define SUPERPACMAN_FRUIT_H
 
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A fruit that can be eaten by Pacman
      */
-    class Fruit : public ime::GridObject {
+    class Fruit : public mighter2d::GridObject {
     public:
         /**
          * @brief Constrictor
          * @param scene The scene the object belongs to
          */
-        explicit Fruit(ime::Scene& scene);
+        explicit Fruit(mighter2d::Scene& scene);
 
         /**
          * @brief Get the name of the class

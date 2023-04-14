@@ -23,31 +23,31 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "LoadingSceneView.h"
-#include <IME/ui/widgets/Label.h>
-#include <IME/ui/widgets/ProgressBar.h>
-#include <IME/ui/widgets/Picture.h>
-#include <IME/ui/widgets/Panel.h>
+#include <Mighter2d/ui/widgets/Label.h>
+#include <Mighter2d/ui/widgets/ProgressBar.h>
+#include <Mighter2d/ui/widgets/Picture.h>
+#include <Mighter2d/ui/widgets/Panel.h>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    void LoadingSceneView::init(ime::ui::GuiContainer& gui) {
-        using namespace ime::ui;
+    void LoadingSceneView::init(mighter2d::ui::GuiContainer& gui) {
+        using namespace mighter2d::ui;
         auto pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
-        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        pnlContainer->getRenderer()->setBackgroundColour(mighter2d::Colour::Transparent);
 
         auto picLEngineLogo = pnlContainer->addWidget(Picture::create("IME_logo.png"), "picEngineLogo");
         picLEngineLogo->setOrigin(0.5f, 0.0f);
         picLEngineLogo->setPosition("50%", "50%");
 
         auto lblPoweredBy = Label::create("Powered by");
-        lblPoweredBy->getRenderer()->setTextStyle(ime::TextStyle::Italic);
+        lblPoweredBy->getRenderer()->setTextStyle(mighter2d::TextStyle::Italic);
         lblPoweredBy->setOrigin(0.5f, 1.0f);
-        lblPoweredBy->setPosition("50%", ime::bindTop(picLEngineLogo));
+        lblPoweredBy->setPosition("50%", mighter2d::bindTop(picLEngineLogo));
         pnlContainer->addWidget(std::move(lblPoweredBy), "lblPoweredBy");
 
         auto pbrAssetLoading = pnlContainer->addWidget<ProgressBar>(ProgressBar::create(""), "pbrAssetLoading");;
         pbrAssetLoading->getRenderer()->setBorderColour({0, 230, 64, 135});
-        pbrAssetLoading->getRenderer()->setFillColour(ime::Colour("#4d05e8"));
+        pbrAssetLoading->getRenderer()->setFillColour(mighter2d::Colour("#4d05e8"));
         pbrAssetLoading->setMaximumValue(26);
         pbrAssetLoading->setTextSize(9);
         pbrAssetLoading->setOrigin(0.5f, 0.0f);
@@ -56,7 +56,7 @@ namespace spm {
 
         auto lblLoading = Label::create("Loading resources, please wait...");
         lblLoading->setOrigin(0.5f, 1.0f);
-        lblLoading->setPosition("50%", ime::bindTop(pbrAssetLoading));
+        lblLoading->setPosition("50%", mighter2d::bindTop(pbrAssetLoading));
         pnlContainer->addWidget(std::move(lblLoading), "lblLoading");
     }
 

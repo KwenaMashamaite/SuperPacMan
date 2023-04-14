@@ -26,7 +26,7 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    constexpr auto SoundEffect = ime::audio::Type::Sfx;
+    constexpr auto SoundEffect = mighter2d::audio::Type::Sfx;
 
     ///////////////////////////////////////////////////////////////
     AudioManager::AudioManager() :

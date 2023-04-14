@@ -23,17 +23,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "GameOverSceneView.h"
-#include <IME/ui/widgets/Label.h>
-#include <IME/ui/widgets/Panel.h>
-#include <IME/ui/widgets/VerticalLayout.h>
-#include <IME/ui/widgets/HorizontalLayout.h>
-#include <IME/ui/widgets/Button.h>
+#include <Mighter2d/ui/widgets/Label.h>
+#include <Mighter2d/ui/widgets/Panel.h>
+#include <Mighter2d/ui/widgets/VerticalLayout.h>
+#include <Mighter2d/ui/widgets/HorizontalLayout.h>
+#include <Mighter2d/ui/widgets/Button.h>
 
-using namespace ime::ui;
+using namespace mighter2d::ui;
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    void GameOverSceneView::init(ime::ui::GuiContainer &gui, bool wonGame) {
+    void GameOverSceneView::init(mighter2d::ui::GuiContainer &gui, bool wonGame) {
         gui.setFont("ChaletLondonNineteenSixty.ttf");
         createPreSaveMenu(gui, wonGame);
         createNavButtons(gui, wonGame);
@@ -42,11 +42,11 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameOverSceneView::createPreSaveMenu(GuiContainer &gui, bool wonGame) {
         auto pnlContainer = gui.addWidget<Panel>(Panel::create(), "pnlContainer");
-        pnlContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        pnlContainer->getRenderer()->setBackgroundColour(mighter2d::Colour::Transparent);
 
         // Container for widgets placed at the centre of the view
         auto pnlCentreContainer = pnlContainer->addWidget<Panel>(Panel::create("100%", "100%"), "pnlCentreContainer");
-        pnlCentreContainer->getRenderer()->setBackgroundColour(ime::Colour("#121212cc"));
+        pnlCentreContainer->getRenderer()->setBackgroundColour(mighter2d::Colour("#121212cc"));
         pnlCentreContainer->setOrigin(0.5f, 0.5f);
         pnlCentreContainer->setPosition("50%", "50%");
 
@@ -54,8 +54,8 @@ namespace spm {
         auto* lblHeading = pnlCentreContainer->addWidget<Label>(Label::create(), "lblHeading1");
         lblHeading->setText("GAME OVER");
         lblHeading->getRenderer()->setFont("pacfont.ttf");
-        lblHeading->getRenderer()->setTextStyle(ime::TextStyle::Bold);
-        lblHeading->getRenderer()->setTextColour(ime::Colour::Red);
+        lblHeading->getRenderer()->setTextStyle(mighter2d::TextStyle::Bold);
+        lblHeading->getRenderer()->setTextColour(mighter2d::Colour::Red);
         lblHeading->setTextSize(50.0f);
         lblHeading->setOrigin(0.5f, 0.0f);
         lblHeading->setPosition("50%", "1%");
@@ -63,32 +63,32 @@ namespace spm {
         // Container for widgets user interacts with
         auto vlInnerCentreContainer = pnlCentreContainer->addWidget<VerticalLayout>(VerticalLayout::create("80%", "28%"), "pnlInnerCentreContainer");
         vlInnerCentreContainer->setOrigin(0.5f, 0.0f);
-        vlInnerCentreContainer->setPosition("50%", ime::bindBottom(lblHeading).append("+15%"));
+        vlInnerCentreContainer->setPosition("50%", mighter2d::bindBottom(lblHeading).append("+15%"));
 
         // Heading
         auto lblHeading2 = Label::create(wonGame ? "Congratulations, game completed!!" : "You died!!");
-        lblHeading2->getRenderer()->setTextColour(ime::Colour("#d0d005"));
-        lblHeading2->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        lblHeading2->getRenderer()->setTextColour(mighter2d::Colour("#d0d005"));
+        lblHeading2->getRenderer()->setBackgroundColour(mighter2d::Colour::Transparent);
         lblHeading2->setHorizontalAlignment(Label::HorizontalAlignment::Center);
-        lblHeading2->getRenderer()->setTextStyle(ime::TextStyle::Italic);
+        lblHeading2->getRenderer()->setTextStyle(mighter2d::TextStyle::Italic);
         vlInnerCentreContainer->addWidget(std::move(lblHeading2), "lblHeading2");
         vlInnerCentreContainer->setRatio(std::size_t{0}, 0.20f);
 
         // Create info labels
         auto lblHighScore = Label::create("HIGH SCORE ");
-        lblHighScore->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Left);
-        lblHighScore->setVerticalAlignment(ime::ui::Label::VerticalAlignment::Center);
-        lblHighScore->getRenderer()->setTextStyle(ime::TextStyle::Bold);
-        lblHighScore->getRenderer()->setTextColour(ime::Colour::White);
+        lblHighScore->setHorizontalAlignment(mighter2d::ui::Label::HorizontalAlignment::Left);
+        lblHighScore->setVerticalAlignment(mighter2d::ui::Label::VerticalAlignment::Center);
+        lblHighScore->getRenderer()->setTextStyle(mighter2d::TextStyle::Bold);
+        lblHighScore->getRenderer()->setTextColour(mighter2d::Colour::White);
         lblHighScore->getRenderer()->setBorders({0.0, 1.0f, 0.0f, 1.0f});
-        lblHighScore->getRenderer()->setBorderColour(ime::Colour::White);
-        lblHighScore->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        lblHighScore->getRenderer()->setBorderColour(mighter2d::Colour::White);
+        lblHighScore->getRenderer()->setBackgroundColour(mighter2d::Colour::Transparent);
 
         auto lblName = lblHighScore->copy();
         lblName->setText("PLAYER");
         lblName->getRenderer()->setBorders({0.0, 1.3f, 0.0f, 1.3f});
-        lblName->getRenderer()->setBorderColour(ime::Colour("#ffffff14"));
-        lblName->getRenderer()->setBackgroundColour(ime::Colour("#11141B66"));
+        lblName->getRenderer()->setBorderColour(mighter2d::Colour("#ffffff14"));
+        lblName->getRenderer()->setBackgroundColour(mighter2d::Colour("#11141B66"));
 
         auto lblLevel = lblName->copy();
         lblLevel->setText("LEVEL");
@@ -98,11 +98,11 @@ namespace spm {
 
         // Create info labels
         auto lblHighScoreVal = lblHighScore->copy();
-        lblHighScoreVal->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Right);
+        lblHighScoreVal->setHorizontalAlignment(mighter2d::ui::Label::HorizontalAlignment::Right);
         lblHighScoreVal->setText("00");
 
         auto lblNameVal = lblName->copy();
-        lblNameVal->setHorizontalAlignment(ime::ui::Label::HorizontalAlignment::Right);
+        lblNameVal->setHorizontalAlignment(mighter2d::ui::Label::HorizontalAlignment::Right);
         lblNameVal->setText("Player 1");
 
         auto lblLevelVal = lblNameVal->copy();
@@ -145,7 +145,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameOverSceneView::createNavButtons(ime::ui::GuiContainer& gui, bool wonGame) {
+    void GameOverSceneView::createNavButtons(mighter2d::ui::GuiContainer& gui, bool wonGame) {
         auto vlContainer = VerticalLayout::create("100%", "90%");
         vlContainer->setOrigin(0.5f, 0.5f);
         vlContainer->setPosition("50%", "50%");
@@ -156,12 +156,12 @@ namespace spm {
         btnRetryLevel->getRenderer()->setFont("DejaVuSans.ttf");
         btnRetryLevel->getRenderer()->setRoundedBorderRadius(18.0f);
         btnRetryLevel->getRenderer()->setRoundedBorderRadius(18);
-        btnRetryLevel->getRenderer()->setHoverTextStyle(ime::TextStyle::Italic);
-        btnRetryLevel->getRenderer()->setBackgroundColour(ime::Colour("#4d4dff"));
-        btnRetryLevel->getRenderer()->setBackgroundHoverColour(ime::Colour("#32CD32"));
-        btnRetryLevel->getRenderer()->setTextColour(ime::Colour::White);
-        btnRetryLevel->getRenderer()->setTextHoverColour(ime::Colour::Black);
-        btnRetryLevel->getRenderer()->setFocusedBorderColour(ime::Colour::Transparent);
+        btnRetryLevel->getRenderer()->setHoverTextStyle(mighter2d::TextStyle::Italic);
+        btnRetryLevel->getRenderer()->setBackgroundColour(mighter2d::Colour("#4d4dff"));
+        btnRetryLevel->getRenderer()->setBackgroundHoverColour(mighter2d::Colour("#32CD32"));
+        btnRetryLevel->getRenderer()->setTextColour(mighter2d::Colour::White);
+        btnRetryLevel->getRenderer()->setTextHoverColour(mighter2d::Colour::Black);
+        btnRetryLevel->getRenderer()->setFocusedBorderColour(mighter2d::Colour::Transparent);
 
         auto btnExitMainMenu = btnRetryLevel->copy();
         btnExitMainMenu->setText("Main Menu");
@@ -176,11 +176,11 @@ namespace spm {
 
         // Container for action buttons
         auto pnlButtonsContainer = Panel::create("80%", "18%");
-        pnlButtonsContainer->getRenderer()->setBackgroundColour(ime::Colour::Transparent);
+        pnlButtonsContainer->getRenderer()->setBackgroundColour(mighter2d::Colour::Transparent);
         pnlButtonsContainer->setOrigin(0.5f, 0.0f);
 
         pnlButtonsContainer->addWidget(std::move(vlContainer), "vlButtonsContainer");
-        pnlButtonsContainer->setPosition("50%", ime::bindBottom(gui.getWidget("pnlInnerCentreContainer")).append("+15%"));
+        pnlButtonsContainer->setPosition("50%", mighter2d::bindBottom(gui.getWidget("pnlInnerCentreContainer")).append("+15%"));
         gui.getWidget<Panel>("pnlCentreContainer")->addWidget(std::move(pnlButtonsContainer), "pnlButtonsContainer");
     }
 

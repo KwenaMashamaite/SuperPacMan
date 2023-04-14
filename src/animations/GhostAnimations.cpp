@@ -41,13 +41,13 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    const std::vector<ime::Animation::Ptr> &GhostAnimations::getAll() const {
+    const std::vector<mighter2d::Animation::Ptr> &GhostAnimations::getAll() const {
         return animations_;
     }
 
     ///////////////////////////////////////////////////////////////
-    void GhostAnimations::createAnimation(const std::string &name, ime::Index startPos) {
-        auto anim = ime::Animation::create(name, spritesheet_, ime::milliseconds(150));
+    void GhostAnimations::createAnimation(const std::string &name, mighter2d::Index startPos) {
+        auto anim = mighter2d::Animation::create(name, spritesheet_, mighter2d::milliseconds(150));
         anim->setLoop(true);
         anim->showTargetOnStart(false);
         anim->addFrames(startPos, 2);

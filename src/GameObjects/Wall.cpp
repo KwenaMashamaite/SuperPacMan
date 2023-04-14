@@ -26,8 +26,8 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    Wall::Wall(ime::Scene& scene) :
-        ime::GridObject(scene)
+    Wall::Wall(mighter2d::Scene& scene) :
+        mighter2d::GridObject(scene)
     {
         setCollisionGroup("walls");
         setObstacle(true);

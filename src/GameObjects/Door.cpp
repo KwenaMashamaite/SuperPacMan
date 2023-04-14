@@ -52,8 +52,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    Door::Door(ime::Scene& scene) :
-        ime::GridObject(scene),
+    Door::Door(mighter2d::Scene& scene) :
+        mighter2d::GridObject(scene),
         id_{++counter},
         isLocked_{false},
         orientation_(Orientation::Vertical),
@@ -69,7 +69,6 @@ namespace spm {
         getSprite().setTexture(spriteSheet_.getTexture());
         setDoorTexture("unlocked_door");
         getSprite().scale(2.07f, 2.07f);
-        resetSpriteOrigin();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -124,7 +123,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void Door::setDoorTexture(const std::string &alias) {
-        getSprite().setTextureRect(spriteSheet_.getSprite(alias).getTextureRect());
+        getSprite().setTextureRect(spriteSheet_.getSprite(getScene(), alias).getTextureRect());
     }
 
     ///////////////////////////////////////////////////////////////

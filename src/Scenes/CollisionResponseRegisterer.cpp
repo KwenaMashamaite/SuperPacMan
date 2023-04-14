@@ -29,7 +29,7 @@
 #include "LevelStartScene.h"
 #include "Utils/Utils.h"
 #include "AI/ghost/EatenState.h"
-#include <IME/core/engine/Engine.h>
+#include <Mighter2d/core/engine/Engine.h>
 #include <cassert>
 
 
@@ -42,57 +42,57 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithFruit(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithFruit(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveFruitCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithKey(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithKey(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveKeyCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithDoor(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithDoor(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveDoorCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithPowerPellet(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithPowerPellet(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolvePowerPelletCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithSuperPellet(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithSuperPellet(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveSuperPelletCollision, this, std::placeholders::_2));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithPacMan(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithPacMan(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolvePacmanCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithGhost(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithGhost(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveGhostCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithStar(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithStar(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveStarCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithTeleportationSensor(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithTeleportationSensor(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveTeleportationSensorCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::registerCollisionWithSlowDownSensor(ime::GridObject *gameObject) {
+    void CollisionResponseRegisterer::registerCollisionWithSlowDownSensor(mighter2d::GridObject *gameObject) {
         gameObject->onGridObjectCollision(std::bind(&CollisionResponseRegisterer::resolveSlowDownSensorCollision, this, std::placeholders::_2, std::placeholders::_1));
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveFruitCollision(ime::GridObject* fruit) {
+    void CollisionResponseRegisterer::resolveFruitCollision(mighter2d::GridObject* fruit) {
         if (fruit->getClassName() != "Fruit")
             return;
 
@@ -102,10 +102,10 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveKeyCollision(ime::GridObject *key) {
+    void CollisionResponseRegisterer::resolveKeyCollision(mighter2d::GridObject *key) {
         if (key->getClassName() == "Key") {
             // Attempt to unlock a door with the collected key
-            game_.getGameObjects().forEachInGroup("Door",[key](ime::GameObject* gameObject) {
+            game_.getGameObjects().forEachInGroup("Door",[key](mighter2d::GameObject* gameObject) {
                 auto* door = static_cast<Door*>(gameObject);
                 door->unlock(*static_cast<Key*>(key));
 
@@ -120,7 +120,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolvePowerPelletCollision(ime::GridObject *pellet) {
+    void CollisionResponseRegisterer::resolvePowerPelletCollision(mighter2d::GridObject *pellet) {
         if (pellet->getClassName() == "Pellet" && pellet->getTag() == "power") {
             pellet->setActive(false);
 
@@ -135,12 +135,12 @@ namespace spm {
 
             timerManager_->extendSuperModeDuration();
             audioManager_->playPowerPelletEatenSfx();
-            game_.emit(GameEvent::FrightenedModeBegin);
+            game_.emitGE(GameEvent::FrightenedModeBegin);
         }
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveSuperPelletCollision(ime::GridObject *pellet) {
+    void CollisionResponseRegisterer::resolveSuperPelletCollision(mighter2d::GridObject *pellet) {
         if (pellet->getClassName() == "Pellet" && pellet->getTag() == "super") {
             pellet->setActive(false);
 
@@ -152,12 +152,12 @@ namespace spm {
                 timerManager_->startSuperModeTimeout();
 
             audioManager_->playSuperPelletEatenSfx();
-            game_.emit(GameEvent::SuperModeBegin);
+            game_.emitGE(GameEvent::SuperModeBegin);
         }
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolvePacmanCollision(ime::GridObject* pacman, ime::GridObject* otherGameObject) {
+    void CollisionResponseRegisterer::resolvePacmanCollision(mighter2d::GridObject* pacman, mighter2d::GridObject* otherGameObject) {
         if (pacman->getClassName() == "PacMan" && static_cast<PacMan*>(pacman)->getState() != PacMan::State::Super) {
             auto* ghost = dynamic_cast<Ghost*>(otherGameObject);
             if (ghost && (ghost->getState() == Ghost::State::Frightened || ghost->getState() == Ghost::State::Eaten))
@@ -175,13 +175,13 @@ namespace spm {
             game_.getCache().setValue("PLAYER_LIVES", pac->getLivesCount());
             game_.view_->removeLife();
 
-            game_.getGameObjects().forEachInGroup("Ghost", [](ime::GameObject* ghost) {
+            game_.getGameObjects().forEachInGroup("Ghost", [](mighter2d::GameObject* ghost) {
                 ghost->getSprite().setVisible(false);
                 static_cast<Ghost*>(ghost)->getGridMover()->setMovementFreeze(true);
             });
 
             auto deathAnimDuration = pacman->getSprite().getAnimator().getAnimation("dying")->getDuration();
-            game_.getTimer().setTimeout(deathAnimDuration + ime::milliseconds(400), [this, pacman] {
+            game_.getTimer().setTimeout(deathAnimDuration + mighter2d::milliseconds(400), [this, pacman] {
                 if (static_cast<PacMan*>(pacman)->getLivesCount() <= 0) {
                     game_.getGameObjects().remove(pacman);
                     game_.endGameplay();
@@ -194,7 +194,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveGhostCollision(ime::GridObject *ghost, ime::GridObject *otherGameObject) {
+    void CollisionResponseRegisterer::resolveGhostCollision(mighter2d::GridObject *ghost, mighter2d::GridObject *otherGameObject) {
         if (ghost->getClassName() == "Ghost" && static_cast<Ghost*>(ghost)->getState() == Ghost::State::Frightened) {
             timerManager_->pausePowerModeTimeout();
             timerManager_->pauseSuperModeTimeout();
@@ -204,7 +204,7 @@ namespace spm {
             replaceWithScoreTexture(ghost, otherGameObject);
             game_.updatePointsMultiplier();
 
-            game_.getTimer().setTimeout(ime::seconds(1), [=] {
+            game_.getTimer().setTimeout(mighter2d::seconds(1), [=] {
                 audioManager_->playBackgroundMusic(1);
                 setMovementFreeze(false);
                 otherGameObject->getSprite().setVisible(true);
@@ -216,7 +216,7 @@ namespace spm {
                 // Its possible for the player to eat all the ghosts before the power mode timeout expires,
                 // in that case we force the power mode to terminate early
                 bool isSomeGhostsBlue = false;
-                game_.getGameObjects().forEachInGroup("Ghost", [&isSomeGhostsBlue](ime::GameObject* ghost) {
+                game_.getGameObjects().forEachInGroup("Ghost", [&isSomeGhostsBlue](mighter2d::GameObject* ghost) {
                     if (static_cast<Ghost*>(ghost)->getState() == Ghost::State::Frightened)
                         isSomeGhostsBlue = true;
                 });
@@ -233,7 +233,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveStarCollision(ime::GridObject *star, ime::GridObject *otherGameObject) {
+    void CollisionResponseRegisterer::resolveStarCollision(mighter2d::GridObject *star, mighter2d::GridObject *otherGameObject) {
         if (star->getClassName() == "Star") {
             timerManager_->stopStarDespawnTimer();
             timerManager_->pauseAllTimers();
@@ -241,9 +241,9 @@ namespace spm {
             setMovementFreeze(true);
             star->getSprite().getAnimator().stop();
 
-            ime::Time freezeDuration = ime::seconds(1);
-            ime::AnimationFrame* leftFruitFrame = game_.getGameObjects().findByTag("leftBonusFruit")->getSprite().getAnimator().getCurrentFrame();
-            ime::AnimationFrame* rightFruitFrame = game_.getGameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().getCurrentFrame();
+            mighter2d::Time freezeDuration = mighter2d::seconds(1);
+            mighter2d::AnimationFrame* leftFruitFrame = game_.getGameObjects().findByTag("leftBonusFruit")->getSprite().getAnimator().getCurrentFrame();
+            mighter2d::AnimationFrame* rightFruitFrame = game_.getGameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().getCurrentFrame();
             if (leftFruitFrame->getIndex() == rightFruitFrame->getIndex()) {
                 otherGameObject->getSprite().setVisible(false);
                 star->getSprite().setTexture("spritesheet.png");
@@ -257,8 +257,7 @@ namespace spm {
                     star->getSprite().setTextureRect({408, 142, 32, 16}); // 2000
                 }
 
-                star->resetSpriteOrigin();
-                freezeDuration = ime::seconds(3.3);
+                freezeDuration = mighter2d::seconds(3.3);
                 audioManager_->playBonusFruitMatchSfx();
             } else {
                 game_.updateScore(Constants::Points::GHOST * game_.pointsMultiplier_);
@@ -288,7 +287,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveDoorCollision(ime::GridObject *door, ime::GridObject *otherGameObject) {
+    void CollisionResponseRegisterer::resolveDoorCollision(mighter2d::GridObject *door, mighter2d::GridObject *otherGameObject) {
         if (door->getClassName() == "Door") {
             auto* pacman = dynamic_cast<PacMan*>(otherGameObject);
             if (pacman && pacman->getState() == PacMan::State::Super) {
@@ -301,7 +300,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveSlowDownSensorCollision(ime::GridObject *sensor, ime::GridObject *objectOnSensor) {
+    void CollisionResponseRegisterer::resolveSlowDownSensorCollision(mighter2d::GridObject *sensor, mighter2d::GridObject *objectOnSensor) {
         if (sensor->getClassName() == "Sensor" && sensor->getTag().find("slowDownSensor") != std::string::npos) {
             float speedMultiplier;
             if (game_.currentLevel_ == 1)
@@ -312,11 +311,11 @@ namespace spm {
                 speedMultiplier = 0.50f;
 
             char sensorNum = sensor->getTag().back();
-            ime::Direction dir = objectOnSensor->getGridMover()->getDirection();
+            mighter2d::Direction dir = objectOnSensor->getGridMover()->getDirection();
 
-            if (((sensorNum == '2' || sensorNum == '4') && dir == ime::Right) ||
-                ((sensorNum == '1' || sensorNum == '3') && dir == ime::Left) ||
-                (sensorNum == '5' && dir == ime::Up))
+            if (((sensorNum == '2' || sensorNum == '4') && dir == mighter2d::Right) ||
+                ((sensorNum == '1' || sensorNum == '3') && dir == mighter2d::Left) ||
+                (sensorNum == '5' && dir == mighter2d::Up))
             {
                 objectOnSensor->getGridMover()->setSpeedMultiplier(speedMultiplier);
             }
@@ -326,15 +325,15 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::resolveTeleportationSensorCollision(ime::GridObject* sensor, ime::GridObject* objectOnSensor) {
+    void CollisionResponseRegisterer::resolveTeleportationSensorCollision(mighter2d::GridObject* sensor, mighter2d::GridObject* objectOnSensor) {
         if (sensor->getClassName() == "Sensor" && sensor->getTag() == "teleportationSensor") {
-            ime::GridMover* gridMover = objectOnSensor->getGridMover();
-            ime::Grid2D& grid = gridMover->getGrid();
-            const ime::Tile& currentTile = grid.getTileOccupiedByChild(objectOnSensor);
+            mighter2d::GridMover* gridMover = objectOnSensor->getGridMover();
+            mighter2d::Grid& grid = gridMover->getGrid();
+            const mighter2d::Tile& currentTile = grid.getTileOccupiedByChild(objectOnSensor);
             grid.removeChild(objectOnSensor);
 
             if (currentTile.getIndex().colm == 0) { // Triggered the left-hand side sensor
-                grid.addChild(objectOnSensor,ime::Index{currentTile.getIndex().row, static_cast<int>(grid.getSizeInTiles().x - 1)});
+                grid.addChild(objectOnSensor,mighter2d::Index{currentTile.getIndex().row, static_cast<int>(grid.getSizeInTiles().x - 1)});
             } else
                 grid.addChild(objectOnSensor, {currentTile.getIndex().row, 0});
 
@@ -344,23 +343,23 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void CollisionResponseRegisterer::replaceWithScoreTexture(ime::GridObject* ghost, ime::GridObject* otherGameObject) const {
+    void CollisionResponseRegisterer::replaceWithScoreTexture(mighter2d::GridObject* ghost, mighter2d::GridObject* otherGameObject) const {
         otherGameObject->getSprite().setVisible(false);
-        static const ime::SpriteSheet numbers{"spritesheet.png", ime::Vector2u{16, 16}, ime::Vector2u{1, 1}, ime::UIntRect{306, 141, 69, 18}};
+        static const mighter2d::SpriteSheet numbers{"spritesheet.png", mighter2d::Vector2u{16, 16}, mighter2d::Vector2u{1, 1}, mighter2d::UIntRect{306, 141, 69, 18}};
         ghost->getSprite().setTexture(numbers.getTexture());
 
         if (game_.pointsMultiplier_ == 1)
-            ghost->getSprite().setTextureRect(*numbers.getFrame(ime::Index{0, 0})); // 100
+            ghost->getSprite().setTextureRect(*numbers.getFrame(mighter2d::Index{0, 0})); // 100
         else if (game_.pointsMultiplier_ == 2)
-            ghost->getSprite().setTextureRect(*numbers.getFrame(ime::Index{0, 1})); // 200
+            ghost->getSprite().setTextureRect(*numbers.getFrame(mighter2d::Index{0, 1})); // 200
         else if (game_.pointsMultiplier_ == 4)
-            ghost->getSprite().setTextureRect(*numbers.getFrame(ime::Index{0, 2})); // 800
+            ghost->getSprite().setTextureRect(*numbers.getFrame(mighter2d::Index{0, 2})); // 800
         else
-            ghost->getSprite().setTextureRect(*numbers.getFrame(ime::Index{0, 3})); // 1600
+            ghost->getSprite().setTextureRect(*numbers.getFrame(mighter2d::Index{0, 3})); // 1600
     }
 
     void CollisionResponseRegisterer::setMovementFreeze(bool freeze) {
-        static auto freezeMovement = [](ime::GridObject* gameObject, bool freeze) {
+        static auto freezeMovement = [](mighter2d::GridObject* gameObject, bool freeze) {
             if (gameObject->getGridMover()) { // Movable object
                 gameObject->getSprite().getAnimator().setTimescale(freeze ? 0.0f : 1.0f);
                 gameObject->getGridMover()->setMovementFreeze(freeze);
@@ -369,8 +368,8 @@ namespace spm {
 
         freezeMovement(game_.gameObjectsManager_.getPacMan(), freeze);
 
-        game_.getGameObjects().forEachInGroup("Ghost", [freeze](ime::GameObject* gameObject) {
-            freezeMovement(static_cast<ime::GridObject*>(gameObject), freeze);
+        game_.getGameObjects().forEachInGroup("Ghost", [freeze](mighter2d::GameObject* gameObject) {
+            freezeMovement(static_cast<mighter2d::GridObject*>(gameObject), freeze);
         });
     }
 }

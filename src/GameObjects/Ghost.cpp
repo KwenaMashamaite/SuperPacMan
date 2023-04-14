@@ -32,12 +32,12 @@
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    Ghost::Ghost(ime::Scene& scene, Colour colour) :
-        ime::GridObject(scene),
+    Ghost::Ghost(mighter2d::Scene& scene, Colour colour) :
+        mighter2d::GridObject(scene),
         isLockedInHouse_{false},
         isFlat_{false}
     {
-        setDirection(ime::Right);
+        setDirection(mighter2d::Right);
 
         if (colour == Colour::Red)
             setTag("blinky");
@@ -45,7 +45,7 @@ namespace spm {
             setTag("pinky");
         else if (colour == Colour::Cyan) {
             setTag("inky");
-            setDirection(ime::Left);
+            setDirection(mighter2d::Left);
         } else if (colour == Colour::Orange)
             setTag("clyde");
 
@@ -76,12 +76,12 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void Ghost::clearState() {
         state_ = nullptr;
-        ime::GameObject::setState(static_cast<int>(State::None));
+        mighter2d::GameObject::setState(static_cast<int>(State::None));
     }
 
     ///////////////////////////////////////////////////////////////
     Ghost::State Ghost::getState() const {
-        return static_cast<Ghost::State>(ime::GameObject::getState());
+        return static_cast<Ghost::State>(mighter2d::GameObject::getState());
     }
 
     ///////////////////////////////////////////////////////////////
@@ -129,13 +129,13 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Ghost::update(ime::Time deltaTime) {
+    void Ghost::update(mighter2d::Time deltaTime) {
         if (state_)
             state_->update(deltaTime);
     }
 
     ///////////////////////////////////////////////////////////////
-    void Ghost::handleEvent(GameEvent event, const ime::PropertyContainer &args) {
+    void Ghost::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
         if (state_)
             state_->handleEvent(event, args);
     }
@@ -146,29 +146,28 @@ namespace spm {
         animations.createAnimationsFor(getTag());
 
         int spriteSheetRow = getTag() == "blinky" ? 0 : (getTag() == "pinky" ? 1 : (getTag() == "inky" ? 2 : 3));
-        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(ime::Index{spriteSheetRow, 0});
+        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(getScene(), mighter2d::Index{spriteSheetRow, 0});
 
         for (const auto& animation : animations.getAll())
             getSprite().getAnimator().addAnimation(animation);
 
         getSprite().scale(2.0f, 2.0f);
-        resetSpriteOrigin();
         getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()));
 
         // Automatically change the animation when the direction changes
-        onPropertyChange("direction", [this](const ime::Property& property) {
+        onPropertyChange("direction", [this](const mighter2d::Property& property) {
             // Evade/frightened animation is the same in all directions
             if (getState() == State::Frightened)
                 return;
 
-            std::string newAnimation = "going" + utils::convertToString(property.getValue<ime::Direction>());
+            std::string newAnimation = "going" + utils::convertToString(property.getValue<mighter2d::Direction>());
 
             if (getState() == State::Eaten)
                 newAnimation += "Eaten";
             else if (isFlat_)
                 newAnimation += "Flat";
 
-            ime::Animator& animator = getSprite().getAnimator();
+            mighter2d::Animator& animator = getSprite().getAnimator();
             if (animator.getActiveAnimation()->getName() != newAnimation)
                 animator.startAnimation(newAnimation);
         });

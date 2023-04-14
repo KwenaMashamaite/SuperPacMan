@@ -26,13 +26,13 @@
 #define SUPERPACMAN_PACMAN_H
 
 #include "AI/IActorState.h"
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief Player controlled actor
      */
-    class PacMan : public ime::GridObject {
+    class PacMan : public mighter2d::GridObject {
     public:
         using Ptr = std::shared_ptr<PacMan>; //!< Shared actor pointer
 
@@ -49,7 +49,7 @@ namespace spm {
          * @brief Constructor
          * @param scene The scene the actor belongs to
          */
-        explicit PacMan(ime::Scene& scene);
+        explicit PacMan(mighter2d::Scene& scene);
 
         /**
          * @brief Set the number of lives
@@ -105,13 +105,13 @@ namespace spm {
          * @param event The event to be handled
          * @param args Arguments associated with the event
          */
-        virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args);
+        virtual void handleEvent(GameEvent event, const mighter2d::PropertyContainer& args);
 
         /**
          * @brief Change pacmans current animation
          * @param dir Pacmans current direction
          */
-        void switchAnimation(ime::Vector2i dir);
+        void switchAnimation(mighter2d::Vector2i dir);
 
         /**
          * @brief Destructor

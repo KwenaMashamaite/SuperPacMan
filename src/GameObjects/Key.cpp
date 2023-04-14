@@ -29,13 +29,12 @@ namespace spm {
     static int counter = 0;
 
     ///////////////////////////////////////////////////////////////
-    Key::Key(ime::Scene& scene) :
-        ime::GridObject(scene),
+    Key::Key(mighter2d::Scene& scene) :
+        mighter2d::GridObject(scene),
         id_{++counter}
     {
         getSprite().setTexture("spritesheet.png");
         getSprite().setTextureRect({290, 142, 16, 16});
-        resetSpriteOrigin();
         getTransform().scale(2.0f, 2.0f);
     }
 

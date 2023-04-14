@@ -26,8 +26,8 @@
 #define SUPERPACMAN_IACTORSTATE_H
 
 #include "Common/Events.h"
-#include <IME/core/time/Time.h>
-#include <IME/common/PropertyContainer.h>
+#include <Mighter2d/core/time/Time.h>
+#include <Mighter2d/common/PropertyContainer.h>
 #include <memory>
 
 namespace spm {
@@ -56,14 +56,14 @@ namespace spm {
          * @brief update the state
          * @param deltaTime Time passed since last state update
          */
-        virtual void update(ime::Time deltaTime) = 0;
+        virtual void update(mighter2d::Time deltaTime) = 0;
 
         /**
          * @brief Handle a game event
          * @param event The event to be handled
          * @param args Arguments associated with the event
          */
-        virtual void handleEvent(GameEvent event, const ime::PropertyContainer& args) = 0;
+        virtual void handleEvent(GameEvent event, const mighter2d::PropertyContainer& args) = 0;
 
         /**
          * @brief Destructor

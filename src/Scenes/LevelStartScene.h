@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_LEVELSTARTSCENE_H
 #define SUPERPACMAN_LEVELSTARTSCENE_H
 
-#include <IME/core/scene/Scene.h>
+#include <Mighter2d/core/scene/Scene.h>
 #include "Views/LevelStartSceneView.h"
 
 namespace spm {
@@ -36,7 +36,7 @@ namespace spm {
      * and fruit along with its associated points for a short period
      * of time before transitioning to the GamePlayScene
      */
-    class LevelStartScene : public ime::Scene {
+    class LevelStartScene : public mighter2d::Scene {
     public:
         /**
          * @brief Constructor
@@ -50,17 +50,6 @@ namespace spm {
          * is entered for the first time
          */
         void onEnter() override;
-
-        /**
-         * @brief Update the scene
-         * @param deltaTime Time passed since last update
-         *
-         * This function is called by the game engine after the scene
-         * has handled system events and external inputs (Keyboard and
-         * mouse). The function is called once per frame and the delta
-         * passed to it is frame rate dependent
-         */
-        void onUpdate(ime::Time deltaTime) override;
 
         /**
          * @brief Destructor

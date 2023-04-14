@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_AUDIOMANAGER_H
 #define SUPERPACMAN_AUDIOMANAGER_H
 
-#include <IME/core/audio/AudioManager.h>
+#include <Mighter2d/core/audio/AudioManager.h>
 
 namespace spm {
     /**
@@ -150,9 +150,9 @@ namespace spm {
         void stop();
 
     private:
-        ime::audio::AudioManager audioPlayer_;
-        ime::audio::Audio* starSpawnSfx_;
-        ime::audio::Audio* bgrndMusic_;
+        mighter2d::audio::AudioManager audioPlayer_;
+        mighter2d::audio::Audio* starSpawnSfx_;
+        mighter2d::audio::Audio* bgrndMusic_;
     };
 }
 

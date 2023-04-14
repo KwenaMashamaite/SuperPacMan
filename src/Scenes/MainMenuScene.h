@@ -26,7 +26,7 @@
 #define SUPERPACMAN_MAINMENUSCENE_H
 
 #include "Views/MainMenuSceneView.h"
-#include <IME/core/scene/Scene.h>
+#include <Mighter2d/core/scene/Scene.h>
 
 namespace spm {
     /**
@@ -37,7 +37,7 @@ namespace spm {
      * to play or exit the game. In addition, the player can view the game
      * controls and/or change the game settings.
      */
-    class MainMenuScene : public ime::Scene {
+    class MainMenuScene : public mighter2d::Scene {
     public:
         /**
          * @brief Constructor

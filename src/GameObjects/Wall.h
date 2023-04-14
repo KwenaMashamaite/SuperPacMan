@@ -25,13 +25,13 @@
 #ifndef SUPERPACMAN_WALL_H
 #define SUPERPACMAN_WALL_H
 
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A wall object
      */
-    class Wall : public ime::GridObject {
+    class Wall : public mighter2d::GridObject {
     public:
         using Ptr = std::shared_ptr<Wall>; //!< Shared actor pointer
 
@@ -39,7 +39,7 @@ namespace spm {
          * @brief Constrictor
          * @param scene The scene the object belongs to
          */
-        explicit Wall(ime::Scene& scene);
+        explicit Wall(mighter2d::Scene& scene);
 
         /**
          * @brief Get the name of the class

@@ -40,7 +40,7 @@ namespace spm {
     void Game::initialize() {
         engine_.onInit([this] {
             // Make game window unresizable
-            engine_.getWindow().setStyle(ime::WindowStyle::Close);
+            engine_.getWindow().setStyle(mighter2d::WindowStyle::Close);
 
             engine_.setPhysicsUpdateFrameRate(120);
 
@@ -58,8 +58,8 @@ namespace spm {
             engine_.getCache().addProperty({"MASTER_VOLUME", 100.0f});
             engine_.getCache().addProperty({"PLAYER_WON_GAME", false});
             engine_.getCache().addProperty({"BONUS_STAGE", 3});
-            engine_.getCache().addProperty({"GHOSTS_FRIGHTENED_MODE_DURATION", ime::seconds(Constants::POWER_MODE_DURATION)});
-            engine_.getCache().addProperty({"PACMAN_SUPER_MODE_DURATION", ime::seconds(Constants::SUPER_MODE_DURATION)});
+            engine_.getCache().addProperty({"GHOSTS_FRIGHTENED_MODE_DURATION", mighter2d::seconds(Constants::POWER_MODE_DURATION)});
+            engine_.getCache().addProperty({"PACMAN_SUPER_MODE_DURATION", mighter2d::seconds(Constants::SUPER_MODE_DURATION)});
 
             // If not found, player will be prompted for name in StartUpScene
             if (engine_.getConfigs().hasPref("PLAYER_NAME"))

@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_SENSOR_H
 #define SUPERPACMAN_SENSOR_H
 
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/object/GridObject.h>
 
 namespace spm {
     /**
@@ -35,13 +35,13 @@ namespace spm {
      * enters it. For example, it is used to detect when PacMan or a Ghost
      * reaches the end of the tunnel
      */
-    class Sensor : public ime::GridObject {
+    class Sensor : public mighter2d::GridObject {
     public:
         /**
          * @brief Constrictor
          * @param scene The scene the object belongs to
          */
-        explicit Sensor(ime::Scene& scene);
+        explicit Sensor(mighter2d::Scene& scene);
 
         /**
          * @brief Get the class type

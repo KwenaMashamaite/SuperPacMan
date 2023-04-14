@@ -54,7 +54,7 @@ namespace spm {
          * @param event The event to be handled
          * @param args Arguments associated with the event
          */
-        void handleEvent(GameEvent event, const ime::PropertyContainer &args) override;
+        void handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) override;
     };
 }
 

@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_GAMEPLAYSCENE_H
 #define SUPERPACMAN_GAMEPLAYSCENE_H
 
-#include <IME/core/scene/Scene.h>
+#include <Mighter2d/core/scene/Scene.h>
 #include "Common/Events.h"
 #include "Grid.h"
 #include "Views/CommonView.h"
@@ -37,7 +37,7 @@ namespace spm {
     /**
      * @brief Defines the playing state of the game
      */
-    class GameplayScene : public ime::Scene {
+    class GameplayScene : public mighter2d::Scene {
     public:
         /**
          * @brief Constructor
@@ -77,7 +77,7 @@ namespace spm {
          * mouse). The function is called once per frame and the delta
          * passed to it is frame rate dependent
          */
-        void onUpdate(ime::Time deltaTime) override;
+        void onUpdate(mighter2d::Time deltaTime) override;
 
         /**
          * @brief Handle cache reactivation
@@ -107,7 +107,7 @@ namespace spm {
          * @brief Emit a game event
          * @param event The event to be emitted
          */
-        void emit(GameEvent event);
+        void emitGE(GameEvent event);
 
         int getLevel() const {return currentLevel_; }
 

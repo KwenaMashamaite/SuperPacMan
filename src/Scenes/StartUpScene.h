@@ -25,7 +25,7 @@
 #ifndef SUPERPACMAN_STARTUPSCENE_H
 #define SUPERPACMAN_STARTUPSCENE_H
 
-#include <IME/core/scene/Scene.h>
+#include <Mighter2d/core/scene/Scene.h>
 
 namespace spm {
     /**
@@ -38,7 +38,7 @@ namespace spm {
      *
      * The user may force a scene transition by pressing the skip scene key
      */
-    class StartUpScene : public ime::Scene {
+    class StartUpScene : public mighter2d::Scene {
     public:
         /**
          * @brief Enter the scene

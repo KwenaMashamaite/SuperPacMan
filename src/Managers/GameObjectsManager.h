@@ -117,16 +117,16 @@ namespace spm {
          * @brief Get all the ghosts
          * @return All the ghosts
          */
-        ime::ObjectContainer<Ghost>& getGhosts();
-        ime::ObjectContainer<Pellet>& getPellets();
-        ime::ObjectContainer<Key>& getKeys();
-        ime::ObjectContainer<Fruit>& getFruits();
-        ime::ObjectContainer<Door>& getDoors();
+        mighter2d::ObjectContainer<Ghost>& getGhosts();
+        mighter2d::ObjectContainer<Pellet>& getPellets();
+        mighter2d::ObjectContainer<Key>& getKeys();
+        mighter2d::ObjectContainer<Fruit>& getFruits();
+        mighter2d::ObjectContainer<Door>& getDoors();
 
         /**
          * @brief Update game objects
          */
-        void update(ime::Time deltaTime);
+        void update(mighter2d::Time deltaTime);
 
     private:
         /**
@@ -155,13 +155,13 @@ namespace spm {
         std::unique_ptr<Star> star_;
         std::unique_ptr<Fruit> leftSideStarFruit_;
         std::unique_ptr<Fruit> rightSideStarFruit_;
-        ime::ObjectContainer<Ghost> ghosts_;
-        ime::ObjectContainer<Fruit> fruits_;
-        ime::ObjectContainer<Pellet> pellets_;
-        ime::ObjectContainer<Key> keys_;
-        ime::ObjectContainer<Door> doors_;
-        ime::ObjectContainer<Sensor> sensors_;
-        ime::ObjectContainer<Wall> walls_;
+        mighter2d::ObjectContainer<Ghost> ghosts_;
+        mighter2d::ObjectContainer<Fruit> fruits_;
+        mighter2d::ObjectContainer<Pellet> pellets_;
+        mighter2d::ObjectContainer<Key> keys_;
+        mighter2d::ObjectContainer<Door> doors_;
+        mighter2d::ObjectContainer<Sensor> sensors_;
+        mighter2d::ObjectContainer<Wall> walls_;
         unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
         unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
     };

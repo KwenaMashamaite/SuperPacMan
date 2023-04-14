@@ -46,60 +46,60 @@ namespace spm {
              * @brief Resolve a collision between a fruit object and another game object
              * @param fruit The fruit in collision with another game object
              */
-            void resolveFruitCollision(ime::GridObject* fruit);
+            void resolveFruitCollision(mighter2d::GridObject* fruit);
 
             /**
              * @brief Resolve a collision between a key object and another game object
              * @param key The key in collision with another game object
              */
-            void resolveKeyCollision(ime::GridObject* key);
+            void resolveKeyCollision(mighter2d::GridObject* key);
 
             /**
              * @brief Resolve a collision between a pellet object and another game object
              * @param pellet The pellet in collision with another game object
              */
-            void resolvePowerPelletCollision(ime::GridObject* pellet);
+            void resolvePowerPelletCollision(mighter2d::GridObject* pellet);
 
             /**
              * @brief Resolve a collision between a pellet object and another game object
              * @param pellet The pellet in collision with another game object
              */
-            void resolveSuperPelletCollision(ime::GridObject* pellet);
+            void resolveSuperPelletCollision(mighter2d::GridObject* pellet);
 
             /**
              * @brief Resolve a collision between pacman and another game object
              * @param pacman Pacman
              * @param otherGameObject The game object in collision with pacman
              */
-            void resolvePacmanCollision(ime::GridObject* pacman, ime::GridObject* otherGameObject);
+            void resolvePacmanCollision(mighter2d::GridObject* pacman, mighter2d::GridObject* otherGameObject);
 
             /**
              * @brief Resolve a collision between a ghost and another game object
              * @param ghost The ghost in collision with another game object
              * @param otherGameObject The game object in collision with the ghost
              */
-            void resolveGhostCollision(ime::GridObject* ghost, ime::GridObject* otherGameObject);
+            void resolveGhostCollision(mighter2d::GridObject* ghost, mighter2d::GridObject* otherGameObject);
 
             /**
              * @brief Resolve a collision between pacman and another game object
              * @param star The star in collision with another game object
              * @param otherGameObject The game object in collision with the star
              */
-            void resolveStarCollision(ime::GridObject* star, ime::GridObject* otherGameObject);
+            void resolveStarCollision(mighter2d::GridObject* star, mighter2d::GridObject* otherGameObject);
 
             /**
              * @brief Resolve a collision between a door and another game object
              * @param door The door in collision with another game object
              * @param otherGameObject The game object in collision with the door
              */
-            void resolveDoorCollision(ime::GridObject* door, ime::GridObject* otherGameObject);
+            void resolveDoorCollision(mighter2d::GridObject* door, mighter2d::GridObject* otherGameObject);
 
             /**
              * @brief Resolve a collision between a speed-slow-down sensor and its trigger
              * @param sensor The triggered slow down sensor
              * @param objectOnSensor The game object that triggered the sensor
              */
-            void resolveSlowDownSensorCollision(ime::GridObject* sensor, ime::GridObject* objectOnSensor);
+            void resolveSlowDownSensorCollision(mighter2d::GridObject* sensor, mighter2d::GridObject* objectOnSensor);
         }; // class CollisionResolver
 
     private:

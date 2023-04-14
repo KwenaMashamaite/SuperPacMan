@@ -25,19 +25,19 @@
 #ifndef SUPERPACMAN_STAR_H
 #define SUPERPACMAN_STAR_H
 
-#include <IME/core/object/GridObject.h>
+#include <Mighter2d/core/object/GridObject.h>
 
 namespace spm {
     /**
      * @brief A star game object
      */
-    class Star : public ime::GridObject {
+    class Star : public mighter2d::GridObject {
     public:
         /**
          * @brief Constrictor
          * @param scene The scene the object belongs to
          */
-        explicit Star(ime::Scene& scene);
+        explicit Star(mighter2d::Scene& scene);
 
         /**
          * @brief Get the name of the class

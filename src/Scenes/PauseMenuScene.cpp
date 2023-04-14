@@ -24,8 +24,8 @@
 
 #include "PauseMenuScene.h"
 #include "views/PauseMenuSceneView.h"
-#include <IME/ui/widgets/ToggleButton.h>
-#include <IME/core/engine/Engine.h>
+#include <Mighter2d/ui/widgets/ToggleButton.h>
+#include <Mighter2d/core/engine/Engine.h>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
@@ -36,26 +36,26 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void PauseMenuScene::initEventHandlers() {
-        getGui().getWidget("btnResume")->on("click", ime::Callback<>([this] {
+        getGui().getWidget("btnResume")->on("click", mighter2d::Callback<>([this] {
             getEngine().popScene();
         }));
 
-        getGui().getWidget("btnMainMenu")->on("click", ime::Callback<>([this] {
+        getGui().getWidget("btnMainMenu")->on("click", mighter2d::Callback<>([this] {
             getEngine().getPreviousScene()->setCached(true, "GameplayScene");
             getEngine().popScene();
             getEngine().popScene();
             getEngine().pushCachedScene("MainMenuScene");
         }));
 
-        getGui().getWidget("btnExit")->on("click", ime::Callback<>([this] {
+        getGui().getWidget("btnExit")->on("click", mighter2d::Callback<>([this] {
             getEngine().quit();
         }));
 
-        auto btnOption = getGui().getWidget<ime::ui::ToggleButton>("btnAudioToggle");
+        auto btnOption = getGui().getWidget<mighter2d::ui::ToggleButton>("btnAudioToggle");
         btnOption->setChecked(getCache().getValue<float>("MASTER_VOLUME") > 0.0f);
         btnOption->setText(btnOption->isChecked() ? "on" : "off");
 
-        getGui().getWidget("btnAudioToggle")->on("toggle", ime::Callback<bool>([this, btnOption](bool checked) {
+        getGui().getWidget("btnAudioToggle")->on("toggle", mighter2d::Callback<bool>([this, btnOption](bool checked) {
             if (checked) {
                 getCache().setValue("MASTER_VOLUME", 100.0f);
                 btnOption->setText("on");
@@ -65,8 +65,8 @@ namespace spm {
             }
         }));
 
-        getInput().onKeyUp([this](ime::Keyboard::Key key) {
-            if (key == ime::Keyboard::Key::Escape || key == ime::Keyboard::Key::P)
+        getInput().onKeyUp([this](mighter2d::Keyboard::Key key) {
+            if (key == mighter2d::Keyboard::Key::Escape || key == mighter2d::Keyboard::Key::P)
                 getEngine().popScene();
         });
     }

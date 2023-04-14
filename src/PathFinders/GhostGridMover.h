@@ -26,14 +26,14 @@
 #define SUPERPACMAN_GHOSTGRIDMOVER_H
 
 #include "GameObjects/Ghost.h"
-#include <IME/core/physics/grid/GridMover.h>
+#include <Mighter2d/core/physics/GridMover.h>
 #include <vector>
 
 namespace spm {
     /**
      * @brief Controls the PathFinders of a ghost in the grid
      */
-    class GhostGridMover : public ime::GridMover {
+    class GhostGridMover : public mighter2d::GridMover {
     public:
         /**
          * @brief The PathFinders strategy
@@ -48,7 +48,7 @@ namespace spm {
          * @param grid The grid the target is in
          * @param ghost Ghost to be moved in the tilemap
          */
-        GhostGridMover(ime::Grid2D& grid, Ghost* ghost);
+        GhostGridMover(mighter2d::Grid& grid, Ghost* ghost);
 
         /**
          * @brief Set the PathFinders strategy
@@ -64,7 +64,7 @@ namespace spm {
          *
          * By default the target tile is the one at index{0, 0}
          */
-        void setTargetTile(ime::Index index);
+        void setTargetTile(mighter2d::Index index);
 
         /**
          * @brief Start the PathFinders
@@ -86,7 +86,7 @@ namespace spm {
          * @brief Filter forbidden directions from a list of possible directions
          * @param reverseGhostDir The reverse of the ghosts current direction
          */
-        void initPossibleDirections(const ime::Direction& reverseGhostDir);
+        void initPossibleDirections(const mighter2d::Direction& reverseGhostDir);
 
         /**
          * @brief Get a random direction
@@ -96,7 +96,7 @@ namespace spm {
          * been filtered out from the possible directions, otherwise it may
          * return an invalid direction
          */
-        ime::Direction getRandomDirection();
+        mighter2d::Direction getRandomDirection();
 
         /**
          * @brief Get a direction with minimal distance to the target tile
@@ -107,7 +107,7 @@ namespace spm {
          * been filtered out from the possible directions, otherwise it may
          * return an invalid direction
          */
-        ime::Direction getMinDistanceDirection(const ime::Index& targetTile) const;
+        mighter2d::Direction getMinDistanceDirection(const mighter2d::Index& targetTile) const;
 
         /**
          * @brief Check if the ghost is allowed to be in the ghost house
@@ -123,8 +123,8 @@ namespace spm {
         bool movementStarted_;                           //!< Flags if PathFinders has been initiated or not
         bool forceDirReversal_;                          //!< A flag indicating whether or not to force the ghost to reverse directions
         Strategy moveStrategy_;                          //!< The current PathFinders strategy of the ghost
-        ime::Index targetTile_;                          //!< The target tile to move to when move strategy is target
-        std::vector<ime::Direction> possibleDirections_; //!< Stores directions to be attempted by randomly moving ghost
+        mighter2d::Index targetTile_;                          //!< The target tile to move to when move strategy is target
+        std::vector<mighter2d::Direction> possibleDirections_; //!< Stores directions to be attempted by randomly moving ghost
     };
 }
 
