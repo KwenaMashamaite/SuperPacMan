@@ -26,6 +26,7 @@
 #define SUPERPACMAN_TIMERMANAGER_H
 
 #include <Mighter2d/core/time/Timer.h>
+#include "GameObjectsManager.h"
 
 namespace spm {
     // Forward declarations
@@ -40,9 +41,11 @@ namespace spm {
         /**
          * @brief Constructor
          * @param gameplayScene The gameplay scene
+         * @param gameObjectsManager Scene game objects
          * @param audioManager The gameplay audio manager
          */
-        TimerManager(GameplayScene& gameplayScene,  AudioManager& audioManager);
+        TimerManager(GameplayScene& gameplayScene, GameObjectsManager& gameObjectsManager,
+            AudioManager& audioManager);
 
         /**
          * @brief Start the ghost house probation counter
@@ -189,12 +192,6 @@ namespace spm {
          */
         void stopAllTimers();
 
-        /**
-         * @brief Update all timers
-         * @param deltaTime The time passed since the last update
-         */
-        void update(mighter2d::Time deltaTime);
-
     private:
         /**
          * @brief Start the ghost scatter mode AI timer
@@ -234,11 +231,11 @@ namespace spm {
         mighter2d::Time getSuperModeDuration();
 
     private:
-        GameplayScene& gameplayScene_;  //!< The gameplay scene
-        AudioManager& audioManager_;    //!< The game audio manager
-        int currentLevel_;              //!< The current game level
-        unsigned int scatterWaveLevel_; //!< The current scatter mode level (up to 4 levels)
-        unsigned int chaseWaveLevel_;   //!< The current chase mode level (up to 5 levels)
+        GameplayScene& gameplayScene_;        //!< The gameplay scene
+        GameObjectsManager& gameObjects_;     //!< The game objects
+        AudioManager& audioManager_;          //!< The game audio manager
+        unsigned int scatterWaveLevel_;       //!< The current scatter mode level (up to 4 levels)
+        unsigned int chaseWaveLevel_;         //!< The current chase mode level (up to 5 levels)
         mighter2d::Timer ghostAITimer_;       //!< Scatter-chase state transition timer
         mighter2d::Timer superModeTimer_;     //!< Pacman Super mode duration counter
         mighter2d::Timer powerModeTimer_;     //!< Energizer mode duration counter

@@ -47,10 +47,10 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    TimerManager::TimerManager(GameplayScene &gameplayScene, AudioManager& audioManager) :
+    TimerManager::TimerManager(GameplayScene &gameplayScene, GameObjectsManager& gameObjectsManager, AudioManager& audioManager) :
         gameplayScene_(gameplayScene),
+        gameObjects_(gameObjectsManager),
         audioManager_(audioManager),
-        currentLevel_(gameplayScene.getLevel()),
         scatterWaveLevel_{0},
         chaseWaveLevel_{0},
         ghostAITimer_(gameplayScene),
@@ -59,22 +59,41 @@ namespace spm {
         bonusStageTimer_(gameplayScene),
         starDespawnTimer_(gameplayScene)
     {
-        // Mighter2d v0.1.0 does not allow a non-repeating timer to be restarted in
-        // its timeout callback. Since this timer is used to control two states
-        // it needs to immediately start countdown when one state terminates.
+        // Ghost AI timer indefinitely switches between chase and scatter mode counting
         ghostAITimer_.setLoop(true);
+
+        // Flash duration
+        static const auto FLASH_ANIM_CUTOFF_TIME = mighter2d::seconds(2);
+
+        // Automatically startFlash pacman
+        superModeTimer_.onUpdate([this](mighter2d::Timer& superModeTimer) {
+            if (superModeTimer.getRemainingDuration() <= FLASH_ANIM_CUTOFF_TIME)
+                gameObjects_.getPacMan()->setFlashEnable(true);
+            else if (superModeTimer.getRemainingDuration() > FLASH_ANIM_CUTOFF_TIME)
+                gameObjects_.getPacMan()->setFlashEnable(false);
+        });
+
+        // Automatically startFlash ghosts
+        powerModeTimer_.onUpdate([this](mighter2d::Timer&) {
+            gameObjects_.getGhosts().forEach([this](Ghost* ghost) {
+                if (powerModeTimer_.getRemainingDuration() <= FLASH_ANIM_CUTOFF_TIME)
+                    ghost->setFlash(true);
+                else if (powerModeTimer_.getRemainingDuration() > FLASH_ANIM_CUTOFF_TIME)
+                    ghost->setFlash(false);
+            });
+        });
     }
 
     ///////////////////////////////////////////////////////////////
     void TimerManager::startGhostHouseArrestTimer() {
         auto startProbationTimer = [this](const std::string& tag, float duration) {
-            auto* ghost = gameplayScene_.getGameObjects().getGroup("Ghost").findByTag<Ghost>(tag);
+            auto* ghost = gameObjects_.getGhosts().findByTag(tag);
             assert(ghost && "Failed to start probation timer: Invalid ghost tag");
 
             if (!ghost->isLockedInGhostHouse())
                 return;
 
-            float probationDuration = duration - currentLevel_;
+            float probationDuration = duration - (float) gameplayScene_.getLevel();
 
             if (probationDuration <= 0)
                 ghost->setLockInGhostHouse(false);
@@ -234,15 +253,6 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void TimerManager::update(mighter2d::Time deltaTime) {
-        ghostAITimer_.update(deltaTime);
-        superModeTimer_.update(deltaTime);
-        powerModeTimer_.update(deltaTime);
-        starDespawnTimer_.update(deltaTime);
-        bonusStageTimer_.update(deltaTime);
-    }
-
-    ///////////////////////////////////////////////////////////////
     void TimerManager::startScatterModeTimer() {
         ghostAITimer_.stop();
 
@@ -272,15 +282,17 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     mighter2d::Time TimerManager::getScatterModeDuration() const {
+        int curLevel = gameplayScene_.getLevel();
+
         if (scatterWaveLevel_ <= 2) {
-            if (currentLevel_ < 5)
+            if (curLevel < 5)
                 return mighter2d::seconds(7.0f);
             else
                 return mighter2d::seconds(5.0f);
         } else if (scatterWaveLevel_ == 3)
             return mighter2d::seconds(5);
         else {
-            if (currentLevel_ == 1)
+            if (curLevel == 1)
                 return mighter2d::seconds(5.0f);
             else
                 return mighter2d::seconds(1.0f / gameplayScene_.getWindow().getFrameRateLimit()); // one frame
@@ -292,7 +304,7 @@ namespace spm {
         if (chaseWaveLevel_ <= 2)
             return mighter2d::seconds(20.0f);
         else if (chaseWaveLevel_ == 3) {
-            if (currentLevel_ == 1)
+            if (gameplayScene_.getLevel() == 1)
                 return mighter2d::seconds(20.0f);
             else
                 return mighter2d::minutes(17);
