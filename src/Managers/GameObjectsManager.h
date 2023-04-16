@@ -35,6 +35,7 @@
 #include "GameObjects/Sensor.h"
 #include "GameObjects/Wall.h"
 #include "Grid.h"
+#include "Mighter2d/core/object/ObjectContainer.h"
 
 namespace spm {
     class GameplayScene;
@@ -52,7 +53,7 @@ namespace spm {
 
         /**
          * @brief Create the game objects
-         * @param grid
+         * @param grid The grid to add game objects to
          */
         void createObjects(Grid& grid);
 
@@ -65,23 +66,6 @@ namespace spm {
          * @brief Reset movable game objects to their initial starting position
          */
         void resetMovableGameObjects();
-
-        /**
-         * @brief Spawn a star game object
-         *
-         * Only one star can appear at a time
-         */
-        void spawnStar();
-
-        /**
-         * @brief Despawn a star
-         */
-        void despawnStar();
-
-        /**
-         * @brief Destroy game objects that are no longer active
-         */
-        void destroyInactiveObjects();
 
         /**
          * @brief Get the number of pellets eaten by pacman in current level
@@ -108,6 +92,18 @@ namespace spm {
         bool isAllFruitsEaten() const;
 
         /**
+         * @brief Spawn a star game object
+         *
+         * Only one star can appear at a time
+         */
+        void spawnStar();
+
+        /**
+         * @brief Despawn a star
+         */
+        void despawnStar();
+
+        /**
          * @brief Get Pacman
          * @return Pacman
          */
@@ -118,52 +114,51 @@ namespace spm {
          * @return All the ghosts
          */
         mighter2d::ObjectContainer<Ghost>& getGhosts();
+
+        /**
+         * @brief Get pellets
+         * @return Pellets
+         */
         mighter2d::ObjectContainer<Pellet>& getPellets();
+
+        /**
+         * @brief Get keys
+         * @return Keys
+         */
         mighter2d::ObjectContainer<Key>& getKeys();
+
+        /**
+         * @brief Get fruits
+         * @return Fruits
+         */
         mighter2d::ObjectContainer<Fruit>& getFruits();
+
+        /**
+         * @brief Get doors
+         * @return Doors
+         */
         mighter2d::ObjectContainer<Door>& getDoors();
 
         /**
-         * @brief Update game objects
+         * @brief Destroy game objects that are no longer active
          */
-        void update(mighter2d::Time deltaTime);
-
-    private:
-        /**
-         * @brief Make pacman flash or stop flashing
-         *
-         * @attention Ideally this implementation should be in @a spm::PacMan::update,
-         * However, the @a PacMan class has no knowledge of how long the super
-         * mode timer has been running. It only knows when the timer starts
-         * counting down and when it expires
-         */
-        void updatePacmanFlashAnimation();
-
-        /**
-         * @brief Make ghosts flash or stop flashing
-         *
-         * @attention Ideally, this implementation should be in @a spm::FrightenedState
-         * class, however, the class has no knowledge of how long the power
-         * mode timer has been running. It only knows when the timer starts
-         * counting down and when it expires
-         */
-        void updateGhostsFlashAnimation();
+        void destroyInactiveObjects();
 
     private:
         GameplayScene& gameplayScene_;
         std::unique_ptr<PacMan> pacman_;
-        std::unique_ptr<Star> star_;
-        std::unique_ptr<Fruit> leftSideStarFruit_;
-        std::unique_ptr<Fruit> rightSideStarFruit_;
         mighter2d::ObjectContainer<Ghost> ghosts_;
         mighter2d::ObjectContainer<Fruit> fruits_;
         mighter2d::ObjectContainer<Pellet> pellets_;
         mighter2d::ObjectContainer<Key> keys_;
         mighter2d::ObjectContainer<Door> doors_;
-        mighter2d::ObjectContainer<Sensor> sensors_;
         mighter2d::ObjectContainer<Wall> walls_;
-        unsigned int numFruitsEaten_;   //!< The number of fruits eaten so far
-        unsigned int numPelletsEaten_;  //!< The number of pellets eaten so far
+        mighter2d::ObjectContainer<Sensor> sensors_;
+        unsigned int numFruitsEaten_;
+        unsigned int numPelletsEaten_;
+        std::unique_ptr<Star> star_;
+        std::unique_ptr<Fruit> leftSideStarFruit_;
+        std::unique_ptr<Fruit> rightSideStarFruit_;
     };
 }
 

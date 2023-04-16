@@ -35,9 +35,6 @@
 namespace spm {
     namespace {
         ///////////////////////////////////////////////////////////////
-        auto FLASH_ANIM_CUTOFF_TIME = mighter2d::seconds(2);
-
-        ///////////////////////////////////////////////////////////////
         std::unique_ptr<Door> createDoor(const mighter2d::Tile& tile, mighter2d::Scene& scene) {
             auto door = std::make_unique<Door>(scene);
 
@@ -79,19 +76,17 @@ namespace spm {
                     }
                 }
 
-                sensors_.addObject(std::move(sensor));
+                grid.addGameObject(sensors_.addObject(std::move(sensor)), tile.getIndex());
             } else if (tile.getId() == 'K') {
-                auto* key = keys_.addObject(std::make_unique<Key>(grid.getScene()));
-                grid.addGameObject(key, tile.getIndex());
+                grid.addGameObject(keys_.addObject(std::make_unique<Key>(grid.getScene())), tile.getIndex());
             } else if (tile.getId() == 'F') {
-                auto* fruit = fruits_.addObject(std::make_unique<Fruit>(grid.getScene()));
-                grid.addGameObject(fruit, tile.getIndex());
+                grid.addGameObject(fruits_.addObject(std::make_unique<Fruit>(grid.getScene())), tile.getIndex());
             } else if (tile.getId() == 'E')
-                pellets_.addObject(std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Power));
+                grid.addGameObject(pellets_.addObject(std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Power)), tile.getIndex());
             else if (tile.getId() == 'S')
-                pellets_.addObject(std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Super));
+                grid.addGameObject(pellets_.addObject(std::make_unique<Pellet>(grid.getScene(), Pellet::Type::Super)), tile.getIndex());
             else if (tile.getId() == 'D')
-                doors_.addObject(createDoor(tile, grid.getScene()));
+                grid.addGameObject(doors_.addObject(createDoor(tile, grid.getScene())), tile.getIndex());
             else if (tile.getId() == '#' || tile.getId() == '|' || tile.getId() == 'N') {// Walls
                 auto wall = std::make_unique<Wall>(grid.getScene());
 
@@ -99,22 +94,25 @@ namespace spm {
                 if (tile.getId() == 'N')
                     wall->setCollisionGroup("hiddenWall");
 
-                walls_.addObject(std::move(wall));
+                grid.addGameObject(walls_.addObject(std::move(wall)), tile.getIndex());
             } else if (tile.getId() == '?') {
-                /*gameObject = mighter2d::GridObject::create(grid.getScene());
                 mighter2d::Animation::Ptr fruitSlideAnim = FruitAnimation().getAnimation();
 
                 if (tile.getIndex().colm == 11) {
-                    gameObject->setTag("leftBonusFruit");
-                    fruitSlideAnim->setLoop(false);
-                    fruitSlideAnim->setPlaybackSpeed(2.0f);
-                } else
-                    gameObject->setTag("rightBonusFruit");
+                    leftSideStarFruit_ = std::make_unique<Fruit>(grid.getScene());
+                    leftSideStarFruit_->setTag("leftBonusFruit");
 
-                gameObject->getSprite().getAnimator().addAnimation(std::move(fruitSlideAnim));
-                gameObject->getSprite().setScale(2.0f, 2.0f);
-                gameObject->getSprite().setOrigin(8, 8);*/
-            }else {
+                    auto slideAnim = leftSideStarFruit_->getSprite().getAnimator().getAnimation("slide");
+                    slideAnim->setLoop(false);
+                    slideAnim->setPlaybackSpeed(2.0f);
+
+                    grid.addGameObject(leftSideStarFruit_.get(), tile.getIndex());
+                } else {
+                    rightSideStarFruit_ = std::make_unique<Fruit>(grid.getScene());
+
+                    grid.addGameObject(rightSideStarFruit_.get(), tile.getIndex());
+                }
+            } else {
                 std::unique_ptr<Ghost> ghost;
 
                 if (tile.getId() == 'B')
@@ -128,122 +126,69 @@ namespace spm {
                 else
                     return;
 
-                ghosts_.addObject(std::move(ghost));
+                grid.addGameObject(ghosts_.addObject(std::move(ghost)), tile.getIndex());
             }
         });
     }
 
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::initGameObjects() {
-        std::vector<mighter2d::Index> keyIndexes;
-        gameplayScene_.grid_->forEachGameObject([this, &keyIndexes](mighter2d::GameObject* gameObject) {
-            if (gameObject->getClassName() == "PacMan")
-                static_cast<PacMan*>(gameObject)->setLivesCount(gameplayScene_.getCache().getValue<int>("PLAYER_LIVES"));
-            else if (gameObject->getClassName() == "Door")
-                static_cast<Door*>(gameObject)->lock();
-            else if (gameObject->getClassName() == "Fruit")
-                gameObject->setTag(utils::getFruitName(gameplayScene_.getLevel()));
-            else if (gameObject->getClassName() == "Ghost") {
-                if (gameplayScene_.isBonusStage_)
-                    gameObject->setActive(false);
-                else if (gameObject->getTag() == "inky" || gameObject->getTag() == "clyde")
-                    static_cast<Ghost *>(gameObject)->setLockInGhostHouse(true);
-            } else if (gameObject->getClassName() == "Key") {
-                keyIndexes.push_back(gameplayScene_.getGrid().getTile(gameObject->getTransform().getPosition()).getIndex());
-            }
+        pacman_->setLivesCount(gameplayScene_.getCache().getValue<int>("PLAYER_LIVES"));
+
+        doors_.forEach([](Door* door) {
+            door->lock();
         });
 
-        if (gameplayScene_.getLevel() >= Constants::RANDOM_KEY_POS_LEVEL) { // Randomise key positions to break pattern
+        fruits_.forEach([this](Fruit* fruit) {
+            fruit->setTag(utils::getFruitName(gameplayScene_.getLevel()));
+        });
+
+        ghosts_.forEach([this](Ghost* ghost) {
+            if (gameplayScene_.isBonusStage_)
+                ghost->setActive(false);
+            else if (ghost->getTag() == "inky" || ghost->getTag() == "clyde")
+                ghost->setLockInGhostHouse(true);
+        });
+
+        if (gameplayScene_.getLevel() >= Constants::RANDOM_KEY_POS_LEVEL) {
+            std::vector<mighter2d::Index> keyIndexes;
+
+            keys_.forEach([&keyIndexes](Key* key) {
+                keyIndexes.push_back(key->getGridIndex());
+            });
+
             auto static randomEngine = std::default_random_engine{std::random_device{}()};
 
-            // Seed engine with current level to ensure the randomly placed keys open the same doors on each game run
+            // Seed engine with current level so that the randomly placed keys open the same doors on each game run
             randomEngine.seed(gameplayScene_.getLevel());
 
             std::shuffle(keyIndexes.begin(), keyIndexes.end(), randomEngine);
 
-            gameplayScene_.getGameObjects().forEachInGroup("Key", [this, index = 0, &keyIndexes](mighter2d::GameObject* keyBase) mutable {
-                auto* key = static_cast<mighter2d::GridObject*>(keyBase);
-                gameplayScene_.grid_->removeGameObject(key);
-                gameplayScene_.grid_->addGameObject(key, keyIndexes[index++]);
+            keys_.forEach([this, index = 0, &keyIndexes](Key* key) mutable {
+                gameplayScene_.grid_->changeObjectTile(key, keyIndexes[index++]);
             });
         }
     }
 
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::resetMovableGameObjects() {
-        auto* pacman = gameplayScene_.gameObjectsManager_.getPacMan();
-        pacman->setState(PacMan::State::Normal);
-        pacman->setDirection(mighter2d::Left);
-        gameplayScene_.grid_->removeGameObject(pacman);
-        gameplayScene_.grid_->addGameObject(pacman, Constants::PacManSpawnTile);
+        pacman_->setState(PacMan::State::Normal);
+        pacman_->setDirection(mighter2d::Left);
+        gameplayScene_.grid_->changeObjectTile(pacman_.get(), Constants::PacManSpawnTile);
 
-        gameplayScene_.getGameObjects().forEachInGroup("Ghost", [this](mighter2d::GameObject* ghostBase) {
-            auto* ghost = static_cast<mighter2d::GridObject*>(ghostBase);
-            gameplayScene_.grid_->removeGameObject(ghost);
+        ghosts_.forEach([this](Ghost* ghost) {
+            mighter2d::Index startCellIndex;
 
             if (ghost->getTag() == "blinky")
-                gameplayScene_.grid_->addGameObject(ghost, Constants::BlinkySpawnTile);
+                startCellIndex = Constants::BlinkySpawnTile;
             else if (ghost->getTag() == "pinky")
-                gameplayScene_.grid_->addGameObject(ghost, Constants::PinkySpawnTile);
+                startCellIndex = Constants::PinkySpawnTile;
             else if (ghost->getTag() == "inky")
-                gameplayScene_.grid_->addGameObject(ghost, Constants::InkySpawnTile);
+                startCellIndex = Constants::InkySpawnTile;
             else
-                gameplayScene_.grid_->addGameObject(ghost, Constants::ClydeSpawnTile);
+                startCellIndex = Constants::ClydeSpawnTile;
 
-            ghost->getSprite().setVisible(true);
-        });
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameObjectsManager::spawnStar() {
-        mighter2d::GridObject::Ptr star = std::make_unique<Star>(gameplayScene_);
-        gameplayScene_.grid_->addGameObject(star.get(), mighter2d::Index{15, 13});
-
-        mighter2d::GameObject* leftFruit = gameplayScene_.getGameObjects().findByTag("leftBonusFruit");
-        int numFrames = leftFruit->getSprite().getAnimator().getAnimation("slide")->getFrameCount();
-        auto* anim = leftFruit->getSprite().getAnimator().getAnimation("slide").get();
-        int stopFrame = mighter2d::utility::generateRandomNum(0, numFrames - 1);
-        leftFruit->getSprite().getAnimator().getAnimation("slide")->onFrameSwitch([anim, stopFrame](mighter2d::AnimationFrame* frame) {
-            if (frame->getIndex() == stopFrame)
-                anim->setPlaybackSpeed(0.0f);
-        });
-
-        leftFruit->getSprite().getAnimator().startAnimation("slide");
-
-        gameplayScene_.getGameObjects().findByTag("rightBonusFruit")->getSprite().getAnimator().startAnimation("slide");
-
-        gameplayScene_.audioManager_.playStarSpawnedSfx();
-        gameplayScene_.timerManager_.startStarDespawnTimer();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameObjectsManager::despawnStar() {
-        gameplayScene_.audioManager_.stopStarSpawnedSfx();
-        gameplayScene_.timerManager_.stopStarDespawnTimer();
-
-        mighter2d::GameObject* leftFruit = gameplayScene_.getGameObjects().findByTag("leftBonusFruit");
-        mighter2d::GameObject* rightFruit = gameplayScene_.getGameObjects().findByTag("rightBonusFruit");
-        leftFruit->getSprite().getAnimator().stop();
-        rightFruit->getSprite().getAnimator().stop();
-        leftFruit->getSprite().setVisible(false);
-        rightFruit->getSprite().setVisible(false);
-
-        gameplayScene_.getGameObjects().removeByTag("star");
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameObjectsManager::destroyInactiveObjects() {
-        gameplayScene_.getGameObjects().removeIf([this](const mighter2d::GameObject* actor) {
-            if (!actor->isActive()) {
-                if (actor->getClassName() == "Pellet")
-                    numPelletsEaten_++;
-                else if (actor->getClassName() == "Fruit")
-                    numFruitsEaten_++;
-
-                return true;
-            }
-
-            return false;
+            gameplayScene_.grid_->addGameObject(ghost, startCellIndex);
         });
     }
 
@@ -268,6 +213,45 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::spawnStar() {
+        if (!star_) {
+            star_ = std::make_unique<Star>(gameplayScene_);
+            gameplayScene_.grid_->addGameObject(star_.get(), mighter2d::Index{15, 13});
+
+
+            auto* fruitAnim = leftSideStarFruit_->getSprite().getAnimator().getAnimation("slide").get();
+            int stopFrame = mighter2d::utility::generateRandomNum(0, fruitAnim->getFrameCount() - 1);
+
+            // Freeze left start animation
+            fruitAnim->onFrameSwitch([fruitAnim, stopFrame](mighter2d::AnimationFrame *frame) {
+                if (frame->getIndex() == stopFrame)
+                    fruitAnim->setPlaybackSpeed(0.0f);
+            });
+
+            leftSideStarFruit_->getSprite().getAnimator().startAnimation("slide");
+            rightSideStarFruit_->getSprite().getAnimator().startAnimation("slide");
+
+            gameplayScene_.audioManager_.playStarSpawnedSfx();
+            gameplayScene_.timerManager_.startStarDespawnTimer();
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::despawnStar() {
+        if (star_) {
+            gameplayScene_.audioManager_.stopStarSpawnedSfx();
+            gameplayScene_.timerManager_.stopStarDespawnTimer();
+
+            leftSideStarFruit_->getSprite().getAnimator().stop();
+            rightSideStarFruit_->getSprite().getAnimator().stop();
+            leftSideStarFruit_->getSprite().setVisible(false);
+            rightSideStarFruit_->getSprite().setVisible(false);
+
+            star_.reset();
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////
     PacMan *GameObjectsManager::getPacMan() const {
         return pacman_.get();
     }
@@ -277,51 +261,54 @@ namespace spm {
         return ghosts_;
     }
 
+    ///////////////////////////////////////////////////////////////
     mighter2d::ObjectContainer<Pellet>& GameObjectsManager::getPellets() {
         return pellets_;
     }
 
+    ///////////////////////////////////////////////////////////////
     mighter2d::ObjectContainer<Key>& GameObjectsManager::getKeys() {
         return keys_;
     }
 
+    ///////////////////////////////////////////////////////////////
     mighter2d::ObjectContainer<Fruit>& GameObjectsManager::getFruits() {
         return fruits_;
     }
 
+    ///////////////////////////////////////////////////////////////
     mighter2d::ObjectContainer<Door> &GameObjectsManager::getDoors() {
         return doors_;
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameObjectsManager::update(mighter2d::Time deltaTime) {
-        //updatePacmanFlashAnimation();
-        //updateGhostsFlashAnimation();
-    }
+    void GameObjectsManager::destroyInactiveObjects() {
+        keys_.removeIf([](const Key* key) {
+            return !key->isActive();
+        });
 
-    ///////////////////////////////////////////////////////////////
-    void GameObjectsManager::updatePacmanFlashAnimation() {
-        if (gameplayScene_.timerManager_.isSuperMode()) {
-            auto* pacman = gameplayScene_.gameObjectsManager_.getPacMan();
-            if (!pacman->isFlashing() && gameplayScene_.timerManager_.getRemainingSuperModeDuration() <= FLASH_ANIM_CUTOFF_TIME)
-                pacman->setFlash(true);
-            else if (pacman->isFlashing() && gameplayScene_.timerManager_.getRemainingSuperModeDuration() > FLASH_ANIM_CUTOFF_TIME)
-            {
-                pacman->setFlash(false);
+        doors_.removeIf([](const Door* door) {
+            return !door->isActive();
+        });
+
+        fruits_.removeIf([this](const Fruit* fruit) {
+            if (!fruit->isActive()) {
+                numFruitsEaten_++;
+
+                return true;
             }
-        }
-    }
 
-    ///////////////////////////////////////////////////////////////
-    void GameObjectsManager::updateGhostsFlashAnimation() {
-        if (gameplayScene_.timerManager_.isPowerMode()) {
-            gameplayScene_.getGameObjects().forEachInGroup("Ghost", [this](mighter2d::GameObject* gameObject) {
-                auto* ghost = static_cast<Ghost*>(gameObject);
-                if (!ghost->isFlashing() && gameplayScene_.timerManager_.getRemainingPowerModeDuration() <= FLASH_ANIM_CUTOFF_TIME)
-                    ghost->setFlash(true);
-                else if (ghost->isFlashing() && gameplayScene_.timerManager_.getRemainingPowerModeDuration() > FLASH_ANIM_CUTOFF_TIME)
-                    ghost->setFlash(false);
-            });
-        }
+            return false;
+        });
+
+        pellets_.removeIf([this](const Pellet* pellet) {
+            if (!pellet->isActive()) {
+                numPelletsEaten_++;
+
+                return true;
+            }
+
+            return false;
+        });
     }
 }
