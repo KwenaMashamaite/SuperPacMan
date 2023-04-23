@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "StartUpScene.h"
-//#include "LoadingScene.h"
+#include "LoadingScene.h"
 #include "Views/StartUpSceneView.h"
 #include <Mighter2d/core/engine/Engine.h>
 #include <Mighter2d/ui/widgets/Panel.h>
@@ -115,17 +115,18 @@ namespace spm {
         preference.setDescription("The name of the player");
         mighter2d::savePref(preference, getCache().getValue<std::string>("SETTINGS_FILENAME"));
 
-        // Display game disclaimer and initiate scene pop countdown
+        // Display game disclaimer
         gui_.getWidget("pnlContainer")->setVisible(true);
         gui_.getWidget("pnlNamePrompt")->setVisible(false);
 
+        //Initiate scene pop countdown
         startCountdown();
         enableSceneSkip();
     }
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::onDestroy() {
-        //getEngine().pushScene(std::make_unique<LoadingScene>());
+        getEngine().pushScene(std::make_unique<LoadingScene>());
     }
 
 } // namespace pm

@@ -32,29 +32,28 @@ namespace spm {
      * @brief Defines the loading state of the game
      *
      * In this state the game loads all the required assets (textures, sounds,
-     * fonts and music) from the disk. Once all assets have been loaded, the
-     * scene removes itself from the engine and transitions to the IntroScene
-     *
-     * Note that the game cannot be exited while in this state
+     * fonts and music) from the disk
      */
     class LoadingScene : public mighter2d::Scene {
     public:
         /**
-         * @brief Enter the scene
-         *
-         * This function is called by the game engine when the scene
-         * is entered for the first time
+         * @brief Constructor
          */
-        void onEnter() override;
+        LoadingScene();
 
         /**
-         * @brief Perform post scene actions
-         *
-         * This function is called by the game engine before the scene
-         * is destroyed. It's used to perform cleanup and notify interested
-         * parties that assets loaded successfully
+         * @brief Start the scene
          */
-        void onExit() override;
+        void onStart() override;
+
+        /**
+         * @brief Transition to main menu scene
+         */
+        void onDestroy() override;
+
+    private:
+        mighter2d::ui::GuiContainer gui_;
+        mighter2d::Timer timer_;
     };
 }
 

@@ -32,6 +32,8 @@
 #include <thread>
 
 namespace spm {
+    using namespace mighter2d::ui;
+
     ///////////////////////////////////////////////////////////////
     void loadGameAssets() {
         mighter2d::ResourceLoader::loadFromFile(mighter2d::ResourceType::Font, {
@@ -56,18 +58,31 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void LoadingScene::onEnter() {
+    LoadingScene::LoadingScene() : 
+        gui_(*this),
+        timer_(*this)
+    {}
+
+    ///////////////////////////////////////////////////////////////
+    void LoadingScene::onStart() {
+        LoadingSceneView::init(gui_);
+
+        // Prevent game window from being closed
         getWindow().setDefaultOnCloseHandlerEnable(false);
-        LoadingSceneView::init(getGui());
 
-        getGui().getWidget("pbrAssetLoading")->on("full", mighter2d::Callback<>([this] {
-            getGui().getWidget<mighter2d::ui::Label>("lblLoading")->setText("Resources loaded successfully");
+        gui_.getWidget<ProgressBar>("pbrAssetLoading")->onFull([this] {
+            gui_.getWidget<Label>("lblLoading")->setText("Resources loaded successfully");
+
             getEngine().popScene();
-        }));
-
-        getTimer().setInterval(mighter2d::milliseconds(65), [this] {
-            getGui().getWidget<mighter2d::ui::ProgressBar>("pbrAssetLoading")->incrementValue();
         });
+
+        timer_.onTimeout([this] {
+            gui_.getWidget<ProgressBar>("pbrAssetLoading")->incrementValue();
+        });
+
+        timer_.setLoop(true);
+        timer_.setInterval(mighter2d::milliseconds(65));
+        timer_.start();
 
         // The progress bar and the thread are not in sync. The thread finishes
         // almost intently and the progress bar is just for user experience
@@ -75,7 +90,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void LoadingScene::onExit() {
+    void LoadingScene::onDestroy() {
         getEngine().pushCachedScene("MainMenuScene");
     }
 
