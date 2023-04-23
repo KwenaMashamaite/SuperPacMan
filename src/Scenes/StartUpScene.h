@@ -26,32 +26,35 @@
 #define SUPERPACMAN_STARTUPSCENE_H
 
 #include <Mighter2d/core/scene/Scene.h>
+#include <Mighter2d/ui/GuiContainer.h>
+#include <Mighter2d/core/input/Keyboard.h>
+#include <Mighter2d/core/time/Timer.h>
 
 namespace spm {
     /**
-     * @brief Defines the start up state of the game
+     * @brief Defines the start up scene of the game
      *
      * This scene is the first to be entered when the game is run. When
      * in this state, the game displays the copyright notice to the player
      * for a predefined amount of time after which the scene removes itself
      * from the game engine and the game transitions to the LoadingScene
-     *
-     * The user may force a scene transition by pressing the skip scene key
      */
     class StartUpScene : public mighter2d::Scene {
     public:
         /**
-         * @brief Enter the scene
-         *
-         * This function is called by the game engine when the scene
-         * is entered for the first time
+         * @brief Constructor
          */
-        void onEnter() override;
+        StartUpScene();
 
         /**
-         * @brief Transition the game to the next scene
+         * @brief Start the scene
          */
-        void onExit() override;
+        void onStart() override;
+
+        /**
+         * @brief Transition to asset loading scene
+         */
+        void onDestroy() override;
 
     private:
         /**
@@ -75,6 +78,11 @@ namespace spm {
          * @brief Save the player name and continue to gameplay
          */
         void save();
+
+    private:
+        mighter2d::ui::GuiContainer gui_;
+        mighter2d::input::Keyboard keyboard_;
+        mighter2d::Timer timer_;
     };
 }
 

@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "StartUpScene.h"
-#include "LoadingScene.h"
+//#include "LoadingScene.h"
 #include "Views/StartUpSceneView.h"
 #include <Mighter2d/core/engine/Engine.h>
 #include <Mighter2d/ui/widgets/Panel.h>
@@ -34,8 +34,15 @@ using namespace mighter2d::ui;
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    void StartUpScene::onEnter() {
-        StartUpSceneView().init(getGui());
+    StartUpScene::StartUpScene() :
+        gui_(*this),
+        keyboard_(*this),
+        timer_(*this)
+    {}
+
+    ///////////////////////////////////////////////////////////////
+    void StartUpScene::onStart() {
+        StartUpSceneView().init(gui_);
 
         if (getCache().hasProperty("PLAYER_NAME")) {
             startCountdown();
@@ -46,49 +53,50 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::startCountdown() {
-        auto pnlContainer = getGui().getWidget<mighter2d::ui::Panel>("pnlContainer");
-        pnlContainer->showWithEffect(mighter2d::ui::AnimationType::Fade, mighter2d::seconds(3));
+        auto pnlContainer = gui_.getWidget<Panel>("pnlContainer");
+        pnlContainer->showWithEffect(AnimationType::Fade, mighter2d::seconds(3));
 
         // Exit the scene with an effect after a couple of seconds
-        getTimer().setTimeout(mighter2d::seconds(13), [this, pnlContainer] {
-            pnlContainer->hideWithEffect(mighter2d::ui::AnimationType::Fade, mighter2d::seconds(2));
-            pnlContainer->on("animationFinish", mighter2d::Callback<>([this] {
-                getEngine().popScene();
-            }));
+        timer_.onTimeout([this, pnlContainer] {
+            pnlContainer->hideWithEffect(AnimationType::Fade, mighter2d::seconds(2));
+            pnlContainer->onAnimationFinish([this] { getEngine().popScene(); });
         });
+
+        timer_.setInterval(mighter2d::seconds(13));
+        timer_.start();
     }
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::promptName() {
-        getGui().getWidget<Panel>("pnlContainer")->setVisible(false);
-        getGui().getWidget<Panel>("pnlNamePrompt")->setVisible(true);
+        gui_.getWidget<Panel>("pnlContainer")->setVisible(false);
+        gui_.getWidget<Panel>("pnlNamePrompt")->setVisible(true);
 
         // Disable continue button when player input is less than required and enable when input size is valid
-        getGui().getWidget("txtName")->on("textChange", mighter2d::Callback<std::string>([this](const std::string& text) {
-            auto* btnContinue = getGui().getWidget<Button>("btnContinue");
+        gui_.getWidget<EditBox>("txtName")->onTextChange([this](const std::string& text) {
+            auto* btnContinue = gui_.getWidget<Button>("btnContinue");
             if (!text.empty())
                 btnContinue->setEnabled(true);
             else
                 btnContinue->setEnabled(false);
-        }));
+        });
 
         // Save player name and continue to gameplay
-        getGui().getWidget("txtName")->on("enterKeyPress", mighter2d::Callback<std::string>([this](const std::string& text) {
+        gui_.getWidget<EditBox>("txtName")->onEnterKeyPress([this](const std::string& text) {
             if (!text.empty()) {
-                getGui().setMouseCursor(mighter2d::CursorType::Arrow);
+                gui_.setMouseCursor(mighter2d::CursorType::Arrow);
                 save();
             }
-        }));
+        });
 
         // Save player name and continue to gameplay
-        getGui().getWidget("btnContinue")->on("click", mighter2d::Callback<>([this] {
+        gui_.getWidget<Button>("btnContinue")->onClick([this] {
             save();
-        }));
+        });
     }
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::enableSceneSkip() {
-        getInput().onKeyUp([this](mighter2d::Keyboard::Key key) {
+        keyboard_.onKeyUp([this](mighter2d::Keyboard::Key key) {
             if (key == mighter2d::Keyboard::Key::Space)
                 getEngine().popScene();
         });
@@ -96,7 +104,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void StartUpScene::save() {
-        auto name = getGui().getWidget<EditBox>("txtName")->getText();
+        auto name = gui_.getWidget<EditBox>("txtName")->getText();
 
         // Save name to engine cache (So that other Scenes can get access to it)
         getCache().addProperty(mighter2d::Property{"PLAYER_NAME", name});
@@ -108,15 +116,16 @@ namespace spm {
         mighter2d::savePref(preference, getCache().getValue<std::string>("SETTINGS_FILENAME"));
 
         // Display game disclaimer and initiate scene pop countdown
-        getGui().getWidget<Panel>("pnlContainer")->setVisible(true);
-        getGui().getWidget<Panel>("pnlNamePrompt")->setVisible(false);
+        gui_.getWidget("pnlContainer")->setVisible(true);
+        gui_.getWidget("pnlNamePrompt")->setVisible(false);
+
         startCountdown();
         enableSceneSkip();
     }
 
     ///////////////////////////////////////////////////////////////
-    void StartUpScene::onExit() {
-        getEngine().pushScene(std::make_unique<LoadingScene>());
+    void StartUpScene::onDestroy() {
+        //getEngine().pushScene(std::make_unique<LoadingScene>());
     }
 
 } // namespace pm
