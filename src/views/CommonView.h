@@ -106,8 +106,8 @@ namespace spm {
 
     private:
         mighter2d::ui::GuiContainer& gui_;  //!< Container for all widgets
-        mighter2d::Timer::Ptr timer_;       //!< One up text flash Timer
-        unsigned int pacmanLives_;    //!< Records the number of pacman lives after a lives update
+        mighter2d::Timer timer_;            //!< One up text flash Timer
+        unsigned int pacmanLives_;          //!< Records the number of pacman lives after a lives update
     };
 }
 

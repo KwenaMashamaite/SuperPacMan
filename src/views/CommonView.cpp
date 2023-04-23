@@ -34,6 +34,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     CommonView::CommonView(GuiContainer &gui) :
         gui_{gui},
+        timer_(gui.getScene()),
         pacmanLives_{0}
     {
         gui_.setFont("namco.ttf");
@@ -45,14 +46,10 @@ namespace spm {
         createLevelIndicatorSprites(level);
         createPlayerLivesIndicatorSprites(lives);
 
-        timer_ = mighter2d::Timer::create(gui_.getScene(), mighter2d::milliseconds(200), [this] {
-            gui_.getWidget("lblOneUp")->toggleVisibility();
-        }, -1);
-
-        int static i = 1;
-        timer_->setTag(std::to_string(i++));
-
-        timer_->start();
+        timer_.onTimeout([this] { gui_.getWidget("lblOneUp")->toggleVisibility(); });
+        timer_.setInterval(mighter2d::milliseconds(200));
+        timer_.setLoop(true);
+        timer_.start();
     }
 
     ///////////////////////////////////////////////////////////////

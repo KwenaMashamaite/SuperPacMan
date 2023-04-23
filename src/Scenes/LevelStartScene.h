@@ -26,11 +26,13 @@
 #define SUPERPACMAN_LEVELSTARTSCENE_H
 
 #include <Mighter2d/core/scene/Scene.h>
+#include <Mighter2d/ui/GuiContainer.h>
+#include <Mighter2d/core/audio/AudioManager.h>
 #include "Views/LevelStartSceneView.h"
 
 namespace spm {
     /**
-     * @brief Defines a state before a level is played
+     * @brief Defines a scene displayed before a level is played
      *
      * When in this state the game displays the current level number
      * and fruit along with its associated points for a short period
@@ -44,20 +46,20 @@ namespace spm {
         LevelStartScene();
 
         /**
-         * @brief Enter the scene
-         *
-         * This function is called by the game engine when the scene
-         * is entered for the first time
+         * @brief Start the scene
          */
-        void onEnter() override;
+        void onStart() override;
 
         /**
-         * @brief Destructor
+         * @brief Transition to gameplay scene
          */
-        ~LevelStartScene() override;
+        void onDestroy() override;
 
     private:
-        LevelStartSceneView* view_; //!< View for this state
+        mighter2d::ui::GuiContainer gui_;
+        mighter2d::Timer timer_;
+        mighter2d::audio::AudioManager audioPlayer_;
+        std::unique_ptr<LevelStartSceneView> view_; //!< View for this state
     };
 }
 

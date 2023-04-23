@@ -23,8 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "MainMenuScene.h"
-//#include "LevelStartScene.h"
-//#include "GameplayScene.h"
+#include "LevelStartScene.h"
 #include "Scoreboard/Scoreboard.h"
 #include "Utils/Utils.h"
 #include <Mighter2d/ui/widgets/VerticalLayout.h>
@@ -88,8 +87,7 @@ namespace spm {
             getEngine().uncacheScene("GameplayScene");
 
             getEngine().popScene();
-            //getEngine().pushScene(std::make_unique<GameplayScene>());
-            //getEngine().pushScene(std::make_unique<LevelStartScene>());
+            getEngine().pushScene(std::make_unique<LevelStartScene>());
         });
 
         gui_.getWidget<Button>("btnQuit")->onClick([this] {

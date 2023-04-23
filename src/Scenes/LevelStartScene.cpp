@@ -23,18 +23,21 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "LevelStartScene.h"
+//#include "GameplayScene.h"
 #include <Mighter2d/ui/widgets/Label.h>
 #include <Mighter2d/core/engine/Engine.h>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
     LevelStartScene::LevelStartScene() :
-        view_{nullptr}
+        gui_(*this),
+        timer_(*this),
+        audioPlayer_(*this)
     {}
 
     ///////////////////////////////////////////////////////////////
-    void LevelStartScene::onEnter() {
-        view_ = new LevelStartSceneView(getGui());
+    void LevelStartScene::onStart() {
+        view_ = std::make_unique<LevelStartSceneView>(gui_);
         auto level = getCache().getValue<int>("CURRENT_LEVEL");
         auto lives = getCache().getValue<int>("PLAYER_LIVES");
         auto score = getCache().getValue<int>("CURRENT_SCORE");
@@ -42,26 +45,28 @@ namespace spm {
         view_->init(level, lives, score, highScore);
 
         if (level == getCache().getValue<int>("BONUS_STAGE"))
-            getGui().getWidget<mighter2d::ui::Label>("lblLevel")->setText("BONUS STAGE");
+            gui_.getWidget<mighter2d::ui::Label>("lblLevel")->setText("BONUS STAGE");
 
         mighter2d::Time sceneDuration = mighter2d::seconds(2);
 
         static bool playedAudio = false;
         if (level == 1 && !playedAudio) {
             playedAudio = true;
-            getAudio().setMasterVolume(getCache().getValue<float>("MASTER_VOLUME"));
-            getAudio().play(mighter2d::audio::Type::Sfx, "beginning.wav");
+            audioPlayer_.setMasterVolume(getCache().getValue<float>("MASTER_VOLUME"));
+            audioPlayer_.play(mighter2d::audio::Type::Sfx, "beginning.wav");
             sceneDuration = mighter2d::seconds(4.2);
         }
 
-        getTimer().setTimeout(sceneDuration, [this] {
-            getEngine().popScene();
-        });
+        timer_.setInterval(sceneDuration);
+        timer_.onTimeout([this] { getEngine().popScene(); });
+        timer_.start();
     }
 
-    ///////////////////////////////////////////////////////////////
-    LevelStartScene::~LevelStartScene() {
-        delete view_;
+    void LevelStartScene::onDestroy() {
+        auto& engine = getEngine();
+
+        if (!engine.pushCachedScene("GameplayScene"))
+            ;//engine.pushScene(std::make_unique<GameplayScene>());
     }
 
 } // namespace spm
