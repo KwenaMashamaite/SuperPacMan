@@ -38,7 +38,7 @@ namespace spm {
          * @param gui Container for all ui widgets in the view
          * @param wonGame True if player won the game, or false if player lost
          */
-        void init(mighter2d::ui::GuiContainer& gui, bool wonGame);
+        static void init(mighter2d::ui::GuiContainer& gui, bool wonGame);
 
     private:
         /**
@@ -46,14 +46,14 @@ namespace spm {
          * @param gui Container for gui widgets
          * @param wonGame True if player won the game or false if player lost
          */
-        void createPreSaveMenu(mighter2d::ui::GuiContainer& gui, bool wonGame);
+        static void createPreSaveMenu(mighter2d::ui::GuiContainer& gui, bool wonGame);
 
         /**
          * @brief Create menu displayed after user saves their data
          * @param gui Container for gui widgets
          * @param wonGame True if player won the game or false if player lost
          */
-        void createNavButtons(mighter2d::ui::GuiContainer& gui, bool wonGame);
+        static void createNavButtons(mighter2d::ui::GuiContainer& gui, bool wonGame);
     };
 }
 

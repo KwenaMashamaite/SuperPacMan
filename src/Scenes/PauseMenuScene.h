@@ -26,26 +26,33 @@
 #define SUPERPACMAN_PAUSEMENUSCENE_H
 
 #include <Mighter2d/core/scene/Scene.h>
+#include <Mighter2d/core/input/Keyboard.h>
 
 namespace spm {
     /**
-     * @brief Defines the pause state of the game
+     * @brief Defines the pause scene of the game
      */
     class PauseMenuScene : public mighter2d::Scene {
     public:
         /**
-         * @brief Enter the scene
-         *
-         * This function is called by the game engine when the scene
-         * is entered for the first time
+         * @brief Constructor
          */
-        void onEnter() override;
+        PauseMenuScene();
+
+        /**
+         * @brief Start the scene
+         */
+        void onStart() override;
 
     private:
         /**
          * @brief Initialize event handlers
          */
         void initEventHandlers();
+
+    private:
+        mighter2d::ui::GuiContainer gui_;
+        mighter2d::input::Keyboard keyboard_;
     };
 }
 

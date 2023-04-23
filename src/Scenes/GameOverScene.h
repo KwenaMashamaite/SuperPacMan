@@ -25,27 +25,24 @@
 #ifndef SUPERPACMAN_GAMEOVERSCENE_H
 #define SUPERPACMAN_GAMEOVERSCENE_H
 
-#include "Views/GameOverSceneView.h"
 #include <Mighter2d/core/scene/Scene.h>
+#include <Mighter2d/ui/GuiContainer.h>
 
 namespace spm {
     /**
-     * @brief Game over state of the game
-     *
-     * In this state the player is presented with the opportunity to retry
-     * the level if they died, or exit to the games main menu or quit the game.
-     * In addition, the player is presented with their score, the level they
-     * managed to reach and the games highest score
+     * @brief Game over scene of the game
      */
     class GameOverScene : public mighter2d::Scene {
     public:
         /**
-         * @brief Enter the scene
-         *
-         * This function is called by the game engine when the scene
-         * is entered for the first time
+         * @brief Constructor
          */
-        void onEnter() override;
+        GameOverScene();
+
+        /**
+         * @brief Start the scene
+         */
+        void onStart() override;
 
     private:
         /**
@@ -64,7 +61,7 @@ namespace spm {
         void initButtonEvents();
 
     private:
-        GameOverSceneView view_;
+        mighter2d::ui::GuiContainer gui_;
     };
 }
 

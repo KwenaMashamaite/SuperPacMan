@@ -25,37 +25,45 @@
 #include "PauseMenuScene.h"
 #include "views/PauseMenuSceneView.h"
 #include <Mighter2d/ui/widgets/ToggleButton.h>
+#include <Mighter2d/ui/widgets/Button.h>
 #include <Mighter2d/core/engine/Engine.h>
 
 namespace spm {
+    using namespace mighter2d::ui;
+
     ///////////////////////////////////////////////////////////////
-    void PauseMenuScene::onEnter() {
-        PauseMenuSceneView::init(getGui());
+    PauseMenuScene::PauseMenuScene() :
+        gui_(*this),
+        keyboard_(*this)
+    {}
+
+    ///////////////////////////////////////////////////////////////
+    void PauseMenuScene::onStart() {
+        PauseMenuSceneView::init(gui_);
         initEventHandlers();
     }
 
     ///////////////////////////////////////////////////////////////
     void PauseMenuScene::initEventHandlers() {
-        getGui().getWidget("btnResume")->on("click", mighter2d::Callback<>([this] {
+        gui_.getWidget<Button>("btnResume")->onClick([this] {
             getEngine().popScene();
-        }));
+        });
 
-        getGui().getWidget("btnMainMenu")->on("click", mighter2d::Callback<>([this] {
-            getEngine().getPreviousScene()->setCached(true, "GameplayScene");
-            getEngine().popScene();
-            getEngine().popScene();
+        gui_.getWidget<Button>("btnMainMenu")->onClick([this] {
+            getEngine().getPreviousScene()->setCacheOnExit(true, "GameplayScene");
+            getEngine().popScene(2);
             getEngine().pushCachedScene("MainMenuScene");
-        }));
+        });
 
-        getGui().getWidget("btnExit")->on("click", mighter2d::Callback<>([this] {
+        gui_.getWidget<Button>("btnExit")->onClick([this] {
             getEngine().quit();
-        }));
+        });
 
-        auto btnOption = getGui().getWidget<mighter2d::ui::ToggleButton>("btnAudioToggle");
+        auto btnOption = gui_.getWidget<ToggleButton>("btnAudioToggle");
         btnOption->setChecked(getCache().getValue<float>("MASTER_VOLUME") > 0.0f);
         btnOption->setText(btnOption->isChecked() ? "on" : "off");
 
-        getGui().getWidget("btnAudioToggle")->on("toggle", mighter2d::Callback<bool>([this, btnOption](bool checked) {
+        gui_.getWidget<ToggleButton>("btnAudioToggle")->onToggle([this, btnOption](bool checked) {
             if (checked) {
                 getCache().setValue("MASTER_VOLUME", 100.0f);
                 btnOption->setText("on");
@@ -63,9 +71,9 @@ namespace spm {
                 getCache().setValue("MASTER_VOLUME", 0.0f);
                 btnOption->setText("off");
             }
-        }));
+        });
 
-        getInput().onKeyUp([this](mighter2d::Keyboard::Key key) {
+        keyboard_.onKeyUp([this](mighter2d::Keyboard::Key key) {
             if (key == mighter2d::Keyboard::Key::Escape || key == mighter2d::Keyboard::Key::P)
                 getEngine().popScene();
         });

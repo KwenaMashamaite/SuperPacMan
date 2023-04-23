@@ -24,9 +24,10 @@
 
 #include "GameOverScene.h"
 #include "LevelStartScene.h"
-#include "GameplayScene.h"
 #include "Scoreboard/Scoreboard.h"
 #include "utils/Utils.h"
+#include "Views/GameOverSceneView.h"
+#include "Mighter2d/ui/widgets/Button.h"
 #include <Mighter2d/core/engine/Engine.h>
 #include <Mighter2d/ui/widgets/Label.h>
 
@@ -34,7 +35,12 @@ using namespace mighter2d::ui;
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    void GameOverScene::onEnter() {
+    GameOverScene::GameOverScene() :
+        gui_(*this)
+    {}
+
+    ///////////////////////////////////////////////////////////////
+    void GameOverScene::onStart() {
         updateLeaderboard();
         initGui();
         initButtonEvents();
@@ -57,34 +63,33 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::initGui() {
-        view_.init(getGui(), getCache().getValue<bool>("PLAYER_WON_GAME"));
-        getGui().getWidget<Label>("lblHighScoreVal")->setText(std::to_string(getCache().getValue<int>("HIGH_SCORE")));
-        getGui().getWidget<Label>("lblScoreVal")->setText(std::to_string(getCache().getValue<int>("CURRENT_SCORE")));
-        getGui().getWidget<Label>("lblLevelVal")->setText(std::to_string(getCache().getValue<int>("CURRENT_LEVEL")));
-        getGui().getWidget<Label>("lblPlayerNameVal")->setText(getCache().getValue<std::string>("PLAYER_NAME"));
+        GameOverSceneView::init(gui_, getCache().getValue<bool>("PLAYER_WON_GAME"));
+        gui_.getWidget<Label>("lblHighScoreVal")->setText(std::to_string(getCache().getValue<int>("HIGH_SCORE")));
+        gui_.getWidget<Label>("lblScoreVal")->setText(std::to_string(getCache().getValue<int>("CURRENT_SCORE")));
+        gui_.getWidget<Label>("lblLevelVal")->setText(std::to_string(getCache().getValue<int>("CURRENT_LEVEL")));
+        gui_.getWidget<Label>("lblPlayerNameVal")->setText(getCache().getValue<std::string>("PLAYER_NAME"));
     }
 
     ///////////////////////////////////////////////////////////////
     void GameOverScene::initButtonEvents() {
-        getGui().getWidget("btnRetry")->on("click", mighter2d::Callback<>([this] {
+        gui_.getWidget<Button>("btnRetry")->onClick([this] {
             utils::resetCache(getCache());
             getEngine().removeAllScenesExceptActive();
-            getEngine().popScene(); // Destroy this scene
-            getEngine().pushScene(std::make_unique<GameplayScene>());
+            getEngine().popScene();
             getEngine().pushScene(std::make_unique<LevelStartScene>());
-        }));
+        });
 
         // Exit to the games main menu when "Exit to Main Menu" is clicked
-        getGui().getWidget("btnExitMainMenu")->on("click", mighter2d::Callback<>([this] {
+        gui_.getWidget<Button>("btnExitMainMenu")->onClick([this] {
             getEngine().removeAllScenesExceptActive();
             getEngine().popScene();
             getEngine().pushCachedScene("MainMenuScene");
-        }));
+        });
 
         // Exit to desktop when "Exit Game" button is clicked
-        getGui().getWidget("btnExitGame")->on("click", mighter2d::Callback<>([this] {
+        gui_.getWidget<Button>("btnExitGame")->onClick( [this] {
             getEngine().quit();
-        }));
+        });
     }
 
 } // namespace spm
