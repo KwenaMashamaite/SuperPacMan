@@ -23,8 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "MainMenuScene.h"
-#include "LevelStartScene.h"
-#include "GameplayScene.h"
+//#include "LevelStartScene.h"
+//#include "GameplayScene.h"
 #include "Scoreboard/Scoreboard.h"
 #include "Utils/Utils.h"
 #include <Mighter2d/ui/widgets/VerticalLayout.h>
@@ -34,16 +34,19 @@
 #include <cassert>
 
 namespace spm {
+    using namespace mighter2d::ui;
+    
     ///////////////////////////////////////////////////////////////
     MainMenuScene::MainMenuScene() :
-        view_{nullptr}
+        gui_(*this)
     {}
 
     ///////////////////////////////////////////////////////////////
-    void MainMenuScene::onEnter() {
-        view_ = new MainMenuSceneView(getGui());
+    void MainMenuScene::onStart() {
+        view_ = std::make_unique<MainMenuSceneView>(gui_);
         view_->init();
-        getGui().getWidget("btnResume")->setVisible(false);
+        gui_.getWidget("btnResume")->setVisible(false);
+
         updateLeaderboard();
         initEventHandlers();
     }
@@ -55,58 +58,59 @@ namespace spm {
         const int NUM_SCORES_TO_DISPLAY = 10;
         assert(scoreboard->getSize() >= NUM_SCORES_TO_DISPLAY && "Scoreboard must have at least 10 entries");
 
-        auto namesContainer = getGui().getWidget<mighter2d::ui::VerticalLayout>("vlNames");
-        auto scoreContainer = getGui().getWidget<mighter2d::ui::VerticalLayout>("vlScores");
-        auto levelContainer = getGui().getWidget<mighter2d::ui::VerticalLayout>("vlLevels");
+        auto namesContainer = gui_.getWidget<VerticalLayout>("vlNames");
+        auto scoreContainer = gui_.getWidget<VerticalLayout>("vlScores");
+        auto levelContainer = gui_.getWidget<VerticalLayout>("vlLevels");
 
         // Replace placeholder text with actual Scoreboard data
         scoreboard->forEachScore([&, count = 1] (const Score& score) mutable {
             if (count > NUM_SCORES_TO_DISPLAY)
                 return;
 
-            namesContainer->getWidget<mighter2d::ui::Label>("lblEntry" + std::to_string(count))->setText(score.getOwner());
-            scoreContainer->getWidget<mighter2d::ui::Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.getValue()));
-            levelContainer->getWidget<mighter2d::ui::Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.getLevel()));
+            namesContainer->getWidget<Label>("lblEntry" + std::to_string(count))->setText(score.getOwner());
+            scoreContainer->getWidget<Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.getValue()));
+            levelContainer->getWidget<Label>("lblEntry" + std::to_string(count))->setText(std::to_string(score.getLevel()));
             count++;
         });
     }
 
     ///////////////////////////////////////////////////////////////
     void MainMenuScene::initEventHandlers() {
-        getGui().getWidget("btnResume")->on("click", mighter2d::Callback<>([this] {
+        gui_.getWidget<Button>("btnResume")->onClick([this] {
             getEngine().popScene();
             getEngine().pushCachedScene("GameplayScene");
-        }));
+        });
 
-        getGui().getWidget("btnPlay")->on("click", mighter2d::Callback<>([this] {
+        gui_.getWidget<Button>("btnPlay")->onClick([this] {
             utils::resetCache(getCache());
+
+            // If we came to main menu from a game, destroy that game first
             getEngine().uncacheScene("GameplayScene");
+
             getEngine().popScene();
-            getEngine().pushScene(std::make_unique<GameplayScene>());
-            getEngine().pushScene(std::make_unique<LevelStartScene>());
-        }));
+            //getEngine().pushScene(std::make_unique<GameplayScene>());
+            //getEngine().pushScene(std::make_unique<LevelStartScene>());
+        });
 
-        getGui().getWidget("btnQuit")->on("click", mighter2d::Callback<>([this] {
+        gui_.getWidget<Button>("btnQuit")->onClick([this] {
             getEngine().quit();
-        }));
+        });
     }
 
-    void MainMenuScene::onResumeFromCache() {
-        if (getEngine().isSceneCached("GameplayScene")) {
-            getGui().getWidget("btnResume")->setVisible(true);
-            getGui().getWidget<mighter2d::ui::Button>("btnPlay")->setText("New Game");
+    void MainMenuScene::onResume(bool fromCache) {
+        if (fromCache) {
+            if (getEngine().isSceneCached("GameplayScene")) {
+                gui_.getWidget("btnResume")->setVisible(true);
+                gui_.getWidget<Button>("btnPlay")->setText("New Game");
+            }
+
+            updateLeaderboard();
         }
-
-        updateLeaderboard();
     }
 
-    void MainMenuScene::onExit() {
-        getGui().getWidget("btnResume")->setVisible(false);
-        getGui().getWidget<mighter2d::ui::Button>("btnPlay")->setText("Play");
-    }
-
-    MainMenuScene::~MainMenuScene() {
-        delete view_;
+    void MainMenuScene::onStop() {
+        gui_.getWidget("btnResume")->setVisible(false);
+        gui_.getWidget<Button>("btnPlay")->setText("Play");
     }
 
 } // namespace pm

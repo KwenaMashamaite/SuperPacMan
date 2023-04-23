@@ -45,33 +45,20 @@ namespace spm {
         MainMenuScene();
 
         /**
-         * @brief Enter the scene
-         *
-         * This function is called by the game engine when the scene
-         * is entered for the first time
+         * @brief Start the scene
          */
-        void onEnter() override;
+        void onStart() override;
 
         /**
-         * @brief Resume scene from cache
-         *
-         * This function is called by the game engine when a cached scene
-         * is reactivated
+         * @brief Resume scene
+         * @param fromCache True if resumed from cache, otherwise false
          */
-        void onResumeFromCache() override;
+        void onResume(bool fromCache) override;
 
         /**
          * @brief Exit scene
-         *
-         * This function is called by the game engine when the scene is
-         * deactivated
          */
-        void onExit() override;
-
-        /**
-         * @brief Destructor
-         */
-        ~MainMenuScene() override;
+        void onStop() override;
 
     private:
         /**
@@ -85,7 +72,8 @@ namespace spm {
         void initEventHandlers();
 
     private:
-        MainMenuSceneView* view_;
+        mighter2d::ui::GuiContainer gui_;
+        std::unique_ptr<MainMenuSceneView> view_;
     };
 }
 
