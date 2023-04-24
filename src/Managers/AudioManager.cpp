@@ -29,7 +29,8 @@ namespace spm {
     constexpr auto SoundEffect = mighter2d::audio::Type::Sfx;
 
     ///////////////////////////////////////////////////////////////
-    AudioManager::AudioManager() :
+    AudioManager::AudioManager(mighter2d::Scene& scene) :
+        audioPlayer_(scene),
         starSpawnSfx_(nullptr),
         bgrndMusic_(nullptr)
     {

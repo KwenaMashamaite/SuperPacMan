@@ -41,348 +41,74 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     GameplayScene::GameplayScene() :
-        currentLevel_{-1},
-        pointsMultiplier_{1},
-        isPaused_{false},
-        view_{nullptr},
-        onWindowCloseId_{-1},
-        isChaseMode_{false},
-        starAppeared_{false},
-        isBonusStage_{false},
-        collisionResponseRegisterer_{*this},
-        timerManager_(*this, audioManager_),
-        gameObjectsManager_(*this)
+        gui_(*this),
+        grid_{*this},
+        gameObjectsManager_(*this),
+        audioManager_(*this),
+        timerManager_(*this)
     {
 
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::onEnter() {
-        audioManager_.setVolume(getCache().getValue<float>("MASTER_VOLUME"));
-        currentLevel_ = getCache().getValue<int>("CURRENT_LEVEL");
-
-        if (currentLevel_ == getCache().getValue<int>("BONUS_STAGE")) {
-            getCache().setValue("BONUS_STAGE", currentLevel_ + 4); // Next bonus stage
-            isBonusStage_ = true;
-        }
-
-        getCache().setValue("GHOSTS_FRIGHTENED_MODE_DURATION", getCache().getValue<mighter2d::Time>("GHOSTS_FRIGHTENED_MODE_DURATION") - mighter2d::seconds(1));
-        getCache().setValue("PACMAN_SUPER_MODE_DURATION", getCache().getValue<mighter2d::Time>("PACMAN_SUPER_MODE_DURATION") - mighter2d::seconds(1));
-
+    void GameplayScene::onStart() {
         initGui();
-        initGrid();
-        //gameObjectsManager_.createObjects(*grid_);
-        /*gameObjectsManager_.initGameObjects();
-        initMovementControllers();
-        initSceneLevelEvents();
-        initEngineLevelEvents();
-        initCollisions();
-        initLevelStartCountdown();*/
+
+        grid_.create(getGameLevel());
+        gameObjectsManager_.createObjects(grid_);
+        gameObjectsManager_.initGameObjects();
+    }
+
+    ///////////////////////////////////////////////////////////////
+    int GameplayScene::getGameLevel() const {
+        return getCache().getValue<int>("CURRENT_LEVEL");
+    }
+
+    ///////////////////////////////////////////////////////////////
+    bool GameplayScene::isBonusStage() const {
+        return getGameLevel() == getCache().getValue<int>("BONUS_STAGE");
+    }
+
+    ///////////////////////////////////////////////////////////////
+    mighter2d::ui::GuiContainer &GameplayScene::getGui() {
+        return gui_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    Grid &GameplayScene::getGrid() {
+        return grid_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    AudioManager &GameplayScene::getAudioPlayer() {
+        return audioManager_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    GameObjectsManager &GameplayScene::getGameObjectsManager() {
+        return gameObjectsManager_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    TimerManager &GameplayScene::getTimerManager() {
+        return timerManager_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    GameplayObserver &GameplayScene::getGameplayObserver() {
+        return gameplayObserver_;
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::initGui() {
-        view_ = new CommonView(getGui()),
-        view_->init(getCache().getValue<int>("CURRENT_LEVEL"), getCache().getValue<int>("PLAYER_LIVES"));
+        view_ = std::make_unique<CommonView>(gui_);
+        view_->init(getGameLevel(), getCache().getValue<int>("PLAYER_LIVES"));
         view_->setHighScore(getCache().getValue<int>("HIGH_SCORE"));
         view_->setScore(getCache().getValue<int>("CURRENT_SCORE"));
-
-        if (isBonusStage_) {
-            mighter2d::ui::Label::Ptr lblRemainingTime = mighter2d::ui::Label::create("");
-            lblRemainingTime->setName("lblRemainingTime");
-            lblRemainingTime->setTextSize(15);
-            lblRemainingTime->getRenderer()->setTextColour(mighter2d::Colour::White);
-            lblRemainingTime->setOrigin(0.5f, 0.5f);
-            lblRemainingTime->setPosition(242, 221);
-            getGui().addWidget(std::move(lblRemainingTime));
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::initGrid() {
-        createGrid2D(20, 20);
-        grid_ = std::make_unique<Grid>(getGrid());
-        grid_->create(currentLevel_);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::initMovementControllers() {
-        auto* pacman = gameObjectsManager_.getPacMan();
-        auto pacmanController = std::make_unique<PacManGridMover>(*grid_, pacman);
-        pacmanController->init();
-        getGridMovers().addObject(std::move(pacmanController));
-
-        gameObjectsManager_.getGhosts().forEach([this](Ghost* ghost) {
-            auto ghostMover = std::make_unique<GhostGridMover>(*grid_, ghost);
-            getGridMovers().addObject(std::move(ghostMover));
-        });
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::initCollisions() {
-        auto* pacman = gameObjectsManager_.getPacMan();
-        collisionResponseRegisterer_.registerCollisionWithFruit(pacman);
-        collisionResponseRegisterer_.registerCollisionWithKey(pacman);
-        collisionResponseRegisterer_.registerCollisionWithDoor(pacman);
-        collisionResponseRegisterer_.registerCollisionWithPowerPellet(pacman);
-        collisionResponseRegisterer_.registerCollisionWithSuperPellet(pacman);
-        collisionResponseRegisterer_.registerCollisionWithGhost(pacman);
-        collisionResponseRegisterer_.registerCollisionWithStar(pacman);
-        collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(pacman);
-
-        gameObjectsManager_.getGhosts().forEach( [this] (Ghost* ghost){
-            collisionResponseRegisterer_.registerCollisionWithPacMan(ghost);
-            collisionResponseRegisterer_.registerCollisionWithTeleportationSensor(ghost);
-            collisionResponseRegisterer_.registerCollisionWithSlowDownSensor(ghost);
-        });
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::updatePointsMultiplier() {
-        if (pointsMultiplier_ == 8)
-            pointsMultiplier_ = 1; // Also resets to 1 when power mode timer expires
-        else
-            pointsMultiplier_ *= 2;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::endGameplay() {
-        gameObjectsManager_.despawnStar();
-        setVisibleOnPause(true);
-        audioManager_.setVolume(0);
-        getGui().setOpacity(0.0f);
-        getEngine().pushScene(std::make_unique<GameOverScene>());
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::initSceneLevelEvents() {
-        getInput().onKeyUp([this](mighter2d::Key key) {
-            if ((key == mighter2d::Key::P || key == mighter2d::Key::Escape))
-                pauseGame();
-        });
-
-        on("levelStartCountdownComplete", mighter2d::Callback<>([this] {
-            getInput().setAllInputEnable(true);
-            getWindow().suspendedEventListener(onWindowCloseId_, false);
-
-            getGui().getWidget("lblReady")->setVisible(false);
-            auto* pacman = gameObjectsManager_.getPacMan();
-            pacman->getSprite().setVisible(true);
-            pacman->getGridMover()->requestMove(mighter2d::Left);
-
-            if (isBonusStage_) {
-                pacman->setState(PacMan::State::Super);
-                timerManager_.startBonusStageTimer();
-            } else {
-                gameObjectsManager_.getGhosts().forEach( [](Ghost* ghost) {
-                    ghost->clearState();
-                    ghost->setState(std::make_unique<ScatterState>());
-                });
-
-                timerManager_.startGhostHouseArrestTimer();
-                timerManager_.startGhostAITimer();
-
-                audioManager_.playBackgroundMusic(1);
-            }
-        }));
-
-        addOnceEventListener("levelComplete", mighter2d::Callback<>([this] {
-            getWindow().suspendedEventListener(onWindowCloseId_, true);
-
-            if (isBonusStage_)
-                updateScore(timerManager_.getRemainingBonusStageDuration().asMilliseconds());
-
-            audioManager_.stop();
-            timerManager_.stopAllTimers();
-            gameObjectsManager_.despawnStar();
-            gameObjectsManager_.getGhosts().removeAll();
-
-            auto* pacman = gameObjectsManager_.getPacMan();
-            pacman->getSprite().getAnimator().complete();
-            pacman->getGridMover()->setMovementFreeze(true);
-
-            getTimer().setTimeout(mighter2d::seconds(0.5), [this, pacman] {
-                gameObjectsManager_.getPellets().removeAll();
-                gameObjectsManager_.getFruits().removeAll();
-                gameObjectsManager_.getKeys().removeAll();
-
-                pacman->getSprite().setVisible(false);
-                grid_->flash(currentLevel_);
-
-                grid_->onFlashStop([this] {
-                    if (currentLevel_ == 16) {
-                        getCache().setValue("PLAYER_WON_GAME", true);
-                        endGameplay();
-                    } else {
-                        getTimer().setTimeout(mighter2d::seconds(1), [this] {
-                            emit("startNewLevel");
-                        });
-                    }
-                });
-
-                audioManager_.playLevelCompleteSfx();
-            });
-        }));
-
-        on("startNewLevel", mighter2d::Callback<>([this] {
-            getCache().setValue("CURRENT_LEVEL", currentLevel_ + 1);
-            getEngine().popScene();
-            getEngine().pushScene(std::make_unique<GameplayScene>());
-            getEngine().pushScene(std::make_unique<LevelStartScene>());
-        }));
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::initEngineLevelEvents() {
-        onWindowCloseId_ = getWindow().onClose([this] {
-            pauseGame();
-        });
-
-        getWindow().suspendedEventListener(onWindowCloseId_, true);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::updateScore(int points) {
-        auto newScore = getCache().getValue<int>("CURRENT_SCORE") + points;
-        getCache().setValue("CURRENT_SCORE", newScore);
-        view_->setScore(newScore);
-
-        if (newScore > getCache().getValue<int>("HIGH_SCORE")) {
-            getCache().setValue("HIGH_SCORE", newScore);
-            view_->setHighScore(newScore);
-        }
-
-        auto extraLivesGiven = getCache().getValue<int>("NUM_EXTRA_LIVES_WON");
-        if (newScore >= Constants::FIRST_EXTRA_LIFE_MIN_SCORE && extraLivesGiven == 0 ||
-            newScore >= Constants::SECOND_EXTRA_LIFE_MIN_SCORE && extraLivesGiven == 1 ||
-            newScore >= Constants::THIRD_EXTRA_LIFE_MIN_SCORE && extraLivesGiven == 2)
-        {
-            getCache().setValue("NUM_EXTRA_LIVES_WON", extraLivesGiven + 1);
-            auto* pacman = gameObjectsManager_.getPacMan();
-            pacman->addLife();
-            getCache().setValue("PLAYER_LIVES", pacman->getLivesCount());
-            view_->addLife();
-
-            audioManager_.playOneUpSfx();
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::initLevelStartCountdown() {
-        getInput().setAllInputEnable(false);
-        getGui().getWidget<mighter2d::ui::Label>("lblReady")->setVisible(true);
-        gameObjectsManager_.getPacMan()->getSprite().setVisible(false);
-
-        int counter = Constants::LEVEL_START_DELAY;
-        getTimer().setInterval(mighter2d::seconds(0.5f), [this, counter]() mutable {
-            if (counter-- == 0)
-                emit("levelStartCountdownComplete");
-        }, counter);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::resetActors() {
-        gameObjectsManager_.resetMovableGameObjects();
-        getGridMovers().removeAll();
-        initMovementControllers();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::emitGE(GameEvent event) {
-        mighter2d::PropertyContainer args;
-        gameObjectsManager_.getPacMan()->handleEvent(event, args);
-        gameObjectsManager_.getGhosts().forEach([event, &args](Ghost* ghost) {
-            ghost->handleEvent(event, args);
-        });
-
-        if (event == GameEvent::ChaseModeBegin)
-            isChaseMode_ = true;
-        else if (event == GameEvent::ScatterModeBegin)
-            isChaseMode_ = false;
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::pauseGame() {
-        if (isPaused_ || grid_->isFlashing() || gameObjectsManager_.getPacMan()->getState() == PacMan::State::Dying)
-            return;
-
-        isPaused_ = true;
-        audioManager_.pause();
-        setVisibleOnPause(true);
-        getEngine().pushCachedScene("PauseMenuScene");
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::resumeGame() {
-        setVisibleOnPause(false);
-
-        if (isPaused_) {
-            isPaused_ = false;
-            audioManager_.setVolume(getCache().getValue<float>("MASTER_VOLUME"));
-            audioManager_.resume();
-        } else
-            resetLevel();
-
-        getWindow().suspendedEventListener(onWindowCloseId_, false);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::resetLevel() {
-        gameObjectsManager_.despawnStar();
-        audioManager_.stop();
-        timerManager_.stopAllTimers();
-        resetActors();
-        initLevelStartCountdown();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::onPause() {
-        audioManager_.pause();
-        getWindow().suspendedEventListener(onWindowCloseId_, true);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::onResume() {
-        resumeGame();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::onResumeFromCache() {
-        setCached(false, "GameplayScene");
-        resumeGame();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::onUpdate(mighter2d::Time deltaTime) {
-        grid_->update(deltaTime);
-        timerManager_.update(deltaTime);
-        gameObjectsManager_.update(deltaTime);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::onExit() {
-        if (!isCached())
-            getWindow().removeEventListener(onWindowCloseId_);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void GameplayScene::onFrameEnd() {
-        gameObjectsManager_.destroyInactiveObjects();
-
-        if (!starAppeared_ && ((gameObjectsManager_.getNumFruitsEaten() + gameObjectsManager_.getNumPelletsEaten()) == Constants::STAR_SPAWN_EATEN_ITEMS)) {
-            starAppeared_ = true;
-            gameObjectsManager_.spawnStar();
-        }
-
-        if (gameObjectsManager_.isAllPelletsEaten() && gameObjectsManager_.isAllFruitsEaten())
-        {
-            emit("levelComplete");
-        }
     }
 
     ///////////////////////////////////////////////////////////////
     GameplayScene::~GameplayScene() {
-        delete view_;
         ObjectReferenceKeeper::clear();
         Key::resetCounter();
         Door::resetCounter();

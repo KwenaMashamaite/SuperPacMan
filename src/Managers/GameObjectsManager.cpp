@@ -140,17 +140,17 @@ namespace spm {
         });
 
         fruits_.forEach([this](Fruit* fruit) {
-            fruit->setTag(utils::getFruitName(gameplayScene_.getLevel()));
+            fruit->setTag(utils::getFruitName(gameplayScene_.getGameLevel()));
         });
 
         ghosts_.forEach([this](Ghost* ghost) {
-            if (gameplayScene_.isBonusStage_)
+            if (gameplayScene_.isBonusStage())
                 ghost->setActive(false);
             else if (ghost->getTag() == "inky" || ghost->getTag() == "clyde")
                 ghost->setLockInGhostHouse(true);
         });
 
-        if (gameplayScene_.getLevel() >= Constants::RANDOM_KEY_POS_LEVEL) {
+        if (gameplayScene_.getGameLevel() >= Constants::RANDOM_KEY_POS_LEVEL) {
             std::vector<mighter2d::Index> keyIndexes;
 
             keys_.forEach([&keyIndexes](Key* key) {
@@ -160,12 +160,12 @@ namespace spm {
             auto static randomEngine = std::default_random_engine{std::random_device{}()};
 
             // Seed engine with current level so that the randomly placed keys open the same doors on each game run
-            randomEngine.seed(gameplayScene_.getLevel());
+            randomEngine.seed(gameplayScene_.getGameLevel());
 
             std::shuffle(keyIndexes.begin(), keyIndexes.end(), randomEngine);
 
             keys_.forEach([this, index = 0, &keyIndexes](Key* key) mutable {
-                gameplayScene_.grid_->changeObjectTile(key, keyIndexes[index++]);
+                gameplayScene_.getGrid().changeObjectTile(key, keyIndexes[index++]);
             });
         }
     }
@@ -174,7 +174,7 @@ namespace spm {
     void GameObjectsManager::resetMovableGameObjects() {
         pacman_->setState(PacMan::State::Normal);
         pacman_->setDirection(mighter2d::Left);
-        gameplayScene_.grid_->changeObjectTile(pacman_.get(), Constants::PacManSpawnTile);
+        gameplayScene_.getGrid().changeObjectTile(pacman_.get(), Constants::PacManSpawnTile);
 
         ghosts_.forEach([this](Ghost* ghost) {
             mighter2d::Index startCellIndex;
@@ -188,7 +188,7 @@ namespace spm {
             else
                 startCellIndex = Constants::ClydeSpawnTile;
 
-            gameplayScene_.grid_->addGameObject(ghost, startCellIndex);
+            gameplayScene_.getGrid().addGameObject(ghost, startCellIndex);
         });
     }
 
@@ -216,7 +216,7 @@ namespace spm {
     void GameObjectsManager::spawnStar() {
         if (!star_) {
             star_ = std::make_unique<Star>(gameplayScene_);
-            gameplayScene_.grid_->addGameObject(star_.get(), mighter2d::Index{15, 13});
+            gameplayScene_.getGrid().addGameObject(star_.get(), mighter2d::Index{15, 13});
 
 
             auto* fruitAnim = leftSideStarFruit_->getSprite().getAnimator().getAnimation("slide").get();
@@ -231,16 +231,16 @@ namespace spm {
             leftSideStarFruit_->getSprite().getAnimator().startAnimation("slide");
             rightSideStarFruit_->getSprite().getAnimator().startAnimation("slide");
 
-            gameplayScene_.audioManager_.playStarSpawnedSfx();
-            gameplayScene_.timerManager_.startStarDespawnTimer();
+            gameplayScene_.getAudioPlayer().playStarSpawnedSfx();
+            gameplayScene_.getTimerManager().startStarDespawnTimer();
         }
     }
 
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::despawnStar() {
         if (star_) {
-            gameplayScene_.audioManager_.stopStarSpawnedSfx();
-            gameplayScene_.timerManager_.stopStarDespawnTimer();
+            gameplayScene_.getAudioPlayer().stopStarSpawnedSfx();
+            gameplayScene_.getTimerManager().stopStarDespawnTimer();
 
             leftSideStarFruit_->getSprite().getAnimator().stop();
             rightSideStarFruit_->getSprite().getAnimator().stop();

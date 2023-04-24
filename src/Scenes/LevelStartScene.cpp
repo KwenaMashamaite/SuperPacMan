@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "LevelStartScene.h"
-//#include "GameplayScene.h"
+#include "GameplayScene.h"
 #include <Mighter2d/ui/widgets/Label.h>
 #include <Mighter2d/core/engine/Engine.h>
 
@@ -66,7 +66,7 @@ namespace spm {
         auto& engine = getEngine();
 
         if (!engine.pushCachedScene("GameplayScene"))
-            ;//engine.pushScene(std::make_unique<GameplayScene>());
+            engine.pushScene(std::make_unique<GameplayScene>());
     }
 
 } // namespace spm

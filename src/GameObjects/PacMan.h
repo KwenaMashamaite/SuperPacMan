@@ -87,12 +87,12 @@ namespace spm {
         State getState() const;
 
         /**
-         * @brief Make pacman flash or stop flashing
-         * @param flash True to flash, otherwise false
+         * @brief Make pacman startFlash or stop flashing
+         * @param flash True to startFlash, otherwise false
          *
          * Note, pacman flashes when in the the spm::PacMan::State::Super state only
          */
-        void setFlash(bool flash);
+        void setFlashEnable(bool flash);
 
         /**
          * @brief Check if the pacman is flashing

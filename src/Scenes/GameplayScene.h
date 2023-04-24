@@ -26,12 +26,12 @@
 #define SUPERPACMAN_GAMEPLAYSCENE_H
 
 #include <Mighter2d/core/scene/Scene.h>
-#include "Common/Events.h"
 #include "Grid.h"
 #include "Views/CommonView.h"
-#include "CollisionResponseRegisterer.h"
-#include "Managers/TimerManager.h"
 #include "Managers/GameObjectsManager.h"
+#include "Managers/AudioManager.h"
+#include "GameplayObserver.h"
+#include "Managers/TimerManager.h"
 
 namespace spm {
     /**
@@ -50,181 +50,75 @@ namespace spm {
          * This function is called by the game engine when the scene
          * is entered for the first time
          */
-        void onEnter() override;
+        void onStart() override;
 
         /**
-         * @brief
-         *
-         * This function is called by the game engine when the game transitions
-         * to another scene without destroying the current active scene
+         * @brief Get the current game level
+         * @return The current game level
          */
-        void onPause() override;
+        int getGameLevel() const;
 
         /**
-         * @brief Restart level after pacman dies
-         *
-         * This function is called by the game engine when the game returns
-         * to this scene from another one
+         * @brief Check if game level is a bonus stage
+         * @return True if its a bonus stage, otherwise false
          */
-        void onResume() override;
+        bool isBonusStage() const;
 
         /**
-         * @brief Update the scene
-         * @param deltaTime Time passed since last update
-         *
-         * This function is called by the game engine after the scene
-         * has handled system events and external inputs (Keyboard and
-         * mouse). The function is called once per frame and the delta
-         * passed to it is frame rate dependent
+         * @brief Get the gameplay scene gui
+         * @return The gameplay scene gui
          */
-        void onUpdate(mighter2d::Time deltaTime) override;
+        mighter2d::ui::GuiContainer& getGui();
 
         /**
-         * @brief Handle cache reactivation
-         *
-         * This function is called by the game engine when the scene is
-         * resumed from the cache
+         * @brief Get the gameplay grid
+         * @return The gamepley grid
          */
-        void onResumeFromCache() override;
+        Grid& getGrid();
 
         /**
-         * @brief Restore engine defaults
-         *
-         * This function is called by the game engine before the scene
-         * is destroyed
+         * @brief Get the game audio player
+         * @return The game audio player
          */
-        void onExit() override;
+        AudioManager& getAudioPlayer();
 
         /**
-         * @brief Handle frame end event
-         *
-         * This function is called by the game engine when the current
-         * frame ends
+         * @brief Get the scenes game object manager
+         * @return The scenes game objects manager
          */
-        void onFrameEnd() override;
+        GameObjectsManager& getGameObjectsManager();
 
         /**
-         * @brief Emit a game event
-         * @param event The event to be emitted
+         * @brief Get the games timer manager
+         * @return The game timer manager
          */
-        void emitGE(GameEvent event);
+        TimerManager& getTimerManager();
 
-        int getLevel() const {return currentLevel_; }
+        /**
+         * @brief Get the gameplay observer
+         * @return The gameplay observer
+         */
+        GameplayObserver& getGameplayObserver();
 
         /**
          * @brief Destructor
          */
-        ~GameplayScene();
+        ~GameplayScene() override;
 
-        int pointsMultiplier_;
-
-        GameObjectsManager gameObjectsManager_;
     private:
         /**
          * @brief Initialize the gui
          */
         void initGui();
 
-        /**
-         * @brief Create the gameplay grid
-         */
-        void initGrid();
-
-        /**
-         * @brief Create movement controllers for pacman and ghosts
-         */
-        void initMovementControllers();
-
-        /**
-         * @brief Initialize pacmans collision responses
-         *
-         * This function defines what happens when pacman collides with
-         * a key, pellet, fruit or a ghost
-         */
-        void initCollisions();
-
-        /**
-         * @brief Initialize gameplay scene events
-         *
-         * These events only trigger when this state is active
-         */
-        void initSceneLevelEvents();
-
-        /**
-         * @brief Initialize game engine events
-         *
-         * These events will trigger in any state
-         */
-        void initEngineLevelEvents();
-
-        /**
-         * @brief Update cache and view score values
-         * @param points The points to update the score by
-         */
-        void updateScore(int points);
-
-        /**
-         * @brief Start the level start countdown
-         *
-         * This function replaces the "Get Ready!!" text with a countdown
-         * from 3 to 1. When the countdown reaches 0, the function emits a
-         * spm::GameEvent::LevelStarted event and the gameplay begins
-         */
-        void initLevelStartCountdown();
-
-        /**
-         * @brief Reset pacman and the ghosts to their respective spawm tiles
-         */
-        void resetActors();
-
-        /**
-         * @brief Transition game to pause menu
-         */
-        void pauseGame();
-
-        /**
-         * @brief Resume gameplay
-         */
-        void resumeGame();
-
-        /**
-         * @brief Restart the current game level without resetting state
-         */
-        void resetLevel();
-
-        /**
-         * @brief Update the ghost point multiplier
-         *
-         * The multiplier increases by a factor of 2 every time the player
-         * eats a ghost. However, since the player cannot eat more than four
-         * ghosts in a single power mode session, the multiplier is capped to
-         * 8. After the player eats the 4th ghost, the multiplier resets
-         * to 1 (default). It also resets to 1 when power mode expires
-         */
-        void updatePointsMultiplier();
-
-        /**
-         * @brief End the gameplay
-         *
-         * This function is called when the player loses all lives
-         */
-        void endGameplay();
-
     private:
-        int currentLevel_;              //!< Current game level
-        bool isPaused_;                 //!< A flag indicating whether or not the game is paused
-        CommonView* view_;               //!< Scene view without the gameplay grid
-        std::unique_ptr<Grid> grid_;    //!< Gameplay grid view
-        AudioManager audioManager_;     //!< Games audio manager
-        int onWindowCloseId_;           //!< The id number of the 'onClose' event handler
-        bool isChaseMode_;              //!< A flag indicating whether or not ghosts are in chase mode
-        bool starAppeared_;             //!< A flag indicatinig whether or not a star has already been spawned
-        bool isBonusStage_;             //!< A counter indicating whether or not the current level is a bonus stage
-        CollisionResponseRegisterer collisionResponseRegisterer_;
+        mighter2d::ui::GuiContainer gui_;
+        std::unique_ptr<CommonView> view_;
+        Grid grid_;
+        GameObjectsManager gameObjectsManager_;
+        GameplayObserver gameplayObserver_;
+        AudioManager audioManager_;
         TimerManager timerManager_;
-
-        friend class CollisionResponseRegisterer;
-        friend class GameObjectsManager;
     };
 }
 

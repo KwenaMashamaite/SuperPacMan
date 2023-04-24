@@ -29,6 +29,8 @@
 #include <Mighter2d/core/object/GridObject.h>
 
 namespace spm {
+    class GameplayScene;
+
     /**
      * @brief Contains all game objects in the game
      */
@@ -36,9 +38,9 @@ namespace spm {
     public:
         /**
          * @brief Constructor
-         * @param grid Third party grid
+         * @param scene The gameplay scene
          */
-        explicit Grid(mighter2d::Grid& grid);
+        explicit Grid(GameplayScene& scene);
 
         /**
          * @brief Create the grid
@@ -54,10 +56,11 @@ namespace spm {
         void addGameObject(mighter2d::GridObject* object, mighter2d::Index index);
 
         /**
-         * @brief Remove an game object from the grid
-         * @param gameObject The game object to be removed
+         * @brief Move an object to a different cell
+         * @param object The object to be change tiles
+         * @param index The index of the cell to move the object to
          */
-        void removeGameObject(mighter2d::GridObject *gameObject);
+        void changeObjectTile(mighter2d::GridObject* object, mighter2d::Index index);
 
         /**
          * @brief Apply a callback to each cell of the grid
@@ -66,19 +69,10 @@ namespace spm {
         void forEachCell(const mighter2d::Callback<const mighter2d::Tile&>& callback);
 
         /**
-         * @brief Apply a callback to each actor in the grid
-         * @param callback The function to be applied
-         */
-        void forEachGameObject(const mighter2d::Callback<mighter2d::GridObject*>& callback);
-
-        /**
          * @brief Flash the grid
          * @param level The current game level
-         *
-         * This function will toggle the grid colour between its current
-         * colour and a white colour for predetermined number of seconds
          */
-        void flash(int level);
+        void startFlash(int level);
 
         /**
          * @brief Execute a callback when the grid animation finishes
@@ -93,7 +87,7 @@ namespace spm {
         void onFlashStop(mighter2d::Callback<> callback);
 
         /**
-         * @brief Check if the grid flash animation is playing or not
+         * @brief Check if the grid startFlash animation is playing or not
          * @return True if animation is currently playing, otherwise false
          */
         bool isFlashing();
@@ -103,11 +97,6 @@ namespace spm {
          * @return The scene the grid is in
          */
         mighter2d::Scene& getScene();
-
-        /**
-         * @brief Implicit conversion operator
-         */
-        operator mighter2d::Grid& ();
 
     private:
         /**
@@ -119,7 +108,7 @@ namespace spm {
         void setBackground(int level);
 
     private:
-        mighter2d::Grid& grid_;
+        mighter2d::Grid grid_;
         mighter2d::SpriteSheet spriteSheet_;
         mighter2d::Sprite background_;
     };

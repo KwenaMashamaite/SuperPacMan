@@ -28,6 +28,8 @@
 #include "Scenes/GameplayScene.h"
 #include <Mighter2d/ui/widgets/Label.h>
 #include <Mighter2d/graphics/Window.h>
+#include <Mighter2d/core/engine/Engine.h>
+#include <cassert>
 
 namespace spm {
     /**
@@ -47,10 +49,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    TimerManager::TimerManager(GameplayScene &gameplayScene, GameObjectsManager& gameObjectsManager, AudioManager& audioManager) :
+    TimerManager::TimerManager(GameplayScene &gameplayScene) :
         gameplayScene_(gameplayScene),
-        gameObjects_(gameObjectsManager),
-        audioManager_(audioManager),
         scatterWaveLevel_{0},
         chaseWaveLevel_{0},
         ghostAITimer_(gameplayScene),
@@ -68,14 +68,14 @@ namespace spm {
         // Automatically startFlash pacman
         superModeTimer_.onUpdate([this](mighter2d::Timer& superModeTimer) {
             if (superModeTimer.getRemainingDuration() <= FLASH_ANIM_CUTOFF_TIME)
-                gameObjects_.getPacMan()->setFlashEnable(true);
+                gameplayScene_.getGameObjectsManager().getPacMan()->setFlashEnable(true);
             else if (superModeTimer.getRemainingDuration() > FLASH_ANIM_CUTOFF_TIME)
-                gameObjects_.getPacMan()->setFlashEnable(false);
+                gameplayScene_.getGameObjectsManager().getPacMan()->setFlashEnable(false);
         });
 
         // Automatically startFlash ghosts
         powerModeTimer_.onUpdate([this](mighter2d::Timer&) {
-            gameObjects_.getGhosts().forEach([this](Ghost* ghost) {
+            gameplayScene_.getGameObjectsManager().getGhosts().forEach([this](Ghost* ghost) {
                 if (powerModeTimer_.getRemainingDuration() <= FLASH_ANIM_CUTOFF_TIME)
                     ghost->setFlash(true);
                 else if (powerModeTimer_.getRemainingDuration() > FLASH_ANIM_CUTOFF_TIME)
@@ -87,18 +87,18 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startGhostHouseArrestTimer() {
         auto startProbationTimer = [this](const std::string& tag, float duration) {
-            auto* ghost = gameObjects_.getGhosts().findByTag(tag);
+            auto* ghost = gameplayScene_.getGameObjectsManager().getGhosts().findByTag(tag);
             assert(ghost && "Failed to start probation timer: Invalid ghost tag");
 
             if (!ghost->isLockedInGhostHouse())
                 return;
 
-            float probationDuration = duration - (float) gameplayScene_.getLevel();
+            float probationDuration = duration - (float) gameplayScene_.getGameLevel();
 
             if (probationDuration <= 0)
                 ghost->setLockInGhostHouse(false);
             else {
-                gameplayScene_.getTimer().setTimeout(mighter2d::seconds(probationDuration), [ghost] {
+                gameplayScene_.getEngine().getTimerManager().setTimeout(mighter2d::seconds(probationDuration), [ghost] {
                     ghost->setLockInGhostHouse(false);
                 });
             }
@@ -126,9 +126,11 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startSuperModeTimeout() {
         configureTimer(superModeTimer_, getSuperModeDuration(), [this] {
-            gameplayScene_.emitGE(GameEvent::SuperModeEnd);
+            gameplayScene_.getGameplayObserver().emit("super_mode_end");
             resumeGhostAITimer();
         });
+
+        gameplayScene_.getGameplayObserver().emit("super_mode_begin");
     }
 
     ///////////////////////////////////////////////////////////////
@@ -160,16 +162,13 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startPowerModeTimeout() {
         configureTimer(powerModeTimer_, getFrightenedModeDuration(), [this] {
-            gameplayScene_.pointsMultiplier_ = 1;
-
             if (!isSuperMode())
                 resumeGhostAITimer();
 
-            gameplayScene_.emitGE(GameEvent::FrightenedModeEnd);
-
-            audioManager_.stop();
-            audioManager_.playBackgroundMusic(1);
+            gameplayScene_.getGameplayObserver().emit("power_mode_end");
         });
+
+        gameplayScene_.getGameplayObserver().emit("power_mode_begin");
     }
 
     ///////////////////////////////////////////////////////////////
@@ -200,12 +199,10 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startBonusStageTimer() {
         configureTimer(bonusStageTimer_, mighter2d::seconds(Constants::BONUS_STAGE_DURATION), [this] {
-            gameplayScene_.emit("levelComplete");
+            gameplayScene_.getGameplayObserver().emit("bonus_stage_end");
         });
 
-        bonusStageTimer_.onUpdate([this](mighter2d::Timer& timer) {
-            gameplayScene_.getGui().getWidget<mighter2d::ui::Label>("lblRemainingTime")->setText(std::to_string(timer.getRemainingDuration().asMilliseconds()));
-        });
+        gameplayScene_.getGameplayObserver().emit("bonus_stage_begin");
     }
 
     ///////////////////////////////////////////////////////////////
@@ -216,7 +213,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startStarDespawnTimer() {
         configureTimer(starDespawnTimer_, mighter2d::seconds(Constants::STAR_ON_SCREEN_TIME), [this] {
-            gameplayScene_.gameObjectsManager_.despawnStar();
+            gameplayScene_.getGameObjectsManager().despawnStar();
         });
     }
 
@@ -260,10 +257,11 @@ namespace spm {
             if (chaseWaveLevel_ < 4)
                 chaseWaveLevel_++;
 
+            gameplayScene_.getGameplayObserver().emit("scatter_mode_end");
             startChaseModeTimer();
         });
 
-        gameplayScene_.emitGE(GameEvent::ScatterModeBegin);
+        gameplayScene_.getGameplayObserver().emit("scatter_mode_begin");
     }
 
     ///////////////////////////////////////////////////////////////
@@ -274,15 +272,16 @@ namespace spm {
             if (scatterWaveLevel_ < 4)
                 scatterWaveLevel_++;
 
+            gameplayScene_.getGameplayObserver().emit("chase_mode_end");
             startScatterModeTimer();
         });
 
-        gameplayScene_.emitGE(GameEvent::ChaseModeBegin);
+        gameplayScene_.getGameplayObserver().emit("chase_mode_begin");
     }
 
     ///////////////////////////////////////////////////////////////
     mighter2d::Time TimerManager::getScatterModeDuration() const {
-        int curLevel = gameplayScene_.getLevel();
+        int curLevel = gameplayScene_.getGameLevel();
 
         if (scatterWaveLevel_ <= 2) {
             if (curLevel < 5)
@@ -304,7 +303,7 @@ namespace spm {
         if (chaseWaveLevel_ <= 2)
             return mighter2d::seconds(20.0f);
         else if (chaseWaveLevel_ == 3) {
-            if (gameplayScene_.getLevel() == 1)
+            if (gameplayScene_.getGameLevel() == 1)
                 return mighter2d::seconds(20.0f);
             else
                 return mighter2d::minutes(17);

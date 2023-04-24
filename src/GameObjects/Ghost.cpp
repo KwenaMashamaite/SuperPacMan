@@ -34,6 +34,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     Ghost::Ghost(mighter2d::Scene& scene, Colour colour) :
         mighter2d::GridObject(scene),
+        IUpdatable(scene),
         isLockedInHouse_{false},
         isFlat_{false}
     {
@@ -146,12 +147,13 @@ namespace spm {
         animations.createAnimationsFor(getTag());
 
         int spriteSheetRow = getTag() == "blinky" ? 0 : (getTag() == "pinky" ? 1 : (getTag() == "inky" ? 2 : 3));
-        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(getScene(), mighter2d::Index{spriteSheetRow, 0});
+        auto spriteSheet = animations.getAll().at(0)->getSpriteSheet();
+        getSprite().setTexture(spriteSheet.getTexture());
 
         for (const auto& animation : animations.getAll())
             getSprite().getAnimator().addAnimation(animation);
 
-        getSprite().scale(2.0f, 2.0f);
+        getSprite().setScale(2.0f, 2.0f);
         getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()));
 
         // Automatically change the animation when the direction changes

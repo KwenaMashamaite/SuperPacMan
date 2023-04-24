@@ -32,7 +32,7 @@ namespace spm {
     {
         auto animation = FruitAnimation();
         getSprite().getAnimator().addAnimation(animation.getAnimation());
-        getSprite() = animation.getAnimation()->getSpriteSheet().getSprite(getScene(), mighter2d::Index{0, 0});
+        getSprite().setTexture(animation.getAnimation()->getSpriteSheet().getTexture());
         getSprite().scale(2.0f, 2.0f);
 
         // When the tag of the object is set to any of the following, its sprite

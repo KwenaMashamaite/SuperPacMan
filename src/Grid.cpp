@@ -24,36 +24,16 @@
 
 #include "Grid.h"
 #include "Animations/GridAnimation.h"
+#include "Scenes/GameplayScene.h"
 #include <Mighter2d/core/scene/Scene.h>
-#include <cassert>
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
-    Grid::Grid(mighter2d::Grid &grid) :
-        grid_{grid},
+    Grid::Grid(GameplayScene& gameplayScene) :
+        grid_{20, 20, gameplayScene},
         spriteSheet_{"spritesheet.png", {224, 244}, {1, 1}, {0, 237, 901, 491}},
-        background_(getScene())
+        background_(gameplayScene)
     {
-        // Set up render layers
-        mighter2d::RenderLayerContainer& renderLayers = grid.getScene().getRenderLayers();
-        renderLayers.removeByName("default"); // This layer is replaced by the background layer
-
-        // Instead of creating the visual grid ourselves, we use a pre-made
-        // one from an image file and render game objects on top of it
-        renderLayers.create("background");
-        renderLayers.add(background_, 0, "background");
-
-        renderLayers.create("Walls");
-        renderLayers.create("Sensors");
-        renderLayers.create("Doors");
-        renderLayers.create("Keys");
-        renderLayers.create("Fruits");
-        renderLayers.create("Pellets");
-        renderLayers.create("Stars");
-        renderLayers.create("GridObjects");
-        renderLayers.create("Ghosts");
-        renderLayers.create("PacMans");
-        
         // Set textures for different levels
         spriteSheet_.assignAlias({0, 1}, "intro_grid");
         spriteSheet_.assignAlias({0, 2}, "level_1_to_4_grid");
@@ -63,6 +43,7 @@ namespace spm {
         spriteSheet_.assignAlias({1, 3}, "level_17_to_20_grid");
 
         // background
+        background_.setRenderLayer("background");
         background_.setTexture(spriteSheet_.getTexture());
         background_.scale(2.1f, 2.1f);
 
@@ -104,16 +85,12 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void Grid::addGameObject(mighter2d::GridObject *object, mighter2d::Index index) {
-        std::string renderLayer = object->getClassName() + "s";
-        const static int renderOrder = 0;
-
-        grid_.getScene().getRenderLayers().add(object->getSprite(), renderOrder, renderLayer);
         grid_.addChild(object, index);
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::removeGameObject(mighter2d::GridObject *gameObject) {
-        grid_.removeChild(gameObject);
+    void Grid::changeObjectTile(mighter2d::GridObject *object, mighter2d::Index index) {
+        grid_.changeTile(object, index);
     }
 
     ///////////////////////////////////////////////////////////////
@@ -124,14 +101,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Grid::forEachGameObject(const mighter2d::Callback<mighter2d::GridObject*> &callback) {
-        grid_.forEachChild([&callback](mighter2d::GridObject* actor) {
-            callback(actor);
-        });
-    }
-
-    ///////////////////////////////////////////////////////////////
-    void Grid::flash(int level) {
+    void Grid::startFlash(int level) {
         auto colour = std::string();
         if (level >= 1 && level <= 4)
             colour = "Blue";
@@ -162,11 +132,6 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     mighter2d::Scene& Grid::getScene() {
         return grid_.getScene();
-    }
-
-    ///////////////////////////////////////////////////////////////
-    Grid::operator mighter2d::Grid& () {
-        return grid_;
     }
 
 } // namespace spm

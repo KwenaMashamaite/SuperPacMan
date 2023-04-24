@@ -25,7 +25,6 @@ set(SRC_FILES
         GameObjects/Wall.cpp
         PathFinders/PacManGridMover.cpp
         PathFinders/GhostGridMover.cpp
-        Scenes/CollisionResponseRegisterer.cpp
         Scenes/StartUpScene.cpp
         Scenes/MainMenuScene.cpp
         Scenes/LoadingScene.cpp
@@ -44,7 +43,7 @@ set(SRC_FILES
         Views/GameOverSceneView.cpp
         Managers/AudioManager.cpp
         Managers/TimerManager.cpp
-        Managers/GameObjectsManager.cpp)
+        Managers/GameObjectsManager.cpp Scenes/GameplayObserver.cpp Scenes/GameplayObserver.h)
 
 # Resource script files
 set(RES_FILES
@@ -59,7 +58,7 @@ add_executable(SuperPacMan ${SRC_FILES} ${RES_FILES})
 
 # Find Mighter2d
 list(APPEND CMAKE_PREFIX_PATH "${PROJECT_SOURCE_DIR}/extlibs")
-find_package(mighter2d 0.1.0 REQUIRED)
+find_package(mighter2d 1.0.0 REQUIRED)
 
 # Link Mighter2d
 target_link_libraries (SuperPacMan PRIVATE mighter2d)

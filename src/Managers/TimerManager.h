@@ -41,11 +41,8 @@ namespace spm {
         /**
          * @brief Constructor
          * @param gameplayScene The gameplay scene
-         * @param gameObjectsManager Scene game objects
-         * @param audioManager The gameplay audio manager
          */
-        TimerManager(GameplayScene& gameplayScene, GameObjectsManager& gameObjectsManager,
-            AudioManager& audioManager);
+        explicit TimerManager(GameplayScene& gameplayScene);
 
         /**
          * @brief Start the ghost house probation counter
@@ -232,8 +229,6 @@ namespace spm {
 
     private:
         GameplayScene& gameplayScene_;        //!< The gameplay scene
-        GameObjectsManager& gameObjects_;     //!< The game objects
-        AudioManager& audioManager_;          //!< The game audio manager
         unsigned int scatterWaveLevel_;       //!< The current scatter mode level (up to 4 levels)
         unsigned int chaseWaveLevel_;         //!< The current chase mode level (up to 5 levels)
         mighter2d::Timer ghostAITimer_;       //!< Scatter-chase state transition timer

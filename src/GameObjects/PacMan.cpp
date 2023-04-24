@@ -84,7 +84,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void PacMan::setFlash(bool flash) {
+    void PacMan::setFlashEnable(bool flash) {
         if (isFlashing() != flash && getState() == State::Super) {
             if (flash)
                 getSprite().getAnimator().startAnimation("going" + utils::convertToString(getDirection()) + "Flashing");
@@ -115,7 +115,12 @@ namespace spm {
     void PacMan::initAnimations() {
         auto animations = PacManAnimations();
         animations.create();
-        getSprite() = animations.getAll().at(0)->getSpriteSheet().getSprite(getScene(), mighter2d::Index{0, 0});
+
+        getSprite().setRenderLayer("pacman");
+        auto spritesheet = animations.getAll().at(0)->getSpriteSheet();
+
+        getSprite().setTexture(spritesheet.getTexture());
+
         for (const auto& animation : animations.getAll())
             getSprite().getAnimator().addAnimation(animation);
 

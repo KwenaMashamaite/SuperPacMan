@@ -22,31 +22,30 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Pellet.h"
-#include "Animations/PelletAnimations.h"
+#ifndef SUPERPACMAN_GAMEPLAYOBSERVER_H
+#define SUPERPACMAN_GAMEPLAYOBSERVER_H
+
+#include <Mighter2d/core/event/EventEmitter.h>
 
 namespace spm {
-    ///////////////////////////////////////////////////////////////
-    Pellet::Pellet(mighter2d::Scene& scene, Type type) :
-        mighter2d::GridObject(scene)
-    {
-        setCollisionGroup(type == Type::Power ? "powerPellets" : "superPellets");
-        setTag(type == Type::Power ? "power" : "super");
+    class GameplayObserver {
+    public:
+        int onPowerModeBegin(const mighter2d::Callback<>& callback);
+        int onPowerModeEnd(const mighter2d::Callback<>& callback);
+        int onSuperModeBegin(const mighter2d::Callback<>& callback);
+        int onSuperModeEnd(const mighter2d::Callback<>& callback);
+        int onScatterModeBegin(const mighter2d::Callback<>& callback);
+        int onScatterModeEnd(const mighter2d::Callback<>& callback);
+        int onChaseModeBegin(const mighter2d::Callback<>& callback);
+        int onChaseModeEnd(const mighter2d::Callback<>& callback);
+        int onBonusStageBegin(const mighter2d::Callback<>& callback);
+        int onBonusStageEnd(const mighter2d::Callback<>& callback);
 
-        auto animations = PelletAnimations();
-        animations.createAnimationFor((type == Type::Power ? "powerPellet" : "superPellet"));
-        getSprite().setTexture(animations.getAll().at(0)->getSpriteSheet().getTexture());
+        void emit(const std::string& event);
 
-        for (const auto& animation : animations.getAll())
-            getSprite().getAnimator().addAnimation(animation);
+    private:
+        mighter2d::EventEmitter eventEmitter_;
+    };
+}
 
-        getSprite().getAnimator().startAnimation("blink");
-        getSprite().scale(2.0f, 2.0f);
-    }
-
-    ///////////////////////////////////////////////////////////////
-    std::string Pellet::getClassName() const {
-        return "Pellet";
-    }
-
-} // namespace spm
+#endif

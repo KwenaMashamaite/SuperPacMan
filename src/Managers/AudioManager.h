@@ -36,7 +36,7 @@ namespace spm {
         /**
          * @brief Constructor
          */
-        AudioManager();
+        AudioManager(mighter2d::Scene& scene);
 
         /**
          * @brief Set the audio volume

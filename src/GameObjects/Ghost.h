@@ -34,7 +34,7 @@ namespace spm {
     /**
      * @brief Ghost actor
      */
-    class Ghost : public mighter2d::GridObject {
+class Ghost : public mighter2d::GridObject, mighter2d::IUpdatable {
     public:
         /**
          * @brief The colour of the ghost
@@ -112,10 +112,10 @@ namespace spm {
         bool isLockedInGhostHouse() const;
 
         /**
-         * @brief Make the ghost flash or stop flashing
-         * @param flash True to flash the ghost otherwise false
+         * @brief Make the ghost startFlash or stop flashing
+         * @param flash True to startFlash the ghost otherwise false
          *
-         * Note, it can only flash when in the the spm::Ghost::State::Frightened state
+         * Note, it can only startFlash when in the the spm::Ghost::State::Frightened state
          */
         void setFlash(bool flash);
 
