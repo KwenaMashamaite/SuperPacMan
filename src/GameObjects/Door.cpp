@@ -69,6 +69,9 @@ namespace spm {
         getSprite().setTexture(spriteSheet_.getTexture());
         setDoorTexture("unlocked_door");
         getSprite().scale(2.07f, 2.07f);
+
+        // Collision detection
+        setStatic(true);
     }
 
     ///////////////////////////////////////////////////////////////

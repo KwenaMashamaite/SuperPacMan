@@ -52,6 +52,9 @@ namespace spm {
         });
 
         setTag("apple"); // Set apple texture by default
+
+        // Collision detection
+        setStatic(true);
     }
 
     ///////////////////////////////////////////////////////////////

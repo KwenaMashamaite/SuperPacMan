@@ -42,6 +42,9 @@ namespace spm {
 
         getSprite().getAnimator().startAnimation("blink");
         getSprite().scale(2.0f, 2.0f);
+
+        //Collision detection
+        setStatic(true);
     }
 
     ///////////////////////////////////////////////////////////////

@@ -32,6 +32,9 @@ namespace spm {
         setCollisionGroup("walls");
         setObstacle(true);
         getSprite().setTextureRect({0, 0, 16, 16});
+
+        // Collision detection
+        setStatic(true);
     }
 
     ///////////////////////////////////////////////////////////////

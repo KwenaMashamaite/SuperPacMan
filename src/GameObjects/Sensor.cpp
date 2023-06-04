@@ -30,6 +30,9 @@ namespace spm {
         mighter2d::GridObject(scene)
     {
         setCollisionGroup("sensors");
+
+        // Collision detection
+        setStatic(true);
     }
 
     ///////////////////////////////////////////////////////////////

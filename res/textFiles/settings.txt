@@ -30,7 +30,7 @@
 WINDOW_TITLE:STRING=Super Pac-Man
 
 # Game window fullscreen option
-FULLSCREEN:BOOL=0
+WINDOW_FULLSCREEN:BOOL=0
 
 # Width of the game window
 WINDOW_WIDTH:INT=482
@@ -42,16 +42,13 @@ WINDOW_HEIGHT:INT=608
 WINDOW_ICON:STRING=res/Images/icon.png
 
 # FPS limit
-FPS_LIMIT:INT=60
+WINDOW_FPS_LIMIT:INT=60
 
 # Vertical synchronization (V-Sync)
-V_SYNC:BOOL=0
+WINDOW_V_SYNC:BOOL=0
 
 # Path to fonts
 FONTS_DIR:STRING=res/Fonts/
-
-# Path to image files
-IMAGES_DIR:STRING=res/Images/
 
 # Path to texture files
 TEXTURES_DIR:STRING=res/Images/

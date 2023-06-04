@@ -33,11 +33,8 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     Game::Game() :
         settingsFilename_("res/TextFiles/Settings.txt"),
-        engine_{"Super Pac-Man", settingsFilename_}
-    {}
-
-    ///////////////////////////////////////////////////////////////
-    void Game::initialize() {
+        engine_{}
+    {
         engine_.onInit([this] {
             // Make game window unresizable
             engine_.getWindow().setStyle(mighter2d::WindowStyle::Close);
@@ -62,8 +59,8 @@ namespace spm {
             engine_.getCache().addProperty({"PACMAN_SUPER_MODE_DURATION", mighter2d::seconds(Constants::SUPER_MODE_DURATION)});
 
             // If not found, player will be prompted for name in StartUpScene
-            if (engine_.getConfigs().hasPref("PLAYER_NAME"))
-                engine_.getCache().addProperty({"PLAYER_NAME",engine_.getConfigs().getPref("PLAYER_NAME").getValue<std::string>()});
+            /*if (engine_.getConfigs().hasPref("PLAYER_NAME"))
+                engine_.getCache().addProperty({"PLAYER_NAME",engine_.getConfigs().getPref("PLAYER_NAME").getValue<std::string>()});*/
 
             // Since the user can go to these scenes on demand and as many times as they like,
             // we cache them to avoid instantiating new once's every time they are needed
@@ -73,9 +70,13 @@ namespace spm {
             // The scene the game will activate when executable is run
             engine_.pushScene(std::make_unique<StartUpScene>());
         });
+    }
 
-        // Initialize the game engine
-        engine_.initialize();
+    ///////////////////////////////////////////////////////////////
+    void Game::initialize() {
+        mighter2d::EngineSettings settings;
+        settings.loadFromFile(settingsFilename_);
+        engine_.initialize(settings);
     }
 
     ///////////////////////////////////////////////////////////////

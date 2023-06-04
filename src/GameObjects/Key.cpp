@@ -36,6 +36,9 @@ namespace spm {
         getSprite().setTexture("spritesheet.png");
         getSprite().setTextureRect({290, 142, 16, 16});
         getTransform().scale(2.0f, 2.0f);
+
+        // Collision detection
+        setStatic(true);
     }
 
     ///////////////////////////////////////////////////////////////
