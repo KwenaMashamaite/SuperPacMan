@@ -135,6 +135,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::init() {
         initGameObjects();
+        initGhostChaseScatterResponse();
         initCollisionResponse();
 
         gameplayScene_.getStateObserver().onFrameEnd([this] {
@@ -220,6 +221,9 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::initCollisionResponse() {
+        initSuperModeResponse();
+        initPowerModeResponse();
+
         GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
 
         gameplayObserver.onFruitEaten([this](Fruit* fruit) {
@@ -230,25 +234,24 @@ namespace spm {
                 spawnStar();
         });
 
-        gameplayObserver.onPowerPelletEaten([this](Pellet* pellet) {
-            pellet->setActive(false);
-            numPelletsEaten_++;
 
-            if ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)
-                spawnStar();
-        });
 
-        gameplayObserver.onPowerModeBegin([this] {
-            ghosts_.forEach([](Ghost* ghost) {
-                ghost->handleEvent(GameEvent::FrightenedModeBegin);
+        gameplayObserver.onKeyEaten([this](Key* key) {
+            key->setActive(false);
+
+            //Unlock corresponding door
+            doors_.forEach([key](Door* door) {
+                door->unlock(*key);
+
+                if (!door->isLocked())
+                    door->setActive(false);
             });
         });
+    }
 
-        gameplayObserver.onPowerModeEnd([this] {
-            ghosts_.forEach([](Ghost* ghost) {
-                ghost->handleEvent(GameEvent::FrightenedModeEnd);
-            });
-        });
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initSuperModeResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
 
         gameplayObserver.onSuperPelletEaten([this](Pellet* pellet) {
             pellet->setActive(false);
@@ -273,16 +276,46 @@ namespace spm {
                 ghost->handleEvent(GameEvent::SuperModeEnd);
             });
         });
+    }
 
-        gameplayObserver.onKeyEaten([this](Key* key) {
-            key->setActive(false);
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initPowerModeResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
 
-            //Unlock corresponding door
-            doors_.forEach([key](Door* door) {
-                door->unlock(*key);
+        gameplayObserver.onPowerPelletEaten([this](Pellet* pellet) {
+            pellet->setActive(false);
+            numPelletsEaten_++;
 
-                if (!door->isLocked())
-                    door->setActive(false);
+            if ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)
+                spawnStar();
+        });
+
+        gameplayObserver.onPowerModeBegin([this] {
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::FrightenedModeBegin);
+            });
+        });
+
+        gameplayObserver.onPowerModeEnd([this] {
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::FrightenedModeEnd);
+            });
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initGhostChaseScatterResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onScatterModeBegin([this] {
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::ScatterModeBegin);
+            });
+        });
+
+        gameplayObserver.onChaseModeBegin([this] {
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::ChaseModeBegin);
             });
         });
     }

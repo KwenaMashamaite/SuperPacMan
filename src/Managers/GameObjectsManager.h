@@ -157,6 +157,21 @@ namespace spm {
         void initCollisionResponse();
 
         /**
+         * @brief Initialise the response to super being eaten
+         */
+        void initSuperModeResponse();
+
+        /**
+         * @brief Initialise the response to power being eaten
+         */
+        void initPowerModeResponse();
+
+        /**
+         * @brief Initialise the ghost scatter-chase response
+         */
+        void initGhostChaseScatterResponse();
+
+        /**
          * @brief Destroy game objects that are no longer active
          */
         void destroyInactiveObjects();
