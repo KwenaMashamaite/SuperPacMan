@@ -51,5 +51,9 @@ namespace spm {
                 ghostGridMover->startMovement();
             });
         });
+
+        scene_->getGameplayObserver().onDoorBroken([this](Door* door) {
+            pacManGridMover_->requestMove(pacManGridMover_->getTarget()->getDirection());
+        });
     }
 }

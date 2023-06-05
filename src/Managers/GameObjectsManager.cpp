@@ -234,7 +234,12 @@ namespace spm {
                 spawnStar();
         });
 
-
+        gameplayObserver.onPacmanHitDoor([this](Door* door) {
+            if (pacman_->getState() == PacMan::State::Super) {
+                door->burst();
+                gameplayScene_.getGameplayObserver().emit("door_broken", door);
+            }
+        });
 
         gameplayObserver.onKeyEaten([this](Key* key) {
             key->setActive(false);

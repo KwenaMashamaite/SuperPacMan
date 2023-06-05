@@ -89,6 +89,10 @@ namespace spm {
         gameplayObserver.onPacmanDying([this](PacMan*) {
             playPacmanDyingSfx();
         });
+
+        gameplayObserver.onDoorBroken([this](Door*) {
+            playDoorBrokenSfx();
+        });
     }
 
     ///////////////////////////////////////////////////////////////
