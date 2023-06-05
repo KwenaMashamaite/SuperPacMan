@@ -101,6 +101,36 @@ namespace spm {
         gameplayObserver.onDoorBroken([this](Door*) {
             playDoorBrokenSfx();
         });
+
+        gameplayObserver.onStarSpawn([this](Star*) {
+            playStarSpawnedSfx();
+        });
+
+        gameplayObserver.onStarAppearanceTimeout([this] {
+            stopStarSpawnedSfx();
+        });
+
+        gameplayObserver.onEatenStarFreezeBegin([this] {
+            pauseBackgroundMusic();
+        });
+
+        gameplayObserver.onEatenStarFreezeEnd([this] {
+            resumeBackgroundMusic();
+        });
+
+        gameplayObserver.onStarEatenWithFruitMatch([this](Star *, EatenStarFruitMatch fruitMatch) {
+            stopStarSpawnedSfx();
+
+            switch (fruitMatch) {
+                case EatenStarFruitMatch::NO_MATCH:
+                    playBonusFruitNotMatchSfx();
+                    break;
+                case EatenStarFruitMatch::MATCHING_BONUS_FRUIT_ONLY:
+                case EatenStarFruitMatch::MATCHING_BONUS_FRUIT_AND_LEVEL_FRUIT:
+                    playBonusFruitMatchSfx();
+                    break;
+            }
+        });
     }
 
     ///////////////////////////////////////////////////////////////

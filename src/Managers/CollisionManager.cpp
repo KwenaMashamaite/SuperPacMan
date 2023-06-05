@@ -110,6 +110,9 @@ namespace spm {
                     gameplayObserver.emit("pacman_dying", pacman);
                 }
             }
+            else if (other->getCollisionGroup() == "stars") {
+                gameplayObserver.emit("star_eaten", dynamic_cast<Star*>(other));
+            }
         });
 
         // Sensors

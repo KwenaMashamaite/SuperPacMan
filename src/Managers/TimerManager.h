@@ -70,13 +70,10 @@ namespace spm {
         void startEatenGhostFreezeTimer();
 
         /**
-         * @brief Start the ghost scatter-chase AI
-         *
-         * This function must be called once to start the ghosts AI. The
-         * initial ghost state will be scatter and it will switch back
-         * and forth between scatter mode and chase mode
+         * @brief Start the character movement freeze timer
+         * @param duration The freeze duration
          */
-        void startGhostAITimer();
+        void startEatenStarFreezeTimer(mighter2d::Time duration);
 
         /**
          * @brief Pause the scatter-chase AI transition timer
@@ -252,6 +249,7 @@ namespace spm {
         mighter2d::Timer bonusStageTimer_;    //!< Bonus stage duration counter
         mighter2d::Timer gameplayDelayTimer_; //!< Level start delay timer
         mighter2d::Timer ghostFreezeTimer_;   //!< Eaten ghost freeze duration
+        mighter2d::Timer starFreezeTimer_;    //!< Eaten ghost freeze duration
     };
 }
 

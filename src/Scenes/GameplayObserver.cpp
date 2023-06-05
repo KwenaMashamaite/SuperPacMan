@@ -73,6 +73,14 @@ namespace spm {
         return eventEmitter_.on("eaten_ghost_freeze_end", callback);
     }
 
+    int GameplayObserver::onEatenStarFreezeBegin(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("eaten_star_freeze_begin", callback);
+    }
+
+    int GameplayObserver::onEatenStarFreezeEnd(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("eaten_star_freeze_end", callback);
+    }
+
     int GameplayObserver::onGamePause(const mighter2d::Callback<> &callback) {
         return eventEmitter_.on("gameplay_pause", callback);
     }
@@ -159,6 +167,18 @@ namespace spm {
 
     int GameplayObserver::onPacmanHitDoor(const mighter2d::Callback<Door *> &callback) {
         return eventEmitter_.on("pacman_hit_door", callback);
+    }
+
+    int GameplayObserver::onStarSpawn(const mighter2d::Callback<Star *> &callback) {
+        return eventEmitter_.on("star_spawn", callback);
+    }
+
+    int GameplayObserver::onStarAppearanceTimeout(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("star_appearance_timeout", callback);
+    }
+
+    int GameplayObserver::onStarDespawn(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("star_despawn", callback);
     }
 
     int GameplayObserver::onStarEaten(const mighter2d::Callback<Star *> &callback) {

@@ -181,6 +181,23 @@ namespace spm {
          */
         void destroyInactiveObjects();
 
+        /**
+         * @brief Freeze or unfreeze the animations
+         * @param freeze True to freeze animation, otherwise false
+         *
+         * This function only freezes pacman and ghost animations. Power
+         * pellet and super pellet animations are unaffected
+         */
+        void setAnimationFreeze(bool freeze);
+
+        /**
+         * @brief Replace object sprite with a points sprite
+         * @param object The object whose sprite is to be replaced
+         *
+         * The points texture depends on the current points multiplier
+         */
+        void replaceWithPointsTexture(mighter2d::GridObject* object);
+
     private:
         GameplayScene& gameplayScene_;
         std::unique_ptr<PacMan> pacman_;

@@ -58,19 +58,27 @@ namespace spm {
 
         // Freezing
         scene_->getGameplayObserver().onEatenGhostFreezeBegin([this] {
-            pacManGridMover_->setMovementFreeze(true);
-
-            ghostGridMovers_.forEach([](GhostGridMover* ghostGridMover) {
-                ghostGridMover->setMovementFreeze(true);
-            });
+            setMovementFreeze(true);
         });
 
         scene_->getGameplayObserver().onEatenGhostFreezeEnd([this] {
-            pacManGridMover_->setMovementFreeze(false);
+            setMovementFreeze(false);
+        });
 
-            ghostGridMovers_.forEach([](GhostGridMover* ghostGridMover) {
-                ghostGridMover->setMovementFreeze(false);
-            });
+        scene_->getGameplayObserver().onEatenStarFreezeBegin([this] {
+            setMovementFreeze(true);
+        });
+
+        scene_->getGameplayObserver().onEatenStarFreezeEnd([this] {
+            setMovementFreeze(false);
+        });
+    }
+
+    void CharacterMovementManager::setMovementFreeze(bool freeze) {
+        pacManGridMover_->setMovementFreeze(freeze);
+
+        ghostGridMovers_.forEach([freeze](GhostGridMover* ghostGridMover) {
+            ghostGridMover->setMovementFreeze(freeze);
         });
     }
 }

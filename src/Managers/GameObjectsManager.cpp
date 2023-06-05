@@ -103,7 +103,7 @@ namespace spm {
 
                 if (tile.getIndex().colm == 11) {
                     leftSideStarFruit_ = std::make_unique<Fruit>(grid.getScene());
-                    leftSideStarFruit_->setTag("leftBonusFruit");
+                    leftSideStarFruit_->getSprite().setVisible(false);
 
                     auto slideAnim = leftSideStarFruit_->getSprite().getAnimator().getAnimation("slide");
                     slideAnim->setLoop(false);
@@ -112,6 +112,7 @@ namespace spm {
                     grid.addGameObject(leftSideStarFruit_.get(), tile.getIndex());
                 } else {
                     rightSideStarFruit_ = std::make_unique<Fruit>(grid.getScene());
+                    rightSideStarFruit_->getSprite().setVisible(false);
 
                     grid.addGameObject(rightSideStarFruit_.get(), tile.getIndex());
                 }
@@ -221,6 +222,11 @@ namespace spm {
                 });
             }
         });
+
+        // Star
+        gameplayObserver.onStarAppearanceTimeout([this] {
+            despawnStar();
+        });
     }
 
     ///////////////////////////////////////////////////////////////
@@ -260,43 +266,44 @@ namespace spm {
 
         gameplayObserver.onGhostEaten([this](Ghost* ghost) {
             ghost->getUserData().addProperty({"pendingEatenStateChange", ""});
-
-            // Replace ghost texture with corresponding score texture
-            static const mighter2d::SpriteSheet pointsSpriteSheet{"spritesheet.png",
-                mighter2d::Vector2u{16, 16}, mighter2d::Vector2u{1, 1}, mighter2d::UIntRect{306, 141, 69, 18}};
-
-            ghost->getSprite().setTexture(pointsSpriteSheet.getTexture());
-            int pointsMultiplier = gameplayScene_.getScoreManager().getPointsMultiplier();
-
-            if (pointsMultiplier == 1)
-                ghost->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 0})); // 100
-            else if (pointsMultiplier == 2)
-                ghost->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 1})); // 200
-            else if (pointsMultiplier == 4)
-                ghost->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 2})); // 800
-            else
-                ghost->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 3})); // 1600
-
+            replaceWithPointsTexture(ghost);
             gameplayScene_.getTimerManager().startEatenGhostFreezeTimer();
+        });
+
+        gameplayObserver.onStarEaten([this](Star* star) {
+            GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+            mighter2d::AnimationFrame* leftFruitFrame = leftSideStarFruit_->getSprite().getAnimator().getCurrentFrame();
+            mighter2d::AnimationFrame* rightFruitFrame = rightSideStarFruit_->getSprite().getAnimator().getCurrentFrame();
+
+            star->getSprite().getAnimator().stop();
+            leftSideStarFruit_->getSprite().getAnimator().pause();
+            rightSideStarFruit_->getSprite().getAnimator().pause();
+
+            if (leftFruitFrame->getIndex() == rightFruitFrame->getIndex()) {
+                star->getSprite().setTexture("spritesheet.png");
+
+                if (leftFruitFrame->getName() == utils::getFruitName(gameplayScene_.getGameLevel())) {
+                    star->getSprite().setTextureRect({441, 142, 32, 16}); // 5000
+                    gameplayObserver.emit("star_eaten_with_fruit_match", star, EatenStarFruitMatch::MATCHING_BONUS_FRUIT_AND_LEVEL_FRUIT);
+                } else {
+                    star->getSprite().setTextureRect({408, 142, 32, 16}); // 2000
+                    gameplayObserver.emit("star_eaten_with_fruit_match", star, EatenStarFruitMatch::MATCHING_BONUS_FRUIT_ONLY);
+                }
+            } else {
+                replaceWithPointsTexture(star);
+                gameplayObserver.emit("star_eaten_with_fruit_match", star, EatenStarFruitMatch::NO_MATCH);
+            }
         });
 
         // Freezing
         gameplayObserver.onEatenGhostFreezeBegin([this] {
-            pacman_->getSprite().getAnimator().setTimescale(0.0f);
+            setAnimationFreeze(true);
             pacman_->getSprite().setVisible(false);
-
-            ghosts_.forEach([](Ghost* ghost) {
-                ghost->getSprite().getAnimator().setTimescale(0.0f);
-            });
         });
 
         gameplayObserver.onEatenGhostFreezeEnd([this] {
-            pacman_->getSprite().getAnimator().setTimescale(1.0f);
+            setAnimationFreeze(false);
             pacman_->getSprite().setVisible(true);
-
-            ghosts_.forEach([](Ghost* ghost) {
-                ghost->getSprite().getAnimator().setTimescale(1.0f);
-            });
 
             // Terminate power mode early if none of the ghosts are blue
             bool isSomeGhostsBlue = false;
@@ -314,6 +321,17 @@ namespace spm {
                 gameplayScene_.getTimerManager().resumePowerModeTimeout();
             else
                 gameplayScene_.getTimerManager().forcePowerModeTimeout();
+        });
+
+        gameplayObserver.onEatenStarFreezeBegin([this] {
+            setAnimationFreeze(true);
+            pacman_->getSprite().setVisible(false);
+        });
+
+        gameplayObserver.onEatenStarFreezeEnd([this] {
+            setAnimationFreeze(false);
+            pacman_->getSprite().setVisible(true);
+            despawnStar();
         });
     }
 
@@ -483,38 +501,31 @@ namespace spm {
     void GameObjectsManager::spawnStar() {
         if (!star_) {
             star_ = std::make_unique<Star>(gameplayScene_);
+            star_->setCollisionGroup("stars");
             gameplayScene_.getGrid().addGameObject(star_.get(), mighter2d::Index{15, 13});
-
 
             auto* fruitAnim = leftSideStarFruit_->getSprite().getAnimator().getAnimation("slide").get();
             int stopFrame = mighter2d::utility::generateRandomNum(0, fruitAnim->getFrameCount() - 1);
-
-            // Freeze left start animation
-            fruitAnim->onFrameSwitch([fruitAnim, stopFrame](mighter2d::AnimationFrame *frame) {
-                if (frame->getIndex() == stopFrame)
-                    fruitAnim->setPlaybackSpeed(0.0f);
-            });
+            fruitAnim->finishOnFrame(stopFrame);
 
             leftSideStarFruit_->getSprite().getAnimator().startAnimation("slide");
             rightSideStarFruit_->getSprite().getAnimator().startAnimation("slide");
 
-            gameplayScene_.getAudioPlayer().playStarSpawnedSfx();
-            gameplayScene_.getTimerManager().startStarDespawnTimer();
+            gameplayScene_.getGameplayObserver().emit("star_spawn", star_.get());
         }
     }
 
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::despawnStar() {
         if (star_) {
-            gameplayScene_.getAudioPlayer().stopStarSpawnedSfx();
-            gameplayScene_.getTimerManager().stopStarDespawnTimer();
-
             leftSideStarFruit_->getSprite().getAnimator().stop();
             rightSideStarFruit_->getSprite().getAnimator().stop();
             leftSideStarFruit_->getSprite().setVisible(false);
             rightSideStarFruit_->getSprite().setVisible(false);
 
             star_.reset();
+
+            gameplayScene_.getGameplayObserver().emit("star_despawn");
         }
     }
 
@@ -551,6 +562,35 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     mighter2d::ObjectContainer<Sensor> &GameObjectsManager::getSensors() {
         return sensors_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::setAnimationFreeze(bool freeze) {
+        float timescale = freeze ? 0.0f : 1.0f;
+
+        pacman_->getSprite().getAnimator().setTimescale(timescale);
+
+        ghosts_.forEach([timescale](Ghost* ghost) {
+            ghost->getSprite().getAnimator().setTimescale(timescale);
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::replaceWithPointsTexture(mighter2d::GridObject *object) {
+        static const mighter2d::SpriteSheet pointsSpriteSheet{"spritesheet.png",
+            mighter2d::Vector2u{16, 16}, mighter2d::Vector2u{1, 1}, mighter2d::UIntRect{306, 141, 69, 18}};
+
+        object->getSprite().setTexture(pointsSpriteSheet.getTexture());
+        int pointsMultiplier = gameplayScene_.getScoreManager().getPointsMultiplier();
+
+        if (pointsMultiplier == 1)
+            object->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 0})); // 100
+        else if (pointsMultiplier == 2)
+            object->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 1})); // 200
+        else if (pointsMultiplier == 4)
+            object->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 2})); // 800
+        else
+            object->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 3})); // 1600
     }
 
     ///////////////////////////////////////////////////////////////

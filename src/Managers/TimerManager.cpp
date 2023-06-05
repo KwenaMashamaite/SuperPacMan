@@ -58,7 +58,8 @@ namespace spm {
         bonusStageTimer_(gameplayScene),
         starDespawnTimer_(gameplayScene),
         gameplayDelayTimer_(gameplayScene),
-        ghostFreezeTimer_(gameplayScene)
+        ghostFreezeTimer_(gameplayScene),
+        starFreezeTimer_(gameplayScene)
     {
         // Ghost AI timer indefinitely switches between chase and scatter mode counting
         ghostAITimer_.setLoop(true);
@@ -128,6 +129,33 @@ namespace spm {
         gameplayObserver.onEatenGhostFreezeEnd([this] {
             resumeSuperModeTimeout();
         });
+
+        gameplayObserver.onStarSpawn([this](Star*) {
+            startStarDespawnTimer();
+        });
+
+        gameplayObserver.onStarEatenWithFruitMatch([this](Star*, EatenStarFruitMatch fruitMatch) {
+            stopStarDespawnTimer();
+
+            if (fruitMatch == EatenStarFruitMatch::NO_MATCH)
+                startEatenStarFreezeTimer(mighter2d::seconds(1));
+            else
+                startEatenStarFreezeTimer(mighter2d::seconds(3.3));
+        });
+
+        gameplayObserver.onEatenStarFreezeBegin([this] {
+            pauseGhostAITimer();
+            pausePowerModeTimeout();
+            pauseSuperModeTimeout();
+            bonusStageTimer_.pause();
+        });
+
+        gameplayObserver.onEatenStarFreezeEnd([this] {
+            resumeGhostAITimer();
+            resumePowerModeTimeout();
+            resumeSuperModeTimeout();
+            bonusStageTimer_.resume();
+        });
     }
 
     ///////////////////////////////////////////////////////////////
@@ -174,8 +202,12 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void TimerManager::startGhostAITimer() {
-        startScatterModeTimer();
+    void TimerManager::startEatenStarFreezeTimer(mighter2d::Time duration) {
+        configureTimer(starFreezeTimer_, duration, [this] {
+            gameplayScene_.getGameplayObserver().emit("eaten_star_freeze_end");
+        });
+
+        gameplayScene_.getGameplayObserver().emit("eaten_star_freeze_begin");
     }
 
     ///////////////////////////////////////////////////////////////
@@ -276,7 +308,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startStarDespawnTimer() {
         configureTimer(starDespawnTimer_, mighter2d::seconds(Constants::STAR_ON_SCREEN_TIME), [this] {
-            gameplayScene_.getGameObjectsManager().despawnStar();
+            gameplayScene_.getGameplayObserver().emit("star_appearance_timeout");
         });
     }
 

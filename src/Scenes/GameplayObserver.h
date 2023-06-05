@@ -56,6 +56,8 @@ namespace spm {
         int onBonusStageEnd(const mighter2d::Callback<>& callback);
         int onEatenGhostFreezeBegin(const mighter2d::Callback<>& callback);
         int onEatenGhostFreezeEnd(const mighter2d::Callback<>& callback);
+        int onEatenStarFreezeBegin(const mighter2d::Callback<>& callback);
+        int onEatenStarFreezeEnd(const mighter2d::Callback<>& callback);
         int onGameplayDelayBegin(const mighter2d::Callback<>& callback);
         int onGameplayDelayEnd(const mighter2d::Callback<>& callback);
         int onGamePause(const mighter2d::Callback<>& callback);
@@ -78,6 +80,9 @@ namespace spm {
         int onPacmanDying(const mighter2d::Callback<PacMan*>& callback);
         int onPacmanDead(const mighter2d::Callback<PacMan*>& callback);
         int onPacmanHitDoor(const mighter2d::Callback<Door*>& callback);
+        int onStarSpawn(const mighter2d::Callback<Star*>& callback);
+        int onStarAppearanceTimeout(const mighter2d::Callback<>& callback);
+        int onStarDespawn(const mighter2d::Callback<>& callback);
         int onStarEaten(const mighter2d::Callback<Star*>& callback);
         int onStarEatenWithFruitMatch(const mighter2d::Callback<Star*, EatenStarFruitMatch>& callback);
         int onSlowdownSensorEnter(const mighter2d::Callback<Sensor*, mighter2d::GridObject*>& callback);
