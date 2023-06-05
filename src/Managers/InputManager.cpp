@@ -22,56 +22,31 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_SCOREMANAGER_H
-#define SUPERPACMAN_SCOREMANAGER_H
+#include "InputManager.h"
+#include "Scenes/GameplayScene.h"
 
 namespace spm {
-    class GameplayScene;
+    InputManager::InputManager(GameplayScene &gameplayScene) :
+        gameplayScene_(&gameplayScene),
+        keyboard_(gameplayScene)
+    {}
 
-    /**
-     * @brief Manages all game score related aspects (update, persistent, one up award etc)
-     */
-    class ScoreManager {
-    public:
-        /**
-         * @brief Constructor
-         * @param gameplayScene The gameplay scene
-         */
-        ScoreManager(GameplayScene& gameplayScene);
+    void InputManager::init() {
+        gameplayScene_->getGameplayObserver().onGameplayDelayBegin([this] {
+            keyboard_.setEnable(false);
+        });
 
-        /**
-         * @brief Initialize
-         */
-        void init();
+        gameplayScene_->getGameplayObserver().onGameplayDelayEnd([this] {
+            keyboard_.setEnable(true);
+        });
 
-        /**
-         * @brief Update the current score
-         * @param score The points to increase the current score by
-         */
-        void updateScore(int points);
+        keyboard_.onKeyUp([this](mighter2d::input::Keyboard::Key key) {
+            if ((key == mighter2d::input::Keyboard::Key::P || key == mighter2d::input::Keyboard::Key::Escape))
+                gameplayScene_->getGameFlowManager().pauseGameplay();
+        });
+    }
 
-        /**
-         * @brief Get the current score
-         * @return The current score
-         */
-        int getScore() const;
-
-        /**
-         * @brief Get the current high score
-         * @return The current high score
-         */
-        int getHighScore() const;
-
-    private:
-        /**
-         * @brief Update the points multiplier
-         */
-        void updatePointsMultiplier();
-
-    private:
-        GameplayScene* gameplayScene_;
-        int pointsMultiplier_;
-    };
+    mighter2d::input::Keyboard &InputManager::getKeyboard() {
+        return keyboard_;
+    }
 }
-
-#endif

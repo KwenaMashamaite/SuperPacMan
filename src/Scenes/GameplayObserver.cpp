@@ -65,7 +65,103 @@ namespace spm {
         return eventEmitter_.on("bonus_stage_end", callback);
     }
 
-    void GameplayObserver::emit(const std::string &event) {
-        eventEmitter_.emit(event);
+    int GameplayObserver::onGamePause(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("gameplay_pause", callback);
+    }
+
+    int GameplayObserver::onGameResume(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("gameplay_resume", callback);
+    }
+
+    int GameplayObserver::onGameplayDelayBegin(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("gameplay_delay_begin", callback);
+    }
+
+    int GameplayObserver::onGameplayDelayEnd(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("gameplay_delay_end", callback);
+    }
+
+    int GameplayObserver::onLevelReset(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("level_reset", callback);
+    }
+
+    int GameplayObserver::onLevelComplete(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("level_complete", callback);
+    }
+
+    int GameplayObserver::onExtraLifeAward(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("extra_life_award", callback);
+    }
+
+    int GameplayObserver::onPowerModeTick(const mighter2d::Callback<mighter2d::Time> &callback) {
+        return eventEmitter_.on("power_mode_tick", callback);
+    }
+
+    int GameplayObserver::onBonusStageTick(const mighter2d::Callback<mighter2d::Time> &callback) {
+        return eventEmitter_.on("bonus_stage_tick", callback);
+    }
+
+    int GameplayObserver::onSuperModeTick(const mighter2d::Callback<mighter2d::Time> &callback) {
+        return eventEmitter_.on("super_mode_tick", callback);
+    }
+
+    int GameplayObserver::onScoreUpdate(const mighter2d::Callback<int> &callback) {
+        return eventEmitter_.on("current_score_update", callback);
+    }
+
+    int GameplayObserver::onHighScoreUpdate(const mighter2d::Callback<int> &callback) {
+        return eventEmitter_.on("high_score_update", callback);
+    }
+
+    int GameplayObserver::onGameplayDelayTick(const mighter2d::Callback<mighter2d::Time> &callback) {
+        return eventEmitter_.on("gameplay_delay_tick", callback);
+    }
+
+    int GameplayObserver::onPowerPelletEaten(const mighter2d::Callback<Pellet *> &callback) {
+        return eventEmitter_.on("power_pellet_eaten", callback);
+    }
+
+    int GameplayObserver::onSuperPelletEaten(const mighter2d::Callback<Pellet *> &callback) {
+        return eventEmitter_.on("super_pellet_eaten", callback);
+    }
+
+    int GameplayObserver::onKeyEaten(const mighter2d::Callback<Key *> &callback) {
+        return eventEmitter_.on("key_eaten", callback);
+    }
+
+    int GameplayObserver::onFruitEaten(const mighter2d::Callback<Fruit *> &callback) {
+        return eventEmitter_.on("fruit_eaten", callback);
+    }
+
+    int GameplayObserver::onDoorBroken(const mighter2d::Callback<Door *> &callback) {
+        return eventEmitter_.on("door_broken", callback);
+    }
+
+    int GameplayObserver::onGhostEaten(const mighter2d::Callback<Ghost *> &callback) {
+        return eventEmitter_.on("ghost_eaten", callback);
+    }
+
+    int GameplayObserver::onPacmanDying(const mighter2d::Callback<PacMan *>& callback) {
+        return eventEmitter_.on("pacman_dying", callback);
+    }
+
+    int GameplayObserver::onPacmanDead(const mighter2d::Callback<PacMan *>& callback) {
+        return eventEmitter_.on("pacman_dead", callback);
+    }
+
+    int GameplayObserver::onPacmanHitDoor(const mighter2d::Callback<Door *> &callback) {
+        return eventEmitter_.on("pacman_hit_door", callback);
+    }
+
+    int GameplayObserver::onStarEaten(const mighter2d::Callback<Star *> &callback) {
+        return eventEmitter_.on("start_eaten", callback);
+    }
+
+    int GameplayObserver::onSlowdownSensorEnter(const mighter2d::Callback<Sensor*, mighter2d::GridObject *> &callback) {
+        return eventEmitter_.on("slowdown_sensor_enter", callback);
+    }
+
+    int GameplayObserver::onTeleportSensorEnter(const mighter2d::Callback<Sensor*, mighter2d::GridObject *> &callback) {
+        return eventEmitter_.on("teleport_sensor_enter", callback);
     }
 }

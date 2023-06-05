@@ -98,6 +98,11 @@ namespace spm {
          */
         mighter2d::Scene& getScene();
 
+        /**
+         * @brief Implicit conversion operator
+         */
+        operator mighter2d::Grid& ();
+
     private:
         /**
          * @brief Set the grid background

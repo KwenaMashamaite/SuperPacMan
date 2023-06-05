@@ -53,6 +53,15 @@ namespace spm {
          * @return Name of the concrete class the pellet belongs to
          */
         std::string getClassName() const override;
+
+        /**
+         * @brief Get the pellet type
+         * @return The type of the pellet
+         */
+        Type getType() const;
+
+    private:
+        Type type_;
     };
 }
 

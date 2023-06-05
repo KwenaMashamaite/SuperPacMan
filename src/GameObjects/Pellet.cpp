@@ -28,7 +28,8 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     Pellet::Pellet(mighter2d::Scene& scene, Type type) :
-        mighter2d::GridObject(scene)
+        mighter2d::GridObject(scene),
+        type_(type)
     {
         setCollisionGroup(type == Type::Power ? "powerPellets" : "superPellets");
         setTag(type == Type::Power ? "power" : "super");
@@ -50,6 +51,11 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     std::string Pellet::getClassName() const {
         return "Pellet";
+    }
+
+    ///////////////////////////////////////////////////////////////
+    Pellet::Type Pellet::getType() const {
+        return type_;
     }
 
 } // namespace spm

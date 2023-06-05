@@ -134,4 +134,9 @@ namespace spm {
         return grid_.getScene();
     }
 
+    ///////////////////////////////////////////////////////////////
+    Grid::operator mighter2d::Grid& () {
+        return grid_;
+    }
+
 } // namespace spm

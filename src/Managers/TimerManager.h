@@ -45,6 +45,15 @@ namespace spm {
         explicit TimerManager(GameplayScene& gameplayScene);
 
         /**
+         * @brief Start the level start delay timer
+         *
+         * After a level loads, the player must wait a few seconds before they
+         * can control pacman. This timer is the first to run and when it is
+         * active all other timers are inactive and vice versa
+         */
+        void startGameplayDelayTimer();
+
+        /**
          * @brief Start the ghost house probation counter
          *
          * Initially, three of the four ghosts are locked inside the ghost
@@ -236,6 +245,7 @@ namespace spm {
         mighter2d::Timer powerModeTimer_;     //!< Energizer mode duration counter
         mighter2d::Timer starDespawnTimer_;   //!< Star appearance counter
         mighter2d::Timer bonusStageTimer_;    //!< Bonus stage duration counter
+        mighter2d::Timer gameplayDelayTimer_; //!< Level start delay timer
     };
 }
 

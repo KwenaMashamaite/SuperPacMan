@@ -26,6 +26,7 @@
 #define SUPERPACMAN_AUDIOMANAGER_H
 
 #include <Mighter2d/core/audio/AudioManager.h>
+#include "Scenes/GameplayObserver.h"
 
 namespace spm {
     /**
@@ -35,8 +36,15 @@ namespace spm {
     public:
         /**
          * @brief Constructor
+         * @param scene The scene the audio manager belongs to
+         * @param gameplayObserver The gameplay observer
          */
-        AudioManager(mighter2d::Scene& scene);
+        AudioManager(mighter2d::Scene& scene, GameplayObserver& gameplayObserver);
+
+        /**
+         * @brief Initialize
+         */
+        void init();
 
         /**
          * @brief Set the audio volume
@@ -153,6 +161,7 @@ namespace spm {
         mighter2d::audio::AudioManager audioPlayer_;
         mighter2d::audio::Audio* starSpawnSfx_;
         mighter2d::audio::Audio* bgrndMusic_;
+        GameplayObserver* gameplayObserver_;
     };
 }
 

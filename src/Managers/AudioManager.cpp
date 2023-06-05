@@ -29,12 +29,55 @@ namespace spm {
     constexpr auto SoundEffect = mighter2d::audio::Type::Sfx;
 
     ///////////////////////////////////////////////////////////////
-    AudioManager::AudioManager(mighter2d::Scene& scene) :
+    AudioManager::AudioManager(mighter2d::Scene& scene, GameplayObserver& gameplayObserver) :
         audioPlayer_(scene),
         starSpawnSfx_(nullptr),
-        bgrndMusic_(nullptr)
+        bgrndMusic_(nullptr),
+        gameplayObserver_(&gameplayObserver)
     {
+    }
 
+    ///////////////////////////////////////////////////////////////
+    void AudioManager::init() {
+        gameplayObserver_->onGamePause([this] {
+            pause();
+        });
+
+        gameplayObserver_->onGameResume([this] {
+            resume();
+        });
+
+        gameplayObserver_->onExtraLifeAward([this] {
+            playOneUpSfx();
+        });
+
+        gameplayObserver_->onGameplayDelayEnd([this] {
+            playBackgroundMusic(1);
+        });
+
+        gameplayObserver_->onKeyEaten([this](Key*) {
+            playKeyEatenSfx();
+        });
+
+        gameplayObserver_->onPowerPelletEaten([this](Pellet*) {
+            playPowerPelletEatenSfx();
+        });
+
+        gameplayObserver_->onSuperPelletEaten([this](Pellet*) {
+            playSuperPelletEatenSfx();
+        });
+
+        gameplayObserver_->onFruitEaten([this](Fruit*) {
+            playFruitEatenSfx();
+        });
+
+        gameplayObserver_->onGhostEaten([this](Ghost*) {
+            playGhostEatenSfx();
+        });
+
+        gameplayObserver_->onPacmanDying([this](PacMan*) {
+            playPacmanDyingSfx();
+        });
     }
 
     ///////////////////////////////////////////////////////////////

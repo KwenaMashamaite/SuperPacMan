@@ -22,55 +22,38 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_SCOREMANAGER_H
-#define SUPERPACMAN_SCOREMANAGER_H
+#ifndef SUPERPACMAN_CHARACTERMOVEMENTMANAGER_H
+#define SUPERPACMAN_CHARACTERMOVEMENTMANAGER_H
+
+#include "Mighter2d/core/scene/Scene.h"
+#include "GameObjectsManager.h"
+#include "PathFinders/PacManGridMover.h"
+#include "PathFinders/GhostGridMover.h"
+#include "InputManager.h"
 
 namespace spm {
     class GameplayScene;
 
     /**
-     * @brief Manages all game score related aspects (update, persistent, one up award etc)
+     * @brief Manages all game object movement controllers
      */
-    class ScoreManager {
+    class CharacterMovementManager {
     public:
         /**
          * @brief Constructor
          * @param gameplayScene The gameplay scene
          */
-        ScoreManager(GameplayScene& gameplayScene);
+        CharacterMovementManager(GameplayScene& gameplayScene);
 
         /**
          * @brief Initialize
          */
-        void init();
-
-        /**
-         * @brief Update the current score
-         * @param score The points to increase the current score by
-         */
-        void updateScore(int points);
-
-        /**
-         * @brief Get the current score
-         * @return The current score
-         */
-        int getScore() const;
-
-        /**
-         * @brief Get the current high score
-         * @return The current high score
-         */
-        int getHighScore() const;
+        void init(InputManager& inputManager);
 
     private:
-        /**
-         * @brief Update the points multiplier
-         */
-        void updatePointsMultiplier();
-
-    private:
-        GameplayScene* gameplayScene_;
-        int pointsMultiplier_;
+        GameplayScene* scene_;
+        std::unique_ptr<PacManGridMover> pacManGridMover_;
+        mighter2d::ObjectContainer<GhostGridMover> ghostGridMovers_;
     };
 }
 

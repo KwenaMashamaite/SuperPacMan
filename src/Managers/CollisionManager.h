@@ -25,86 +25,44 @@
 #ifndef SUPERPACMAN_COLLISIONMANAGER_H
 #define SUPERPACMAN_COLLISIONMANAGER_H
 
-#include "Scenes/GameplayScene.h"
+#include "Mighter2d/core/object/GridObject.h"
 
 namespace spm {
+    class GameplayScene;
+
+    /**
+     * @brief Manages all collision detection and collision event dispatching
+     *
+     * This class does not resolve the collision, it detects it and raises an
+     * event so that other classes can handle the collision accordingly
+     */
     class CollisionManager {
     public:
         /**
-         * @brief Initialize the collision manager
+         * @brief Constructor
          * @param gameplayScene The gameplay scene
          */
-        void init(GameplayScene& gameplayScene);
+        CollisionManager(GameplayScene& gameplayScene);
+
+        /**
+         * @brief Initialize the collision manager
+         */
+        void init();
 
     private:
         /**
-         * @brief Defines the collision reaction for different game objects
+         * @brief Setup which objects can collide
          */
-        class CollisionResolver {
-        public:
-            /**
-             * @brief Resolve a collision between a fruit object and another game object
-             * @param fruit The fruit in collision with another game object
-             */
-            void resolveFruitCollision(mighter2d::GridObject* fruit);
+        void initCollisionFilters();
 
-            /**
-             * @brief Resolve a collision between a key object and another game object
-             * @param key The key in collision with another game object
-             */
-            void resolveKeyCollision(mighter2d::GridObject* key);
-
-            /**
-             * @brief Resolve a collision between a pellet object and another game object
-             * @param pellet The pellet in collision with another game object
-             */
-            void resolvePowerPelletCollision(mighter2d::GridObject* pellet);
-
-            /**
-             * @brief Resolve a collision between a pellet object and another game object
-             * @param pellet The pellet in collision with another game object
-             */
-            void resolveSuperPelletCollision(mighter2d::GridObject* pellet);
-
-            /**
-             * @brief Resolve a collision between pacman and another game object
-             * @param pacman Pacman
-             * @param otherGameObject The game object in collision with pacman
-             */
-            void resolvePacmanCollision(mighter2d::GridObject* pacman, mighter2d::GridObject* otherGameObject);
-
-            /**
-             * @brief Resolve a collision between a ghost and another game object
-             * @param ghost The ghost in collision with another game object
-             * @param otherGameObject The game object in collision with the ghost
-             */
-            void resolveGhostCollision(mighter2d::GridObject* ghost, mighter2d::GridObject* otherGameObject);
-
-            /**
-             * @brief Resolve a collision between pacman and another game object
-             * @param star The star in collision with another game object
-             * @param otherGameObject The game object in collision with the star
-             */
-            void resolveStarCollision(mighter2d::GridObject* star, mighter2d::GridObject* otherGameObject);
-
-            /**
-             * @brief Resolve a collision between a door and another game object
-             * @param door The door in collision with another game object
-             * @param otherGameObject The game object in collision with the door
-             */
-            void resolveDoorCollision(mighter2d::GridObject* door, mighter2d::GridObject* otherGameObject);
-
-            /**
-             * @brief Resolve a collision between a speed-slow-down sensor and its trigger
-             * @param sensor The triggered slow down sensor
-             * @param objectOnSensor The game object that triggered the sensor
-             */
-            void resolveSlowDownSensorCollision(mighter2d::GridObject* sensor, mighter2d::GridObject* objectOnSensor);
-        }; // class CollisionResolver
+        /**
+         * @brief Setup which objects raise collision events
+         */
+        void initCollisionDetection();
 
     private:
-        CollisionResolver collisionResolver_;
+        GameplayScene* gameplayScene_;
     };
 }
 
-#endif //SUPERPACMAN_COLLISIONMANAGER_H
+#endif

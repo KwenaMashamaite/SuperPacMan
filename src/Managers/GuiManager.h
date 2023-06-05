@@ -22,55 +22,36 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_SCOREMANAGER_H
-#define SUPERPACMAN_SCOREMANAGER_H
+#ifndef  SUPERPACMAN_GUIMANAGER_H
+#define  SUPERPACMAN_GUIMANAGER_H
+
+#include "Views/CommonView.h"
+#include <Mighter2d/ui/GuiContainer.h>
+#include <memory>
 
 namespace spm {
     class GameplayScene;
 
     /**
-     * @brief Manages all game score related aspects (update, persistent, one up award etc)
+     * @brief Handles the gameplay gui
      */
-    class ScoreManager {
+    class GuiManager {
     public:
         /**
          * @brief Constructor
          * @param gameplayScene The gameplay scene
          */
-        ScoreManager(GameplayScene& gameplayScene);
+        GuiManager(GameplayScene& gameplayScene);
 
         /**
-         * @brief Initialize
+         * @brief Initialize the scene
          */
         void init();
 
-        /**
-         * @brief Update the current score
-         * @param score The points to increase the current score by
-         */
-        void updateScore(int points);
-
-        /**
-         * @brief Get the current score
-         * @return The current score
-         */
-        int getScore() const;
-
-        /**
-         * @brief Get the current high score
-         * @return The current high score
-         */
-        int getHighScore() const;
-
-    private:
-        /**
-         * @brief Update the points multiplier
-         */
-        void updatePointsMultiplier();
-
     private:
         GameplayScene* gameplayScene_;
-        int pointsMultiplier_;
+        mighter2d::ui::GuiContainer gui_;
+        std::unique_ptr<CommonView> view_;
     };
 }
 

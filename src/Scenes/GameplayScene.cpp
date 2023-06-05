@@ -41,22 +41,34 @@
 namespace spm {
     ///////////////////////////////////////////////////////////////
     GameplayScene::GameplayScene() :
-        gui_(*this),
         grid_{*this},
         gameObjectsManager_(*this),
-        audioManager_(*this),
-        timerManager_(*this)
+        gameFlowManager_{*this},
+        inputManager_{*this},
+        gameObjectMovementManager_(*this),
+        audioManager_(*this, gameplayObserver_),
+        timerManager_(*this),
+        guiManager_(*this),
+        collisionManager_(*this),
+        scoreManager_(*this)
     {
 
     }
 
     ///////////////////////////////////////////////////////////////
     void GameplayScene::onStart() {
-        initGui();
-
         grid_.create(getGameLevel());
         gameObjectsManager_.createObjects(grid_);
         gameObjectsManager_.initGameObjects();
+        gameFlowManager_.init();
+        inputManager_.init();
+        gameObjectMovementManager_.init(inputManager_);
+        audioManager_.init();
+        guiManager_.init();
+        collisionManager_.init();
+        scoreManager_.init();
+
+        timerManager_.startGameplayDelayTimer();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -70,8 +82,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    mighter2d::ui::GuiContainer &GameplayScene::getGui() {
-        return gui_;
+    GuiManager &GameplayScene::getGuiManager() {
+        return guiManager_;
     }
 
     ///////////////////////////////////////////////////////////////
@@ -95,16 +107,18 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    GameplayObserver &GameplayScene::getGameplayObserver() {
-        return gameplayObserver_;
+    InputManager &GameplayScene::getInputManager() {
+        return inputManager_;
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameplayScene::initGui() {
-        view_ = std::make_unique<CommonView>(gui_);
-        view_->init(getGameLevel(), getCache().getValue<int>("PLAYER_LIVES"));
-        view_->setHighScore(getCache().getValue<int>("HIGH_SCORE"));
-        view_->setScore(getCache().getValue<int>("CURRENT_SCORE"));
+    GameFlowManager &GameplayScene::getGameFlowManager() {
+        return gameFlowManager_;
+    }
+
+    ///////////////////////////////////////////////////////////////
+    GameplayObserver &GameplayScene::getGameplayObserver() {
+        return gameplayObserver_;
     }
 
     ///////////////////////////////////////////////////////////////

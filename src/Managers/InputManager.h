@@ -22,55 +22,24 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_SCOREMANAGER_H
-#define SUPERPACMAN_SCOREMANAGER_H
+#ifndef SUPERPACMAN_INPUTMANAGER_H
+#define SUPERPACMAN_INPUTMANAGER_H
+
+#include <Mighter2d/core/input/Keyboard.h>
 
 namespace spm {
     class GameplayScene;
 
-    /**
-     * @brief Manages all game score related aspects (update, persistent, one up award etc)
-     */
-    class ScoreManager {
+    class InputManager {
     public:
-        /**
-         * @brief Constructor
-         * @param gameplayScene The gameplay scene
-         */
-        ScoreManager(GameplayScene& gameplayScene);
-
-        /**
-         * @brief Initialize
-         */
+        InputManager(GameplayScene& gameplayScene);
         void init();
 
-        /**
-         * @brief Update the current score
-         * @param score The points to increase the current score by
-         */
-        void updateScore(int points);
-
-        /**
-         * @brief Get the current score
-         * @return The current score
-         */
-        int getScore() const;
-
-        /**
-         * @brief Get the current high score
-         * @return The current high score
-         */
-        int getHighScore() const;
-
-    private:
-        /**
-         * @brief Update the points multiplier
-         */
-        void updatePointsMultiplier();
+        mighter2d::input::Keyboard& getKeyboard();
 
     private:
         GameplayScene* gameplayScene_;
-        int pointsMultiplier_;
+        mighter2d::input::Keyboard keyboard_;
     };
 }
 

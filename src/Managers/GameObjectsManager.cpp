@@ -28,6 +28,7 @@
 #include "utils/Utils.h"
 #include "common/Constants.h"
 #include "Animations/FruitAnimation.h"
+#include "AI/ghost/ScatterState.h"
 #include <random>
 #include <algorithm>
 #include <Mighter2d/utility/Utils.h>
@@ -67,9 +68,9 @@ namespace spm {
                 auto sensor = std::make_unique<Sensor>(grid.getScene());
 
                 if (tile.getId() == 'T')
-                    sensor->setTag("teleportationSensor");
+                    sensor->setTag("teleportSensor");
                 if (tile.getId() == 'H' || tile.getId() == '+') {
-                    sensor->setTag("slowDownSensor" + std::to_string(++slowDownSensorCount));
+                    sensor->setTag("slowdownSensor" + std::to_string(++slowDownSensorCount));
 
                     if (tile.getId() == '+') { // Sensor + Door,
                         doors_.addObject(createDoor(tile, grid.getScene()));
@@ -168,6 +169,59 @@ namespace spm {
                 gameplayScene_.getGrid().changeObjectTile(key, keyIndexes[index++]);
             });
         }
+
+        // Animation flashing
+        static const auto FLASH_ANIM_CUTOFF_TIME = mighter2d::seconds(2);
+
+        gameplayScene_.getGameplayObserver().onPowerModeTick([this](mighter2d::Time remainingDuration) {
+            ghosts_.forEach([this, &remainingDuration](Ghost* ghost) {
+                if (remainingDuration <= FLASH_ANIM_CUTOFF_TIME)
+                    ghost->setFlash(true);
+                else if (remainingDuration > FLASH_ANIM_CUTOFF_TIME)
+                    ghost->setFlash(false);
+            });
+        });
+
+        gameplayScene_.getGameplayObserver().onSuperModeTick([this](mighter2d::Time remainingDuration) {
+            if (remainingDuration <= FLASH_ANIM_CUTOFF_TIME)
+                pacman_->setFlashEnable(true);
+            else if (remainingDuration > FLASH_ANIM_CUTOFF_TIME)
+                pacman_->setFlashEnable(false);
+        });
+
+        // Gameplay delay
+        gameplayScene_.getGameplayObserver().onGameplayDelayBegin([this] {
+            pacman_->getSprite().setVisible(false);
+        });
+
+        gameplayScene_.getGameplayObserver().onGameplayDelayEnd([this] {
+            pacman_->getSprite().setVisible(true);
+
+            if (gameplayScene_.isBonusStage()) {
+                pacman_->setState(PacMan::State::Super);
+            } else {
+                ghosts_.forEach([](Ghost* ghost) {
+                    ghost->clearState();
+                    ghost->setState(std::make_unique<ScatterState>());
+                });
+            }
+        });
+
+        //Others
+        gameplayScene_.getGameplayObserver().onFruitEaten([this](Fruit*) {
+            if (!star_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS))
+                spawnStar();
+        });
+
+        gameplayScene_.getGameplayObserver().onPowerPelletEaten([this](Pellet*) {
+            if (!star_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS))
+                spawnStar();
+        });
+
+        gameplayScene_.getGameplayObserver().onSuperPelletEaten([this](Pellet*) {
+            if (!star_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS))
+                spawnStar();
+        });
     }
 
     ///////////////////////////////////////////////////////////////
@@ -282,6 +336,11 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    mighter2d::ObjectContainer<Sensor> &GameObjectsManager::getSensors() {
+        return sensors_;
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameObjectsManager::destroyInactiveObjects() {
         keys_.removeIf([](const Key* key) {
             return !key->isActive();
@@ -310,5 +369,8 @@ namespace spm {
 
             return false;
         });
+
+        if (pellets_.getCount() == 0 && fruits_.getCount() == 0)
+            gameplayScene_.getGameplayObserver().emit("level_complete");
     }
 }

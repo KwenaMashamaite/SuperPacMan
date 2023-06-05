@@ -22,22 +22,22 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_SCOREMANAGER_H
-#define SUPERPACMAN_SCOREMANAGER_H
+#ifndef SUPERPACMAN_GAMEFLOWMANAGER_H
+#define SUPERPACMAN_GAMEFLOWMANAGER_H
 
 namespace spm {
     class GameplayScene;
 
     /**
-     * @brief Manages all game score related aspects (update, persistent, one up award etc)
+     * @brief Manages the flow of the gameplay
      */
-    class ScoreManager {
+    class GameFlowManager {
     public:
         /**
          * @brief Constructor
          * @param gameplayScene The gameplay scene
          */
-        ScoreManager(GameplayScene& gameplayScene);
+        GameFlowManager(GameplayScene& gameplayScene);
 
         /**
          * @brief Initialize
@@ -45,32 +45,15 @@ namespace spm {
         void init();
 
         /**
-         * @brief Update the current score
-         * @param score The points to increase the current score by
+         * @brief Pause the gameplay
+         *
+         * This function will transition to pause menu
          */
-        void updateScore(int points);
-
-        /**
-         * @brief Get the current score
-         * @return The current score
-         */
-        int getScore() const;
-
-        /**
-         * @brief Get the current high score
-         * @return The current high score
-         */
-        int getHighScore() const;
-
-    private:
-        /**
-         * @brief Update the points multiplier
-         */
-        void updatePointsMultiplier();
+        void pauseGameplay();
 
     private:
         GameplayScene* gameplayScene_;
-        int pointsMultiplier_;
+        int onWindowCloseId_;
     };
 }
 

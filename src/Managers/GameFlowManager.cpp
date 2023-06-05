@@ -22,56 +22,44 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_SCOREMANAGER_H
-#define SUPERPACMAN_SCOREMANAGER_H
+#include "GameFlowManager.h"
+#include "Scenes/GameplayScene.h"
+#include <Mighter2d/core/engine/Engine.h>
+#include <Mighter2d/graphics/Window.h>
 
 namespace spm {
-    class GameplayScene;
+    GameFlowManager::GameFlowManager(GameplayScene &gameplayScene) :
+        gameplayScene_(&gameplayScene),
+        onWindowCloseId_{-1}
+    {
 
-    /**
-     * @brief Manages all game score related aspects (update, persistent, one up award etc)
-     */
-    class ScoreManager {
-    public:
-        /**
-         * @brief Constructor
-         * @param gameplayScene The gameplay scene
-         */
-        ScoreManager(GameplayScene& gameplayScene);
+    }
 
-        /**
-         * @brief Initialize
-         */
-        void init();
+    void GameFlowManager::init() {
+        onWindowCloseId_ = gameplayScene_->getWindow().onClose([this] {
+            pauseGameplay();
+        });
 
-        /**
-         * @brief Update the current score
-         * @param score The points to increase the current score by
-         */
-        void updateScore(int points);
+        // Disable pause menu pop up during gameplay delay countdown
+        gameplayScene_->getGameplayObserver().onGameplayDelayBegin([this] {
+            gameplayScene_->getWindow().suspendEventListener(onWindowCloseId_, true);
+        });
 
-        /**
-         * @brief Get the current score
-         * @return The current score
-         */
-        int getScore() const;
+        gameplayScene_->getGameplayObserver().onGameplayDelayEnd([this] {
+            gameplayScene_->getWindow().suspendEventListener(onWindowCloseId_, false);
+        });
 
-        /**
-         * @brief Get the current high score
-         * @return The current high score
-         */
-        int getHighScore() const;
+        gameplayScene_->getStateObserver().onPause([this] {
+            gameplayScene_->getGameplayObserver().emit("gameplay_pause");
+        });
 
-    private:
-        /**
-         * @brief Update the points multiplier
-         */
-        void updatePointsMultiplier();
+        gameplayScene_->getStateObserver().onResume([this] {
+            gameplayScene_->getGameplayObserver().emit("gameplay_resume");
+        });
+    }
 
-    private:
-        GameplayScene* gameplayScene_;
-        int pointsMultiplier_;
-    };
+    void GameFlowManager::pauseGameplay() {
+        gameplayScene_->setVisibleOnPause(true);
+        gameplayScene_->getEngine().pushCachedScene("PauseMenuScene");
+    }
 }
-
-#endif

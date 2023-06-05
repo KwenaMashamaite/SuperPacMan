@@ -32,6 +32,7 @@ set(SRC_FILES
         Scenes/GameplayScene.cpp
         Scenes/PauseMenuScene.cpp
         Scenes/GameOverScene.cpp
+        Scenes/GameplayObserver.cpp
         Scoreboard/Score.cpp
         Scoreboard/Scoreboard.cpp
         Views/CommonView.cpp
@@ -43,7 +44,13 @@ set(SRC_FILES
         Views/GameOverSceneView.cpp
         Managers/AudioManager.cpp
         Managers/TimerManager.cpp
-        Managers/GameObjectsManager.cpp Scenes/GameplayObserver.cpp Scenes/GameplayObserver.h)
+        Managers/GameObjectsManager.cpp
+        Managers/CharacterMovementManager.cpp
+        Managers/GameFlowManager.cpp
+        Managers/ScoreManager.cpp
+        Managers/CollisionManager.cpp
+        Managers/InputManager.cpp
+        Managers/GuiManager.cpp)
 
 # Resource script files
 set(RES_FILES

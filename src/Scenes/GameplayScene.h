@@ -27,11 +27,16 @@
 
 #include <Mighter2d/core/scene/Scene.h>
 #include "Grid.h"
-#include "Views/CommonView.h"
 #include "Managers/GameObjectsManager.h"
 #include "Managers/AudioManager.h"
 #include "GameplayObserver.h"
 #include "Managers/TimerManager.h"
+#include "Managers/CharacterMovementManager.h"
+#include "Managers/InputManager.h"
+#include "Managers/GameFlowManager.h"
+#include "Managers/GuiManager.h"
+#include "Managers/CollisionManager.h"
+#include "Managers/ScoreManager.h"
 
 namespace spm {
     /**
@@ -68,7 +73,7 @@ namespace spm {
          * @brief Get the gameplay scene gui
          * @return The gameplay scene gui
          */
-        mighter2d::ui::GuiContainer& getGui();
+        GuiManager& getGuiManager();
 
         /**
          * @brief Get the gameplay grid
@@ -95,6 +100,18 @@ namespace spm {
         TimerManager& getTimerManager();
 
         /**
+         * @brief Get the games input manager
+         * @return The input manager
+         */
+        InputManager& getInputManager();
+
+        /**
+         * @brief Get the game flow manager
+         * @return The game flow manager
+         */
+        GameFlowManager& getGameFlowManager();
+
+        /**
          * @brief Get the gameplay observer
          * @return The gameplay observer
          */
@@ -106,19 +123,17 @@ namespace spm {
         ~GameplayScene() override;
 
     private:
-        /**
-         * @brief Initialize the gui
-         */
-        void initGui();
-
-    private:
-        mighter2d::ui::GuiContainer gui_;
-        std::unique_ptr<CommonView> view_;
+        GameplayObserver gameplayObserver_;
         Grid grid_;
         GameObjectsManager gameObjectsManager_;
-        GameplayObserver gameplayObserver_;
+        InputManager inputManager_;
+        GameFlowManager gameFlowManager_;
+        CharacterMovementManager gameObjectMovementManager_;
         AudioManager audioManager_;
         TimerManager timerManager_;
+        GuiManager guiManager_;
+        CollisionManager collisionManager_;
+        ScoreManager scoreManager_;
     };
 }
 

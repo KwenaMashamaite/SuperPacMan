@@ -57,31 +57,46 @@ namespace spm {
         superModeTimer_(gameplayScene),
         powerModeTimer_(gameplayScene),
         bonusStageTimer_(gameplayScene),
-        starDespawnTimer_(gameplayScene)
+        starDespawnTimer_(gameplayScene),
+        gameplayDelayTimer_(gameplayScene)
     {
         // Ghost AI timer indefinitely switches between chase and scatter mode counting
         ghostAITimer_.setLoop(true);
 
-        // Flash duration
-        static const auto FLASH_ANIM_CUTOFF_TIME = mighter2d::seconds(2);
+        // Ticks
+        bonusStageTimer_.onUpdate([this](mighter2d::Timer&) {
+            gameplayScene_.getGameplayObserver().emit("bonus_stage_tick", bonusStageTimer_.getRemainingDuration());
+        });
 
-        // Automatically startFlash pacman
+        gameplayDelayTimer_.onUpdate([this](mighter2d::Timer&) {
+            gameplayScene_.getGameplayObserver().emit("gameplay_delay_tick", gameplayDelayTimer_.getRemainingDuration());
+        });
+
         superModeTimer_.onUpdate([this](mighter2d::Timer& superModeTimer) {
-            if (superModeTimer.getRemainingDuration() <= FLASH_ANIM_CUTOFF_TIME)
-                gameplayScene_.getGameObjectsManager().getPacMan()->setFlashEnable(true);
-            else if (superModeTimer.getRemainingDuration() > FLASH_ANIM_CUTOFF_TIME)
-                gameplayScene_.getGameObjectsManager().getPacMan()->setFlashEnable(false);
+            gameplayScene_.getGameplayObserver().emit("super_mode_tick", superModeTimer.getRemainingDuration());
         });
 
-        // Automatically startFlash ghosts
-        powerModeTimer_.onUpdate([this](mighter2d::Timer&) {
-            gameplayScene_.getGameObjectsManager().getGhosts().forEach([this](Ghost* ghost) {
-                if (powerModeTimer_.getRemainingDuration() <= FLASH_ANIM_CUTOFF_TIME)
-                    ghost->setFlash(true);
-                else if (powerModeTimer_.getRemainingDuration() > FLASH_ANIM_CUTOFF_TIME)
-                    ghost->setFlash(false);
-            });
+        powerModeTimer_.onUpdate([this](mighter2d::Timer& powerModeTimer) {
+            gameplayScene_.getGameplayObserver().emit("power_mode_tick", powerModeTimer.getRemainingDuration());
         });
+
+        // Other
+        gameplayScene_.getGameplayObserver().onGameplayDelayEnd([this] {
+            if (!gameplayScene_.isBonusStage()) {
+                startGhostHouseArrestTimer();
+                startScatterModeTimer();
+            }
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void TimerManager::startGameplayDelayTimer() {
+        configureTimer(gameplayDelayTimer_, mighter2d::seconds(Constants::LEVEL_START_DELAY), [this] {
+            gameplayScene_.getGameplayObserver().emit("gameplay_delay_end");
+        });
+
+        gameplayDelayTimer_.start();
+        gameplayScene_.getGameplayObserver().emit("gameplay_delay_begin");
     }
 
     ///////////////////////////////////////////////////////////////

@@ -22,56 +22,34 @@
 // SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SUPERPACMAN_SCOREMANAGER_H
-#define SUPERPACMAN_SCOREMANAGER_H
+#include "CharacterMovementManager.h"
+#include "Scenes/GameplayScene.h"
 
 namespace spm {
-    class GameplayScene;
+    CharacterMovementManager::CharacterMovementManager(GameplayScene& gameplayScene) :
+        scene_(&gameplayScene)
+    {
 
-    /**
-     * @brief Manages all game score related aspects (update, persistent, one up award etc)
-     */
-    class ScoreManager {
-    public:
-        /**
-         * @brief Constructor
-         * @param gameplayScene The gameplay scene
-         */
-        ScoreManager(GameplayScene& gameplayScene);
+    }
 
-        /**
-         * @brief Initialize
-         */
-        void init();
+    void CharacterMovementManager::init(InputManager& inputManager) {
+        pacManGridMover_ = std::make_unique<PacManGridMover>(scene_->getGrid(), scene_->getGameObjectsManager().getPacMan());
+        pacManGridMover_->setKeyboard(inputManager.getKeyboard());
+        pacManGridMover_->init();
 
-        /**
-         * @brief Update the current score
-         * @param score The points to increase the current score by
-         */
-        void updateScore(int points);
+        if (!scene_->isBonusStage()) {
+            scene_->getGameObjectsManager().getGhosts().forEach([this](Ghost *ghost) {
+                ghostGridMovers_.addObject(std::make_unique<GhostGridMover>(scene_->getGrid(), ghost));
+            });
+        }
 
-        /**
-         * @brief Get the current score
-         * @return The current score
-         */
-        int getScore() const;
+        // Start movement
+        scene_->getGameplayObserver().onGameplayDelayEnd([this] {
+            pacManGridMover_->requestMove(mighter2d::Left);
 
-        /**
-         * @brief Get the current high score
-         * @return The current high score
-         */
-        int getHighScore() const;
-
-    private:
-        /**
-         * @brief Update the points multiplier
-         */
-        void updatePointsMultiplier();
-
-    private:
-        GameplayScene* gameplayScene_;
-        int pointsMultiplier_;
-    };
+            ghostGridMovers_.forEach([](GhostGridMover* ghostGridMover) {
+                ghostGridMover->startMovement();
+            });
+        });
+    }
 }
-
-#endif

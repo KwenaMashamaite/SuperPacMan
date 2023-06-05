@@ -140,6 +140,12 @@ namespace spm {
         mighter2d::ObjectContainer<Door>& getDoors();
 
         /**
+         * @brief Get sensors
+         * @return sensors
+         */
+        mighter2d::ObjectContainer<Sensor>& getSensors();
+
+        /**
          * @brief Destroy game objects that are no longer active
          */
         void destroyInactiveObjects();
