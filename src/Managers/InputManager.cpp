@@ -44,6 +44,10 @@ namespace spm {
             if ((key == mighter2d::input::Keyboard::Key::P || key == mighter2d::input::Keyboard::Key::Escape))
                 gameplayScene_->getGameFlowManager().pauseGameplay();
         });
+
+        gameplayScene_->getGameplayObserver().onPacmanDeathBegin([this](PacMan*) {
+            keyboard_.setEnable(false);
+        });
     }
 
     mighter2d::input::Keyboard &InputManager::getKeyboard() {

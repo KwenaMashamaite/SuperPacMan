@@ -33,15 +33,11 @@ namespace spm {
     }
 
     void CharacterMovementManager::init(InputManager& inputManager) {
-        pacManGridMover_ = std::make_unique<PacManGridMover>(scene_->getGrid(), scene_->getGameObjectsManager().getPacMan());
-        pacManGridMover_->setKeyboard(inputManager.getKeyboard());
-        pacManGridMover_->init();
+        createMovers(inputManager);
 
-        if (!scene_->isBonusStage()) {
-            scene_->getGameObjectsManager().getGhosts().forEach([this](Ghost *ghost) {
-                ghostGridMovers_.addObject(std::make_unique<GhostGridMover>(scene_->getGrid(), ghost));
-            });
-        }
+        scene_->getGameplayObserver().onLevelReset([inputMan = &inputManager, this] {
+            createMovers(*inputMan);
+        });
 
         // Start movement
         scene_->getGameplayObserver().onGameplayDelayEnd([this] {
@@ -51,5 +47,53 @@ namespace spm {
                 ghostGridMover->startMovement();
             });
         });
+
+        scene_->getGameplayObserver().onDoorBroken([this](Door* door) {
+            pacManGridMover_->requestMove(pacManGridMover_->getTarget()->getDirection());
+        });
+
+        // Freezing
+        scene_->getGameplayObserver().onEatenGhostFreezeBegin([this] {
+            setMovementFreeze(true);
+        });
+
+        scene_->getGameplayObserver().onEatenGhostFreezeEnd([this] {
+            setMovementFreeze(false);
+        });
+
+        scene_->getGameplayObserver().onEatenStarFreezeBegin([this] {
+            setMovementFreeze(true);
+        });
+
+        scene_->getGameplayObserver().onEatenStarFreezeEnd([this] {
+            setMovementFreeze(false);
+        });
+
+        scene_->getGameplayObserver().onPacmanDeathBegin([this](PacMan*) {
+            setMovementFreeze(true);
+        });
+    }
+
+    void CharacterMovementManager::setMovementFreeze(bool freeze) {
+        pacManGridMover_->setMovementFreeze(freeze);
+
+        ghostGridMovers_.forEach([freeze](GhostGridMover* ghostGridMover) {
+            ghostGridMover->setMovementFreeze(freeze);
+        });
+    }
+
+    void CharacterMovementManager::createMovers(InputManager(& inputManager)) {
+        pacManGridMover_.reset();
+        ghostGridMovers_.removeAll();
+
+        pacManGridMover_ = std::make_unique<PacManGridMover>(scene_->getGrid(), scene_->getGameObjectsManager().getPacMan());
+        pacManGridMover_->setKeyboard(inputManager.getKeyboard());
+        pacManGridMover_->init();
+
+        if (!scene_->isBonusStage()) {
+            scene_->getGameObjectsManager().getGhosts().forEach([this](Ghost *ghost) {
+                ghostGridMovers_.addObject(std::make_unique<GhostGridMover>(scene_->getGrid(), ghost));
+            });
+        }
     }
 }

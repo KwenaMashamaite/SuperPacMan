@@ -103,9 +103,8 @@ namespace spm {
         /**
          * @brief Handle a game event
          * @param event The event to be handled
-         * @param args Arguments associated with the event
          */
-        virtual void handleEvent(GameEvent event, const mighter2d::PropertyContainer& args);
+        void handleEvent(GameEvent event);
 
         /**
          * @brief Change pacmans current animation

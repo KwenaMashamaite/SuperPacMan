@@ -31,10 +31,7 @@ namespace spm {
     class GameplayScene;
 
     /**
-     * @brief Manages all collision detection and collision event dispatching
-     *
-     * This class does not resolve the collision, it detects it and raises an
-     * event so that other classes can handle the collision accordingly
+     * @brief Manages collision detection, resolution and collision event dispatching
      */
     class CollisionManager {
     public:
@@ -45,7 +42,7 @@ namespace spm {
         CollisionManager(GameplayScene& gameplayScene);
 
         /**
-         * @brief Initialize the collision manager
+         * @brief Initialize
          */
         void init();
 
@@ -59,6 +56,54 @@ namespace spm {
          * @brief Setup which objects raise collision events
          */
         void initCollisionDetection();
+
+        /**
+         * @brief Setup reaction to object collision
+         */
+        void initCollisionResponses();
+
+        /**
+         * @brief Setup collision response with PacMan
+         */
+        void initPacmanResponse();
+
+        /**
+         * @brief Setup collision response with a Sensor
+         */
+        void initSensorResponse();
+
+        /**
+         * @brief Setup collision response with a Pellet
+         */
+        void initPelletResponse();
+
+        /**
+         * @brief Setup collision response with a Fruit
+         */
+        void initFruitResponse();
+
+        /**
+         * @brief Setup collision response with a Key
+         */
+        void initKeyResponse();
+
+        /**
+         * @brief Setup collision response with a Star
+         */
+        void initStarResponse();
+
+        /**
+         * @brief Setup collision response with a Ghost
+         */
+        void initGhostResponse();
+
+        /**
+         * @brief Replace object sprite with a points sprite
+         * @param object The object whose sprite is to be replaced
+         *
+         * The points texture depends on the current points multiplier
+         */
+        void replaceWithPointsTexture(mighter2d::GridObject* object);
 
     private:
         GameplayScene* gameplayScene_;

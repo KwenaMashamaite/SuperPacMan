@@ -24,13 +24,16 @@
 
 #include "GameFlowManager.h"
 #include "Scenes/GameplayScene.h"
+#include "Scenes/LevelStartScene.h"
+#include "Scenes/GameOverScene.h"
 #include <Mighter2d/core/engine/Engine.h>
 #include <Mighter2d/graphics/Window.h>
 
 namespace spm {
     GameFlowManager::GameFlowManager(GameplayScene &gameplayScene) :
         gameplayScene_(&gameplayScene),
-        onWindowCloseId_{-1}
+        onWindowCloseId_{-1},
+        gameplayPausedByPlayer_{false}
     {
 
     }
@@ -40,13 +43,22 @@ namespace spm {
             pauseGameplay();
         });
 
-        // Disable pause menu pop up during gameplay delay countdown
-        gameplayScene_->getGameplayObserver().onGameplayDelayBegin([this] {
+        GameplayObserver& gameplayObserver = gameplayScene_->getGameplayObserver();
+
+        gameplayObserver.onGameplayDelayBegin([this] {
             gameplayScene_->getWindow().suspendEventListener(onWindowCloseId_, true);
         });
 
-        gameplayScene_->getGameplayObserver().onGameplayDelayEnd([this] {
+        gameplayObserver.onGameplayDelayEnd([this] {
             gameplayScene_->getWindow().suspendEventListener(onWindowCloseId_, false);
+        });
+
+        gameplayObserver.onPacmanDied([this](PacMan* pacMan) {
+            if (pacMan->getLivesCount() > 0)
+                gameplayScene_->getEngine().pushScene(std::make_unique<LevelStartScene>());
+            else {
+                gameplayScene_->getEngine().pushScene(std::make_unique<GameOverScene>());
+            }
         });
 
         gameplayScene_->getStateObserver().onPause([this] {
@@ -54,11 +66,20 @@ namespace spm {
         });
 
         gameplayScene_->getStateObserver().onResume([this] {
+            // If the player dies, the gameplay temporarily pauses by showing the level start scene.
+            // In other words, if the gameplay was not explicitly paused by the player, it implies pacman died
+            if (!gameplayPausedByPlayer_) {
+                gameplayScene_->getGameplayObserver().emit("level_reset");
+            }
+
+            gameplayPausedByPlayer_ = false;
+
             gameplayScene_->getGameplayObserver().emit("gameplay_resume");
         });
     }
 
     void GameFlowManager::pauseGameplay() {
+        gameplayPausedByPlayer_ = true;
         gameplayScene_->setVisibleOnPause(true);
         gameplayScene_->getEngine().pushCachedScene("PauseMenuScene");
     }

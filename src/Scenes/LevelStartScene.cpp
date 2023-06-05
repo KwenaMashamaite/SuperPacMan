@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "LevelStartScene.h"
-#include "GameplayScene.h"
 #include <Mighter2d/ui/widgets/Label.h>
 #include <Mighter2d/core/engine/Engine.h>
 
@@ -58,15 +57,12 @@ namespace spm {
         }
 
         timer_.setInterval(sceneDuration);
-        timer_.onTimeout([this] { getEngine().popScene(); });
+
+        timer_.onTimeout([this] {
+            getEngine().popScene();
+        });
+
         timer_.start();
-    }
-
-    void LevelStartScene::onDestroy() {
-        auto& engine = getEngine();
-
-        if (!engine.pushCachedScene("GameplayScene"))
-            engine.pushScene(std::make_unique<GameplayScene>());
     }
 
 } // namespace spm

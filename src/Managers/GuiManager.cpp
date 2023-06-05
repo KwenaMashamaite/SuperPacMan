@@ -77,5 +77,13 @@ namespace spm {
         gameplayScene_->getGameplayObserver().onGameplayDelayEnd([this] {
             gui_.getWidget<mighter2d::ui::Label>("lblReady")->setVisible(false);
         });
+
+        gameplayObserver.onExtraLifeAward([this] {
+            view_->addLife();
+        });
+
+        gameplayObserver.onPacmanDeathBegin([this](PacMan*) {
+            view_->removeLife();
+        });
     }
 }

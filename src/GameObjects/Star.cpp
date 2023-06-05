@@ -32,11 +32,12 @@ namespace spm {
         setTag("star");
 
         mighter2d::SpriteSheet spriteSheet{"spritesheet.png", mighter2d::Vector2u{16, 16}, {1, 1}, {289, 209, 35, 18}};
-        getSprite() = spriteSheet.getSprite(getScene(), mighter2d::Index{0, 0});
+        getSprite().setTexture(spriteSheet.getTexture());
 
         mighter2d::Animation::Ptr blinkAnim = mighter2d::Animation::create("blink", spriteSheet, mighter2d::seconds(0.27));
         blinkAnim->addFrames(mighter2d::Index{0, 0}, 2);
         blinkAnim->setLoop(true);
+        getSprite().setTexture(blinkAnim->getSpriteSheet().getTexture());
         getSprite().getAnimator().addAnimation(std::move(blinkAnim));
 
         getSprite().scale(2.0f, 2.0f);

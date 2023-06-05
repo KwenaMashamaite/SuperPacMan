@@ -24,7 +24,6 @@
 
 #include "TimerManager.h"
 #include "common/Constants.h"
-#include "GameObjects/Ghost.h"
 #include "Scenes/GameplayScene.h"
 #include <Mighter2d/ui/widgets/Label.h>
 #include <Mighter2d/graphics/Window.h>
@@ -58,7 +57,10 @@ namespace spm {
         powerModeTimer_(gameplayScene),
         bonusStageTimer_(gameplayScene),
         starDespawnTimer_(gameplayScene),
-        gameplayDelayTimer_(gameplayScene)
+        gameplayDelayTimer_(gameplayScene),
+        ghostFreezeTimer_(gameplayScene),
+        starFreezeTimer_(gameplayScene),
+        generalTimers_(gameplayScene)
     {
         // Ghost AI timer indefinitely switches between chase and scatter mode counting
         ghostAITimer_.setLoop(true);
@@ -80,12 +82,90 @@ namespace spm {
             gameplayScene_.getGameplayObserver().emit("power_mode_tick", powerModeTimer.getRemainingDuration());
         });
 
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
         // Other
         gameplayScene_.getGameplayObserver().onGameplayDelayEnd([this] {
             if (!gameplayScene_.isBonusStage()) {
                 startGhostHouseArrestTimer();
                 startScatterModeTimer();
             }
+        });
+
+        gameplayObserver.onPowerPelletEaten([this](Pellet*) {
+            startPowerModeTimeout();
+        });
+
+        gameplayObserver.onPowerModeBegin([this]  {
+            pauseGhostAITimer();
+
+            if (isSuperMode())
+                extendSuperModeDuration();
+        });
+
+        gameplayObserver.onPowerModeEnd([this] {
+            if (!isSuperMode())
+                resumeGhostAITimer();
+        });
+
+        gameplayObserver.onSuperPelletEaten([this](Pellet*) {
+            startSuperModeTimeout();
+        });
+
+        gameplayObserver.onSuperModeBegin([this] {
+            pauseGhostAITimer();
+        });
+
+        gameplayObserver.onSuperModeEnd([this] {
+            resumeGhostAITimer();
+        });
+
+        gameplayObserver.onGhostEaten([this](Ghost*) {
+            pausePowerModeTimeout();
+
+            if (isSuperMode())
+                pauseSuperModeTimeout();
+        });
+
+        gameplayObserver.onEatenGhostFreezeEnd([this] {
+            resumeSuperModeTimeout();
+        });
+
+        gameplayObserver.onStarSpawn([this](Star*) {
+            startStarDespawnTimer();
+        });
+
+        gameplayObserver.onStarEatenWithFruitMatch([this](Star*, EatenStarFruitMatch fruitMatch) {
+            stopStarDespawnTimer();
+
+            if (fruitMatch == EatenStarFruitMatch::NO_MATCH)
+                startEatenStarFreezeTimer(mighter2d::seconds(1));
+            else
+                startEatenStarFreezeTimer(mighter2d::seconds(3.3));
+        });
+
+        gameplayObserver.onEatenStarFreezeBegin([this] {
+            pauseGhostAITimer();
+            pausePowerModeTimeout();
+            pauseSuperModeTimeout();
+            bonusStageTimer_.pause();
+        });
+
+        gameplayObserver.onEatenStarFreezeEnd([this] {
+            resumeGhostAITimer();
+            resumePowerModeTimeout();
+            resumeSuperModeTimeout();
+            bonusStageTimer_.resume();
+        });
+
+        gameplayObserver.onPacmanDeathBegin([this](PacMan*) {
+            stopAllTimers();
+        });
+
+        gameplayObserver.onPacmanDeathEnd([this](PacMan* pacman) {
+            generalTimers_.setTimeout(mighter2d::seconds(0.5), [this, pacman] {
+                gameplayScene_.getGameplayObserver().emit("pacman_died", pacman);
+            });
         });
     }
 
@@ -124,8 +204,21 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void TimerManager::startGhostAITimer() {
-        startScatterModeTimer();
+    void TimerManager::startEatenGhostFreezeTimer() {
+        configureTimer(ghostFreezeTimer_, mighter2d::seconds(1), [this] {
+            gameplayScene_.getGameplayObserver().emit("eaten_ghost_freeze_end");
+        });
+
+        gameplayScene_.getGameplayObserver().emit("eaten_ghost_freeze_begin");
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void TimerManager::startEatenStarFreezeTimer(mighter2d::Time duration) {
+        configureTimer(starFreezeTimer_, duration, [this] {
+            gameplayScene_.getGameplayObserver().emit("eaten_star_freeze_end");
+        });
+
+        gameplayScene_.getGameplayObserver().emit("eaten_star_freeze_begin");
     }
 
     ///////////////////////////////////////////////////////////////
@@ -140,10 +233,11 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void TimerManager::startSuperModeTimeout() {
-        configureTimer(superModeTimer_, getSuperModeDuration(), [this] {
-            gameplayScene_.getGameplayObserver().emit("super_mode_end");
-            resumeGhostAITimer();
-        });
+        if (!gameplayScene_.isBonusStage()) {
+            configureTimer(superModeTimer_, getSuperModeDuration(), [this] {
+                gameplayScene_.getGameplayObserver().emit("super_mode_end");
+            });
+        }
 
         gameplayScene_.getGameplayObserver().emit("super_mode_begin");
     }
@@ -177,9 +271,6 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startPowerModeTimeout() {
         configureTimer(powerModeTimer_, getFrightenedModeDuration(), [this] {
-            if (!isSuperMode())
-                resumeGhostAITimer();
-
             gameplayScene_.getGameplayObserver().emit("power_mode_end");
         });
 
@@ -228,7 +319,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startStarDespawnTimer() {
         configureTimer(starDespawnTimer_, mighter2d::seconds(Constants::STAR_ON_SCREEN_TIME), [this] {
-            gameplayScene_.getGameObjectsManager().despawnStar();
+            gameplayScene_.getGameplayObserver().emit("star_appearance_timeout");
         });
     }
 

@@ -99,7 +99,7 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void PacMan::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
+    void PacMan::handleEvent(GameEvent event) {
         if (event == GameEvent::SuperModeBegin)
             setState(State::Super);
         else if (event == GameEvent::SuperModeEnd)

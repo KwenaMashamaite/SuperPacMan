@@ -48,8 +48,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void FrightenedState::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
-        GhostState::handleEvent(event, args);
+    void FrightenedState::handleEvent(GameEvent event) {
+        GhostState::handleEvent(event);
 
         if (event == GameEvent::FrightenedModeEnd) {
             if (nextState_ == Ghost::State::Scatter)

@@ -54,6 +54,7 @@ namespace spm {
     private:
         GameplayScene* gameplayScene_;
         int onWindowCloseId_;
+        bool gameplayPausedByPlayer_;
     };
 }
 

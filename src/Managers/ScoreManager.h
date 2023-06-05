@@ -62,6 +62,12 @@ namespace spm {
          */
         int getHighScore() const;
 
+        /**
+         * @brief Get the points multiplier
+         * @return Points multiplier
+         */
+        int getPointsMultiplier() const;
+
     private:
         /**
          * @brief Update the points multiplier

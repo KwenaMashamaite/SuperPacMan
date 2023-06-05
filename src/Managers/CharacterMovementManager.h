@@ -51,6 +51,19 @@ namespace spm {
         void init(InputManager& inputManager);
 
     private:
+        /**
+         * @brief Freeze or unfreeze movement
+         * @param freeze True to freeze, otherwise false
+         */
+        void setMovementFreeze(bool freeze);
+
+        /**
+         * @brief Instantiate grid movers
+         * @param inputManager Input manager
+         */
+        void createMovers(InputManager& inputManager);
+
+    private:
         GameplayScene* scene_;
         std::unique_ptr<PacManGridMover> pacManGridMover_;
         mighter2d::ObjectContainer<GhostGridMover> ghostGridMovers_;

@@ -57,6 +57,8 @@ namespace spm {
          */
         void onStart() override;
 
+
+
         /**
          * @brief Get the current game level
          * @return The current game level
@@ -104,6 +106,12 @@ namespace spm {
          * @return The input manager
          */
         InputManager& getInputManager();
+
+        /**
+         * @brief Get the score manager
+         * @return The score manager
+         */
+        ScoreManager& getScoreManager();
 
         /**
          * @brief Get the game flow manager

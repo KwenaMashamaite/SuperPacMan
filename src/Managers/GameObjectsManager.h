@@ -58,14 +58,14 @@ namespace spm {
         void createObjects(Grid& grid);
 
         /**
-         * @brief Initialize the game objects
+         * @brief Initialize
          */
-        void initGameObjects();
+        void init();
 
         /**
          * @brief Reset movable game objects to their initial starting position
          */
-        void resetMovableGameObjects();
+        void resetGameObjects();
 
         /**
          * @brief Get the number of pellets eaten by pacman in current level
@@ -110,6 +110,18 @@ namespace spm {
         PacMan* getPacMan() const;
 
         /**
+         * @brief Get the fruit to the left of a star
+         * @return The left side star fruit
+         */
+        Fruit* getLeftSideStarFruit() const;
+
+        /**
+        * @brief Get the fruit to the right of a star
+        * @return The right side star fruit
+        */
+        Fruit* getRightSideStarFruit() const;
+
+        /**
          * @brief Get all the ghosts
          * @return All the ghosts
          */
@@ -145,10 +157,60 @@ namespace spm {
          */
         mighter2d::ObjectContainer<Sensor>& getSensors();
 
+    private:
+        /**
+         * @brief Initialize the game objects
+         */
+        void initGameObjects();
+
+        /**
+         * @brief Initialize how objects react to events raised by other actions
+         */
+        void initEventBehaviorResponse();
+
+        /**
+         * @brief Initialise how objects react to a super mode event
+         */
+        void initSuperModeResponse();
+
+        /**
+         * @brief Initialise how objects react to a power mode event
+         */
+        void initPowerModeResponse();
+
+        /**
+         * @brief Initialize how objects react to a ghost freeze event
+         */
+        void initGhostFreezeResponse();
+
+        /**
+         * @brief Initialize how objects react to a star freeze event
+         */
+        void initStarFreezeResponse();
+
+        /**
+         * @brief Initialize how objects respond to a timer tick event
+         */
+        void initTimerTickResponse();
+
+        /**
+         * @brief Initialise the ghost scatter-chase response
+         */
+        void initGhostChaseScatterResponse();
+
         /**
          * @brief Destroy game objects that are no longer active
          */
         void destroyInactiveObjects();
+
+        /**
+         * @brief Freeze or unfreeze the object animations
+         * @param freeze True to freeze animation, otherwise false
+         *
+         * This function only freezes pacman and ghost animations. Power
+         * pellet and super pellet animations are unaffected
+         */
+        void setAnimationFreeze(bool freeze);
 
     private:
         GameplayScene& gameplayScene_;
@@ -165,6 +227,7 @@ namespace spm {
         std::unique_ptr<Star> star_;
         std::unique_ptr<Fruit> leftSideStarFruit_;
         std::unique_ptr<Fruit> rightSideStarFruit_;
+        bool isGhostChaseMode_;
     };
 }
 

@@ -26,6 +26,7 @@
 #include "LevelStartScene.h"
 #include "Scoreboard/Scoreboard.h"
 #include "Utils/Utils.h"
+#include "GameplayScene.h"
 #include <Mighter2d/ui/widgets/VerticalLayout.h>
 #include <Mighter2d/core/engine/Engine.h>
 #include <Mighter2d/ui/widgets/Label.h>
@@ -87,6 +88,7 @@ namespace spm {
             getEngine().uncacheScene("GameplayScene");
 
             getEngine().popScene();
+            getEngine().pushScene(std::make_unique<GameplayScene>());
             getEngine().pushScene(std::make_unique<LevelStartScene>());
         });
 

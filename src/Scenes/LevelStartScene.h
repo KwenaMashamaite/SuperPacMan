@@ -50,11 +50,6 @@ namespace spm {
          */
         void onStart() override;
 
-        /**
-         * @brief Transition to gameplay scene
-         */
-        void onDestroy() override;
-
     private:
         mighter2d::ui::GuiContainer gui_;
         mighter2d::Timer timer_;

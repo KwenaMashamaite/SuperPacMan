@@ -23,60 +23,115 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "AudioManager.h"
+#include "Scenes/GameplayScene.h"
 
 namespace spm {
     ///////////////////////////////////////////////////////////////
     constexpr auto SoundEffect = mighter2d::audio::Type::Sfx;
 
     ///////////////////////////////////////////////////////////////
-    AudioManager::AudioManager(mighter2d::Scene& scene, GameplayObserver& gameplayObserver) :
-        audioPlayer_(scene),
+    AudioManager::AudioManager(GameplayScene& gameplayScene) :
+        gameplayScene_(&gameplayScene),
+        audioPlayer_(gameplayScene),
         starSpawnSfx_(nullptr),
-        bgrndMusic_(nullptr),
-        gameplayObserver_(&gameplayObserver)
+        bgrndMusic_(nullptr)
     {
     }
 
     ///////////////////////////////////////////////////////////////
     void AudioManager::init() {
-        gameplayObserver_->onGamePause([this] {
+        GameplayObserver& gameplayObserver =  gameplayScene_->getGameplayObserver();
+        
+        gameplayObserver.onGamePause([this] {
             pause();
         });
 
-        gameplayObserver_->onGameResume([this] {
+        gameplayObserver.onGameResume([this] {
+            setVolume(gameplayScene_->getCache().getValue<float>("MASTER_VOLUME"));
             resume();
         });
 
-        gameplayObserver_->onExtraLifeAward([this] {
+        gameplayObserver.onExtraLifeAward([this] {
             playOneUpSfx();
         });
 
-        gameplayObserver_->onGameplayDelayEnd([this] {
+        gameplayObserver.onGameplayDelayEnd([this] {
             playBackgroundMusic(1);
         });
 
-        gameplayObserver_->onKeyEaten([this](Key*) {
+        gameplayObserver.onKeyEaten([this](Key*) {
             playKeyEatenSfx();
         });
 
-        gameplayObserver_->onPowerPelletEaten([this](Pellet*) {
+        gameplayObserver.onPowerModeBegin([this]  {
             playPowerPelletEatenSfx();
+
+            if (!gameplayScene_->isBonusStage()) {
+                playBackgroundMusic(2);
+            }
         });
 
-        gameplayObserver_->onSuperPelletEaten([this](Pellet*) {
+        gameplayObserver.onPowerModeEnd([this] {
+            playBackgroundMusic(1);
+        });
+
+        gameplayObserver.onSuperPelletEaten([this](Pellet*) {
             playSuperPelletEatenSfx();
         });
 
-        gameplayObserver_->onFruitEaten([this](Fruit*) {
+        gameplayObserver.onFruitEaten([this](Fruit*) {
             playFruitEatenSfx();
         });
 
-        gameplayObserver_->onGhostEaten([this](Ghost*) {
+        gameplayObserver.onGhostEaten([this](Ghost*) {
             playGhostEatenSfx();
         });
 
-        gameplayObserver_->onPacmanDying([this](PacMan*) {
+        gameplayObserver.onEatenGhostFreezeBegin([this] {
+            pauseBackgroundMusic();
+        });
+
+        gameplayObserver.onEatenGhostFreezeEnd([this] {
+            resumeBackgroundMusic();
+        });
+
+        gameplayObserver.onPacmanDeathBegin([this](PacMan *) {
+            stop();
             playPacmanDyingSfx();
+        });
+
+        gameplayObserver.onDoorBroken([this](Door*) {
+            playDoorBrokenSfx();
+        });
+
+        gameplayObserver.onStarSpawn([this](Star*) {
+            playStarSpawnedSfx();
+        });
+
+        gameplayObserver.onStarAppearanceTimeout([this] {
+            stopStarSpawnedSfx();
+        });
+
+        gameplayObserver.onEatenStarFreezeBegin([this] {
+            pauseBackgroundMusic();
+        });
+
+        gameplayObserver.onEatenStarFreezeEnd([this] {
+            resumeBackgroundMusic();
+        });
+
+        gameplayObserver.onStarEatenWithFruitMatch([this](Star *, EatenStarFruitMatch fruitMatch) {
+            stopStarSpawnedSfx();
+
+            switch (fruitMatch) {
+                case EatenStarFruitMatch::NO_MATCH:
+                    playBonusFruitNotMatchSfx();
+                    break;
+                case EatenStarFruitMatch::MATCHING_BONUS_FRUIT_ONLY:
+                case EatenStarFruitMatch::MATCHING_BONUS_FRUIT_AND_LEVEL_FRUIT:
+                    playBonusFruitMatchSfx();
+                    break;
+            }
         });
     }
 

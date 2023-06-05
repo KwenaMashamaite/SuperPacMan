@@ -29,12 +29,16 @@
 #include "common/Constants.h"
 #include "Animations/FruitAnimation.h"
 #include "AI/ghost/ScatterState.h"
+#include "AI/ghost/EatenState.h"
 #include <random>
 #include <algorithm>
 #include <Mighter2d/utility/Utils.h>
 
 namespace spm {
     namespace {
+        ///////////////////////////////////////////////////////////////
+        const auto FLASH_ANIM_CUTOFF_TIME = mighter2d::seconds(2);
+
         ///////////////////////////////////////////////////////////////
         std::unique_ptr<Door> createDoor(const mighter2d::Tile& tile, mighter2d::Scene& scene) {
             auto door = std::make_unique<Door>(scene);
@@ -53,7 +57,8 @@ namespace spm {
     GameObjectsManager::GameObjectsManager(GameplayScene &gameplayScene) :
         gameplayScene_(gameplayScene),
         numPelletsEaten_(0),
-        numFruitsEaten_(0)
+        numFruitsEaten_(0),
+        isGhostChaseMode_{false}
     {
 
     }
@@ -73,7 +78,7 @@ namespace spm {
                     sensor->setTag("slowdownSensor" + std::to_string(++slowDownSensorCount));
 
                     if (tile.getId() == '+') { // Sensor + Door,
-                        doors_.addObject(createDoor(tile, grid.getScene()));
+                        grid.addGameObject(doors_.addObject(createDoor(tile, grid.getScene())), tile.getIndex());
                     }
                 }
 
@@ -101,7 +106,7 @@ namespace spm {
 
                 if (tile.getIndex().colm == 11) {
                     leftSideStarFruit_ = std::make_unique<Fruit>(grid.getScene());
-                    leftSideStarFruit_->setTag("leftBonusFruit");
+                    leftSideStarFruit_->getSprite().setVisible(false);
 
                     auto slideAnim = leftSideStarFruit_->getSprite().getAnimator().getAnimation("slide");
                     slideAnim->setLoop(false);
@@ -110,6 +115,7 @@ namespace spm {
                     grid.addGameObject(leftSideStarFruit_.get(), tile.getIndex());
                 } else {
                     rightSideStarFruit_ = std::make_unique<Fruit>(grid.getScene());
+                    rightSideStarFruit_->getSprite().setVisible(false);
 
                     grid.addGameObject(rightSideStarFruit_.get(), tile.getIndex());
                 }
@@ -133,8 +139,28 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::init() {
+        initGameObjects();
+        initGhostChaseScatterResponse();
+        initEventBehaviorResponse();
+
+        gameplayScene_.getStateObserver().onFrameEnd([this] {
+            destroyInactiveObjects();
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameObjectsManager::initGameObjects() {
         pacman_->setLivesCount(gameplayScene_.getCache().getValue<int>("PLAYER_LIVES"));
+        auto pacmanDeathAnim = pacman_->getSprite().getAnimator().getAnimation("dying");
+
+        pacmanDeathAnim->onPlay([this](mighter2d::Animation*) {
+            gameplayScene_.getGameplayObserver().emit("pacman_death_begin", pacman_.get());
+        });
+
+        pacmanDeathAnim->onComplete([this](mighter2d::Animation*) {
+            gameplayScene_.getGameplayObserver().emit("pacman_death_end", pacman_.get());
+        });
 
         doors_.forEach([](Door* door) {
             door->lock();
@@ -170,10 +196,73 @@ namespace spm {
             });
         }
 
-        // Animation flashing
-        static const auto FLASH_ANIM_CUTOFF_TIME = mighter2d::seconds(2);
+        gameplayScene_.getGameplayObserver().onLevelReset([this] {
+            resetGameObjects();
+        });
+    }
 
-        gameplayScene_.getGameplayObserver().onPowerModeTick([this](mighter2d::Time remainingDuration) {
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initEventBehaviorResponse() {
+        initSuperModeResponse();
+        initPowerModeResponse();
+        initGhostFreezeResponse();
+        initStarFreezeResponse();
+        initTimerTickResponse();
+
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onPacmanDeathBegin([this](PacMan* pacman) {
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->getSprite().setVisible(false);
+            });
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initSuperModeResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onSuperModeBegin([this] {
+            pacman_->handleEvent(GameEvent::SuperModeBegin);
+
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::SuperModeBegin);
+            });
+        });
+
+        gameplayObserver.onSuperModeEnd([this] {
+            pacman_->handleEvent(GameEvent::SuperModeEnd);
+
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::SuperModeEnd);
+            });
+        });
+
+        gameplayObserver.onSuperModeTick([this](mighter2d::Time remainingDuration) {
+            if (remainingDuration <= FLASH_ANIM_CUTOFF_TIME)
+                pacman_->setFlashEnable(true);
+            else if (remainingDuration > FLASH_ANIM_CUTOFF_TIME)
+                pacman_->setFlashEnable(false);
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initPowerModeResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onPowerModeBegin([this] {
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::FrightenedModeBegin);
+            });
+        });
+
+        gameplayObserver.onPowerModeEnd([this] {
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::FrightenedModeEnd);
+            });
+        });
+
+        gameplayObserver.onPowerModeTick([this](mighter2d::Time remainingDuration) {
             ghosts_.forEach([this, &remainingDuration](Ghost* ghost) {
                 if (remainingDuration <= FLASH_ANIM_CUTOFF_TIME)
                     ghost->setFlash(true);
@@ -181,20 +270,65 @@ namespace spm {
                     ghost->setFlash(false);
             });
         });
+    }
 
-        gameplayScene_.getGameplayObserver().onSuperModeTick([this](mighter2d::Time remainingDuration) {
-            if (remainingDuration <= FLASH_ANIM_CUTOFF_TIME)
-                pacman_->setFlashEnable(true);
-            else if (remainingDuration > FLASH_ANIM_CUTOFF_TIME)
-                pacman_->setFlashEnable(false);
-        });
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initGhostFreezeResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
 
-        // Gameplay delay
-        gameplayScene_.getGameplayObserver().onGameplayDelayBegin([this] {
+        gameplayObserver.onEatenGhostFreezeBegin([this] {
+            setAnimationFreeze(true);
             pacman_->getSprite().setVisible(false);
         });
 
-        gameplayScene_.getGameplayObserver().onGameplayDelayEnd([this] {
+        gameplayObserver.onEatenGhostFreezeEnd([this] {
+            setAnimationFreeze(false);
+            pacman_->getSprite().setVisible(true);
+
+            // Terminate power mode early if none of the ghosts are blue
+            bool isSomeGhostsBlue = false;
+            ghosts_.forEach([this, &isSomeGhostsBlue](Ghost* ghost) {
+                if (ghost->getUserData().hasProperty("pendingEatenStateChange")) {
+                    ghost->getUserData().removeProperty("pendingEatenStateChange");
+
+                    ghost->setState(std::make_unique<EatenState>(isGhostChaseMode_ ? Ghost::State::Chase : Ghost::State::Scatter));
+
+                } else if (ghost->getState() == Ghost::State::Frightened)
+                    isSomeGhostsBlue = true;
+            });
+
+            if (isSomeGhostsBlue)
+                gameplayScene_.getTimerManager().resumePowerModeTimeout();
+            else
+                gameplayScene_.getTimerManager().forcePowerModeTimeout();
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initStarFreezeResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onEatenStarFreezeBegin([this] {
+            setAnimationFreeze(true);
+            pacman_->getSprite().setVisible(false);
+        });
+
+        gameplayObserver.onEatenStarFreezeEnd([this] {
+            setAnimationFreeze(false);
+            pacman_->getSprite().setVisible(true);
+            despawnStar();
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initTimerTickResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onGameplayDelayBegin([this] {
+            pacman_->getSprite().setVisible(false);
+        });
+
+        gameplayObserver.onGameplayDelayEnd([this] {
             pacman_->getSprite().setVisible(true);
 
             if (gameplayScene_.isBonusStage()) {
@@ -207,30 +341,41 @@ namespace spm {
             }
         });
 
-        //Others
-        gameplayScene_.getGameplayObserver().onFruitEaten([this](Fruit*) {
-            if (!star_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS))
-                spawnStar();
-        });
-
-        gameplayScene_.getGameplayObserver().onPowerPelletEaten([this](Pellet*) {
-            if (!star_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS))
-                spawnStar();
-        });
-
-        gameplayScene_.getGameplayObserver().onSuperPelletEaten([this](Pellet*) {
-            if (!star_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS))
-                spawnStar();
+        gameplayObserver.onStarAppearanceTimeout([this] {
+            despawnStar();
         });
     }
 
     ///////////////////////////////////////////////////////////////
-    void GameObjectsManager::resetMovableGameObjects() {
+    void GameObjectsManager::initGhostChaseScatterResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onScatterModeBegin([this] {
+            isGhostChaseMode_ = false;
+
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::ScatterModeBegin);
+            });
+        });
+
+        gameplayObserver.onChaseModeBegin([this] {
+            isGhostChaseMode_ = true;
+
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::ChaseModeBegin);
+            });
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::resetGameObjects() {
+        pacman_->getSprite().setVisible(true);
         pacman_->setState(PacMan::State::Normal);
         pacman_->setDirection(mighter2d::Left);
         gameplayScene_.getGrid().changeObjectTile(pacman_.get(), Constants::PacManSpawnTile);
 
         ghosts_.forEach([this](Ghost* ghost) {
+            ghost->getSprite().setVisible(true);
             mighter2d::Index startCellIndex;
 
             if (ghost->getTag() == "blinky")
@@ -242,7 +387,7 @@ namespace spm {
             else
                 startCellIndex = Constants::ClydeSpawnTile;
 
-            gameplayScene_.getGrid().addGameObject(ghost, startCellIndex);
+            gameplayScene_.getGrid().changeObjectTile(ghost, startCellIndex);
         });
     }
 
@@ -270,44 +415,54 @@ namespace spm {
     void GameObjectsManager::spawnStar() {
         if (!star_) {
             star_ = std::make_unique<Star>(gameplayScene_);
+            star_->setCollisionGroup("stars");
             gameplayScene_.getGrid().addGameObject(star_.get(), mighter2d::Index{15, 13});
-
 
             auto* fruitAnim = leftSideStarFruit_->getSprite().getAnimator().getAnimation("slide").get();
             int stopFrame = mighter2d::utility::generateRandomNum(0, fruitAnim->getFrameCount() - 1);
-
-            // Freeze left start animation
-            fruitAnim->onFrameSwitch([fruitAnim, stopFrame](mighter2d::AnimationFrame *frame) {
-                if (frame->getIndex() == stopFrame)
-                    fruitAnim->setPlaybackSpeed(0.0f);
-            });
+            fruitAnim->finishOnFrame(stopFrame);
 
             leftSideStarFruit_->getSprite().getAnimator().startAnimation("slide");
             rightSideStarFruit_->getSprite().getAnimator().startAnimation("slide");
 
-            gameplayScene_.getAudioPlayer().playStarSpawnedSfx();
-            gameplayScene_.getTimerManager().startStarDespawnTimer();
+            gameplayScene_.getGameplayObserver().emit("star_spawn", star_.get());
         }
     }
 
     ///////////////////////////////////////////////////////////////
     void GameObjectsManager::despawnStar() {
-        if (star_) {
-            gameplayScene_.getAudioPlayer().stopStarSpawnedSfx();
-            gameplayScene_.getTimerManager().stopStarDespawnTimer();
-
+        if (star_ && star_->isActive()) {
             leftSideStarFruit_->getSprite().getAnimator().stop();
             rightSideStarFruit_->getSprite().getAnimator().stop();
+            star_->getSprite().getAnimator().stop();
             leftSideStarFruit_->getSprite().setVisible(false);
             rightSideStarFruit_->getSprite().setVisible(false);
 
-            star_.reset();
+            // @todo Trying to deallocate the star causes a nullptr error in the engine,
+            // I have no clue what the issue is. Here is a workaround: since the star
+            // appears once for the entire game level, I'll just hide it
+            // star_.reset();
+
+            star_->setActive(false);
+            star_->getSprite().setVisible(false);
+
+            gameplayScene_.getGameplayObserver().emit("star_despawn");
         }
     }
 
     ///////////////////////////////////////////////////////////////
     PacMan *GameObjectsManager::getPacMan() const {
         return pacman_.get();
+    }
+
+    ///////////////////////////////////////////////////////////////
+    Fruit *GameObjectsManager::getLeftSideStarFruit() const {
+        return leftSideStarFruit_.get();
+    }
+
+    ///////////////////////////////////////////////////////////////
+    Fruit *GameObjectsManager::getRightSideStarFruit() const {
+        return rightSideStarFruit_.get();
     }
 
     ///////////////////////////////////////////////////////////////
@@ -341,6 +496,17 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::setAnimationFreeze(bool freeze) {
+        float timescale = freeze ? 0.0f : 1.0f;
+
+        pacman_->getSprite().getAnimator().setTimescale(timescale);
+
+        ghosts_.forEach([timescale](Ghost* ghost) {
+            ghost->getSprite().getAnimator().setTimescale(timescale);
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
     void GameObjectsManager::destroyInactiveObjects() {
         keys_.removeIf([](const Key* key) {
             return !key->isActive();
@@ -369,8 +535,5 @@ namespace spm {
 
             return false;
         });
-
-        if (pellets_.getCount() == 0 && fruits_.getCount() == 0)
-            gameplayScene_.getGameplayObserver().emit("level_complete");
     }
 }

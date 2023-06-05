@@ -136,9 +136,9 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void Ghost::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
+    void Ghost::handleEvent(GameEvent event) {
         if (state_)
-            state_->handleEvent(event, args);
+            state_->handleEvent(event);
     }
 
     ///////////////////////////////////////////////////////////////

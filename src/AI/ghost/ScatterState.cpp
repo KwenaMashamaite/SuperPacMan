@@ -53,8 +53,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void ScatterState::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
-        GhostState::handleEvent(event, args);
+    void ScatterState::handleEvent(GameEvent event) {
+        GhostState::handleEvent(event);
 
         if (event == GameEvent::SuperModeBegin)
             ghost_->setFlattened(true);
