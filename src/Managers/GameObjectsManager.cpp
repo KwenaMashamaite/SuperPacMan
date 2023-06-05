@@ -223,6 +223,7 @@ namespace spm {
     void GameObjectsManager::initCollisionResponse() {
         initSuperModeResponse();
         initPowerModeResponse();
+        initSensorResponse();
 
         GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
 
@@ -322,6 +323,26 @@ namespace spm {
             ghosts_.forEach([](Ghost* ghost) {
                 ghost->handleEvent(GameEvent::ChaseModeBegin);
             });
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initSensorResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onTeleportSensorEnter([](Sensor* sensor, mighter2d::GridObject* object) {
+            mighter2d::GridMover* gridMover = object->getGridMover();
+            mighter2d::Grid& grid = gridMover->getGrid();
+            const mighter2d::Tile& currentTile = grid.getTileOccupiedByChild(object);
+            grid.removeChild(object);
+
+            if (currentTile.getIndex().colm == 0) { // Triggered the left-hand side sensor
+                grid.addChild(object, mighter2d::Index{currentTile.getIndex().row, static_cast<int>(grid.getSizeInTiles().x - 1)});
+            } else
+                grid.addChild(object, {currentTile.getIndex().row, 0});
+
+            gridMover->resetTargetTile();
+            gridMover->requestMove(gridMover->getDirection());
         });
     }
 

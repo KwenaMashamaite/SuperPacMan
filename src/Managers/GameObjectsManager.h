@@ -172,6 +172,11 @@ namespace spm {
         void initGhostChaseScatterResponse();
 
         /**
+         * @brief Initialise how objects react to sensors
+         */
+        void initSensorResponse();
+
+        /**
          * @brief Destroy game objects that are no longer active
          */
         void destroyInactiveObjects();
