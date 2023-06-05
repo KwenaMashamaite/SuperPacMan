@@ -34,7 +34,46 @@ spm::ScoreManager::ScoreManager(spm::GameplayScene &gameplayScene) :
 }
 
 void spm::ScoreManager::init() {
+    auto& gameplayObserver = gameplayScene_->getGameplayObserver();
 
+    gameplayObserver.onFruitEaten([this](Fruit*) {
+        updateScore(Constants::Points::FRUIT * gameplayScene_->getGameLevel());
+    });
+
+    gameplayObserver.onKeyEaten([this](Key*) {
+        updateScore(Constants::Points::KEY);
+    });
+
+    gameplayObserver.onPowerPelletEaten([this](Pellet*) {
+        updateScore(Constants::Points::POWER_PELLET);
+    });
+
+    gameplayObserver.onSuperPelletEaten([this](Pellet*) {
+        updateScore(Constants::Points::SUPER_PELLET);
+    });
+
+    gameplayObserver.onGhostEaten([this](Ghost*) {
+        updateScore(Constants::Points::GHOST * pointsMultiplier_);
+        updatePointsMultiplier();
+    });
+
+    gameplayObserver.onDoorBroken([this](Door*) {
+        updateScore(Constants::Points::BROKEN_DOOR);
+    });
+
+    gameplayObserver.onStarEatenWithFruitMatch([this](Star*, EatenStarFruitMatch fruitMatch) {
+        switch (fruitMatch) {
+            case EatenStarFruitMatch::NO_MATCH:
+                updateScore(Constants::Points::GHOST * pointsMultiplier_);
+                break;
+            case EatenStarFruitMatch::MATCHING_BONUS_FRUIT_ONLY:
+                updateScore(Constants::Points::MATCHING_BONUS_FRUIT);
+                break;
+            case EatenStarFruitMatch::MATCHING_BONUS_FRUIT_AND_LEVEL_FRUIT:
+                updateScore(Constants::Points::MATCHING_BONUS_FRUIT_AND_LEVEL_FRUIT);
+                break;
+        }
+    });
 }
 
 void spm::ScoreManager::updateScore(int points) {

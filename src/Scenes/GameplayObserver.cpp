@@ -154,7 +154,11 @@ namespace spm {
     }
 
     int GameplayObserver::onStarEaten(const mighter2d::Callback<Star *> &callback) {
-        return eventEmitter_.on("start_eaten", callback);
+        return eventEmitter_.on("star_eaten", callback);
+    }
+
+    int GameplayObserver::onStarEatenWithFruitMatch(const mighter2d::Callback<Star *, EatenStarFruitMatch> &callback) {
+        return eventEmitter_.on("star_eaten_with_fruit_match", callback);
     }
 
     int GameplayObserver::onSlowdownSensorEnter(const mighter2d::Callback<Sensor*, mighter2d::GridObject *> &callback) {

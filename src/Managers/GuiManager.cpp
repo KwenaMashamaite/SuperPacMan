@@ -41,6 +41,8 @@ namespace spm {
         view_->setHighScore(gameplayScene_->getCache().getValue<int>("HIGH_SCORE"));
         view_->setScore(gameplayScene_->getCache().getValue<int>("CURRENT_SCORE"));
 
+        GameplayObserver& gameplayObserver = gameplayScene_->getGameplayObserver();
+
         if (gameplayScene_->isBonusStage()) {
             mighter2d::ui::Label::Ptr lblRemainingTime = mighter2d::ui::Label::create("");
             lblRemainingTime->setName("lblRemainingTime");
@@ -55,6 +57,14 @@ namespace spm {
                     ->setText(std::to_string(remainingDuration.asMilliseconds()));
             });
         }
+
+        gameplayObserver.onScoreUpdate([this](int newScore) {
+            view_->setScore(newScore);
+        });
+
+        gameplayObserver.onHighScoreUpdate([this](int newScore) {
+            view_->setHighScore(newScore);
+        });
 
         gameplayScene_->getGameplayObserver().onGameplayDelayTick([](mighter2d::Time remainingDuration) {
 

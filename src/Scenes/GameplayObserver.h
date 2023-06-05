@@ -31,6 +31,15 @@
 
 namespace spm {
     /**
+     * @brief Defines the state of the fruit to the left and right of a star when it was eaten
+     */
+    enum class EatenStarFruitMatch {
+        NO_MATCH,                            //!< Star was eaten with no matching fruit
+        MATCHING_BONUS_FRUIT_ONLY,           //!< Star was eaten with only its fruits matching each other but not match with level fruit
+        MATCHING_BONUS_FRUIT_AND_LEVEL_FRUIT //!< Star was eaten with both its fruits matching the level fruit
+    };
+
+    /**
      * @brief Enables communication between different classes
      */
     class GameplayObserver {
@@ -68,6 +77,7 @@ namespace spm {
         int onPacmanDead(const mighter2d::Callback<PacMan*>& callback);
         int onPacmanHitDoor(const mighter2d::Callback<Door*>& callback);
         int onStarEaten(const mighter2d::Callback<Star*>& callback);
+        int onStarEatenWithFruitMatch(const mighter2d::Callback<Star*, EatenStarFruitMatch>& callback);
         int onSlowdownSensorEnter(const mighter2d::Callback<Sensor*, mighter2d::GridObject*>& callback);
         int onTeleportSensorEnter(const mighter2d::Callback<Sensor*, mighter2d::GridObject*>& callback);
 
