@@ -54,6 +54,8 @@ namespace spm {
         int onChaseModeEnd(const mighter2d::Callback<>& callback);
         int onBonusStageBegin(const mighter2d::Callback<>& callback);
         int onBonusStageEnd(const mighter2d::Callback<>& callback);
+        int onEatenGhostFreezeBegin(const mighter2d::Callback<>& callback);
+        int onEatenGhostFreezeEnd(const mighter2d::Callback<>& callback);
         int onGameplayDelayBegin(const mighter2d::Callback<>& callback);
         int onGameplayDelayEnd(const mighter2d::Callback<>& callback);
         int onGamePause(const mighter2d::Callback<>& callback);

@@ -65,6 +65,14 @@ namespace spm {
         return eventEmitter_.on("bonus_stage_end", callback);
     }
 
+    int GameplayObserver::onEatenGhostFreezeBegin(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("eaten_ghost_freeze_begin", callback);
+    }
+
+    int GameplayObserver::onEatenGhostFreezeEnd(const mighter2d::Callback<> &callback) {
+        return eventEmitter_.on("eaten_ghost_freeze_end", callback);
+    }
+
     int GameplayObserver::onGamePause(const mighter2d::Callback<> &callback) {
         return eventEmitter_.on("gameplay_pause", callback);
     }

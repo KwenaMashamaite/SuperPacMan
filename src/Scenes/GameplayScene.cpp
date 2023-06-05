@@ -112,6 +112,11 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
+    ScoreManager &GameplayScene::getScoreManager() {
+        return scoreManager_;
+    }
+
+    ///////////////////////////////////////////////////////////////
     GameFlowManager &GameplayScene::getGameFlowManager() {
         return gameFlowManager_;
     }

@@ -43,7 +43,7 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void EatenState::onEntry() {
         ghost_->mighter2d::GameObject::setState(static_cast<int>(Ghost::State::Eaten));
-        ghost_->getCollisionExcludeList().add("sensors");
+        ghost_->getCollisionExcludeList().add("slowdownSensors");
         ghost_->getCollisionExcludeList().add("doors");
         GhostState::onEntry();
 
@@ -80,7 +80,7 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void EatenState::onExit() {
-        ghost_->getCollisionExcludeList().remove("sensors");
+        ghost_->getCollisionExcludeList().remove("slowdownSensors");
         ghost_->getCollisionExcludeList().remove("doors");
         gridMover_->removeEventListener(destFoundHandler_);
     }

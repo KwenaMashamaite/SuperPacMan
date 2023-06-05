@@ -57,7 +57,8 @@ namespace spm {
         powerModeTimer_(gameplayScene),
         bonusStageTimer_(gameplayScene),
         starDespawnTimer_(gameplayScene),
-        gameplayDelayTimer_(gameplayScene)
+        gameplayDelayTimer_(gameplayScene),
+        ghostFreezeTimer_(gameplayScene)
     {
         // Ghost AI timer indefinitely switches between chase and scatter mode counting
         ghostAITimer_.setLoop(true);
@@ -116,6 +117,17 @@ namespace spm {
         gameplayObserver.onSuperModeEnd([this] {
             resumeGhostAITimer();
         });
+
+        gameplayObserver.onGhostEaten([this](Ghost*) {
+            pausePowerModeTimeout();
+
+            if (isSuperMode())
+                pauseSuperModeTimeout();
+        });
+
+        gameplayObserver.onEatenGhostFreezeEnd([this] {
+            resumeSuperModeTimeout();
+        });
     }
 
     ///////////////////////////////////////////////////////////////
@@ -150,6 +162,15 @@ namespace spm {
 
         startProbationTimer("inky", Constants::INKY_HOUSE_ARREST_DURATION);
         startProbationTimer("clyde", Constants::CLYDE_HOUSE_ARREST_DURATION);
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void TimerManager::startEatenGhostFreezeTimer() {
+        configureTimer(ghostFreezeTimer_, mighter2d::seconds(1), [this] {
+            gameplayScene_.getGameplayObserver().emit("eaten_ghost_freeze_end");
+        });
+
+        gameplayScene_.getGameplayObserver().emit("eaten_ghost_freeze_begin");
     }
 
     ///////////////////////////////////////////////////////////////

@@ -106,6 +106,12 @@ namespace spm {
         InputManager& getInputManager();
 
         /**
+         * @brief Get the score manager
+         * @return The score manager
+         */
+        ScoreManager& getScoreManager();
+
+        /**
          * @brief Get the game flow manager
          * @return The game flow manager
          */

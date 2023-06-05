@@ -86,6 +86,14 @@ namespace spm {
             playGhostEatenSfx();
         });
 
+        gameplayObserver.onEatenGhostFreezeBegin([this] {
+            pauseBackgroundMusic();
+        });
+
+        gameplayObserver.onEatenGhostFreezeEnd([this] {
+            resumeBackgroundMusic();
+        });
+
         gameplayObserver.onPacmanDying([this](PacMan*) {
             playPacmanDyingSfx();
         });

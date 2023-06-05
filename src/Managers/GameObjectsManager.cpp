@@ -29,6 +29,7 @@
 #include "common/Constants.h"
 #include "Animations/FruitAnimation.h"
 #include "AI/ghost/ScatterState.h"
+#include "AI/ghost/EatenState.h"
 #include <random>
 #include <algorithm>
 #include <Mighter2d/utility/Utils.h>
@@ -53,7 +54,8 @@ namespace spm {
     GameObjectsManager::GameObjectsManager(GameplayScene &gameplayScene) :
         gameplayScene_(gameplayScene),
         numPelletsEaten_(0),
-        numFruitsEaten_(0)
+        numFruitsEaten_(0),
+        isGhostChaseMode_{false}
     {
 
     }
@@ -184,7 +186,9 @@ namespace spm {
         // Animation flashing
         static const auto FLASH_ANIM_CUTOFF_TIME = mighter2d::seconds(2);
 
-        gameplayScene_.getGameplayObserver().onPowerModeTick([this](mighter2d::Time remainingDuration) {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onPowerModeTick([this](mighter2d::Time remainingDuration) {
             ghosts_.forEach([this, &remainingDuration](Ghost* ghost) {
                 if (remainingDuration <= FLASH_ANIM_CUTOFF_TIME)
                     ghost->setFlash(true);
@@ -193,7 +197,7 @@ namespace spm {
             });
         });
 
-        gameplayScene_.getGameplayObserver().onSuperModeTick([this](mighter2d::Time remainingDuration) {
+        gameplayObserver.onSuperModeTick([this](mighter2d::Time remainingDuration) {
             if (remainingDuration <= FLASH_ANIM_CUTOFF_TIME)
                 pacman_->setFlashEnable(true);
             else if (remainingDuration > FLASH_ANIM_CUTOFF_TIME)
@@ -201,11 +205,11 @@ namespace spm {
         });
 
         // Gameplay delay
-        gameplayScene_.getGameplayObserver().onGameplayDelayBegin([this] {
+        gameplayObserver.onGameplayDelayBegin([this] {
             pacman_->getSprite().setVisible(false);
         });
 
-        gameplayScene_.getGameplayObserver().onGameplayDelayEnd([this] {
+        gameplayObserver.onGameplayDelayEnd([this] {
             pacman_->getSprite().setVisible(true);
 
             if (gameplayScene_.isBonusStage()) {
@@ -252,6 +256,64 @@ namespace spm {
                 if (!door->isLocked())
                     door->setActive(false);
             });
+        });
+
+        gameplayObserver.onGhostEaten([this](Ghost* ghost) {
+            ghost->getUserData().addProperty({"pendingEatenStateChange", ""});
+
+            // Replace ghost texture with corresponding score texture
+            static const mighter2d::SpriteSheet pointsSpriteSheet{"spritesheet.png",
+                mighter2d::Vector2u{16, 16}, mighter2d::Vector2u{1, 1}, mighter2d::UIntRect{306, 141, 69, 18}};
+
+            ghost->getSprite().setTexture(pointsSpriteSheet.getTexture());
+            int pointsMultiplier = gameplayScene_.getScoreManager().getPointsMultiplier();
+
+            if (pointsMultiplier == 1)
+                ghost->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 0})); // 100
+            else if (pointsMultiplier == 2)
+                ghost->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 1})); // 200
+            else if (pointsMultiplier == 4)
+                ghost->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 2})); // 800
+            else
+                ghost->getSprite().setTextureRect(*pointsSpriteSheet.getFrame(mighter2d::Index{0, 3})); // 1600
+
+            gameplayScene_.getTimerManager().startEatenGhostFreezeTimer();
+        });
+
+        // Freezing
+        gameplayObserver.onEatenGhostFreezeBegin([this] {
+            pacman_->getSprite().getAnimator().setTimescale(0.0f);
+            pacman_->getSprite().setVisible(false);
+
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->getSprite().getAnimator().setTimescale(0.0f);
+            });
+        });
+
+        gameplayObserver.onEatenGhostFreezeEnd([this] {
+            pacman_->getSprite().getAnimator().setTimescale(1.0f);
+            pacman_->getSprite().setVisible(true);
+
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->getSprite().getAnimator().setTimescale(1.0f);
+            });
+
+            // Terminate power mode early if none of the ghosts are blue
+            bool isSomeGhostsBlue = false;
+            ghosts_.forEach([this, &isSomeGhostsBlue](Ghost* ghost) {
+                if (ghost->getUserData().hasProperty("pendingEatenStateChange")) {
+                    ghost->getUserData().removeProperty("pendingEatenStateChange");
+
+                    ghost->setState(std::make_unique<EatenState>(isGhostChaseMode_ ? Ghost::State::Chase : Ghost::State::Scatter));
+
+                } else if (ghost->getState() == Ghost::State::Frightened)
+                    isSomeGhostsBlue = true;
+            });
+
+            if (isSomeGhostsBlue)
+                gameplayScene_.getTimerManager().resumePowerModeTimeout();
+            else
+                gameplayScene_.getTimerManager().forcePowerModeTimeout();
         });
     }
 
@@ -314,12 +376,16 @@ namespace spm {
         GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
 
         gameplayObserver.onScatterModeBegin([this] {
+            isGhostChaseMode_ = false;
+
             ghosts_.forEach([](Ghost* ghost) {
                 ghost->handleEvent(GameEvent::ScatterModeBegin);
             });
         });
 
         gameplayObserver.onChaseModeBegin([this] {
+            isGhostChaseMode_ = true;
+
             ghosts_.forEach([](Ghost* ghost) {
                 ghost->handleEvent(GameEvent::ChaseModeBegin);
             });

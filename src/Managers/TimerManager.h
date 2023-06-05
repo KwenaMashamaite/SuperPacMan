@@ -65,6 +65,11 @@ namespace spm {
         void startGhostHouseArrestTimer();
 
         /**
+         * @brief Start the character movement freeze timer
+         */
+        void startEatenGhostFreezeTimer();
+
+        /**
          * @brief Start the ghost scatter-chase AI
          *
          * This function must be called once to start the ghosts AI. The
@@ -246,6 +251,7 @@ namespace spm {
         mighter2d::Timer starDespawnTimer_;   //!< Star appearance counter
         mighter2d::Timer bonusStageTimer_;    //!< Bonus stage duration counter
         mighter2d::Timer gameplayDelayTimer_; //!< Level start delay timer
+        mighter2d::Timer ghostFreezeTimer_;   //!< Eaten ghost freeze duration
     };
 }
 

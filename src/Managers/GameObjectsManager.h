@@ -196,6 +196,7 @@ namespace spm {
         std::unique_ptr<Star> star_;
         std::unique_ptr<Fruit> leftSideStarFruit_;
         std::unique_ptr<Fruit> rightSideStarFruit_;
+        bool isGhostChaseMode_;
     };
 }
 

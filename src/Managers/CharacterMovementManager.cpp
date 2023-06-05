@@ -55,5 +55,22 @@ namespace spm {
         scene_->getGameplayObserver().onDoorBroken([this](Door* door) {
             pacManGridMover_->requestMove(pacManGridMover_->getTarget()->getDirection());
         });
+
+        // Freezing
+        scene_->getGameplayObserver().onEatenGhostFreezeBegin([this] {
+            pacManGridMover_->setMovementFreeze(true);
+
+            ghostGridMovers_.forEach([](GhostGridMover* ghostGridMover) {
+                ghostGridMover->setMovementFreeze(true);
+            });
+        });
+
+        scene_->getGameplayObserver().onEatenGhostFreezeEnd([this] {
+            pacManGridMover_->setMovementFreeze(false);
+
+            ghostGridMovers_.forEach([](GhostGridMover* ghostGridMover) {
+                ghostGridMover->setMovementFreeze(false);
+            });
+        });
     }
 }
