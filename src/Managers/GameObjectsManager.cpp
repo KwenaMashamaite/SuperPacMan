@@ -258,6 +258,22 @@ namespace spm {
                 spawnStar();
         });
 
+        gameplayObserver.onSuperModeBegin([this] {
+            pacman_->handleEvent(GameEvent::SuperModeBegin);
+
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::SuperModeBegin);
+            });
+        });
+
+        gameplayObserver.onSuperModeEnd([this] {
+            pacman_->handleEvent(GameEvent::SuperModeEnd);
+
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::SuperModeEnd);
+            });
+        });
+
         gameplayObserver.onKeyEaten([this](Key* key) {
             key->setActive(false);
 

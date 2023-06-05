@@ -104,6 +104,18 @@ namespace spm {
             if (!isSuperMode())
                 resumeGhostAITimer();
         });
+
+        gameplayObserver.onSuperPelletEaten([this](Pellet*) {
+            startSuperModeTimeout();
+        });
+
+        gameplayObserver.onSuperModeBegin([this] {
+            pauseGhostAITimer();
+        });
+
+        gameplayObserver.onSuperModeEnd([this] {
+            resumeGhostAITimer();
+        });
     }
 
     ///////////////////////////////////////////////////////////////
@@ -157,10 +169,11 @@ namespace spm {
 
     ///////////////////////////////////////////////////////////////
     void TimerManager::startSuperModeTimeout() {
-        configureTimer(superModeTimer_, getSuperModeDuration(), [this] {
-            gameplayScene_.getGameplayObserver().emit("super_mode_end");
-            resumeGhostAITimer();
-        });
+        if (!gameplayScene_.isBonusStage()) {
+            configureTimer(superModeTimer_, getSuperModeDuration(), [this] {
+                gameplayScene_.getGameplayObserver().emit("super_mode_end");
+            });
+        }
 
         gameplayScene_.getGameplayObserver().emit("super_mode_begin");
     }
