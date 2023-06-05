@@ -330,7 +330,7 @@ namespace spm {
     void GameObjectsManager::initSensorResponse() {
         GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
 
-        gameplayObserver.onTeleportSensorEnter([](Sensor* sensor, mighter2d::GridObject* object) {
+        gameplayObserver.onTeleportSensorEnter([](Sensor*, mighter2d::GridObject* object) {
             mighter2d::GridMover* gridMover = object->getGridMover();
             mighter2d::Grid& grid = gridMover->getGrid();
             const mighter2d::Tile& currentTile = grid.getTileOccupiedByChild(object);
@@ -343,6 +343,31 @@ namespace spm {
 
             gridMover->resetTargetTile();
             gridMover->requestMove(gridMover->getDirection());
+        });
+
+        gameplayObserver.onSlowdownSensorEnter([this](Sensor* sensor, mighter2d::GridObject* object) {
+            float speedMultiplier = 0.0;
+            int gameLevel = gameplayScene_.getGameLevel();
+
+            if (gameLevel == 1)
+                speedMultiplier = 0.40f;
+            else if (gameLevel >= 2 && gameLevel <= 4)
+                speedMultiplier = 0.45f;
+            else
+                speedMultiplier = 0.50f;
+
+            char sensorNum = sensor->getTag().back();
+            mighter2d::GridMover* gridMover = object->getGridMover();
+            mighter2d::Direction dir = gridMover->getDirection();
+
+            if (((sensorNum == '2' || sensorNum == '4') && dir == mighter2d::Right) ||
+                ((sensorNum == '1' || sensorNum == '3') && dir == mighter2d::Left) ||
+                (sensorNum == '5' && dir == mighter2d::Up))
+            {
+                gridMover->setSpeedMultiplier(speedMultiplier);
+            }
+            else
+                gridMover->setSpeedMultiplier(1.0f);
         });
     }
 
