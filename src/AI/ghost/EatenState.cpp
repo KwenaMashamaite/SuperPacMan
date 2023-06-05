@@ -65,8 +65,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void EatenState::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
-        GhostState::handleEvent(event, args);
+    void EatenState::handleEvent(GameEvent event) {
+        GhostState::handleEvent(event);
 
         if (event == GameEvent::SuperModeEnd)
             ghost_->setFlattened(false);

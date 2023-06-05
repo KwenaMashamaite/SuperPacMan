@@ -73,7 +73,7 @@ namespace spm {
                     sensor->setTag("slowdownSensor" + std::to_string(++slowDownSensorCount));
 
                     if (tile.getId() == '+') { // Sensor + Door,
-                        doors_.addObject(createDoor(tile, grid.getScene()));
+                        grid.addGameObject(doors_.addObject(createDoor(tile, grid.getScene())), tile.getIndex());
                     }
                 }
 
@@ -129,6 +129,16 @@ namespace spm {
 
                 grid.addGameObject(ghosts_.addObject(std::move(ghost)), tile.getIndex());
             }
+        });
+    }
+
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::init() {
+        initGameObjects();
+        initCollisionResponse();
+
+        gameplayScene_.getStateObserver().onFrameEnd([this] {
+            destroyInactiveObjects();
         });
     }
 
@@ -206,21 +216,58 @@ namespace spm {
                 });
             }
         });
+    }
 
-        //Others
-        gameplayScene_.getGameplayObserver().onFruitEaten([this](Fruit*) {
-            if (!star_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS))
+    ///////////////////////////////////////////////////////////////
+    void GameObjectsManager::initCollisionResponse() {
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
+        gameplayObserver.onFruitEaten([this](Fruit* fruit) {
+            fruit->setActive(false);
+            numFruitsEaten_++;
+
+            if ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)
                 spawnStar();
         });
 
-        gameplayScene_.getGameplayObserver().onPowerPelletEaten([this](Pellet*) {
-            if (!star_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS))
+        gameplayObserver.onPowerPelletEaten([this](Pellet* pellet) {
+            pellet->setActive(false);
+            numPelletsEaten_++;
+
+            if ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)
                 spawnStar();
         });
 
-        gameplayScene_.getGameplayObserver().onSuperPelletEaten([this](Pellet*) {
-            if (!star_ && ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS))
+        gameplayObserver.onPowerModeBegin([this] {
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::FrightenedModeBegin);
+            });
+        });
+
+        gameplayObserver.onPowerModeEnd([this] {
+            ghosts_.forEach([](Ghost* ghost) {
+                ghost->handleEvent(GameEvent::FrightenedModeEnd);
+            });
+        });
+
+        gameplayObserver.onSuperPelletEaten([this](Pellet* pellet) {
+            pellet->setActive(false);
+            numPelletsEaten_++;
+
+            if ((numFruitsEaten_ + numPelletsEaten_) == Constants::STAR_SPAWN_EATEN_ITEMS)
                 spawnStar();
+        });
+
+        gameplayObserver.onKeyEaten([this](Key* key) {
+            key->setActive(false);
+
+            //Unlock corresponding door
+            doors_.forEach([key](Door* door) {
+                door->unlock(*key);
+
+                if (!door->isLocked())
+                    door->setActive(false);
+            });
         });
     }
 
@@ -351,23 +398,11 @@ namespace spm {
         });
 
         fruits_.removeIf([this](const Fruit* fruit) {
-            if (!fruit->isActive()) {
-                numFruitsEaten_++;
-
-                return true;
-            }
-
-            return false;
+            return !fruit->isActive();
         });
 
         pellets_.removeIf([this](const Pellet* pellet) {
-            if (!pellet->isActive()) {
-                numPelletsEaten_++;
-
-                return true;
-            }
-
-            return false;
+            return !pellet->isActive();
         });
 
         if (pellets_.getCount() == 0 && fruits_.getCount() == 0)

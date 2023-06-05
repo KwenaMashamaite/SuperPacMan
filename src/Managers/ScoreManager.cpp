@@ -61,6 +61,10 @@ void spm::ScoreManager::init() {
         updateScore(Constants::Points::BROKEN_DOOR);
     });
 
+    gameplayObserver.onPowerModeEnd([this] {
+        pointsMultiplier_ = 1;
+    });
+
     gameplayObserver.onStarEatenWithFruitMatch([this](Star*, EatenStarFruitMatch fruitMatch) {
         switch (fruitMatch) {
             case EatenStarFruitMatch::NO_MATCH:

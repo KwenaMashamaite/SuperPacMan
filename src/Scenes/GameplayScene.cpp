@@ -46,7 +46,7 @@ namespace spm {
         gameFlowManager_{*this},
         inputManager_{*this},
         gameObjectMovementManager_(*this),
-        audioManager_(*this, gameplayObserver_),
+        audioManager_(*this),
         timerManager_(*this),
         guiManager_(*this),
         collisionManager_(*this),
@@ -59,7 +59,7 @@ namespace spm {
     void GameplayScene::onStart() {
         grid_.create(getGameLevel());
         gameObjectsManager_.createObjects(grid_);
-        gameObjectsManager_.initGameObjects();
+        gameObjectsManager_.init();
         gameFlowManager_.init();
         inputManager_.init();
         gameObjectMovementManager_.init(inputManager_);

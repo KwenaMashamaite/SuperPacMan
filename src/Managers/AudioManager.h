@@ -29,6 +29,8 @@
 #include "Scenes/GameplayObserver.h"
 
 namespace spm {
+    class GameplayScene;
+
     /**
      * @brief Plays game audio
      */
@@ -36,10 +38,10 @@ namespace spm {
     public:
         /**
          * @brief Constructor
-         * @param scene The scene the audio manager belongs to
+         * @param gameplayScene The scene the audio manager belongs to
          * @param gameplayObserver The gameplay observer
          */
-        AudioManager(mighter2d::Scene& scene, GameplayObserver& gameplayObserver);
+        AudioManager(GameplayScene& gameplayScene);
 
         /**
          * @brief Initialize
@@ -158,10 +160,10 @@ namespace spm {
         void stop();
 
     private:
+        GameplayScene* gameplayScene_;
         mighter2d::audio::AudioManager audioPlayer_;
         mighter2d::audio::Audio* starSpawnSfx_;
         mighter2d::audio::Audio* bgrndMusic_;
-        GameplayObserver* gameplayObserver_;
     };
 }
 

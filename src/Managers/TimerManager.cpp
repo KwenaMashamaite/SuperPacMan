@@ -24,7 +24,6 @@
 
 #include "TimerManager.h"
 #include "common/Constants.h"
-#include "GameObjects/Ghost.h"
 #include "Scenes/GameplayScene.h"
 #include <Mighter2d/ui/widgets/Label.h>
 #include <Mighter2d/graphics/Window.h>
@@ -80,12 +79,30 @@ namespace spm {
             gameplayScene_.getGameplayObserver().emit("power_mode_tick", powerModeTimer.getRemainingDuration());
         });
 
+        GameplayObserver& gameplayObserver = gameplayScene_.getGameplayObserver();
+
         // Other
         gameplayScene_.getGameplayObserver().onGameplayDelayEnd([this] {
             if (!gameplayScene_.isBonusStage()) {
                 startGhostHouseArrestTimer();
                 startScatterModeTimer();
             }
+        });
+
+        gameplayObserver.onPowerPelletEaten([this](Pellet*) {
+            startPowerModeTimeout();
+        });
+
+        gameplayObserver.onPowerModeBegin([this]  {
+            pauseGhostAITimer();
+
+            if (isSuperMode())
+                extendSuperModeDuration();
+        });
+
+        gameplayObserver.onPowerModeEnd([this] {
+            if (!isSuperMode())
+                resumeGhostAITimer();
         });
     }
 
@@ -177,9 +194,6 @@ namespace spm {
     ///////////////////////////////////////////////////////////////
     void TimerManager::startPowerModeTimeout() {
         configureTimer(powerModeTimer_, getFrightenedModeDuration(), [this] {
-            if (!isSuperMode())
-                resumeGhostAITimer();
-
             gameplayScene_.getGameplayObserver().emit("power_mode_end");
         });
 

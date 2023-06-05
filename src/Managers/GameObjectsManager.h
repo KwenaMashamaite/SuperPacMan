@@ -58,9 +58,9 @@ namespace spm {
         void createObjects(Grid& grid);
 
         /**
-         * @brief Initialize the game objects
+         * @brief Initialize
          */
-        void initGameObjects();
+        void init();
 
         /**
          * @brief Reset movable game objects to their initial starting position
@@ -144,6 +144,17 @@ namespace spm {
          * @return sensors
          */
         mighter2d::ObjectContainer<Sensor>& getSensors();
+
+    private:
+        /**
+         * @brief Initialize the game objects
+         */
+        void initGameObjects();
+
+        /**
+         * @brief Initialize how objects react to collisions with other objects
+         */
+        void initCollisionResponse();
 
         /**
          * @brief Destroy game objects that are no longer active

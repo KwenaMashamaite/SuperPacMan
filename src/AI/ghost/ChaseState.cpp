@@ -102,8 +102,8 @@ namespace spm {
     }
 
     ///////////////////////////////////////////////////////////////
-    void ChaseState::handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) {
-        GhostState::handleEvent(event, args);
+    void ChaseState::handleEvent(GameEvent event) {
+        GhostState::handleEvent(event);
 
         if (event == GameEvent::SuperModeBegin) {
             gridMover_->setMoveStrategy(GhostGridMover::Strategy::Random);

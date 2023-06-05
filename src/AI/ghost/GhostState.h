@@ -67,9 +67,8 @@ namespace spm {
         /**
          * @brief Handle an event
          * @param event The event to be handled
-         * @param args Event arguments
          */
-        void handleEvent(GameEvent event, const mighter2d::PropertyContainer &args) override;
+        void handleEvent(GameEvent event) override;
 
         /**
          * @brief Exit the state

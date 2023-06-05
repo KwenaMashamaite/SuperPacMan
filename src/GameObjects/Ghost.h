@@ -146,9 +146,8 @@ class Ghost : public mighter2d::GridObject, mighter2d::IUpdatable {
         /**
          * @brief Handle a game event
          * @param event The event to be handled
-         * @param args Arguments associated with the event
          */
-        virtual void handleEvent(GameEvent event, const mighter2d::PropertyContainer& args);
+        void handleEvent(GameEvent event);
 
         /**
          * @brief Destructor
